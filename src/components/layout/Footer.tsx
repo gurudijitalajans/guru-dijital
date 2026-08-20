@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, ArrowUpRight } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
+import { FooterWordmark } from "@/components/v2/FooterWordmark";
 import { navLinks, services, site } from "@/lib/data";
 
 export default function Footer() {
@@ -124,12 +125,8 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Giant watermark */}
-      <div className="pointer-events-none select-none overflow-hidden" aria-hidden>
-        <p className="headline-outline-light -mb-[0.23em] text-center text-[22vw] font-extrabold leading-none tracking-tight">
-          guru
-        </p>
-      </div>
+      {/* Giant interactive wordmark */}
+      <FooterWordmark />
 
       <div className="border-t border-paper/10">
         <div className="container-g flex flex-col items-center justify-between gap-2 py-6 text-xs text-paper/40 sm:flex-row">

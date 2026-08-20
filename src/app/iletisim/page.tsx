@@ -99,16 +99,16 @@ export default function IletisimPage() {
                   {...(item.external
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="group flex items-center gap-4 rounded-3xl border border-ink/8 bg-white p-6 shadow-card transition-colors duration-300 hover:border-guru/40"
+                  className="group flex items-center gap-4 rounded-3xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
                 >
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/10 text-guru-deep transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
                     {item.icon}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-smoke">
+                    <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-paper/50">
                       {item.label}
                     </span>
-                    <span className="mt-1 block truncate font-semibold text-ink">
+                    <span className="mt-1 block truncate font-semibold text-paper">
                       {item.value}
                     </span>
                   </span>
@@ -116,7 +116,7 @@ export default function IletisimPage() {
               </StaggerItem>
             ))}
             <StaggerItem>
-              <div className="relative overflow-hidden rounded-3xl bg-coal p-6 text-paper md:p-7">
+              <div className="relative overflow-hidden rounded-3xl border border-paper/10 bg-ink p-6 text-paper shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-7">
                 <div className="grain-blob -right-16 -top-16 h-48 w-48 opacity-40" aria-hidden />
                 <p className="relative text-lg font-bold leading-snug tracking-tight">
                   unlock the <span className="text-guru">next</span> level
@@ -139,6 +139,7 @@ export default function IletisimPage() {
         <div className="container-g">
           <SectionHeading
             center
+            dark
             eyebrow="Sık Sorulanlar"
             title="Aklınıza takılan *sorular*"
             sub="Kısa cevaplar; detayları keşif görüşmesinde birlikte netleştiririz."

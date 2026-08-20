@@ -2,6 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { SmoothScroll } from "@/components/fx/SmoothScroll";
+import { CustomCursor } from "@/components/fx/CustomCursor";
+import { Preloader } from "@/components/fx/Preloader";
+import { GrainOverlay } from "@/components/fx/GrainOverlay";
+import { ScrollProgress } from "@/components/fx/ScrollProgress";
 import { site } from "@/lib/data";
 import "./globals.css";
 
@@ -75,9 +80,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <Preloader />
+        <CustomCursor />
+        <ScrollProgress />
+        <GrainOverlay />
+        <SmoothScroll>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );

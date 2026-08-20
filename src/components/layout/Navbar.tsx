@@ -37,14 +37,14 @@ export default function Navbar() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled && !open
-          ? "border-b border-ink/5 bg-paper/85 backdrop-blur-xl"
+          ? "border-b border-paper/10 bg-coal/80 backdrop-blur-xl"
           : "bg-transparent"
       )}
     >
       <div className="container-g flex h-16 items-center justify-between md:h-20">
         <Link href="/" className="relative z-[60] shrink-0" aria-label="Guru Dijital Ajans — Ana Sayfa">
           <Image
-            src={open ? "/logo-light.png" : "/logo-dark.png"}
+            src="/logo-light.png"
             alt="Guru Dijital Ajans"
             width={720}
             height={306}
@@ -66,7 +66,7 @@ export default function Navbar() {
                 href={link.href}
                 className={cn(
                   "relative text-sm font-medium transition-colors duration-200",
-                  active ? "text-ink" : "text-ink/60 hover:text-ink"
+                  active ? "text-paper" : "text-paper/60 hover:text-paper"
                 )}
               >
                 {link.label}
@@ -83,7 +83,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden lg:block">
-          <GButton href="/iletisim" size="md">
+          <GButton href="/iletisim" size="md" variant="green">
             Teklif Al
           </GButton>
         </div>
@@ -92,7 +92,7 @@ export default function Navbar() {
         <button
           className={cn(
             "relative z-[60] flex size-11 items-center justify-center rounded-full transition-colors lg:hidden",
-            open ? "bg-paper/10 text-paper" : "bg-ink/5 text-ink"
+            "bg-paper/10 text-paper"
           )}
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Menüyü kapat" : "Menüyü aç"}

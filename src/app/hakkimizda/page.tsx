@@ -40,8 +40,8 @@ export default function HakkimizdaPage() {
                 <p
                   className={
                     i === 0
-                      ? "text-xl font-medium leading-relaxed tracking-tight text-ink md:text-2xl"
-                      : "text-base leading-relaxed text-smoke md:text-lg"
+                      ? "text-xl font-medium leading-relaxed tracking-tight text-paper md:text-2xl"
+                      : "text-base leading-relaxed text-paper/60 md:text-lg"
                   }
                 >
                   {p}
@@ -52,7 +52,7 @@ export default function HakkimizdaPage() {
           <div className="lg:pt-2">
             <Reveal delay={0.1} className="lg:sticky lg:top-28">
               <TiltCard className="group rounded-3xl">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-ink/8 shadow-card">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-paper/10">
                   <Image
                     src="/work/unlock-cover.webp"
                     alt="Guru Dijital — unlock the next level"
@@ -68,7 +68,7 @@ export default function HakkimizdaPage() {
       </section>
 
       {/* Sayılarla Guru */}
-      <section className="relative overflow-hidden bg-coal py-20 text-paper md:py-28">
+      <section className="relative overflow-hidden bg-ink py-20 text-paper md:py-28">
         <div className="grain-blob -left-32 -top-24 h-96 w-96 opacity-30" aria-hidden />
         <div className="container-g relative">
           <SectionHeading
@@ -96,6 +96,7 @@ export default function HakkimizdaPage() {
       <section className="py-20 md:py-28">
         <div className="container-g">
           <SectionHeading
+            dark
             eyebrow="Değerlerimiz"
             title="Bizi biz yapan *ilkeler*"
             sub="İlk günkü heyecan, üretme tutkusu ve işe duyduğumuz saygı; her projede aynı dört ilkeyle çalışıyoruz."
@@ -103,12 +104,12 @@ export default function HakkimizdaPage() {
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 md:mt-16">
             {values.map((v, i) => (
               <StaggerItem key={v.title} className="h-full">
-                <div className="flex h-full flex-col rounded-3xl border border-ink/8 bg-white p-7 shadow-card">
-                  <span className="text-sm font-bold tracking-[0.14em] text-guru-deep">
+                <div className="flex h-full flex-col rounded-3xl border border-paper/10 bg-carbon p-7 transition-colors hover:border-guru/40">
+                  <span className="text-sm font-bold tracking-[0.14em] text-guru">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="mt-4 text-lg font-bold tracking-tight text-ink">{v.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-smoke">{v.desc}</p>
+                  <h3 className="mt-4 text-lg font-bold tracking-tight text-paper">{v.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-paper/60">{v.desc}</p>
                 </div>
               </StaggerItem>
             ))}
@@ -120,30 +121,31 @@ export default function HakkimizdaPage() {
       <section className="pb-20 md:pb-28">
         <div className="container-g">
           <SectionHeading
+            dark
             eyebrow="Ödüller & Tanınırlık"
             title="Google'ın da *takdir* ettiği işler"
           />
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 md:mt-16">
             {awards.map((a, i) => (
               <StaggerItem key={a.title} className="h-full">
-                <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-guru/30 bg-white p-8 shadow-card md:p-10">
+                <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-guru/30 bg-carbon p-8 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-10">
                   <div className="absolute inset-x-0 top-0 h-1 bg-guru" aria-hidden />
                   <div className="flex items-center justify-between gap-4">
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-guru/12 text-guru-deep">
+                    <span className="flex size-12 items-center justify-center rounded-2xl bg-guru/12 text-guru">
                       {i === 0 ? (
                         <BadgeCheck className="size-6" strokeWidth={2} />
                       ) : (
                         <Award className="size-6" strokeWidth={2} />
                       )}
                     </span>
-                    <span className="rounded-full border border-guru/30 px-3.5 py-1 text-xs font-bold tracking-[0.12em] text-guru-deep">
+                    <span className="rounded-full border border-guru/30 px-3.5 py-1 text-xs font-bold tracking-[0.12em] text-guru">
                       {a.year}
                     </span>
                   </div>
-                  <h3 className="mt-6 text-xl font-bold tracking-tight text-ink md:text-2xl">
+                  <h3 className="mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">
                     {a.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-smoke md:text-[15px]">
+                  <p className="mt-3 text-sm leading-relaxed text-paper/60 md:text-[15px]">
                     {a.desc}
                   </p>
                 </div>

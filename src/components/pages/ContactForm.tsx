@@ -41,16 +41,16 @@ function validate(values: Values): Errors {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-paper px-4 py-3 text-sm text-ink outline-none transition-all duration-200 placeholder:text-smoke/60",
+    "w-full rounded-xl border bg-carbon px-4 py-3 text-sm text-paper outline-none transition-all duration-200 placeholder:text-paper/40",
     hasError
-      ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/15"
-      : "border-ink/10 focus:border-guru focus:ring-2 focus:ring-guru/25"
+      ? "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
+      : "border-paper/15 focus:border-guru focus:ring-2 focus:ring-guru/25"
   );
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="mt-1.5 text-xs font-medium text-red-600">
+    <p id={id} role="alert" className="mt-1.5 text-xs font-medium text-red-400">
       {message}
     </p>
   );
@@ -91,7 +91,7 @@ export function ContactForm() {
   }
 
   return (
-    <div className="rounded-3xl border border-ink/8 bg-white p-6 shadow-card md:p-8">
+    <div className="rounded-3xl border border-paper/10 bg-carbon p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8 [color-scheme:dark]">
       <AnimatePresence mode="wait" initial={false}>
         {submitted ? (
           <motion.div
@@ -102,18 +102,18 @@ export function ContactForm() {
             transition={{ duration: 0.45, ease: EASE }}
             className="flex min-h-96 flex-col items-center justify-center text-center"
           >
-            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru-deep">
+            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru">
               <CheckCircle2 className="size-8" strokeWidth={2} />
             </span>
-            <h3 className="mt-6 text-xl font-bold tracking-tight text-ink md:text-2xl">
+            <h3 className="mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">
               Talebiniz e-posta uygulamanızda açıldı
             </h3>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-smoke">
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-paper/60">
               Gönder butonuna basmanız yeterli. E-posta uygulamanız açılmadıysa
               mesajınızı doğrudan{" "}
               <a
                 href={`mailto:${site.email}`}
-                className="font-semibold text-ink underline decoration-guru decoration-2 underline-offset-2"
+                className="font-semibold text-paper underline decoration-guru decoration-2 underline-offset-2"
               >
                 {site.email}
               </a>{" "}
@@ -126,7 +126,7 @@ export function ContactForm() {
                 setErrors({});
                 setSubmitted(false);
               }}
-              className="mt-7 rounded-full border border-ink/15 px-6 py-3 text-sm font-semibold text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-paper active:scale-[0.98]"
+              className="mt-7 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-paper hover:bg-paper hover:text-ink active:scale-[0.98]"
             >
               Yeni mesaj yaz
             </button>
@@ -141,15 +141,15 @@ export function ContactForm() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full bg-guru/10 px-4 py-2 text-[13px] font-semibold text-guru-deep">
+            <div className="inline-flex items-center gap-2 rounded-full bg-guru/12 px-4 py-2 text-[13px] font-semibold text-guru">
               <Clock className="size-4" strokeWidth={2.2} />
               Ortalama yanıt süremiz: aynı gün
             </div>
 
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="cf-name" className="mb-1.5 block text-sm font-semibold text-ink">
-                  Ad Soyad <span className="text-guru-deep">*</span>
+                <label htmlFor="cf-name" className="mb-1.5 block text-sm font-semibold text-paper">
+                  Ad Soyad <span className="text-guru">*</span>
                 </label>
                 <input
                   id="cf-name"
@@ -167,8 +167,8 @@ export function ContactForm() {
               </div>
 
               <div>
-                <label htmlFor="cf-email" className="mb-1.5 block text-sm font-semibold text-ink">
-                  E-posta <span className="text-guru-deep">*</span>
+                <label htmlFor="cf-email" className="mb-1.5 block text-sm font-semibold text-paper">
+                  E-posta <span className="text-guru">*</span>
                 </label>
                 <input
                   id="cf-email"
@@ -186,8 +186,8 @@ export function ContactForm() {
               </div>
 
               <div>
-                <label htmlFor="cf-phone" className="mb-1.5 block text-sm font-semibold text-ink">
-                  Telefon <span className="font-normal text-smoke">(opsiyonel)</span>
+                <label htmlFor="cf-phone" className="mb-1.5 block text-sm font-semibold text-paper">
+                  Telefon <span className="font-normal text-paper/50">(opsiyonel)</span>
                 </label>
                 <input
                   id="cf-phone"
@@ -202,8 +202,8 @@ export function ContactForm() {
               </div>
 
               <div>
-                <label htmlFor="cf-service" className="mb-1.5 block text-sm font-semibold text-ink">
-                  İlgilendiğiniz Hizmet <span className="text-guru-deep">*</span>
+                <label htmlFor="cf-service" className="mb-1.5 block text-sm font-semibold text-paper">
+                  İlgilendiğiniz Hizmet <span className="text-guru">*</span>
                 </label>
                 <select
                   id="cf-service"
@@ -212,7 +212,7 @@ export function ContactForm() {
                   onChange={(e) => set("service", e.target.value)}
                   aria-invalid={Boolean(errors.service)}
                   aria-describedby={errors.service ? "cf-service-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.service)), !values.service && "text-smoke/60")}
+                  className={cn(inputCls(Boolean(errors.service)), !values.service && "text-paper/40")}
                 >
                   <option value="" disabled>
                     Hizmet seçin
@@ -228,8 +228,8 @@ export function ContactForm() {
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="cf-message" className="mb-1.5 block text-sm font-semibold text-ink">
-                  Mesajınız <span className="text-guru-deep">*</span>
+                <label htmlFor="cf-message" className="mb-1.5 block text-sm font-semibold text-paper">
+                  Mesajınız <span className="text-guru">*</span>
                 </label>
                 <textarea
                   id="cf-message"
@@ -250,7 +250,7 @@ export function ContactForm() {
               <GButton type="submit" variant="green" size="lg">
                 Mesajı Gönder
               </GButton>
-              <p className="text-xs leading-relaxed text-smoke">
+              <p className="text-xs leading-relaxed text-paper/50">
                 Gönderdiğinizde mesajınız e-posta uygulamanızda hazırlanır.
               </p>
             </div>

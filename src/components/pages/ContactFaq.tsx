@@ -30,7 +30,7 @@ export function ContactFaq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <div className="mx-auto max-w-3xl divide-y divide-ink/8 rounded-3xl border border-ink/8 bg-white px-6 shadow-card md:px-8">
+    <div className="mx-auto max-w-3xl divide-y divide-paper/10 rounded-3xl border border-paper/10 bg-carbon px-6 md:px-8">
       {faqs.map((item, i) => {
         const isOpen = open === i;
         return (
@@ -45,7 +45,7 @@ export function ContactFaq() {
               <span
                 className={cn(
                   "text-[15px] font-semibold tracking-tight transition-colors duration-300 md:text-base",
-                  isOpen ? "text-ink" : "text-ink/80"
+                  isOpen ? "text-paper" : "text-paper/80"
                 )}
               >
                 {item.q}
@@ -55,7 +55,7 @@ export function ContactFaq() {
                 transition={{ duration: 0.3, ease: EASE }}
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300",
-                  isOpen ? "bg-guru text-ink" : "bg-mist/70 text-ink/70"
+                  isOpen ? "bg-guru text-ink" : "bg-paper/10 text-paper/70"
                 )}
                 aria-hidden
               >
@@ -72,7 +72,7 @@ export function ContactFaq() {
                   transition={{ duration: 0.4, ease: EASE }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-6 pr-10 text-sm leading-relaxed text-smoke md:text-[15px]">
+                  <p className="pb-6 pr-10 text-sm leading-relaxed text-paper/60 md:text-[15px]">
                     {item.a}
                   </p>
                 </motion.div>

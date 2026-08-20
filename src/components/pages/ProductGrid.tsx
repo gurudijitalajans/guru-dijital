@@ -42,8 +42,8 @@ export function ProductGrid() {
               className={cn(
                 "rounded-full border px-4 py-2 text-sm font-semibold tracking-tight transition-all duration-300 active:scale-[0.97]",
                 isActive
-                  ? "border-ink bg-ink text-paper"
-                  : "border-ink/10 bg-white text-smoke hover:border-ink/30 hover:text-ink"
+                  ? "border-guru bg-guru text-ink"
+                  : "border-paper/15 bg-transparent text-paper/60 hover:border-paper/40 hover:text-paper"
               )}
             >
               {f.label}
@@ -62,7 +62,7 @@ export function ProductGrid() {
             transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
           >
               <TiltCard className="group h-full rounded-3xl">
-                <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-ink/8 bg-white shadow-card">
+                <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-paper/10 bg-carbon transition-colors duration-300 group-hover:border-guru/40">
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
                       src={p.image}
@@ -71,15 +71,19 @@ export function ProductGrid() {
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                     />
+                    <div
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/60 to-transparent"
+                      aria-hidden
+                    />
                   </div>
                   <div className="flex flex-1 flex-col p-6 md:p-7">
-                    <h3 className="text-lg font-bold tracking-tight text-ink">{p.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-smoke">{p.desc}</p>
+                    <h3 className="text-lg font-bold tracking-tight text-paper">{p.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-paper/60">{p.desc}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {p.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-mist/70 px-3 py-1 text-xs font-medium text-ink/70"
+                          className="rounded-full bg-paper/10 px-3 py-1 text-xs font-medium text-paper/70"
                         >
                           {tag}
                         </span>
@@ -87,7 +91,7 @@ export function ProductGrid() {
                     </div>
                     <Link
                       href={`/hizmetler/${p.serviceSlug}`}
-                      className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-ink transition-colors hover:text-guru-deep"
+                      className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-paper transition-colors hover:text-guru"
                     >
                       İlgili hizmet: {serviceTitleBySlug.get(p.serviceSlug)}
                       <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

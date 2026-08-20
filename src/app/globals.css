@@ -33,11 +33,23 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+/* Lenis smooth-scroll aktifken native smooth kapanır */
+html[data-lenis] {
+  scroll-behavior: auto;
+}
+
+/* Özel imleç aktifken native imleç gizlenir */
+html[data-cursor-on],
+html[data-cursor-on] * {
+  cursor: none !important;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-coal);
+  color: var(--color-paper);
   font-family: var(--font-sans);
   overflow-x: clip;
 }
