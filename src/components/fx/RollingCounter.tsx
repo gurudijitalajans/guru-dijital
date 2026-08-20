@@ -38,10 +38,9 @@ export function RollingCounter({
   });
   const label = `${prefix}${formatted}${suffix}`;
 
-  if (reduce) {
-    return <span className={cn("tabular-nums", className)}>{label}</span>;
-  }
-
+  // Hydration notu: reduced-motion'da farklı (düz) bir ağaç render etmek SSR ile
+  // istemcinin ilk render'ını ayrıştırır (useReducedMotion SSR'da null, istemcide
+  // true). Ağaç her durumda aynı kalır; reduce yalnızca animasyonu süresizleştirir.
   return (
     <span
       ref={ref}
@@ -61,8 +60,12 @@ export function RollingCounter({
               <motion.span
                 className="flex flex-col"
                 initial={{ y: 0 }}
-                animate={inView ? { y: `-${Number(ch)}em` } : { y: 0 }}
-                transition={{ duration: 0.9, delay: 0.15 + i * 0.08, ease: EASE }}
+                animate={inView || reduce ? { y: `-${Number(ch)}em` } : { y: 0 }}
+                transition={
+                  reduce
+                    ? { duration: 0 }
+                    : { duration: 0.9, delay: 0.15 + i * 0.08, ease: EASE }
+                }
               >
                 {DIGITS.map((d) => (
                   <span key={d} className="block h-[1em] text-center leading-[1]">

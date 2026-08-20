@@ -98,7 +98,12 @@ function CaseCard({
   const dim = useTransform(progress, [start, end], [0, isLast ? 0 : 0.45]);
 
   return (
-    <div className="md:sticky md:top-[8vh]" style={{ zIndex: index + 1 }}>
+    /* Kısa viewport'ta (alçak laptop/zoom) 92vh'lik alan karta yetmeyip alt
+       istatistik satırını kalıcı gizleyebilir — sticky yalnız >=600px yükseklikte */
+    <div
+      className="md:[@media(min-height:600px)]:sticky md:[@media(min-height:600px)]:top-[8vh]"
+      style={{ zIndex: index + 1 }}
+    >
       <motion.article
         style={fx ? { scale, transformOrigin: "center top" } : undefined}
         className="relative flex overflow-hidden rounded-[2rem] border border-paper/10 bg-carbon shadow-[inset_0_1px_0_rgb(245_246_245/0.06),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[86vh]"

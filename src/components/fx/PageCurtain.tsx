@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-import { useState, type ReactNode } from "react";
+import { motion } from "motion/react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -14,15 +14,27 @@ type PageCurtainProps = {
  * Yalnızca giriş yönlü tasarlandı (App Router template'te çıkış animasyonu
  * güvenilir değildir): içerik hafif yukarı kayarak/opaklaşarak girer ve üstten
  * inen yeşil→siyah iki katmanlı perde süpürmesi (~0.7s) oynar.
- * Perdeler animasyon bitince DOM'dan kaldırılır.
+ *
+ * Hydration notu: reduced-motion tercihi İLK render'da DOM'u dallandıramaz —
+ * useReducedMotion SSR'da null, istemcide true döndüğünden yapısal mismatch
+ * yaratır. Bu yüzden tercih mount SONRASI matchMedia ile okunur; ilk render
+ * herkes için birebir aynıdır, reduce kullanıcılarında perde mount'ta kaldırılır
+ * ve içerik geçişi süresizleştirilir.
  */
 export function PageCurtain({ children }: PageCurtainProps) {
-  const reduce = useReducedMotion();
+  const [reduce, setReduce] = useState(false);
   const [sweepDone, setSweepDone] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setReduce(true);
+      setSweepDone(true);
+    }
+  }, []);
 
   return (
     <>
-      {!reduce && !sweepDone && (
+      {!sweepDone && (
         <>
           {/* Siyah katman — yeşilin hemen arkasından süpürür */}
           <motion.div
@@ -44,9 +56,13 @@ export function PageCurtain({ children }: PageCurtainProps) {
         </>
       )}
       <motion.div
-        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 26 }}
+        initial={{ opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: reduce ? 0 : 0.12, ease: EASE }}
+        transition={
+          reduce
+            ? { duration: 0 }
+            : { duration: 0.7, delay: 0.12, ease: EASE }
+        }
       >
         {children}
       </motion.div>
