@@ -129,7 +129,7 @@ export default function Footer() {
       </div>
 
       {/* Giant interactive wordmark: alt bara taşmadan, nefes payıyla oturur */}
-      <FooterWordmark className="mb-8 mt-4 md:mb-12" />
+      <FooterWordmark className="my-10 md:my-16" />
 
       <div className="border-t border-paper/10">
         <div className="container-g flex flex-col items-center justify-between gap-2 py-6 text-xs text-paper/40 sm:flex-row">
