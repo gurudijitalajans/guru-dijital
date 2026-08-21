@@ -4,6 +4,10 @@ import { InstagramIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StaggerGroup, StaggerItem, Reveal } from "@/components/ui/Reveal";
+import { Scramble } from "@/components/fx/Scramble";
+import { Spotlight } from "@/components/fx/Spotlight";
+import { RotatingBadge } from "@/components/fx/RotatingBadge";
+import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { ContactFaq } from "@/components/pages/ContactFaq";
 import { site } from "@/lib/data";
@@ -77,42 +81,65 @@ function buildContactItems(): ContactItem[] {
   return items;
 }
 
+/* PageHeroV2 eyebrow'u runtime'da ReactNode kabul eder (div içinde {eyebrow});
+   tip yüzeyi string olduğundan güvenli daraltmayla geçilir. */
+const heroEyebrow = (
+  <Scramble text="İletişim" duration={1} />
+) as unknown as string;
+
 export default function IletisimPage() {
   const contactItems = buildContactItems();
 
   return (
     <>
       <PageHero
-        eyebrow="İletişim"
+        eyebrow={heroEyebrow}
         title="Projenizi *konuşalım*"
         sub="Fikrinizi, hedefinizi ya da aklınızdaki soruyu yazın; aynı gün dönüş yapalım. İlk görüşme her zaman ücretsiz."
-      />
+      >
+        {/* Sıfır yükseklikli relative kanca: rozet başlığın sağ boşluğuna asılır */}
+        <div className="relative hidden lg:block" aria-hidden={false}>
+          <div className="absolute -top-44 right-0">
+            <RotatingBadge
+              size={100}
+              href="#iletisim-form"
+              label="Forma git: Projeni konuşalım"
+            />
+          </div>
+        </div>
+      </PageHero>
 
       {/* İletişim kanalları + form */}
-      <section className="pb-20 md:pb-28">
+      <section id="iletisim-form" className="scroll-mt-28 pb-20 md:pb-28">
         <div className="container-g grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           <StaggerGroup className="flex flex-col gap-4">
             {contactItems.map((item) => (
               <StaggerItem key={item.label}>
-                <a
-                  href={item.href}
-                  {...(item.external
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="group flex items-center gap-4 rounded-3xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
+                <Spotlight
+                  className="overflow-hidden rounded-3xl"
+                  size={360}
+                  opacity={0.09}
                 >
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
-                    {item.icon}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-paper/50">
-                      {item.label}
+                  <a
+                    href={item.href}
+                    {...(item.external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="group flex items-center gap-4 rounded-3xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
+                  >
+                    <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
+                      {item.icon}
                     </span>
-                    <span className="mt-1 block truncate font-semibold text-paper">
-                      {item.value}
+                    <span className="min-w-0">
+                      <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-paper/50">
+                        {item.label}
+                      </span>
+                      <span className="mt-1 block truncate font-semibold text-paper">
+                        {item.value}
+                      </span>
                     </span>
-                  </span>
-                </a>
+                  </a>
+                </Spotlight>
               </StaggerItem>
             ))}
             <StaggerItem>
@@ -149,6 +176,26 @@ export default function IletisimPage() {
               <ContactFaq />
             </Reveal>
           </div>
+        </div>
+
+        {/* Dekoratif velocity şeridi — düşük opaklık, tamamen süsleme */}
+        <div
+          aria-hidden
+          className="mt-16 select-none border-y border-paper/10 py-4 md:mt-20"
+        >
+          <VelocityMarquee baseVelocity={2}>
+            {Array.from({ length: 3 }, (_, i) => (
+              <span
+                key={i}
+                className="mx-5 inline-flex items-center gap-5 text-sm font-semibold uppercase tracking-[0.22em] text-paper/20 md:text-base"
+              >
+                projeni konuşalım
+                <span className="text-guru/35">✦</span>
+                aynı gün dönüş
+                <span className="text-guru/35">✦</span>
+              </span>
+            ))}
+          </VelocityMarquee>
         </div>
       </section>
     </>

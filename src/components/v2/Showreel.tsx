@@ -39,24 +39,24 @@ type Frame = {
 
 /* Üst sıra: sola akar */
 const ROW_TOP: Frame[] = [
-  { src: "/work/instagram-postlar.webp", alt: "Instagram post tasarımları", w: 1600, h: 1131 },
-  { src: "/work/ambalaj-etiket.webp", alt: "Ambalaj etiket tasarımı", w: 1600, h: 833 },
-  { src: "/work/kurumsal-kimlik.webp", alt: "Kurumsal kimlik çalışması", w: 1600, h: 1921 },
-  { src: "/work/web-siteleri.webp", alt: "Web sitesi tasarımı", w: 1600, h: 678 },
-  { src: "/work/sosyal-icerik-cita.webp", alt: "Sosyal medya içerik tasarımı", w: 1600, h: 1131 },
-  { src: "/work/katalog-brosur.webp", alt: "Katalog ve broşür tasarımı", w: 1600, h: 814 },
-  { src: "/work/dijital-pazarlama.webp", alt: "Dijital pazarlama görseli", w: 1600, h: 1615 },
+  { src: "/tiles/sosyal-medya.webp", alt: "Guru marka deseni: sosyal medya", w: 1600, h: 1200 },
+  { src: "/tiles/grafik-tasarim.webp", alt: "Guru marka deseni: grafik tasarım", w: 1600, h: 1200 },
+  { src: "/tiles/icerik-uretimi.webp", alt: "Guru marka deseni: içerik üretimi", w: 1600, h: 1200 },
+  { src: "/tiles/web-tasarim.webp", alt: "Guru marka deseni: web tasarım", w: 1600, h: 1200 },
+  { src: "/tiles/dijital-pazarlama.webp", alt: "Guru marka deseni: dijital pazarlama", w: 1600, h: 1200 },
+  { src: "/tiles/video-tasarimi.webp", alt: "Guru marka deseni: video tasarımı", w: 1600, h: 1200 },
+  { src: "/tiles/marka.webp", alt: "Guru marka deseni", w: 1600, h: 1200 },
 ];
 
 /* Alt sıra: sağa akar */
 const ROW_BOTTOM: Frame[] = [
-  { src: "/work/web-mockup-dark.webp", alt: "Koyu temalı web arayüz mockup'ı", w: 1600, h: 1219 },
-  { src: "/work/sosyal-medya-telefon.webp", alt: "Telefonda sosyal medya içeriği", w: 1508, h: 1835 },
-  { src: "/work/ambalaj-kavanoz.webp", alt: "Kavanoz ambalaj tasarımı", w: 1600, h: 1131 },
-  { src: "/work/logo-tasarimlari.webp", alt: "Logo tasarım koleksiyonu", w: 1600, h: 474 },
-  { src: "/work/icerik-uretimi.webp", alt: "İçerik üretimi çalışması", w: 1600, h: 1131 },
-  { src: "/work/web-siteleri-2.webp", alt: "Web sitesi vitrin tasarımı", w: 1600, h: 678 },
-  { src: "/work/unlock-cover.webp", alt: "Unlock kampanya kapağı", w: 1600, h: 1131 },
+  { src: "/tiles/aurora-genis.webp", alt: "Guru aurora deseni", w: 1600, h: 1200 },
+  { src: "/tiles/studyo.webp", alt: "Guru stüdyo deseni", w: 1600, h: 1200 },
+  { src: "/tiles/teklif.webp", alt: "Guru marka deseni", w: 1600, h: 1200 },
+  { src: "/tiles/sosyal-medya.webp", alt: "Guru marka deseni: sosyal medya", w: 1600, h: 1200 },
+  { src: "/tiles/web-tasarim.webp", alt: "Guru marka deseni: web tasarım", w: 1600, h: 1200 },
+  { src: "/tiles/grafik-tasarim.webp", alt: "Guru marka deseni: grafik tasarım", w: 1600, h: 1200 },
+  { src: "/tiles/dijital-pazarlama.webp", alt: "Guru marka deseni: dijital pazarlama", w: 1600, h: 1200 },
 ];
 
 /* Reduced-motion fallback: tek statik satır */
@@ -108,7 +108,7 @@ function OutlineTicker({ playState }: { playState: "running" | "paused" }) {
                 key={i}
                 className="headline-outline-light whitespace-nowrap px-8 text-[15vw] font-extrabold uppercase leading-none tracking-tight md:text-[10vw]"
               >
-                showreel <span className="text-guru">✦</span> 2025
+                Showreel <span className="text-guru">✦</span> 2025
               </span>
             ))}
           </div>
@@ -167,9 +167,9 @@ export function Showreel() {
     <section
       ref={sectionRef}
       className="relative overflow-hidden bg-ink py-16 md:py-24"
-      aria-label="Showreel — işlerimizden kareler"
+      aria-label="Showreel: İşlerimizden kareler"
     >
-      <h2 className="sr-only">Showreel — işlerimizden kareler</h2>
+      <h2 className="sr-only">Showreel: İşlerimizden kareler</h2>
 
       {reduced ? (
         /* ---- Reduced-motion: statik başlık + tek grid satırı ---- */
@@ -178,7 +178,7 @@ export function Showreel() {
             className="headline-outline-light text-[13vw] font-extrabold uppercase leading-none tracking-tight md:text-[8vw]"
             aria-hidden
           >
-            showreel ✦ 2025
+            Showreel ✦ 2025
           </p>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {STATIC_ROW.map((f) => (

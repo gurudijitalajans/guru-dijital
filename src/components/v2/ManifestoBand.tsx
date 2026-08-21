@@ -15,12 +15,11 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 type Word = { t: string; tone?: "outline" | "green" };
 
 const WORDS: Word[] = [
-  { t: "strateji," },
+  { t: "Strateji," },
   { t: "tasarım,", tone: "outline" },
   { t: "içerik" },
   { t: "ve" },
-  { t: "performans" },
-  { t: "—" },
+  { t: "performans:" },
   { t: "tek", tone: "green" },
   { t: "çatıda.", tone: "green" },
 ];
@@ -39,7 +38,7 @@ export function ManifestoBand({ className }: { className?: string }) {
       <div className="grain-blob right-[-10%] top-[-30%] h-72 w-72 opacity-20 md:h-96 md:w-96" aria-hidden />
 
       <div className="container-g">
-        <p className="flex flex-wrap items-baseline gap-x-[0.32em] gap-y-2 font-extrabold lowercase leading-[1.02] tracking-[-0.04em] text-[clamp(2.2rem,7vw,5.5rem)]">
+        <p className="flex flex-wrap items-baseline gap-x-[0.32em] gap-y-2 font-extrabold leading-[1.02] tracking-[-0.04em] text-[clamp(2.2rem,7vw,5.5rem)]">
           {WORDS.map((w, i) => (
             <motion.span
               key={i}

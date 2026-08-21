@@ -42,7 +42,7 @@ export default function Navbar() {
       )}
     >
       <div className="container-g flex h-16 items-center justify-between md:h-20">
-        <Link href="/" className="relative z-[60] shrink-0" aria-label="Guru Dijital Ajans — Ana Sayfa">
+        <Link href="/" className="relative z-[60] shrink-0" aria-label="Guru Dijital Ajans | Ana Sayfa">
           <Image
             src="/logo-light.png"
             alt="Guru Dijital Ajans"
@@ -171,7 +171,7 @@ export default function Navbar() {
                   <Mail className="size-5" />
                 </a>
               </div>
-              <span className="text-sm text-paper/50">unlock the next level</span>
+              <span className="text-sm text-paper/50">Unlock the next level</span>
             </motion.div>
           </motion.div>
         )}

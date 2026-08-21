@@ -15,8 +15,8 @@ export default function Footer() {
       {/* CTA band */}
       <div className="container-g flex flex-col items-start justify-between gap-8 border-b border-paper/10 py-16 md:flex-row md:items-center md:py-20">
         <p className="max-w-xl text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-          unlock the <span className="text-guru">next</span> level —
-          <span className="text-paper/60"> markanızı bir sonraki seviyeye taşıyalım.</span>
+          Unlock the <span className="text-guru">next</span> level.
+          <span className="text-paper/60"> Markanızı bir sonraki seviyeye taşıyalım.</span>
         </p>
         <div className="flex items-center gap-8">
           <RotatingBadge size={116} className="hidden lg:inline-block" />
@@ -135,7 +135,7 @@ export default function Footer() {
       <div className="border-t border-paper/10">
         <div className="container-g flex flex-col items-center justify-between gap-2 py-6 text-xs text-paper/40 sm:flex-row">
           <p>© {year} {site.name}. Tüm hakları saklıdır.</p>
-          <p>unlock the next level</p>
+          <p>Unlock the next level</p>
         </div>
       </div>
     </footer>

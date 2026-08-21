@@ -1,94 +1,68 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
-import { services } from "@/lib/data";
 import { PageHero } from "@/components/layout/PageHero";
-import { CTASection } from "@/components/sections/CTASection";
+import { Scramble } from "@/components/fx/Scramble";
+import { ShimmerText } from "@/components/fx/ShimmerText";
+import { RotatingBadge } from "@/components/fx/RotatingBadge";
+import { SectionDivider } from "@/components/v2/SectionDivider";
 import { Reveal } from "@/components/ui/Reveal";
+import { ServicesShowcaseList } from "@/components/pages/hizmetler/ServicesShowcaseList";
 
 export const metadata: Metadata = {
   title: "Hizmetler",
   description:
-    "Sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı — markanızı büyüten altı başlıkta entegre dijital çözümler.",
+    "Sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı; markanızı büyüten altı başlıkta entegre dijital çözümler.",
 };
 
 export default function HizmetlerPage() {
   return (
     <>
       <PageHero
-        eyebrow="Hizmetlerimiz"
+        // PageHeroV2 eyebrow'u JSX child olarak basar; Scramble elementi
+        // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
+        eyebrow={(<Scramble text="Hizmetlerimiz" duration={1.1} />) as unknown as string}
         title="Markanızı bir üst seviyeye taşıyan *hizmetler*"
-        sub="Stratejiden üretime, yayından ölçüme; altı başlıkta uçtan uca dijital çözümler sunuyoruz. Her hizmeti tek başına ya da entegre bir bütün olarak markanız için kurguluyoruz."
+        sub="Stratejiden üretime, yayından ölçüme; altı başlıkta uçtan uca dijital çözümler."
       />
 
-      {/* Hizmet listesi */}
-      <section className="pb-20 md:pb-28">
-        <div className="container-g flex flex-col gap-5 md:gap-6">
-          {services.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <Reveal key={s.slug} delay={Math.min(i * 0.08, 0.24)}>
-                <Link
-                  href={`/hizmetler/${s.slug}`}
-                  className="group relative block rounded-3xl border border-paper/10 bg-carbon p-6 transition-all duration-300 hover:-translate-y-1 hover:border-guru/40 hover:shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8"
-                >
-                  <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-10">
-                    {/* Numara + ikon + metin */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-4 md:gap-5">
-                        <span
-                          className="headline-outline-light text-4xl font-extrabold leading-none md:text-5xl"
-                          aria-hidden
-                        >
-                          {s.no}
-                        </span>
-                        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-paper/10 text-paper transition-colors duration-300 group-hover:bg-guru group-hover:text-ink md:size-12">
-                          <Icon className="size-5 md:size-6" strokeWidth={1.8} />
-                        </span>
-                      </div>
-                      <h2 className="mt-5 text-2xl font-semibold tracking-tight md:text-3xl">
-                        {s.title}
-                      </h2>
-                      <p className="mt-3 max-w-xl text-sm leading-relaxed text-paper/60 md:text-base">
-                        {s.short}
-                      </p>
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {s.keywords.map((k) => (
-                          <span
-                            key={k}
-                            className="rounded-full border border-paper/15 px-3 py-1 text-xs font-medium text-paper/60 transition-colors duration-300 group-hover:border-guru/30"
-                          >
-                            {k}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Görsel önizleme */}
-                    <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-2xl border border-paper/10 md:aspect-[4/3] md:w-60 lg:w-72">
-                      <Image
-                        src={s.images[0].src}
-                        alt={s.images[0].alt}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(min-width: 1024px) 288px, (min-width: 768px) 240px, 100vw"
-                      />
-                    </div>
-
-                    {/* Ok */}
-                    <span className="absolute right-6 top-6 flex size-11 items-center justify-center rounded-full border border-paper/15 text-paper transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:static md:size-12 md:shrink-0">
-                      <ArrowUpRight className="size-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            );
-          })}
+      {/* Hizmet indeksi — dev tipografili satırlar + imleci takip eden önizleme */}
+      <section className="relative overflow-hidden pb-24 pt-14 md:pb-32 md:pt-20">
+        <div
+          className="grain-blob left-[-12%] top-[14%] h-[24rem] w-[24rem] opacity-20"
+          aria-hidden
+        />
+        <div className="container-g relative">
+          <ServicesShowcaseList />
         </div>
       </section>
 
-      <CTASection />
+      <SectionDivider from="coal" to="ink" />
+
+      {/* Kısa CTA şeridi — dönen rozetli */}
+      <section className="relative overflow-hidden bg-ink py-16 md:py-24">
+        <div
+          className="grain-blob -bottom-28 -right-24 h-80 w-80 opacity-20"
+          aria-hidden
+        />
+        <div className="container-g relative flex flex-col items-center gap-10 text-center md:flex-row md:justify-between md:gap-12 md:text-left">
+          <Reveal>
+            <div>
+              <p className="inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-paper/50">
+                <span className="inline-block size-2 bg-guru" aria-hidden />
+                Sıradaki Proje
+              </p>
+              <h2 className="mt-4 max-w-xl text-balance text-3xl font-extrabold tracking-[-0.03em] text-paper sm:text-4xl md:text-5xl">
+                <ShimmerText interval={5}>
+                  Aklınızdaki işi <span className="text-guru">birlikte</span>{" "}
+                  büyütelim
+                </ShimmerText>
+              </h2>
+            </div>
+          </Reveal>
+          <Reveal delay={0.1} className="shrink-0">
+            <RotatingBadge size={150} />
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 }

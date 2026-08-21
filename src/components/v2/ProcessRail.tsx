@@ -61,9 +61,9 @@ function DesktopRail({ className }: { className?: string }) {
         {/* Arka plan: dev sönük outline yazı */}
         <span
           aria-hidden
-          className="headline-outline-light pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[24vw] font-extrabold lowercase tracking-[-0.04em] opacity-35"
+          className="headline-outline-light pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-[24vw] font-extrabold tracking-[-0.04em] opacity-35"
         >
-          süreç
+          Süreç
         </span>
 
         {/* Üst şerit: eyebrow + kaydırma ipucu */}
@@ -73,8 +73,8 @@ function DesktopRail({ className }: { className?: string }) {
               <span className="inline-block size-2 bg-guru" aria-hidden />
               Nasıl Çalışıyoruz
             </p>
-            <p className="mt-2 text-lg font-extrabold lowercase tracking-[-0.04em] text-paper">
-              dört adımda <span className="text-guru">sonuç</span>
+            <p className="mt-2 text-lg font-extrabold tracking-[-0.04em] text-paper">
+              Dört adımda <span className="text-guru">sonuç</span>
             </p>
           </div>
           <p className="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-[0.16em] text-paper/40">
@@ -157,7 +157,7 @@ function RailPanel({
           {step.no}
         </motion.span>
       </div>
-      <h3 className="mt-7 max-w-xl text-3xl font-extrabold lowercase tracking-[-0.04em] text-paper md:text-5xl">
+      <h3 className="mt-7 max-w-xl text-3xl font-extrabold tracking-[-0.04em] text-paper md:text-5xl">
         {step.title}
       </h3>
       <p className="mt-5 max-w-md text-base leading-relaxed text-paper/60 md:text-lg">
@@ -176,9 +176,9 @@ function VerticalSteps({ className }: { className?: string }) {
     <div className={cn("relative overflow-hidden py-20 md:py-24", className)}>
       <span
         aria-hidden
-        className="headline-outline-light pointer-events-none absolute right-[-4%] top-6 select-none text-[5.5rem] font-extrabold lowercase tracking-[-0.04em] opacity-40 sm:text-[8rem]"
+        className="headline-outline-light pointer-events-none absolute right-[-4%] top-6 select-none text-[5.5rem] font-extrabold tracking-[-0.04em] opacity-40 sm:text-[8rem]"
       >
-        süreç
+        Süreç
       </span>
 
       <div className="container-g relative">
@@ -189,8 +189,8 @@ function VerticalSteps({ className }: { className?: string }) {
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h2 className="text-3xl font-extrabold lowercase leading-[1.05] tracking-[-0.04em] text-paper sm:text-4xl">
-            dört adımda <span className="text-guru">sonuç</span>
+          <h2 className="text-3xl font-extrabold leading-[1.05] tracking-[-0.04em] text-paper sm:text-4xl">
+            Dört adımda <span className="text-guru">sonuç</span>
           </h2>
         </Reveal>
 

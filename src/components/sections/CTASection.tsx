@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
  */
 export function CTASection({
   title = "Projenizi birlikte büyütelim",
-  sub = "Markanız için doğru stratejiyi konuşmak üzere bir kahve içelim — ilk görüşme her zaman ücretsiz.",
+  sub = "Markanız için doğru stratejiyi konuşmak üzere bir kahve içelim; ilk görüşme her zaman ücretsiz.",
 }: {
   title?: string;
   sub?: string;
@@ -19,7 +19,7 @@ export function CTASection({
       <div className="pointer-events-none absolute inset-x-0 top-6 select-none opacity-[0.16]" aria-hidden>
         <Marquee slow>
           <span className="whitespace-nowrap pr-8 text-7xl font-extrabold tracking-tight md:text-8xl">
-            unlock the next level · unlock the next level ·
+            Unlock the next level · Unlock the next level ·
           </span>
         </Marquee>
       </div>

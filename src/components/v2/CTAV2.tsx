@@ -15,7 +15,7 @@ export type CTAV2Props = {
  * Magnetic ve Reveal client alt bileşenler; bu bileşen server'da kalır.
  */
 export function CTAV2({ className }: CTAV2Props) {
-  const parts = parseAccent("projeni *konuşalım*");
+  const parts = parseAccent("Projeni *konuşalım*");
 
   return (
     <section
@@ -40,7 +40,7 @@ export function CTAV2({ className }: CTAV2Props) {
 
       <div className="container-g relative flex flex-col items-center text-center">
         <Reveal>
-          <h2 className="text-balance font-extrabold lowercase leading-[0.95] tracking-[-0.04em] text-paper text-[clamp(3rem,10vw,8rem)]">
+          <h2 className="text-balance font-extrabold leading-[0.95] tracking-[-0.04em] text-paper text-[clamp(3rem,10vw,8rem)]">
             {parts.map((p, i) => (
               <span key={i} className={p.accent ? "text-guru" : undefined}>
                 {p.t}
@@ -53,15 +53,15 @@ export function CTAV2({ className }: CTAV2Props) {
           <Magnetic strength={0.35}>
             <Link
               href="/iletisim"
-              aria-label="İletişime geç — projeni konuşalım"
+              aria-label="İletişime geç: Projeni konuşalım"
               className="group flex size-[128px] flex-col items-center justify-center gap-1 rounded-full bg-guru text-ink shadow-[0_0_80px_rgb(16_216_108/0.35)] transition-transform duration-500 ease-out hover:scale-110 md:size-[150px]"
             >
               <ArrowUpRight
                 className="size-8 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:size-9"
                 strokeWidth={2.2}
               />
-              <span className="text-sm font-semibold lowercase tracking-tight md:text-[15px]">
-                başlayalım
+              <span className="text-sm font-semibold tracking-tight md:text-[15px]">
+                Başlayalım
               </span>
             </Link>
           </Magnetic>

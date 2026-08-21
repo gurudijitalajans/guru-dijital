@@ -84,8 +84,8 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
               </p>
             </Reveal>
             <Reveal delay={0.05}>
-              <h2 className="text-balance text-4xl font-extrabold lowercase leading-[1.02] tracking-[-0.04em] text-paper sm:text-5xl md:text-6xl">
-                markanızı büyüten{" "}
+              <h2 className="text-balance text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] text-paper sm:text-5xl md:text-6xl">
+                Markanızı büyüten{" "}
                 <span className="text-guru">altı</span> disiplin
               </h2>
             </Reveal>

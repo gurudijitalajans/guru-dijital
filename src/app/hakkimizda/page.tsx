@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Award, BadgeCheck } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { CTASection } from "@/components/sections/CTASection";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { Counter } from "@/components/ui/Counter";
 import { TiltCard } from "@/components/ui/TiltCard";
+import { Scramble } from "@/components/fx/Scramble";
+import { Sparkles } from "@/components/fx/Sparkles";
+import { LiquidImage } from "@/components/fx/LiquidImage";
+import { Spotlight } from "@/components/fx/Spotlight";
+import { GlowBorder } from "@/components/fx/GlowBorder";
+import { RollingCounter } from "@/components/fx/RollingCounter";
+import { SectionDivider } from "@/components/v2/SectionDivider";
 import { aboutParagraphs, awards, references, services, values } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -22,50 +27,85 @@ const stats = [
   { value: 7, suffix: "/24", label: "Yol Arkadaşlığı" },
 ];
 
+/** Manifesto paragrafında yeşile boyanacak ifadeler (veri metniyle birebir). */
+const MANIFESTO_ACCENTS = [
+  "dönüştürücü bir etki",
+  "değer üretme süreci",
+  "gerçek bir bağ",
+];
+
+/**
+ * Düz metni MANIFESTO_ACCENTS ifadelerine göre bölüp vurgulu parçaları
+ * text-guru span'larına sarar. Saf string işlemi — SSR/istemci deterministik.
+ */
+function ManifestoText({ text }: { text: string }) {
+  const parts = text.split(new RegExp(`(${MANIFESTO_ACCENTS.join("|")})`, "g"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        MANIFESTO_ACCENTS.includes(part) ? (
+          <span key={i} className="text-guru">
+            {part}
+          </span>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
 export default function HakkimizdaPage() {
   return (
     <>
       <PageHero
-        eyebrow="Biz Kimiz"
+        // PageHeroV2 eyebrow'u yalnızca {eyebrow} olarak render eder; ReactNode
+        // runtime'da güvenlidir, prop tipi string olduğu için cast gerekir.
+        eyebrow={(<Scramble text="Biz Kimiz" duration={1.1} />) as unknown as string}
         title="Ortak bir hayalin *gerçeğe* dönüşme süreci"
         sub="Bizim için her marka bir yol arkadaşı, her proje ortak bir hayalin gerçeğe dönüşme sürecidir."
-      />
+      >
+        {/* Başlık çevresinde düşük yoğunluklu ışıltı — container'ı kaplar */}
+        <Sparkles density={9} />
+      </PageHero>
 
-      {/* Hikâye */}
-      <section className="pb-20 md:pb-28">
-        <div className="container-g grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-          <div>
-            {aboutParagraphs.map((p, i) => (
-              <Reveal key={i} delay={i * 0.06} className={i > 0 ? "mt-7" : undefined}>
-                <p
-                  className={
-                    i === 0
-                      ? "text-xl font-medium leading-relaxed tracking-tight text-paper md:text-2xl"
-                      : "text-base leading-relaxed text-paper/60 md:text-lg"
-                  }
-                >
-                  {p}
-                </p>
-              </Reveal>
-            ))}
-          </div>
-          <div className="lg:pt-2">
-            <Reveal delay={0.1} className="lg:sticky lg:top-28">
+      {/* Hikâye — manifesto + 2 sütun küçük metin + liquid görsel */}
+      <section className="pb-20 pt-16 md:pb-28 md:pt-24">
+        <div className="container-g">
+          <Reveal>
+            <p className="max-w-5xl text-2xl font-semibold leading-[1.3] tracking-tight text-paper md:text-3xl md:leading-[1.25] lg:text-4xl">
+              <ManifestoText text={aboutParagraphs[0]} />
+            </p>
+          </Reveal>
+
+          <div className="mt-14 grid items-center gap-12 md:mt-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+            <Reveal delay={0.08}>
+              <div className="gap-10 sm:columns-2">
+                {aboutParagraphs.slice(1).map((p, i) => (
+                  <p
+                    key={i}
+                    className="mb-5 break-inside-avoid text-sm leading-relaxed text-paper/55"
+                  >
+                    {p}
+                  </p>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal delay={0.14}>
               <TiltCard className="group rounded-3xl">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-paper/10">
-                  <Image
-                    src="/work/unlock-cover.webp"
-                    alt="Guru Dijital — unlock the next level"
-                    fill
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                    sizes="(min-width: 1024px) 40vw, 100vw"
-                  />
-                </div>
+                <LiquidImage
+                  src="/tiles/marka.webp"
+                  alt="Guru Dijital: Unlock the next level"
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  className="aspect-[4/5] rounded-3xl border border-paper/10"
+                />
               </TiltCard>
             </Reveal>
           </div>
         </div>
       </section>
+
+      <SectionDivider from="coal" to="ink" />
 
       {/* Sayılarla Guru */}
       <section className="relative overflow-hidden bg-ink py-20 text-paper md:py-28">
@@ -78,19 +118,23 @@ export default function HakkimizdaPage() {
           />
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 md:mt-16">
             {stats.map((s) => (
-              <StaggerItem key={s.label}>
-                <div className="rounded-3xl border border-paper/10 bg-carbon p-8">
-                  <span className="inline-block size-2 bg-guru" aria-hidden />
-                  <p className="mt-5 text-4xl font-extrabold tracking-tight md:text-5xl">
-                    <Counter value={s.value} suffix={s.suffix} />
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-paper/60">{s.label}</p>
-                </div>
+              <StaggerItem key={s.label} className="h-full">
+                <Spotlight className="h-full overflow-hidden rounded-3xl border border-paper/10 bg-carbon">
+                  <div className="p-8">
+                    <span className="inline-block size-2 bg-guru" aria-hidden />
+                    <p className="mt-5 text-4xl font-extrabold tracking-tight md:text-5xl">
+                      <RollingCounter value={s.value} suffix={s.suffix} />
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-paper/60">{s.label}</p>
+                  </div>
+                </Spotlight>
               </StaggerItem>
             ))}
           </StaggerGroup>
         </div>
       </section>
+
+      <SectionDivider from="ink" to="coal" flip />
 
       {/* Değerler */}
       <section className="py-20 md:py-28">
@@ -104,13 +148,20 @@ export default function HakkimizdaPage() {
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 md:mt-16">
             {values.map((v, i) => (
               <StaggerItem key={v.title} className="h-full">
-                <div className="flex h-full flex-col rounded-3xl border border-paper/10 bg-carbon p-7 transition-colors hover:border-guru/40">
-                  <span className="text-sm font-bold tracking-[0.14em] text-guru">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-4 text-lg font-bold tracking-tight text-paper">{v.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-paper/60">{v.desc}</p>
-                </div>
+                <GlowBorder className="h-full" radius="1.5rem">
+                  <div className="flex h-full flex-col p-7">
+                    <span
+                      aria-hidden
+                      className="text-5xl font-extrabold leading-none tracking-tight text-transparent [-webkit-text-stroke:1.5px_rgb(16_216_108/0.55)] md:text-6xl"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="mt-5 text-lg font-bold tracking-tight text-paper">
+                      {v.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-paper/60">{v.desc}</p>
+                  </div>
+                </GlowBorder>
               </StaggerItem>
             ))}
           </StaggerGroup>

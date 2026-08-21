@@ -40,12 +40,17 @@ export function ContactFaq() {
               onClick={() => setOpen(isOpen ? null : i)}
               aria-expanded={isOpen}
               aria-controls={`faq-panel-${i}`}
-              className="flex w-full items-center justify-between gap-4 py-5 text-left md:py-6"
+              className="group relative flex w-full items-center justify-between gap-4 py-5 text-left md:py-6"
             >
+              {/* Hover'da solda beliren ince yeşil çizgi */}
+              <span
+                aria-hidden
+                className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 scale-y-50 rounded-full bg-guru opacity-0 shadow-[0_0_12px_rgba(16,216,108,0.6)] transition-all duration-300 group-hover:scale-y-100 group-hover:opacity-100"
+              />
               <span
                 className={cn(
-                  "text-[15px] font-semibold tracking-tight transition-colors duration-300 md:text-base",
-                  isOpen ? "text-paper" : "text-paper/80"
+                  "text-[15px] font-semibold tracking-tight transition-all duration-300 group-hover:translate-x-3 md:text-base",
+                  isOpen ? "text-paper" : "text-paper/80 group-hover:text-paper"
                 )}
               >
                 {item.q}
@@ -54,8 +59,10 @@ export function ContactFaq() {
                 animate={{ rotate: isOpen ? 45 : 0 }}
                 transition={{ duration: 0.3, ease: EASE }}
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300",
-                  isOpen ? "bg-guru text-ink" : "bg-paper/10 text-paper/70"
+                  "flex size-8 shrink-0 items-center justify-center rounded-full transition-[background-color,color,scale] duration-300 group-hover:scale-110",
+                  isOpen
+                    ? "bg-guru text-ink"
+                    : "bg-paper/10 text-paper/70 group-hover:bg-paper/20 group-hover:text-paper"
                 )}
                 aria-hidden
               >

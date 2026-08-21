@@ -108,7 +108,7 @@ function ShowcaseCard({
     <Link
       href="/urunler"
       data-cursor="view"
-      aria-label={`${product.title} — tüm ürünleri gör`}
+      aria-label={`${product.title}: tüm ürünleri gör`}
       className="group block h-full"
     >
       <article
@@ -201,7 +201,7 @@ export function WorkShowcase() {
             dark
             eyebrow="Ürünlerimiz"
             title="Somut işler, *görünür* sonuçlar"
-            sub="Logodan ambalaja, kataloğdan web sitesine — hizmetlerimizin rafta ve ekranda duran çıktıları."
+            sub="Logodan ambalaja, kataloğdan web sitesine; hizmetlerimizin rafta ve ekranda duran çıktıları."
           />
           <Reveal delay={0.15} className="hidden md:block">
             <GButton

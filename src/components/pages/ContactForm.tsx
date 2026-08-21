@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle2, Clock } from "lucide-react";
 import { GButton } from "@/components/ui/Button";
+import { Sparkles } from "@/components/fx/Sparkles";
 import { services, site } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +45,7 @@ const inputCls = (hasError: boolean) =>
     "w-full rounded-xl border bg-carbon px-4 py-3 text-sm text-paper outline-none transition-all duration-200 placeholder:text-paper/40",
     hasError
       ? "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
-      : "border-paper/15 focus:border-guru focus:ring-2 focus:ring-guru/25"
+      : "border-paper/15 focus:border-guru focus:ring-2 focus:ring-guru/25 focus:shadow-[0_0_26px_rgba(16,216,108,0.16)]"
   );
 
 function FieldError({ id, message }: { id: string; message?: string }) {
@@ -73,7 +74,7 @@ export function ContactForm() {
       setErrors(nextErrors);
       return;
     }
-    const subject = `Web Sitesi İletişim Formu — ${values.service}`;
+    const subject = `Web Sitesi İletişim Formu | ${values.service}`;
     const body = [
       `Ad Soyad: ${values.name.trim()}`,
       `E-posta: ${values.email.trim()}`,
@@ -96,13 +97,15 @@ export function ContactForm() {
         {submitted ? (
           <motion.div
             key="success"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.45, ease: EASE }}
-            className="flex min-h-96 flex-col items-center justify-center text-center"
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="relative flex min-h-96 flex-col items-center justify-center overflow-hidden text-center"
           >
-            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru">
+            {/* Kutlama ışıltıları — dekoratif, pointer-events yok */}
+            <Sparkles density={10} className="opacity-80" />
+            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_rgba(16,216,108,0.25)]">
               <CheckCircle2 className="size-8" strokeWidth={2} />
             </span>
             <h3 className="mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">

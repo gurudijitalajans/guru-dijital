@@ -14,14 +14,14 @@ export function RotatingBadge({
   className,
   size = 128,
   href = "/iletisim",
-  label = "Teklif al — projeni konuşalım",
+  label = "Teklif al: Projeni konuşalım",
 }: {
   className?: string;
   size?: number;
   href?: string;
   label?: string;
 }) {
-  const text = "guru dijital ajans ✦ unlock the next level ✦ ";
+  const text = "Guru Dijital Ajans ✦ Unlock the next level ✦ ";
   return (
     <Link
       href={href}

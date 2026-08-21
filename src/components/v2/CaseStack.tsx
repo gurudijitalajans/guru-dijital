@@ -53,7 +53,7 @@ export function CaseStack({ className }: CaseStackProps) {
         <SectionHeading
           dark
           eyebrow="Vaka Çalışmaları"
-          title="nasıl *başardık*?"
+          title="Nasıl *başardık*?"
           sub="Rakamlar bizden daha iyi anlatıyor: strateji değişince aynı bütçe bambaşka sonuçlar üretiyor."
         />
       </div>

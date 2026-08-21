@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { products, services } from "@/lib/data";
 import { TiltCard } from "@/components/ui/TiltCard";
+import { LiquidImage } from "@/components/fx/LiquidImage";
+import { Spotlight } from "@/components/fx/Spotlight";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -29,7 +30,7 @@ export function ProductGrid() {
 
   return (
     <div>
-      {/* Filtre çipleri */}
+      {/* Filtre çipleri — aktif çipin yeşil hapı layoutId ile çipler arasında süzülür */}
       <div className="flex flex-wrap gap-2.5" role="group" aria-label="Ürünleri hizmete göre filtrele">
         {filters.map((f) => {
           const isActive = active === f.slug;
@@ -40,13 +41,22 @@ export function ProductGrid() {
               onClick={() => setActive(f.slug)}
               aria-pressed={isActive}
               className={cn(
-                "rounded-full border px-4 py-2 text-sm font-semibold tracking-tight transition-all duration-300 active:scale-[0.97]",
+                "relative rounded-full border px-4 py-2 text-sm font-semibold tracking-tight transition-all duration-300 active:scale-[0.97]",
                 isActive
-                  ? "border-guru bg-guru text-ink"
+                  ? "border-guru text-ink"
                   : "border-paper/15 bg-transparent text-paper/60 hover:border-paper/40 hover:text-paper"
               )}
             >
-              {f.label}
+              {isActive && (
+                <motion.span
+                  layoutId="product-filter-pill"
+                  className="absolute inset-0 rounded-full bg-guru"
+                  transition={{ type: "spring", bounce: 0.18, duration: 0.5 }}
+                  initial={false}
+                  aria-hidden
+                />
+              )}
+              <span className="relative">{f.label}</span>
             </button>
           );
         })}
@@ -61,21 +71,29 @@ export function ProductGrid() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.05, ease: EASE }}
           >
-              <TiltCard className="group h-full rounded-3xl">
+            <TiltCard className="group h-full rounded-3xl">
+              <Spotlight className="h-full overflow-hidden rounded-3xl" opacity={0.07}>
                 <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-paper/10 bg-carbon transition-colors duration-300 group-hover:border-guru/40">
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
+                  {/* Görsel — hover'da sıvı dalgalanma; alttaki metin linkinin
+                      görsel ikizi olduğundan tab sırasından çıkarılır. */}
+                  <Link
+                    href={`/hizmetler/${p.serviceSlug}`}
+                    tabIndex={-1}
+                    data-cursor="view"
+                    className="relative block"
+                  >
+                    <LiquidImage
                       src={p.image}
                       alt={p.imageAlt}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="aspect-[4/3]"
+                      imgClassName="transition-transform duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none"
                     />
                     <div
                       className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/60 to-transparent"
                       aria-hidden
                     />
-                  </div>
+                  </Link>
                   <div className="flex flex-1 flex-col p-6 md:p-7">
                     <h3 className="text-lg font-bold tracking-tight text-paper">{p.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-paper/60">{p.desc}</p>
@@ -98,7 +116,8 @@ export function ProductGrid() {
                     </Link>
                   </div>
                 </article>
-              </TiltCard>
+              </Spotlight>
+            </TiltCard>
           </motion.div>
         ))}
       </div>

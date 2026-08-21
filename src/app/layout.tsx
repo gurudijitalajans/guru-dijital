@@ -15,14 +15,14 @@ import "./globals.css";
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin", "latin-ext"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Guru Dijital Ajans — unlock the next level",
+    default: "Guru Dijital Ajans | Unlock the Next Level",
     template: "%s | Guru Dijital Ajans",
   },
   description: site.description,
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: site.url,
     siteName: site.name,
-    title: "Guru Dijital Ajans — unlock the next level",
+    title: "Guru Dijital Ajans | Unlock the Next Level",
     description: site.description,
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Guru Dijital Ajans" }],
   },

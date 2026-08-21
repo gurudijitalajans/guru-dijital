@@ -109,16 +109,16 @@ export function HeroV2() {
         </motion.p>
 
         {/* dev display başlık — çevresinde ışıltı partikülleri */}
-        <h1 className="relative mt-6 w-fit font-extrabold lowercase leading-[0.95] tracking-[-0.04em]">
+        <h1 className="relative mt-6 w-fit font-extrabold leading-[0.95] tracking-[-0.04em]">
           <Sparkles className="absolute -inset-x-10 -inset-y-8" density={12} />
           <CharReveal
-            text="unlock the"
+            text="Unlock the"
             delay={0.12}
             className="headline-outline-light text-[clamp(3rem,15vw,9rem)]"
           />
           <ShimmerText interval={5}>
             <CharReveal
-              text="next level"
+              text="Next Level"
               delay={0.44}
               className="text-guru text-[clamp(3rem,15vw,9rem)] drop-shadow-[0_0_28px_rgb(16_216_108/0.35)]"
             />
