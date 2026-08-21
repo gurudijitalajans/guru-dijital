@@ -40,7 +40,7 @@ export function ContactFaq() {
               onClick={() => setOpen(isOpen ? null : i)}
               aria-expanded={isOpen}
               aria-controls={`faq-panel-${i}`}
-              className="group relative flex w-full items-center justify-between gap-4 py-5 text-left md:py-6"
+              className="group relative flex min-h-11 w-full items-center justify-between gap-4 py-5 text-left md:py-6"
             >
               {/* Hover'da solda beliren ince yeşil çizgi */}
               <span

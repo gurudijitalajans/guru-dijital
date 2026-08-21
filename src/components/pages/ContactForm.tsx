@@ -41,10 +41,10 @@ function validate(values: Values): Errors {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-ink/60 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
+    "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/12 hover:border-paper/25 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-paper/20 hover:border-paper/30 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
 const labelCls = "block text-[13px] font-medium text-paper/80";
@@ -184,8 +184,8 @@ export function ContactForm() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-paper/10 bg-ink/60 px-3.5 py-1.5 text-xs font-medium text-paper/70">
-              <Clock className="size-3.5 text-guru" strokeWidth={2.2} />
+            <div className="inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/60 px-3.5 py-1.5 text-xs font-medium leading-none text-paper/70">
+              <Clock className="size-3.5 shrink-0 text-guru" strokeWidth={2.2} />
               Ortalama yanıt: aynı gün
             </div>
 

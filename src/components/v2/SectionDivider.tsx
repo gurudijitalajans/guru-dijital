@@ -39,10 +39,14 @@ const TONE_HEX: Record<SectionTone, string> = {
 
 // İki morph durumu — komut yapıları birebir aynı (M L C C L Z),
 // motion d string'lerindeki sayıları güvenle interpolate eder.
+// Dikiş sızıntısı önlemi: fill, viewBox alt/yan kenarlarını 1-2px TAŞAR
+// (y=91, x=-2/1442). Kenarla çakışan path antialiasing'i divider'ın son
+// piksel sırasında `from` zeminini hairline olarak sızdırıyordu; taşan
+// geometri viewport'ta kırpılır ve alt sıra saf `to` rengiyle dolar.
 const FILL_A =
-  "M0,90 L0,58 C240,12 480,72 720,42 C960,12 1200,60 1440,30 L1440,90 Z";
+  "M-2,91 L-2,58 C240,12 480,72 720,42 C960,12 1200,60 1442,30 L1442,91 Z";
 const FILL_B =
-  "M0,90 L0,40 C240,72 480,14 720,52 C960,84 1200,24 1440,56 L1440,90 Z";
+  "M-2,91 L-2,40 C240,72 480,14 720,52 C960,84 1200,24 1442,56 L1442,91 Z";
 const LINE_A = "M0,58 C240,12 480,72 720,42 C960,12 1200,60 1440,30";
 const LINE_B = "M0,40 C240,72 480,14 720,52 C960,84 1200,24 1440,56";
 
@@ -75,7 +79,12 @@ export function SectionDivider({
     <div
       ref={ref}
       aria-hidden
-      className={cn("relative h-[90px] w-full overflow-hidden", className)}
+      /* -mb-px: alt kenar sonraki bölümle 1px örtüşür; fill hex'i bölüm
+         zeminiyle birebir aynı olduğundan örtüşme görünmez, kesirli zoom
+         kaynaklı zemin hairline'ı da kapanır. Üstte -mt-px YOK: bazı
+         sayfalarda divider'dan önceki bölümün bilinçli border-b çizgisi
+         var, örtüşme o çizgiyi ezerdi. */
+      className={cn("relative -mb-px h-[90px] w-full overflow-hidden", className)}
       style={{ backgroundColor: TONE_HEX[from] }}
     >
       <svg

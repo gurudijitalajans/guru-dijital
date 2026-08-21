@@ -74,10 +74,10 @@ type SchedulerErrors = {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-ink/60 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
+    "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/12 hover:border-paper/25 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-paper/20 hover:border-paper/30 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
 const labelCls = "block text-[13px] font-medium text-paper/80";
@@ -87,7 +87,7 @@ const chipCls = (selected: boolean) =>
     "flex min-h-11 items-center justify-center rounded-xl border transition-colors duration-200",
     selected
       ? "border-guru bg-guru text-ink"
-      : "border-paper/12 bg-ink/60 text-paper/70 hover:border-paper/25 hover:text-paper"
+      : "border-paper/20 bg-ink/70 text-paper/70 hover:border-paper/30 hover:text-paper"
   );
 
 function FieldError({ id, message }: { id: string; message?: string }) {
@@ -176,8 +176,8 @@ export function MeetingScheduler() {
                   Talebiniz e-posta uygulamanızda hazırlandı
                 </h3>
                 {selectedDay && time && (
-                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-paper/10 bg-ink/60 px-4 py-1.5 text-sm font-semibold text-paper">
-                    <CalendarClock className="size-4 text-guru" strokeWidth={2.2} />
+                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/60 px-4 py-1.5 text-sm font-semibold text-paper">
+                    <CalendarClock className="size-4 shrink-0 text-guru" strokeWidth={2.2} />
                     {selectedDay.full} {time}
                   </p>
                 )}

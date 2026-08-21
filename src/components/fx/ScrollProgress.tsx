@@ -18,10 +18,10 @@ export function ScrollProgress() {
   return (
     <motion.div
       aria-hidden
-      className="fixed inset-x-0 top-0 z-[95] h-0.5 origin-left bg-guru"
+      className="fixed inset-x-0 top-0 z-[95] h-0.5 origin-left rounded-r-full bg-gradient-to-r from-guru-deep to-guru"
       style={{
         scaleX: reduce ? scrollYProgress : smooth,
-        boxShadow: "0 0 12px rgb(16 216 108 / 0.55)",
+        boxShadow: "0 0 12px rgb(16 216 108 / 0.45)",
       }}
     />
   );

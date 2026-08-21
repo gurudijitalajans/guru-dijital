@@ -24,7 +24,9 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
   ];
 
   return (
-    <section className={cn("overflow-x-clip bg-ink py-24 md:py-32", className)}>
+    // Zemin: coal — önündeki SectionDivider to="coal" ve ardından gelen
+    // CTAV2 (bg-coal) ile birebir aynı hex; ton dikişi kalmaz.
+    <section className={cn("overflow-x-clip bg-coal py-24 md:py-32", className)}>
       <div className="container-g">
         <SectionHeading
           dark

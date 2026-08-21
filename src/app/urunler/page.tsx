@@ -75,8 +75,6 @@ export default function UrunlerPage() {
         </div>
       </section>
 
-      <SectionDivider from="ink" to="coal" />
-
       <CTASection />
     </>
   );

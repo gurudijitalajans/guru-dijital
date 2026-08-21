@@ -9,8 +9,10 @@ import { cn } from "@/lib/utils";
  * @property ile --angle kaydı globals'a eklenemediği için açı, rAF döngüsünde
  * doğrudan style.setProperty("--angle", ...) ile güncellenir; SSR'da statik
  * 0deg fallback'i vardır ve dönen katman opacity 0 ile başlar (hydration nötr).
- * Altta her zaman görünen sönük yeşil çerçeve zemini durur → reduced-motion /
- * pointer:coarse ortamında statik ama BOŞ olmayan bir çerçeve kalır.
+ * Altta her zaman görünen nötr çerçeve zemini durur (bg-paper/10 = kart
+ * standardı border-paper/10 tonu) → idle'da tek görünür çizgi GlowBorder'dan
+ * gelir; sarılan içerik kendi border'ını TAŞIMAMALIDIR (çift halka yasak).
+ * reduced-motion / pointer:coarse ortamında statik ama BOŞ olmayan çerçeve kalır.
  * IntersectionObserver ekran dışında rAF'ı durdurur; her karede alloc yok
  * (yalnız tek string üretimi), tüm listener/observer'lar cleanup'lıdır.
  */
@@ -126,10 +128,11 @@ export function GlowBorder({
       className={cn("relative p-px", className)}
       style={{ borderRadius: radius }}
     >
-      {/* Statik sönük yeşil çerçeve zemini (reduced-motion / coarse fallback) */}
+      {/* Statik nötr çerçeve zemini — kart standardı border-paper/10 tonunda
+         (reduced-motion / coarse fallback'te de tek görünür çizgi budur) */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-guru/15"
+        className="absolute inset-0 bg-paper/10"
         style={{ borderRadius: radius }}
       />
       {/* Dönen neon katman — ilk render'da görünmez, mount sonrası açılır */}

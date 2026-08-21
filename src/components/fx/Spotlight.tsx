@@ -94,11 +94,13 @@ export function Spotlight({
   return (
     <div ref={wrapRef} className={cn("relative", className)}>
       {children}
-      {/* Işık katmanı: pointer-events-none, ilk render'da görünmez (hydration nötr) */}
+      {/* Işık katmanı: pointer-events-none, ilk render'da görünmez (hydration nötr).
+         rounded-[inherit] sarmalayıcının radius'unu birebir izler → overflow-hidden
+         olmayan kullanımda da köşelerden ışık taşmaz. */}
       <div
         ref={overlayRef}
         aria-hidden
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-out"
+        className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-500 ease-out"
         style={{
           opacity: 0,
           background: `radial-gradient(${size}px circle at var(--mx, 50%) var(--my, 50%), rgba(${color}, ${opacity}), transparent 70%)`,
