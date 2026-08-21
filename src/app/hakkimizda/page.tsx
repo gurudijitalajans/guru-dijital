@@ -94,7 +94,7 @@ export default function HakkimizdaPage() {
             <Reveal delay={0.14}>
               <TiltCard className="group rounded-3xl">
                 <LiquidImage
-                  src="/tiles/marka.webp"
+                  src="/work/unlock-cover.webp"
                   alt="Guru Dijital: Unlock the next level"
                   sizes="(min-width: 1024px) 45vw, 100vw"
                   className="aspect-[4/5] rounded-3xl border border-paper/10"

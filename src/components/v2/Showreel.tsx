@@ -39,24 +39,24 @@ type Frame = {
 
 /* Üst sıra: sola akar */
 const ROW_TOP: Frame[] = [
-  { src: "/tiles/sosyal-medya.webp", alt: "Guru marka deseni: sosyal medya", w: 1600, h: 1200 },
-  { src: "/tiles/grafik-tasarim.webp", alt: "Guru marka deseni: grafik tasarım", w: 1600, h: 1200 },
-  { src: "/tiles/icerik-uretimi.webp", alt: "Guru marka deseni: içerik üretimi", w: 1600, h: 1200 },
-  { src: "/tiles/web-tasarim.webp", alt: "Guru marka deseni: web tasarım", w: 1600, h: 1200 },
-  { src: "/tiles/dijital-pazarlama.webp", alt: "Guru marka deseni: dijital pazarlama", w: 1600, h: 1200 },
-  { src: "/tiles/video-tasarimi.webp", alt: "Guru marka deseni: video tasarımı", w: 1600, h: 1200 },
-  { src: "/tiles/marka.webp", alt: "Guru marka deseni", w: 1600, h: 1200 },
+  { src: "/work/sosyal-medya-telefon.webp", alt: "Telefonda Guru Dijital Instagram hesabı", w: 1600, h: 2559 },
+  { src: "/work/ambalaj-etiket.webp", alt: "Ambalaj ve etiket tasarımları", w: 1600, h: 806 },
+  { src: "/work/kurumsal-kimlik.webp", alt: "Kurumsal kimlik mockup seti", w: 1600, h: 2530 },
+  { src: "/work/web-siteleri.webp", alt: "Yayında olan web siteleri", w: 1600, h: 758 },
+  { src: "/work/instagram-postlar.webp", alt: "Instagram gönderi tasarımları", w: 1600, h: 471 },
+  { src: "/work/katalog-brosur.webp", alt: "Katalog ve broşür tasarımları", w: 1600, h: 829 },
+  { src: "/tiles/aurora-genis.webp", alt: "Guru aurora deseni", w: 1600, h: 1200 },
 ];
 
 /* Alt sıra: sağa akar */
 const ROW_BOTTOM: Frame[] = [
-  { src: "/tiles/aurora-genis.webp", alt: "Guru aurora deseni", w: 1600, h: 1200 },
-  { src: "/tiles/studyo.webp", alt: "Guru stüdyo deseni", w: 1600, h: 1200 },
-  { src: "/tiles/teklif.webp", alt: "Guru marka deseni", w: 1600, h: 1200 },
-  { src: "/tiles/sosyal-medya.webp", alt: "Guru marka deseni: sosyal medya", w: 1600, h: 1200 },
-  { src: "/tiles/web-tasarim.webp", alt: "Guru marka deseni: web tasarım", w: 1600, h: 1200 },
-  { src: "/tiles/grafik-tasarim.webp", alt: "Guru marka deseni: grafik tasarım", w: 1600, h: 1200 },
-  { src: "/tiles/dijital-pazarlama.webp", alt: "Guru marka deseni: dijital pazarlama", w: 1600, h: 1200 },
+  { src: "/work/web-mockup-dark.webp", alt: "Koyu temalı web arayüzü laptop mockup", w: 1600, h: 1396 },
+  { src: "/work/ambalaj-kavanoz.webp", alt: "Kavanoz ambalaj tasarımı", w: 1600, h: 1131 },
+  { src: "/work/logo-tasarimlari.webp", alt: "Logo tasarım koleksiyonu", w: 1600, h: 620 },
+  { src: "/work/dijital-pazarlama.webp", alt: "Dijital pazarlama kreatif kolaj", w: 1600, h: 1605 },
+  { src: "/work/ambalaj-aycekirdek.webp", alt: "Ay çekirdeği ambalaj tasarımı", w: 1600, h: 1131 },
+  { src: "/work/sosyal-icerik-cita.webp", alt: "Çita temalı kreatif içerik", w: 1600, h: 1131 },
+  { src: "/tiles/marka.webp", alt: "Guru marka deseni", w: 1600, h: 1200 },
 ];
 
 /* Reduced-motion fallback: tek statik satır */

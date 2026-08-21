@@ -21,16 +21,22 @@ export function Preloader() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem(STORAGE_KEY) === "1";
-      sessionStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      // sessionStorage erişilemezse (gizli mod vb.) preloader'ı atla.
-      seen = true;
-    }
-    setPhase(seen || reduced ? "done" : "count");
+    // Faz kararı bir sonraki kareye ertelenir: hem overlay'in en az bir kez
+    // boyanması garantilenir hem de effect içinde senkron setState kaskadı
+    // (react-hooks/set-state-in-effect) oluşmaz.
+    const rafId = requestAnimationFrame(() => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let seen = false;
+      try {
+        seen = sessionStorage.getItem(STORAGE_KEY) === "1";
+        sessionStorage.setItem(STORAGE_KEY, "1");
+      } catch {
+        // sessionStorage erişilemezse (gizli mod vb.) preloader'ı atla.
+        seen = true;
+      }
+      setPhase(seen || reduced ? "done" : "count");
+    });
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   // 0 → 100 sayaç (rAF, ease-out)

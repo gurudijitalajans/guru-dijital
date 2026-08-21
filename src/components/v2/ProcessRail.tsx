@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { MoveRight } from "lucide-react";
 import { process as processSteps } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { usePrefersReducedMotion } from "@/components/fx/usePrefersReducedMotion";
 
 type ProcessStep = (typeof processSteps)[number];
 
@@ -24,15 +19,9 @@ export type ProcessRailProps = {
  * sticky ray; mobil ve prefers-reduced-motion'da sade dikey kartlar.
  */
 export function ProcessRail({ className }: ProcessRailProps) {
-  const reduce = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  /* Reduced-motion: her genişlikte dikey sürüm (mount sonrası kesinleşir) */
-  const staticOnly = mounted && !!reduce;
+  /* SSR anlık görüntüsü false olduğundan hydration güvenli; tercih hydration
+     sonrası tek re-render ile uygulanır (effect + setState kaskadı yok). */
+  const staticOnly = usePrefersReducedMotion();
 
   return (
     <section id="surec" className={cn("relative bg-ink", className)}>

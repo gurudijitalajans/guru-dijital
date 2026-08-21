@@ -87,6 +87,7 @@ export function ProductGrid() {
                       alt={p.imageAlt}
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className="aspect-[4/3]"
+                      priority={i < 3}
                       imgClassName="transition-transform duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none"
                     />
                     <div

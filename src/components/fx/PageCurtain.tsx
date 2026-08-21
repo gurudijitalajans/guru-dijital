@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -15,26 +16,18 @@ type PageCurtainProps = {
  * güvenilir değildir): içerik hafif yukarı kayarak/opaklaşarak girer ve üstten
  * inen yeşil→siyah iki katmanlı perde süpürmesi (~0.7s) oynar.
  *
- * Hydration notu: reduced-motion tercihi İLK render'da DOM'u dallandıramaz —
- * useReducedMotion SSR'da null, istemcide true döndüğünden yapısal mismatch
- * yaratır. Bu yüzden tercih mount SONRASI matchMedia ile okunur; ilk render
- * herkes için birebir aynıdır, reduce kullanıcılarında perde mount'ta kaldırılır
- * ve içerik geçişi süresizleştirilir.
+ * Hydration notu: reduced-motion tercihi useSyncExternalStore üzerinden okunur
+ * (sunucu anlık görüntüsü false) — ilk render herkes için SSR ile birebir aynı,
+ * tercih hydration sonrası devreye girer ve perdeler o karede kaldırılır.
  */
 export function PageCurtain({ children }: PageCurtainProps) {
-  const [reduce, setReduce] = useState(false);
+  const reduce = usePrefersReducedMotion();
   const [sweepDone, setSweepDone] = useState(false);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReduce(true);
-      setSweepDone(true);
-    }
-  }, []);
+  const hideCurtain = sweepDone || reduce;
 
   return (
     <>
-      {!sweepDone && (
+      {!hideCurtain && (
         <>
           {/* Siyah katman — yeşilin hemen arkasından süpürür */}
           <motion.div
@@ -59,9 +52,7 @@ export function PageCurtain({ children }: PageCurtainProps) {
         initial={{ opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
         transition={
-          reduce
-            ? { duration: 0 }
-            : { duration: 0.7, delay: 0.12, ease: EASE }
+          reduce ? { duration: 0 } : { duration: 0.7, delay: 0.12, ease: EASE }
         }
       >
         {children}
