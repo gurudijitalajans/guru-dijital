@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const STORAGE_KEY = "guru-preloaded";
@@ -19,6 +19,7 @@ type Phase = "idle" | "count" | "exit" | "done";
 export function Preloader() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [progress, setProgress] = useState(0);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Faz kararı bir sonraki kareye ertelenir: hem overlay'in en az bir kez
@@ -70,8 +71,15 @@ export function Preloader() {
     if (phase !== "count" && phase !== "exit") return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // iOS Safari body overflow kilidini tek başına tanımaz: preloader
+    // görünürken overlay üzerindeki touchmove da engellenir. React'in
+    // onTouchMove'u passive bağlandığından native listener şart (passive: false).
+    const overlay = overlayRef.current;
+    const onTouchMove = (e: TouchEvent) => e.preventDefault();
+    overlay?.addEventListener("touchmove", onTouchMove, { passive: false });
     return () => {
       document.body.style.overflow = prev;
+      overlay?.removeEventListener("touchmove", onTouchMove);
     };
   }, [phase]);
 
@@ -80,7 +88,7 @@ export function Preloader() {
   const exiting = phase === "exit";
 
   return (
-    <div aria-hidden className="fixed inset-0 z-[100]">
+    <div ref={overlayRef} aria-hidden className="fixed inset-0 z-[100]">
       {/* Üst perde — %50.5 ile olası 1px dikiş çizgisi önlenir */}
       <motion.div
         className="absolute inset-x-0 top-0 h-[50.5%] bg-ink"

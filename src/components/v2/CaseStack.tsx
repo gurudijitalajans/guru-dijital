@@ -144,8 +144,8 @@ function CaseCard({
             <p className="mt-5 max-w-md text-sm leading-relaxed text-paper/65 md:text-base">
               {cs.summary}
             </p>
-            <p className="mt-7 inline-flex max-w-full items-center gap-2 rounded-full border border-guru/25 bg-guru/10 px-4 py-2 text-xs font-medium text-guru md:text-sm">
-              <span aria-hidden className="inline-block size-1.5 shrink-0 rounded-full bg-guru" />
+            <p className="mt-7 inline-flex max-w-full items-start gap-2 rounded-2xl border border-guru/25 bg-guru/10 px-4 py-2 text-xs font-medium text-guru md:items-center md:rounded-full md:text-sm">
+              <span aria-hidden className="mt-[5px] inline-block size-1.5 shrink-0 rounded-full bg-guru md:mt-0" />
               {cs.note}
             </p>
           </div>
@@ -155,25 +155,25 @@ function CaseCard({
             {cs.stats.map((s) => (
               <div
                 key={s.label}
-                className="rounded-2xl border border-paper/10 bg-coal/50 p-4 md:p-5"
+                className="relative rounded-2xl border border-paper/10 bg-coal/50 p-4 md:p-5"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <RollingStat
-                    value={s.value}
-                    prefix={s.prefix}
-                    suffix={s.suffix}
-                    down={s.down}
-                  />
-                  {s.down && (
-                    <span
-                      className="mt-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-guru/15 text-guru md:size-7"
-                      aria-label="düşüş"
-                      title="Düşüş"
-                    >
-                      <ArrowDown className="size-3.5 md:size-4" strokeWidth={2.5} />
-                    </span>
-                  )}
-                </div>
+                {/* Ok rozeti satır akışının dışında (absolute sağ-üst):
+                   dar ekranda sayaçla aynı satır genişliğini paylaşmaz */}
+                {s.down && (
+                  <span
+                    className="absolute right-3 top-3 inline-flex size-6 items-center justify-center rounded-full bg-guru/15 text-guru md:right-4 md:top-4 md:size-7"
+                    aria-label="düşüş"
+                    title="Düşüş"
+                  >
+                    <ArrowDown className="size-3.5 md:size-4" strokeWidth={2.5} />
+                  </span>
+                )}
+                <RollingStat
+                  value={s.value}
+                  prefix={s.prefix}
+                  suffix={s.suffix}
+                  down={s.down}
+                />
                 <p className="mt-2 text-xs leading-snug text-paper/55 md:text-sm">
                   {s.label}
                 </p>
@@ -211,7 +211,7 @@ function RollingStat({
       prefix={prefix}
       suffix={suffix}
       className={cn(
-        "text-3xl font-extrabold tracking-[-0.04em] md:text-4xl lg:text-[2.6rem]",
+        "text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl md:text-4xl lg:text-[2.6rem]",
         down ? "text-guru" : "text-paper"
       )}
     />

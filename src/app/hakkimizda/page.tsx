@@ -81,11 +81,12 @@ export default function HakkimizdaPage() {
         title="Markaların *yol arkadaşıyız*"
         sub="Strateji, tasarım ve teknoloji; tek çatıda."
         aside={
+          // Aside lg altında render edilmez (hidden lg:block); priority/preload
+          // mobilde gereksiz indirme yaratacağı için bilinçli olarak yok.
           <LiquidImage
             src="/work/unlock-cover.webp"
             alt="Guru Dijital marka kapak görseli"
             sizes="380px"
-            priority
             className="aspect-[1600/1187] w-[380px] rounded-2xl border border-paper/10"
           />
         }

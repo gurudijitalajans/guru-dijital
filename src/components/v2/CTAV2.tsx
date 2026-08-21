@@ -70,7 +70,7 @@ export function CTAV2({ className }: CTAV2Props) {
         <Reveal delay={0.25} className="mt-10 md:mt-14">
           <a
             href={`mailto:${site.email}`}
-            className="text-sm text-paper/60 transition-colors duration-300 hover:text-guru md:text-base"
+            className="inline-block py-3 -my-3 text-sm text-paper/60 transition-colors duration-300 hover:text-guru md:text-base"
           >
             {site.email}
           </a>

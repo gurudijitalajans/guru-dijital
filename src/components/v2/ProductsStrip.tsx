@@ -52,7 +52,7 @@ export function ProductsStrip() {
                         <Icon className="size-6" strokeWidth={2} />
                       </span>
                       {p.comingSoon && (
-                        <span className="rounded-full border border-guru/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-guru">
+                        <span className="rounded-full border border-guru/40 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-guru">
                           Yakında
                         </span>
                       )}

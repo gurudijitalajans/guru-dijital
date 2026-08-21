@@ -145,9 +145,18 @@ export function DotField({
     };
 
     /* ---- rAF döngüsü: yalnız gerektiğinde çalışır ---- */
+    // Wave (dokunmatik) modunda kare hızı ~24fps'e düşürülür: dalga yavaş bir
+    // parlaklık salınımı olduğundan 60fps redraw pil/jank maliyetine değmez.
+    const WAVE_FRAME_MS = 1000 / 24;
+    let lastWaveDraw = 0;
     const tick = (now: number) => {
       rafId = null;
       if (disposed || !visible || mode === "static") return;
+      if (mode === "wave" && now - lastWaveDraw < WAVE_FRAME_MS) {
+        schedule(); // bu kare çizim yok; sıradaki kareyi bekle
+        return;
+      }
+      if (mode === "wave") lastWaveDraw = now;
       const moving = drawFrame(now);
       // wave sürekli akar; interactive settle olunca durur (pointermove yeniden başlatır)
       if (mode === "wave" || moving) schedule();

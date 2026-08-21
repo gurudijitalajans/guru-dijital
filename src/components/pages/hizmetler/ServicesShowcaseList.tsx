@@ -86,7 +86,7 @@ export function ServicesShowcaseList() {
                 hoverEnabled && "lg:hover:pl-6"
               )}
             >
-              {/* Sol: numara + hizmet adı */}
+              {/* Sol: numara + hizmet adı (+ lg altı kısa açıklama) */}
               <span className="flex min-w-0 items-baseline gap-4 md:gap-8">
                 <span
                   className="shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-paper/30 md:text-base"
@@ -94,8 +94,14 @@ export function ServicesShowcaseList() {
                 >
                   {service.no}
                 </span>
-                <span className="text-4xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-5xl lg:text-6xl">
-                  {service.title}
+                <span className="min-w-0">
+                  <span className="block text-4xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-5xl lg:text-6xl">
+                    {service.title}
+                  </span>
+                  {/* Kısa açıklama lg'de sağ kolonda; lg altında başlığın altında */}
+                  <span className="mt-2 block text-sm leading-relaxed text-paper/50 lg:hidden">
+                    {service.short}
+                  </span>
                 </span>
               </span>
 

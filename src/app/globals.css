@@ -105,8 +105,11 @@ body {
 .marquee-slow .marquee-track {
   animation: var(--animate-marquee-slow);
 }
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
+/* Dokunmatikte :hover yapışıp animasyonu kalıcı durdurmasın */
+@media (hover: hover) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

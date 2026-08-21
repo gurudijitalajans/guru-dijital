@@ -49,14 +49,14 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="flex size-10 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
+              className="flex size-11 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
             >
               <InstagramIcon className="size-4" />
             </a>
             <a
               href={`mailto:${site.email}`}
               aria-label="E-posta"
-              className="flex size-10 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
+              className="flex size-11 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
             >
               <Mail className="size-4" />
             </a>
@@ -72,7 +72,7 @@ export default function Footer() {
               <li key={s.slug}>
                 <Link
                   href={`/hizmetler/${s.slug}`}
-                  className="text-sm text-paper/70 transition-colors hover:text-guru"
+                  className="inline-block py-1.5 -my-1 text-sm text-paper/70 transition-colors hover:text-guru"
                 >
                   {s.title}
                 </Link>
@@ -90,7 +90,7 @@ export default function Footer() {
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="text-sm text-paper/70 transition-colors hover:text-guru"
+                  className="inline-block py-1.5 -my-1 text-sm text-paper/70 transition-colors hover:text-guru"
                 >
                   {l.label}
                 </Link>
@@ -105,7 +105,7 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2.5 text-sm text-paper/70">
             <li>
-              <a href={`mailto:${site.email}`} className="transition-colors hover:text-guru">
+              <a href={`mailto:${site.email}`} className="inline-block py-1.5 -my-1 transition-colors hover:text-guru">
                 {site.email}
               </a>
             </li>
@@ -114,7 +114,7 @@ export default function Footer() {
                 href={site.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transition-colors hover:text-guru"
+                className="inline-block py-1.5 -my-1 transition-colors hover:text-guru"
               >
                 instagram/@gurudijital
               </a>

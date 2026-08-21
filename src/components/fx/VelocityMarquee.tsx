@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import {
   motion,
   useAnimationFrame,
@@ -43,6 +43,10 @@ export function VelocityMarquee({
   className,
 }: VelocityMarqueeProps) {
   const reduce = useReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  /* Görünürlük kapısı: ekran dışındayken kare başına transform yazılmaz.
+     Ref üzerinden okunur (state değil) → re-render yok, hydration nötr. */
+  const visibleRef = useRef(true);
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
@@ -59,7 +63,21 @@ export function VelocityMarquee({
   // Track 4 kopyadan oluşur → bir kopya genişliği = track'in %25'i.
   const x = useTransform(baseX, (v) => `${wrap(-100 / COPIES, 0, v)}%`);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry?.isIntersecting ?? true;
+      },
+      { rootMargin: "120px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useAnimationFrame((_time, delta) => {
+    if (!visibleRef.current) return; // ekran dışında: transform yazma
     const dt = Math.min(delta, 64) / 1000; // sekme arka plana düşünce sıçramayı önle
 
     if (reduce) {
@@ -78,7 +96,7 @@ export function VelocityMarquee({
   });
 
   return (
-    <div className={cn("overflow-hidden", className)}>
+    <div ref={containerRef} className={cn("overflow-hidden", className)}>
       <motion.div className="flex w-max flex-nowrap will-change-transform" style={{ x }}>
         {Array.from({ length: COPIES }, (_, i) => (
           <div key={i} className="flex shrink-0 items-center" aria-hidden={i > 0}>

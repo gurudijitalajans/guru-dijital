@@ -93,7 +93,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
           <Reveal delay={0.12} className="shrink-0">
             <Link
               href="/hizmetler"
-              className="group inline-flex items-center gap-2 text-sm font-semibold text-paper/60 transition-colors duration-300 hover:text-guru"
+              className="group inline-flex items-center gap-2 py-3 -my-3 text-sm font-semibold text-paper/60 transition-colors duration-300 hover:text-guru"
             >
               Tüm hizmetleri incele
               <ArrowUpRight
@@ -137,8 +137,14 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
                     >
                       {service.no}
                     </span>
-                    <span className="text-2xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-3xl md:text-4xl lg:text-5xl">
-                      {service.title}
+                    <span className="min-w-0">
+                      <span className="block text-2xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-3xl md:text-4xl lg:text-5xl">
+                        {service.title}
+                      </span>
+                      {/* Kısa açıklama mobil/tablet'te başlık altında görünür */}
+                      <span className="mt-1 block text-xs leading-relaxed text-paper/45 lg:hidden">
+                        {service.short}
+                      </span>
                     </span>
                   </span>
 

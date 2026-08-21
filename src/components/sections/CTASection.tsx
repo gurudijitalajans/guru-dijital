@@ -18,7 +18,7 @@ export function CTASection({
     <section className="relative overflow-hidden bg-guru py-20 text-ink md:py-28">
       <div className="pointer-events-none absolute inset-x-0 top-6 select-none opacity-[0.16]" aria-hidden>
         <Marquee slow>
-          <span className="whitespace-nowrap pr-8 text-7xl font-extrabold tracking-tight md:text-8xl">
+          <span className="whitespace-nowrap pr-8 text-5xl font-extrabold tracking-tight md:text-8xl">
             Unlock the next level · Unlock the next level ·
           </span>
         </Marquee>

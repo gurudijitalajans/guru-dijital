@@ -251,7 +251,7 @@ export default async function HizmetDetayPage({
           <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
           <Sparkles density={8} className="opacity-70" />
           <span
-            className="headline-outline-light pointer-events-none absolute -right-6 -top-8 select-none text-[10rem] font-extrabold leading-none md:text-[16rem]"
+            className="headline-outline-light pointer-events-none absolute -right-6 -top-8 select-none text-[6rem] font-extrabold leading-none sm:text-[10rem] md:text-[16rem]"
             aria-hidden
           >
             {service.no}

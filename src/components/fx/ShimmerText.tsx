@@ -51,7 +51,7 @@ export function ShimmerText({ children, className, interval = 4 }: ShimmerTextPr
       {/* parlama katmanı: aynı metnin clip'li aria-hidden kopyası */}
       <motion.span
         aria-hidden
-        className="pointer-events-none absolute inset-0 select-none text-transparent [&_*]:text-transparent!"
+        className="pointer-events-none absolute inset-0 select-none text-transparent will-change-[background-position] [&_*]:text-transparent!"
         style={{
           backgroundImage:
             "linear-gradient(105deg, transparent 42%, rgba(245, 246, 245, 0.9) 50%, transparent 58%)",

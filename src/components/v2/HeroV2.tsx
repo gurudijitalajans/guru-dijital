@@ -101,11 +101,16 @@ export function HeroV2() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-guru opacity-60 motion-reduce:animate-none" />
             <span className="relative inline-flex size-2 rounded-full bg-guru shadow-[0_0_12px_rgb(16_216_108/0.8)]" />
           </span>
-          <Scramble
-            text="2025 Google Partner'ı · Google Ads Impact Awards adayı"
-            delay={0.4}
-            duration={1.1}
-          />
+          {/* Mobilde kısa statik metin: scramble'ın rastgele karakter
+             genişlikleri dar ekranda satır-kırılım zıplaması yapıyordu */}
+          <span className="sm:hidden">2025 Google Partner&apos;ı</span>
+          <span className="hidden sm:inline">
+            <Scramble
+              text="2025 Google Partner'ı · Google Ads Impact Awards adayı"
+              delay={0.4}
+              duration={1.1}
+            />
+          </span>
         </motion.p>
 
         {/* dev display başlık — çevresinde ışıltı partikülleri */}
@@ -114,13 +119,13 @@ export function HeroV2() {
           <CharReveal
             text="Markanızı bir üst"
             delay={0.12}
-            className="headline-outline-light text-[clamp(2.4rem,10.5vw,6.8rem)]"
+            className="headline-outline-light text-[clamp(1.8rem,8.4vw,6.8rem)]"
           />
           <ShimmerText interval={5}>
             <CharReveal
               text="seviyeye taşıyoruz"
               delay={0.44}
-              className="text-guru text-[clamp(2.4rem,10.5vw,6.8rem)] drop-shadow-[0_0_22px_rgb(16_216_108/0.28)]"
+              className="text-guru text-[clamp(1.8rem,8.4vw,6.8rem)] drop-shadow-[0_0_22px_rgb(16_216_108/0.28)]"
             />
           </ShimmerText>
         </h1>

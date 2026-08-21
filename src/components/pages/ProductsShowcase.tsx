@@ -77,9 +77,9 @@ export function ProductsShowcase() {
                     <GButton
                       href="/iletisim"
                       variant="dark"
-                      className="border border-paper/15"
+                      className="w-full border border-paper/15 sm:w-auto"
                     >
-                      Haberdar olmak istiyorum
+                      Haberdar Et
                     </GButton>
                   </div>
                 </article>

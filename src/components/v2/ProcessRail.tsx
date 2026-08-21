@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { MoveRight } from "lucide-react";
 import { process as processSteps } from "@/lib/data";
@@ -9,6 +9,27 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { usePrefersReducedMotion } from "@/components/fx/usePrefersReducedMotion";
 
 type ProcessStep = (typeof processSteps)[number];
+
+/* lg breakpoint izleyici, hydration güvenli (useSyncExternalStore):
+   SSR anlık görüntüsü true → DesktopRail SSR'da render edilir ve CSS
+   (hidden lg:block) mobilde gizler; hydration sonrası gerçek matchMedia
+   değeri devreye girer ve mobilde bileşen tamamen unmount edilir
+   (useScroll aboneliği ve rAF maliyeti taşınmaz). Effect'te setState yok. */
+const LG_QUERY = "(min-width: 1024px)";
+
+function subscribeLg(onChange: () => void) {
+  const mq = window.matchMedia(LG_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+function useIsLg(): boolean {
+  return useSyncExternalStore(
+    subscribeLg,
+    () => window.matchMedia(LG_QUERY).matches,
+    () => true
+  );
+}
 
 export type ProcessRailProps = {
   className?: string;
@@ -22,10 +43,11 @@ export function ProcessRail({ className }: ProcessRailProps) {
   /* SSR anlık görüntüsü false olduğundan hydration güvenli; tercih hydration
      sonrası tek re-render ile uygulanır (effect + setState kaskadı yok). */
   const staticOnly = usePrefersReducedMotion();
+  const isLg = useIsLg();
 
   return (
     <section id="surec" className={cn("relative bg-ink", className)}>
-      {!staticOnly && <DesktopRail className="hidden lg:block" />}
+      {!staticOnly && isLg && <DesktopRail className="hidden lg:block" />}
       <VerticalSteps className={staticOnly ? undefined : "lg:hidden"} />
     </section>
   );

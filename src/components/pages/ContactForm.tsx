@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, Clock, Copy } from "lucide-react";
 import { Sparkles } from "@/components/fx/Sparkles";
 import { services, site } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -41,7 +41,7 @@ function validate(values: Values): Errors {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-ink/60 px-4 text-sm text-paper outline-none transition-colors duration-200 placeholder:text-paper/35",
+    "w-full rounded-xl border bg-ink/60 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
       : "border-paper/12 hover:border-paper/25 focus:border-guru focus:ring-2 focus:ring-guru/20"
@@ -62,6 +62,29 @@ export function ContactForm() {
   const [values, setValues] = useState<Values>(initialValues);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copyTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Yalnız unmount temizliği: bekleyen "kopyalandı" zamanlayıcısını iptal et.
+    return () => {
+      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+    };
+  }, []);
+
+  function copyEmail() {
+    // Yalnız tıklama anında çalışır (hydration güvenli); pano yoksa sessiz geç,
+    // adres zaten görünür ve mailto olarak tıklanabilir.
+    if (!navigator.clipboard) return;
+    navigator.clipboard
+      .writeText(site.email)
+      .then(() => {
+        setCopied(true);
+        if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+        copyTimer.current = window.setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {});
+  }
 
   function set<K extends keyof Values>(key: K, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -123,17 +146,33 @@ export function ContactForm() {
               </a>{" "}
               adresine iletebilirsiniz.
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setValues(initialValues);
-                setErrors({});
-                setSubmitted(false);
-              }}
-              className="mt-7 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-paper hover:bg-paper hover:text-ink active:scale-[0.98]"
-            >
-              Yeni mesaj yaz
-            </button>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={copyEmail}
+                aria-live="polite"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-guru/70 hover:text-guru active:scale-[0.98]"
+              >
+                {copied ? (
+                  <Check className="size-4 text-guru" strokeWidth={2.4} />
+                ) : (
+                  <Copy className="size-4" strokeWidth={2.2} />
+                )}
+                {copied ? "Adres kopyalandı" : "Adresi kopyala"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setValues(initialValues);
+                  setErrors({});
+                  setSubmitted(false);
+                  setCopied(false);
+                }}
+                className="min-h-11 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-paper hover:bg-paper hover:text-ink active:scale-[0.98]"
+              >
+                Yeni mesaj yaz
+              </button>
+            </div>
           </motion.div>
         ) : (
           <motion.form

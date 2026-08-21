@@ -79,8 +79,9 @@ function FrameStrip({ frames }: { frames: Frame[] }) {
             src={f.src}
             alt={f.alt}
             fill
-            /* Genişlik = md yükseklik (224px) × oran — deterministik, SSR güvenli */
-            sizes={`${Math.round(224 * (f.w / f.h))}px`}
+            /* Genişlik = satır yüksekliği × oran (mobil 160px, md 224px);
+               deterministik, SSR güvenli */
+            sizes={`(min-width: 768px) ${Math.round(224 * (f.w / f.h))}px, ${Math.round(160 * (f.w / f.h))}px`}
             className="object-cover"
           />
         </div>

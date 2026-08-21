@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ import { GButton } from "@/components/ui/Button";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   // Rota değişince menüyü kapat: React'in "render sırasında state uyarlama"
@@ -31,17 +32,46 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Menü açıkken viewport desktop eşiğine büyürse (overlay lg:hidden ile
+  // görünmez olur) open state'i ve scroll kilidini bırakma.
   useEffect(() => {
-    document.documentElement.style.overflow = open ? "hidden" : "";
+    const mql = window.matchMedia("(min-width: 1024px)");
+    const closeIfDesktop = () => {
+      if (mql.matches) setOpen(false);
+    };
+    mql.addEventListener("change", closeIfDesktop);
+    // Bazı ortamlarda (emülasyon, eski WebKit) mql change atlanabiliyor.
+    window.addEventListener("resize", closeIfDesktop, { passive: true });
+    return () => {
+      mql.removeEventListener("change", closeIfDesktop);
+      window.removeEventListener("resize", closeIfDesktop);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    // iOS Safari html overflow'u tek başına takmayabiliyor; body'ye de uygula.
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    // Yalnız overlay DIŞINDAKİ dokunmatik kaydırmayı engelle; overlay kendi
+    // içinde (overflow-y-auto) serbestçe kaysın.
+    const onTouchMove = (e: TouchEvent) => {
+      const overlay = overlayRef.current;
+      if (overlay && e.target instanceof Node && overlay.contains(e.target)) return;
+      e.preventDefault();
+    };
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
     return () => {
       document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.removeEventListener("touchmove", onTouchMove);
     };
   }, [open]);
 
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        "fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300",
         scrolled && !open
           ? "border-b border-paper/10 bg-coal/80 backdrop-blur-xl"
           : "bg-transparent"
@@ -55,6 +85,7 @@ export default function Navbar() {
             width={720}
             height={306}
             priority
+            sizes="(min-width: 768px) 120px, 100px"
             className="h-9 w-auto md:h-10"
           />
         </Link>
@@ -112,6 +143,7 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={overlayRef}
             className="fixed inset-0 z-50 flex flex-col bg-coal text-paper lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -120,9 +152,10 @@ export default function Navbar() {
           >
             <div className="grain-blob -right-24 top-1/4 h-72 w-72" aria-hidden />
             <nav
-              className="container-g flex flex-1 flex-col justify-center gap-1 pt-16"
+              className="container-g flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pt-[calc(4rem+env(safe-area-inset-top))]"
               aria-label="Mobil menü"
             >
+              <div className="my-auto flex flex-col gap-1 py-4">
               {navLinks.map((link, i) => {
                 const active =
                   link.href === "/"
@@ -151,9 +184,10 @@ export default function Navbar() {
                   </motion.div>
                 );
               })}
+              </div>
             </nav>
             <motion.div
-              className="container-g flex items-center justify-between border-t border-paper/10 py-6"
+              className="container-g flex items-center justify-between border-t border-paper/10 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

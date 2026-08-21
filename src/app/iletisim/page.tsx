@@ -10,6 +10,7 @@ import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { ContactFaq } from "@/components/pages/ContactFaq";
+import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
 import { site } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -134,7 +135,7 @@ export default function IletisimPage() {
                       <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-paper/50">
                         {item.label}
                       </span>
-                      <span className="mt-1.5 block truncate text-[15px] font-semibold text-paper md:text-base">
+                      <span className="mt-1.5 block break-all text-[15px] font-semibold text-paper md:text-base">
                         {item.value}
                       </span>
                     </span>
@@ -158,6 +159,24 @@ export default function IletisimPage() {
           <Reveal delay={0.1}>
             <ContactForm />
           </Reveal>
+        </div>
+      </section>
+
+      {/* Toplantı planlama */}
+      <section id="toplanti" className="scroll-mt-28 pb-20 md:pb-28">
+        <div className="container-g">
+          <SectionHeading
+            center
+            dark
+            eyebrow="Toplantı Planla"
+            title="Ya da doğrudan toplantı *planlayın*"
+            sub="Size uygun günü ve saati seçin; talebinize aynı gün onay dönüşü yapalım."
+          />
+          <div className="mt-12 md:mt-16">
+            <Reveal>
+              <MeetingScheduler />
+            </Reveal>
+          </div>
         </div>
       </section>
 
