@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Mail, ArrowUpRight } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
 import { FooterWordmark } from "@/components/v2/FooterWordmark";
+import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { navLinks, services, site } from "@/lib/data";
 
 export default function Footer() {
@@ -17,13 +18,16 @@ export default function Footer() {
           unlock the <span className="text-guru">next</span> level —
           <span className="text-paper/60"> markanızı bir sonraki seviyeye taşıyalım.</span>
         </p>
-        <Link
-          href="/iletisim"
-          className="group inline-flex items-center gap-2 rounded-full bg-guru px-7 py-3.5 font-semibold text-ink transition-all duration-300 hover:bg-paper active:scale-[0.98]"
-        >
-          Projenizi Konuşalım
-          <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        </Link>
+        <div className="flex items-center gap-8">
+          <RotatingBadge size={116} className="hidden lg:inline-block" />
+          <Link
+            href="/iletisim"
+            className="group inline-flex items-center gap-2 rounded-full bg-guru px-7 py-3.5 font-semibold text-ink transition-all duration-300 hover:bg-paper active:scale-[0.98]"
+          >
+            Projenizi Konuşalım
+            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
       </div>
 
       {/* Columns */}

@@ -48,10 +48,21 @@ export function GButton({
   );
   const inner = (
     <>
-      {children}
+      {/* amphora tarzı hover: etiket maskeden yukarı kayar, kopyası alttan gelir */}
+      <span className="relative overflow-hidden">
+        <span className="block transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[110%] motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+          {children}
+        </span>
+        <span
+          aria-hidden
+          className="absolute inset-0 block translate-y-[110%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 motion-reduce:hidden"
+        >
+          {children}
+        </span>
+      </span>
       {arrow && (
         <ArrowUpRight
-          className="size-[1.1em] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          className="size-[1.1em] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45"
           strokeWidth={2.2}
         />
       )}

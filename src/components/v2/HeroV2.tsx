@@ -5,6 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import { ArrowDown } from "lucide-react";
 import { DotField } from "@/components/fx/DotField";
 import { AuroraCanvas } from "@/components/fx/AuroraCanvas";
+import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { Sparkles } from "@/components/fx/Sparkles";
 import { ShimmerText } from "@/components/fx/ShimmerText";
 import { Scramble } from "@/components/fx/Scramble";
@@ -183,6 +184,16 @@ export function HeroV2() {
           className="h-12 w-px bg-gradient-to-b from-smoke/50 to-transparent"
           aria-hidden
         />
+      </motion.div>
+
+      {/* ---- sağ orta: dönen rozet ---- */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, delay: 1.55, ease: EASE }}
+        className="absolute bottom-28 right-6 z-10 hidden lg:block xl:right-14"
+      >
+        <RotatingBadge size={132} />
       </motion.div>
 
       {/* ---- sağ altta scroll ipucu ---- */}
