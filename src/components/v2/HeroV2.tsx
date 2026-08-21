@@ -112,15 +112,15 @@ export function HeroV2() {
         <h1 className="relative mt-6 w-fit font-extrabold leading-[0.95] tracking-[-0.04em]">
           <Sparkles className="absolute -inset-x-10 -inset-y-8" density={12} />
           <CharReveal
-            text="Unlock the"
+            text="Markanızı bir üst"
             delay={0.12}
-            className="headline-outline-light text-[clamp(3rem,15vw,9rem)]"
+            className="headline-outline-light text-[clamp(2.4rem,10.5vw,6.8rem)]"
           />
           <ShimmerText interval={5}>
             <CharReveal
-              text="Next Level"
+              text="seviyeye taşıyoruz"
               delay={0.44}
-              className="text-guru text-[clamp(3rem,15vw,9rem)] drop-shadow-[0_0_28px_rgb(16_216_108/0.35)]"
+              className="text-guru text-[clamp(2.4rem,10.5vw,6.8rem)] drop-shadow-[0_0_22px_rgb(16_216_108/0.28)]"
             />
           </ShimmerText>
         </h1>
@@ -132,7 +132,7 @@ export function HeroV2() {
           transition={{ duration: 0.75, delay: 0.95, ease: EASE }}
           className="mt-6 max-w-xl text-[15px] leading-relaxed text-mist/75 md:mt-8 md:text-lg"
         >
-          {"Markanızı bir üst seviyeye taşıyan entegre dijital çözümler."}
+          {"Strateji, tasarım, içerik, performans ve işletme ürünleri: hepsi tek çatıda."}
         </motion.p>
 
         {/* aksiyonlar */}
@@ -163,6 +163,16 @@ export function HeroV2() {
             </GButton>
           </Magnetic>
         </motion.div>
+
+        {/* motto: bilinçli olarak küçük ve sakin */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.35, ease: EASE }}
+          className="mt-10 text-[11px] font-semibold uppercase tracking-[0.34em] text-paper/35"
+        >
+          Unlock the next level
+        </motion.p>
       </motion.div>
 
       {/* ---- sol altta dikey instagram etiketi ---- */}

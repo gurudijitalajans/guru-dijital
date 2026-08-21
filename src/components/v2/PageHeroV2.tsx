@@ -12,6 +12,8 @@ export type PageHeroV2Props = {
   title: string;
   sub?: string;
   children?: ReactNode;
+  /** lg+ ekranlarda sağ kolonda gösterilen görsel/rozet slotu (tam genişlik kullanımı) */
+  aside?: ReactNode;
   className?: string;
   /** Daha kısa padding'li kompakt varyant. */
   minimal?: boolean;
@@ -27,6 +29,7 @@ export function PageHeroV2({
   title,
   sub,
   children,
+  aside,
   className,
   minimal = false,
 }: PageHeroV2Props) {
@@ -64,7 +67,8 @@ export function PageHeroV2({
         aria-hidden
       />
 
-      <div className="container-g relative">
+      <div className="container-g relative grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+        <div>
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: reduce ? 0 : 14 }}
@@ -131,6 +135,18 @@ export function PageHeroV2({
             className="mt-8"
           >
             {children}
+          </motion.div>
+        )}
+        </div>
+
+        {aside && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
+            className="hidden lg:block"
+          >
+            {aside}
           </motion.div>
         )}
       </div>

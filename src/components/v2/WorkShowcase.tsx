@@ -10,7 +10,7 @@ import {
   useTransform,
 } from "motion/react";
 import { cn } from "@/lib/utils";
-import { products, type Product } from "@/lib/data";
+import { works, type Work } from "@/lib/data";
 import { LiquidImage } from "@/components/fx/LiquidImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
@@ -89,7 +89,7 @@ function ShowcaseCard({
   layout,
   fine,
 }: {
-  product: Product;
+  product: Work;
   index: number;
   layout: CardLayout;
   fine: boolean;
@@ -186,8 +186,8 @@ function ShowcaseCard({
 export function WorkShowcase() {
   const fine = useFinePointer();
   const items = FEATURED.map((slug) =>
-    products.find((p) => p.slug === slug)
-  ).filter((p): p is Product => Boolean(p));
+    works.find((p) => p.slug === slug)
+  ).filter((p): p is Work => Boolean(p));
 
   return (
     <section className="relative overflow-hidden bg-ink py-20 md:py-28">

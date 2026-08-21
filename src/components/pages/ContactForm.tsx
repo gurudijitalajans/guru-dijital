@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CheckCircle2, Clock } from "lucide-react";
-import { GButton } from "@/components/ui/Button";
+import { ArrowRight, CheckCircle2, Clock } from "lucide-react";
 import { Sparkles } from "@/components/fx/Sparkles";
 import { services, site } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -42,16 +41,18 @@ function validate(values: Values): Errors {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-carbon px-4 py-3 text-sm text-paper outline-none transition-all duration-200 placeholder:text-paper/40",
+    "w-full rounded-xl border bg-ink/60 px-4 text-sm text-paper outline-none transition-colors duration-200 placeholder:text-paper/35",
     hasError
-      ? "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
-      : "border-paper/15 focus:border-guru focus:ring-2 focus:ring-guru/25 focus:shadow-[0_0_26px_rgba(16,216,108,0.16)]"
+      ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
+      : "border-paper/12 hover:border-paper/25 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
+
+const labelCls = "block text-[13px] font-medium text-paper/80";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="mt-1.5 text-xs font-medium text-red-400">
+    <p id={id} role="alert" className="text-[12px] font-medium text-red-400">
       {message}
     </p>
   );
@@ -103,7 +104,7 @@ export function ContactForm() {
             transition={{ duration: 0.5, ease: EASE }}
             className="relative flex min-h-96 flex-col items-center justify-center overflow-hidden text-center"
           >
-            {/* Kutlama ışıltıları — dekoratif, pointer-events yok */}
+            {/* Kutlama ışıltıları: dekoratif, pointer-events yok */}
             <Sparkles density={10} className="opacity-80" />
             <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_rgba(16,216,108,0.25)]">
               <CheckCircle2 className="size-8" strokeWidth={2} />
@@ -144,15 +145,15 @@ export function ContactForm() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full bg-guru/12 px-4 py-2 text-[13px] font-semibold text-guru">
-              <Clock className="size-4" strokeWidth={2.2} />
-              Ortalama yanıt süremiz: aynı gün
+            <div className="inline-flex items-center gap-2 rounded-full border border-paper/10 bg-ink/60 px-3.5 py-1.5 text-xs font-medium text-paper/70">
+              <Clock className="size-3.5 text-guru" strokeWidth={2.2} />
+              Ortalama yanıt: aynı gün
             </div>
 
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-              <div>
-                <label htmlFor="cf-name" className="mb-1.5 block text-sm font-semibold text-paper">
-                  Ad Soyad <span className="text-guru">*</span>
+            <div className="mt-7 grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label htmlFor="cf-name" className={labelCls}>
+                  Ad soyad <span className="text-guru">*</span>
                 </label>
                 <input
                   id="cf-name"
@@ -164,13 +165,13 @@ export function ContactForm() {
                   onChange={(e) => set("name", e.target.value)}
                   aria-invalid={Boolean(errors.name)}
                   aria-describedby={errors.name ? "cf-name-error" : undefined}
-                  className={inputCls(Boolean(errors.name))}
+                  className={cn(inputCls(Boolean(errors.name)), "h-12")}
                 />
                 <FieldError id="cf-name-error" message={errors.name} />
               </div>
 
-              <div>
-                <label htmlFor="cf-email" className="mb-1.5 block text-sm font-semibold text-paper">
+              <div className="space-y-2">
+                <label htmlFor="cf-email" className={labelCls}>
                   E-posta <span className="text-guru">*</span>
                 </label>
                 <input
@@ -183,14 +184,14 @@ export function ContactForm() {
                   onChange={(e) => set("email", e.target.value)}
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? "cf-email-error" : undefined}
-                  className={inputCls(Boolean(errors.email))}
+                  className={cn(inputCls(Boolean(errors.email)), "h-12")}
                 />
                 <FieldError id="cf-email-error" message={errors.email} />
               </div>
 
-              <div>
-                <label htmlFor="cf-phone" className="mb-1.5 block text-sm font-semibold text-paper">
-                  Telefon <span className="font-normal text-paper/50">(opsiyonel)</span>
+              <div className="space-y-2">
+                <label htmlFor="cf-phone" className={labelCls}>
+                  Telefon <span className="text-paper/45">(opsiyonel)</span>
                 </label>
                 <input
                   id="cf-phone"
@@ -200,13 +201,13 @@ export function ContactForm() {
                   placeholder="05xx xxx xx xx"
                   value={values.phone}
                   onChange={(e) => set("phone", e.target.value)}
-                  className={inputCls(false)}
+                  className={cn(inputCls(false), "h-12")}
                 />
               </div>
 
-              <div>
-                <label htmlFor="cf-service" className="mb-1.5 block text-sm font-semibold text-paper">
-                  İlgilendiğiniz Hizmet <span className="text-guru">*</span>
+              <div className="space-y-2">
+                <label htmlFor="cf-service" className={labelCls}>
+                  İlgilendiğiniz hizmet <span className="text-guru">*</span>
                 </label>
                 <select
                   id="cf-service"
@@ -215,7 +216,11 @@ export function ContactForm() {
                   onChange={(e) => set("service", e.target.value)}
                   aria-invalid={Boolean(errors.service)}
                   aria-describedby={errors.service ? "cf-service-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.service)), !values.service && "text-paper/40")}
+                  className={cn(
+                    inputCls(Boolean(errors.service)),
+                    "h-12",
+                    !values.service && "text-paper/35"
+                  )}
                 >
                   <option value="" disabled>
                     Hizmet seçin
@@ -230,8 +235,8 @@ export function ContactForm() {
                 <FieldError id="cf-service-error" message={errors.service} />
               </div>
 
-              <div className="sm:col-span-2">
-                <label htmlFor="cf-message" className="mb-1.5 block text-sm font-semibold text-paper">
+              <div className="space-y-2 sm:col-span-2">
+                <label htmlFor="cf-message" className={labelCls}>
                   Mesajınız <span className="text-guru">*</span>
                 </label>
                 <textarea
@@ -243,16 +248,23 @@ export function ContactForm() {
                   onChange={(e) => set("message", e.target.value)}
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? "cf-message-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.message)), "resize-y")}
+                  className={cn(inputCls(Boolean(errors.message)), "resize-y py-3 leading-relaxed")}
                 />
                 <FieldError id="cf-message-error" message={errors.message} />
               </div>
             </div>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <GButton type="submit" variant="green" size="lg">
+            <div className="mt-8 space-y-3">
+              <button
+                type="submit"
+                className="group inline-flex h-12 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-guru px-8 text-[15px] font-semibold text-ink transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(16,216,108,0.3)] active:scale-[0.985] sm:w-auto md:h-14"
+              >
                 Mesajı Gönder
-              </GButton>
+                <ArrowRight
+                  className="size-[18px] transition-transform duration-300 group-hover:translate-x-1"
+                  strokeWidth={2.2}
+                />
+              </button>
               <p className="text-xs leading-relaxed text-paper/50">
                 Gönderdiğinizde mesajınız e-posta uygulamanızda hazırlanır.
               </p>

@@ -5,6 +5,7 @@ import { ShimmerText } from "@/components/fx/ShimmerText";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { SectionDivider } from "@/components/v2/SectionDivider";
 import { Reveal } from "@/components/ui/Reveal";
+import { GButton } from "@/components/ui/Button";
 import { ServicesShowcaseList } from "@/components/pages/hizmetler/ServicesShowcaseList";
 
 export const metadata: Metadata = {
@@ -21,7 +22,8 @@ export default function HizmetlerPage() {
         // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
         eyebrow={(<Scramble text="Hizmetlerimiz" duration={1.1} />) as unknown as string}
         title="Markanızı bir üst seviyeye taşıyan *hizmetler*"
-        sub="Stratejiden üretime, yayından ölçüme; altı başlıkta uçtan uca dijital çözümler."
+        sub="Altı başlıkta uçtan uca dijital çözümler."
+        aside={<RotatingBadge size={120} />}
       />
 
       {/* Hizmet indeksi — dev tipografili satırlar + imleci takip eden önizleme */}
@@ -37,7 +39,7 @@ export default function HizmetlerPage() {
 
       <SectionDivider from="coal" to="ink" />
 
-      {/* Kısa CTA şeridi — dönen rozetli */}
+      {/* Kısa CTA şeridi; rozet hero'ya taşındı, sağda label-roll buton */}
       <section className="relative overflow-hidden bg-ink py-16 md:py-24">
         <div
           className="grain-blob -bottom-28 -right-24 h-80 w-80 opacity-20"
@@ -59,7 +61,9 @@ export default function HizmetlerPage() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="shrink-0">
-            <RotatingBadge size={150} />
+            <GButton href="/iletisim" variant="light" size="lg">
+              Projenizi Konuşalım
+            </GButton>
           </Reveal>
         </div>
       </section>

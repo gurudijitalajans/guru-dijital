@@ -82,33 +82,33 @@ export function ServicesShowcaseList() {
               aria-label={`${service.title} hizmet detayı`}
               onMouseEnter={hoverEnabled ? () => setActive(i) : undefined}
               className={cn(
-                "group relative z-10 flex items-center justify-between gap-4 py-7 transition-all duration-500 md:py-10",
+                "group relative z-10 flex items-center justify-between gap-5 py-8 transition-all duration-500 md:py-12",
                 hoverEnabled && "lg:hover:pl-6"
               )}
             >
               {/* Sol: numara + hizmet adı */}
-              <span className="flex min-w-0 items-baseline gap-4 md:gap-7">
+              <span className="flex min-w-0 items-baseline gap-4 md:gap-8">
                 <span
-                  className="shrink-0 text-xs font-semibold tabular-nums tracking-[0.12em] text-paper/30 md:text-sm"
+                  className="shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-paper/30 md:text-base"
                   aria-hidden
                 >
                   {service.no}
                 </span>
-                <span className="text-3xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-4xl md:text-5xl lg:text-6xl">
+                <span className="text-4xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-5xl lg:text-6xl">
                   {service.title}
                 </span>
               </span>
 
               {/* Sağ: kısa açıklama (yalnız lg) + dairesel ok */}
-              <span className="flex shrink-0 items-center gap-6">
+              <span className="flex shrink-0 items-center gap-6 md:gap-8">
                 <span className="hidden max-w-[16rem] text-sm leading-relaxed text-paper/45 lg:block">
                   {service.short}
                 </span>
                 <span
-                  className="grid size-10 shrink-0 place-items-center rounded-full border border-paper/15 text-paper/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-13"
+                  className="grid size-12 shrink-0 place-items-center rounded-full border border-paper/15 text-paper/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-14"
                   aria-hidden
                 >
-                  <ArrowUpRight className="size-4 md:size-5" strokeWidth={2} />
+                  <ArrowUpRight className="size-5 md:size-6" strokeWidth={2} />
                 </span>
               </span>
             </Link>

@@ -1,4 +1,8 @@
 import {
+  Bot,
+  Briefcase,
+  Users,
+  Workflow,
   Share2,
   Palette,
   PenLine,
@@ -346,10 +350,10 @@ export const process = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Ürünler (iş ürünleri vitrini)                                      */
+/*  İşlerimiz (portfolyo vitrini)                                      */
 /* ------------------------------------------------------------------ */
 
-export type Product = {
+export type Work = {
   slug: string;
   title: string;
   desc: string;
@@ -359,7 +363,7 @@ export type Product = {
   tags: string[];
 };
 
-export const products: Product[] = [
+export const works: Work[] = [
   {
     slug: "logo-marka-kimligi",
     title: "Logo & Marka Kimliği",
@@ -413,6 +417,76 @@ export const products: Product[] = [
     imageAlt: "Yayında olan web sitesi projeleri",
     serviceSlug: "web-tasarim",
     tags: ["Kurumsal Site", "E-ticaret"],
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Ürünler (işletmeye yönelik yazılım ürünleri)                       */
+/* ------------------------------------------------------------------ */
+
+export type SoftwareProduct = {
+  slug: string;
+  name: string;
+  tagline: string;
+  desc: string;
+  features: string[];
+  icon: LucideIcon;
+  /* Detaylı tanıtım içeriği müşteriden gelene dek kartlar "Yakında" rozetiyle yayında */
+  comingSoon?: boolean;
+};
+
+export const products: SoftwareProduct[] = [
+  {
+    slug: "guru-chatbot",
+    name: "Guru Chatbot",
+    tagline: "Yapay zeka destekli müşteri asistanı",
+    desc: "Web sitenizde ve sosyal kanallarınızda müşterilerinizle 7/24 konuşan, sorulara anında yanıt veren ve talepleri ekibinize ileten akıllı asistan.",
+    features: [
+      "7/24 otomatik müşteri yanıtları",
+      "Web sitesi ve WhatsApp entegrasyonu",
+      "Talepleri ekibe yönlendirme",
+    ],
+    icon: Bot,
+    comingSoon: true,
+  },
+  {
+    slug: "guru-crm",
+    name: "Guru CRM",
+    tagline: "Müşteri ilişkileri tek ekranda",
+    desc: "Müşteri kayıtlarından satış fırsatlarına; teklif, görüşme ve takip süreçlerinizi tek panelden yöneten müşteri ilişkileri platformu.",
+    features: [
+      "Müşteri ve fırsat takibi",
+      "Teklif ve satış hattı yönetimi",
+      "Raporlama ve hatırlatmalar",
+    ],
+    icon: Users,
+    comingSoon: true,
+  },
+  {
+    slug: "guru-operation",
+    name: "Guru Operation",
+    tagline: "Operasyonunuz kontrol altında",
+    desc: "Görevler, iş akışları ve ekip planlaması: günlük operasyonun tamamını görünür kılan, darboğazları erkenden gösteren yönetim aracı.",
+    features: [
+      "Görev ve iş akışı yönetimi",
+      "Ekip planlama ve takvim",
+      "Süreç performans takibi",
+    ],
+    icon: Workflow,
+    comingSoon: true,
+  },
+  {
+    slug: "guru-business",
+    name: "Guru Business",
+    tagline: "İşletmeniz için uçtan uca paket",
+    desc: "Chatbot, CRM ve Operation modüllerini tek çatıda birleştiren; büyüyen işletmeler için uçtan uca dijital yönetim çözümü.",
+    features: [
+      "Tüm Guru modülleri bir arada",
+      "İşletmeye özel kurulum",
+      "Öncelikli destek",
+    ],
+    icon: Briefcase,
+    comingSoon: true,
   },
 ];
 

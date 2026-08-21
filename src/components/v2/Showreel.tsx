@@ -208,10 +208,10 @@ export function Showreel() {
               "[-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]"
             )}
           >
-            <VelocityMarquee baseVelocity={-3}>
+            <VelocityMarquee baseVelocity={-0.8}>
               <FrameStrip frames={ROW_TOP} />
             </VelocityMarquee>
-            <VelocityMarquee baseVelocity={3}>
+            <VelocityMarquee baseVelocity={0.8}>
               <FrameStrip frames={ROW_BOTTOM} />
             </VelocityMarquee>
           </motion.div>

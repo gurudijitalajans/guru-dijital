@@ -1,6 +1,7 @@
 import { HeroV2 } from "@/components/v2/HeroV2";
 import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { ServicesIndex } from "@/components/v2/ServicesIndex";
+import { ProductsStrip } from "@/components/v2/ProductsStrip";
 import { CaseStack } from "@/components/v2/CaseStack";
 import { Showreel } from "@/components/v2/Showreel";
 import { ProcessRail } from "@/components/v2/ProcessRail";
@@ -18,7 +19,7 @@ export default function Home() {
 
       {/* scroll hızına tepkili hizmet marquee'si */}
       <div className="border-y border-paper/10 bg-ink py-5" aria-hidden>
-        <VelocityMarquee baseVelocity={2.5}>
+        <VelocityMarquee baseVelocity={0.7}>
           {services.map((s) => (
             <span
               key={s.slug}
@@ -33,6 +34,7 @@ export default function Home() {
 
       <ManifestoBand />
       <ServicesIndex />
+      <ProductsStrip />
       <CaseStack />
       <SectionDivider from="coal" to="ink" />
       <Showreel />

@@ -125,16 +125,16 @@ export default function IletisimPage() {
                     {...(item.external
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}
-                    className="group flex items-center gap-4 rounded-3xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
+                    className="group flex min-h-[96px] items-center gap-4 rounded-3xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
                   >
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
                       {item.icon}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-paper/50">
+                      <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-paper/50">
                         {item.label}
                       </span>
-                      <span className="mt-1 block truncate font-semibold text-paper">
+                      <span className="mt-1.5 block truncate text-[15px] font-semibold text-paper md:text-base">
                         {item.value}
                       </span>
                     </span>
@@ -146,10 +146,10 @@ export default function IletisimPage() {
               <div className="relative overflow-hidden rounded-3xl border border-paper/10 bg-ink p-6 text-paper shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-7">
                 <div className="grain-blob -right-16 -top-16 h-48 w-48 opacity-40" aria-hidden />
                 <p className="relative text-lg font-bold leading-snug tracking-tight">
-                  unlock the <span className="text-guru">next</span> level
+                  Bir üst seviyeye <span className="text-guru">hazır mısınız?</span>
                 </p>
                 <p className="relative mt-2 text-sm leading-relaxed text-paper/60">
-                  Markanızı bir sonraki seviyeye taşımak için tek mesaj yeter.
+                  Markanızı büyütmek için tek mesaj yeter.
                 </p>
               </div>
             </StaggerItem>
@@ -178,12 +178,12 @@ export default function IletisimPage() {
           </div>
         </div>
 
-        {/* Dekoratif velocity şeridi — düşük opaklık, tamamen süsleme */}
+        {/* Dekoratif velocity şeridi: düşük opaklık, tamamen süsleme */}
         <div
           aria-hidden
           className="mt-16 select-none border-y border-paper/10 py-4 md:mt-20"
         >
-          <VelocityMarquee baseVelocity={2}>
+          <VelocityMarquee baseVelocity={0.6}>
             {Array.from({ length: 3 }, (_, i) => (
               <span
                 key={i}

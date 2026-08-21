@@ -34,7 +34,7 @@ export function FooterWordmark({ className }: FooterWordmarkProps) {
   return (
     <div className={cn("relative select-none overflow-x-clip", className)}>
       <span className="sr-only">guru</span>
-      <div aria-hidden className="flex items-end justify-center leading-none">
+      <div aria-hidden className="flex items-end justify-center pb-[0.06em] leading-none">
         {LETTERS.map((ch, i) => (
           <WordmarkLetter key={i} char={ch} interactive={interactive} />
         ))}
@@ -86,7 +86,7 @@ function WordmarkLetter({
   return (
     <motion.span
       ref={ref}
-      className="headline-outline-light inline-block text-[26vw] font-extrabold lowercase leading-none tracking-[-0.06em]"
+      className="headline-outline-light inline-block text-[20vw] font-extrabold lowercase leading-[0.9] tracking-[-0.06em]"
       style={interactive ? { y, color } : undefined}
     >
       {char}

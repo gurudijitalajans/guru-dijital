@@ -25,6 +25,17 @@ function accentLastWord(text: string) {
   return `${words.slice(0, -1).join(" ")} *${words[words.length - 1]}*`;
 }
 
+/**
+ * Metni ilk `count` cümleye indirir (az metin kuralı). Nokta + boşluk
+ * sınırından böler; alan adlarındaki noktalar boşluk içermediği için güvenli.
+ */
+function firstSentences(text: string, count: number) {
+  return text
+    .split(/(?<=\.)\s+/)
+    .slice(0, count)
+    .join(" ");
+}
+
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
 }
@@ -79,19 +90,17 @@ export default async function HizmetDetayPage({
         sub={service.headline}
       />
 
-      {/* Giriş + kapak görseli */}
+      {/* Giriş + kapak görseli; lg'de görsel kolonu daha geniş (tam genişlik) */}
       <section className="pb-20 md:pb-28 md:pt-2">
-        <div className="container-g grid items-center gap-10 md:grid-cols-2 md:gap-16">
+        <div className="container-g grid items-center gap-10 md:grid-cols-2 md:gap-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
-            <StaggerGroup className="space-y-5">
-              {service.intro.map((p) => (
-                <StaggerItem key={p}>
-                  <p className="text-base leading-relaxed text-paper/70 md:text-lg">{p}</p>
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
+            <Reveal>
+              <p className="text-lg leading-relaxed text-paper/70 md:text-xl md:leading-relaxed">
+                {firstSentences(service.intro[0], 2)}
+              </p>
+            </Reveal>
             <Reveal delay={0.15}>
-              <div className="mt-7 flex flex-wrap gap-2">
+              <div className="mt-8 flex flex-wrap gap-2">
                 {service.keywords.map((k) => (
                   <span
                     key={k}
@@ -110,7 +119,7 @@ export default async function HizmetDetayPage({
               src={cover.src}
               alt={cover.alt}
               priority
-              sizes="(min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 55vw, (min-width: 768px) 50vw, 100vw"
               className="aspect-[4/3] rounded-3xl border border-paper/10 shadow-[0_0_50px_rgba(16,216,108,0.07)]"
             />
           </Reveal>
@@ -126,7 +135,7 @@ export default async function HizmetDetayPage({
               dark
               eyebrow="Vaka Çalışmaları"
               title="Rakamlarla *kanıtlanmış* sonuçlar"
-              sub="Yönettiğimiz kampanyalardan iki örnek: sağlık sektöründe reklam bütçesi artırılmadan yalnızca 3 ayda, e-ticarette ise sürekli optimizasyonla elde edilen sonuçlar."
+              sub="Sağlık ve e-ticaret sektörlerinden iki kampanyanın ölçülmüş sonuçları."
             />
             <StaggerGroup className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
               {stats.map((stat) => (
@@ -157,7 +166,7 @@ export default async function HizmetDetayPage({
       <section className="bg-ink py-20 md:py-28">
         <div className="container-g">
           <SectionHeading dark eyebrow="Kapsam" title={accentLastWord(service.offeringsTitle)} />
-          <StaggerGroup className="mt-12 grid gap-4 md:grid-cols-2 md:gap-5">
+          <StaggerGroup className="mt-12 grid gap-5 md:grid-cols-2">
             {service.offerings.map((offering, i) => (
               <StaggerItem key={offering} className="h-full">
                 <Spotlight
@@ -165,7 +174,7 @@ export default async function HizmetDetayPage({
                   opacity={0.09}
                   className="h-full overflow-hidden rounded-3xl border border-paper/10 bg-carbon transition-all duration-300 hover:-translate-y-1 hover:border-guru/40"
                 >
-                  <div className="flex h-full items-start gap-5 p-6 md:gap-6 md:p-8">
+                  <div className="flex h-full items-start gap-5 p-7 md:gap-6 md:p-8">
                     <span
                       className="headline-outline-light shrink-0 text-5xl font-extrabold leading-none md:text-6xl"
                       aria-hidden
@@ -192,7 +201,7 @@ export default async function HizmetDetayPage({
             <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
           </div>
           <Reveal className="mt-12 md:mt-14">
-            <VelocityMarquee baseVelocity={2}>
+            <VelocityMarquee baseVelocity={0.8}>
               {gallery.map((img) => (
                 <div
                   key={img.src}
@@ -251,8 +260,8 @@ export default async function HizmetDetayPage({
             <Reveal>
               <div className="flex items-stretch gap-6 md:gap-10">
                 <span className="w-1 shrink-0 bg-guru" aria-hidden />
-                <p className="max-w-4xl text-xl font-semibold leading-snug tracking-tight sm:text-2xl md:text-4xl">
-                  {service.outro}
+                <p className="max-w-5xl text-xl font-semibold leading-snug tracking-tight sm:text-2xl md:text-4xl">
+                  {firstSentences(service.outro, 1)}
                 </p>
               </div>
             </Reveal>
@@ -268,7 +277,7 @@ export default async function HizmetDetayPage({
               dark
               eyebrow="Yayında"
               title="Canlı web *projelerimiz*"
-              sub="Tasarlayıp yayına aldığımız sitelerden bazıları; hepsi şu anda yayında, hepsi dönüşüm odaklı."
+              sub="Tasarlayıp yayına aldığımız sitelerden bazıları."
             />
             <StaggerGroup className="mt-12 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {webProjects.map((project) => (
@@ -304,9 +313,9 @@ export default async function HizmetDetayPage({
         </section>
       )}
 
-      {/* Önceki / sonraki hizmet — hover'da dönen neon çerçeve */}
+      {/* Önceki / sonraki hizmet — hover'da dönen neon çerçeve, eşit yükseklik */}
       <section className="border-t border-paper/10 py-16 md:py-20">
-        <div className="container-g grid gap-4 sm:grid-cols-2 md:gap-5">
+        <div className="container-g grid gap-5 sm:grid-cols-2">
           <Reveal className="h-full">
             <GlowBorder
               radius="1.5rem"
@@ -315,16 +324,16 @@ export default async function HizmetDetayPage({
             >
               <Link
                 href={`/hizmetler/${prev.slug}`}
-                className="group flex h-full items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 md:p-7"
+                className="group flex h-full items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 md:p-8"
               >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-paper/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-paper/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
                   <ArrowLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-0.5" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-paper/50">
                     Önceki Hizmet
                   </span>
-                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight">
+                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight md:text-xl">
                     {prev.title}
                   </span>
                 </span>
@@ -339,16 +348,16 @@ export default async function HizmetDetayPage({
             >
               <Link
                 href={`/hizmetler/${next.slug}`}
-                className="group flex h-full flex-row-reverse items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 text-right md:p-7"
+                className="group flex h-full flex-row-reverse items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 text-right md:p-8"
               >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-paper/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-paper/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
                   <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-paper/50">
                     Sonraki Hizmet
                   </span>
-                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight">
+                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight md:text-xl">
                     {next.title}
                   </span>
                 </span>

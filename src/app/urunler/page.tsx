@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import { PageHero, AccentText } from "@/components/layout/PageHero";
 import { CTASection } from "@/components/sections/CTASection";
-import { ProductGrid } from "@/components/pages/ProductGrid";
+import { ProductsShowcase } from "@/components/pages/ProductsShowcase";
 import { Reveal } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Scramble } from "@/components/fx/Scramble";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { SectionDivider } from "@/components/v2/SectionDivider";
-import { site } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Ürünler",
   description:
-    "Logo ve marka kimliğinden ambalaja, katalogdan web sitelerine; Guru Dijital'in ürettiği işlerden seçkiler.",
+    "Guru Chatbot, Guru CRM, Guru Operation ve Guru Business; işletmenizi büyüten yazılım ürünlerimiz çok yakında.",
 };
 
 /* PageHeroV2 eyebrow'u yalnızca JSX içinde render eder; Scramble SSR'da düz
@@ -27,52 +26,51 @@ export default function UrunlerPage() {
     <>
       <PageHero
         eyebrow={scrambledEyebrow}
-        title="Sözü işlerimize *bırakıyoruz*"
-        sub="Logodan ambalaja, hizmetlerimizin somut çıktıları."
+        title="İşletmenizi büyüten *yazılım* ürünleri"
+        sub="Ajans deneyimimizi işletmeniz için çalışan ürünlere dönüştürüyoruz."
+        aside={<RotatingBadge size={120} />}
       />
 
-      {/* Ürün vitrini: filtre + grid */}
-      <section className="pb-20 md:pb-28">
-        <div className="container-g">
-          <Reveal>
-            <ProductGrid />
-          </Reveal>
+      {/* Ürün vitrini: 4 yazılım ürünü, 2x2 dev kart grid'i */}
+      <section className="relative overflow-hidden py-16 md:py-24">
+        <div
+          className="grain-blob -left-32 top-1/4 h-96 w-96 opacity-15"
+          aria-hidden
+        />
+        <div
+          className="grain-blob -right-40 bottom-10 h-80 w-80 opacity-10"
+          aria-hidden
+        />
+        <div className="container-g relative">
+          <ProductsShowcase />
         </div>
       </section>
 
       <SectionDivider from="coal" to="ink" flip />
 
-      {/* Instagram bandı */}
-      <section className="relative overflow-hidden bg-ink py-20 text-paper md:py-28">
-        <div className="grain-blob -right-32 -top-24 h-96 w-96 opacity-35" aria-hidden />
-        <div className="grain-blob -left-40 bottom-0 h-80 w-80 opacity-20" aria-hidden />
-        <div className="container-g relative flex flex-col items-center text-center">
+      {/* Özel çözüm bandı */}
+      <section className="relative overflow-hidden bg-ink py-16 text-paper md:py-24">
+        <div
+          className="grain-blob -right-28 -top-24 h-80 w-80 opacity-20"
+          aria-hidden
+        />
+        <div className="container-g relative flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:gap-12 md:text-left">
           <Reveal>
-            <RotatingBadge size={110} className="mb-8" />
-          </Reveal>
-          <Reveal delay={0.08}>
-            <h2 className="max-w-2xl text-balance text-3xl font-bold leading-[1.06] tracking-[-0.03em] sm:text-4xl md:text-5xl">
-              <AccentText text="Portfolyomuz sürekli *büyüyor*" />
-            </h2>
-          </Reveal>
-          <Reveal delay={0.16}>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/70 md:text-lg">
-              En güncel işler ve kamera arkası her hafta Instagram&apos;da.
-            </p>
-          </Reveal>
-          <Reveal delay={0.24}>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-              <Magnetic>
-                <GButton href={site.instagram} external size="lg" variant="green">
-                  Instagram&apos;da İnceleyin
-                </GButton>
-              </Magnetic>
-              <Magnetic>
-                <GButton href="/hizmetler" size="lg" variant="light">
-                  Hizmetlerimize Bakın
-                </GButton>
-              </Magnetic>
+            <div>
+              <h2 className="max-w-xl text-balance text-3xl font-extrabold leading-[1.06] tracking-[-0.03em] sm:text-4xl md:text-5xl">
+                <AccentText text="İşletmenize *özel* çözüm mü gerekiyor?" />
+              </h2>
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-paper/65 md:text-lg">
+                İhtiyacınızı dinleyelim; size uygun kurulumu birlikte planlayalım.
+              </p>
             </div>
+          </Reveal>
+          <Reveal delay={0.1} className="shrink-0">
+            <Magnetic>
+              <GButton href="/iletisim" size="lg" variant="green">
+                Teklif Al
+              </GButton>
+            </Magnetic>
           </Reveal>
         </div>
       </section>

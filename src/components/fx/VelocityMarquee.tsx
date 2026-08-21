@@ -50,7 +50,8 @@ export function VelocityMarquee({
     damping: 50,
     stiffness: 400,
   });
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 4], {
+  // Scroll ivmesinin katkısı bilinçli düşük: bant sakin akmalı.
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 1.2], {
     clamp: false,
   });
   const directionFactor = useRef(1);

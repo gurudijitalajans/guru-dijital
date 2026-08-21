@@ -79,7 +79,7 @@ export function ContactFaq() {
                   transition={{ duration: 0.4, ease: EASE }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-6 pr-10 text-sm leading-relaxed text-paper/60 md:text-[15px]">
+                  <p className="pb-5 pr-12 text-sm leading-relaxed text-paper/60 md:pb-6 md:text-[15px]">
                     {item.a}
                   </p>
                 </motion.div>
