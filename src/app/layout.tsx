@@ -4,6 +4,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/fx/SmoothScroll";
 import { CustomCursor } from "@/components/fx/CustomCursor";
+import { GooDefs } from "@/components/fx/GooDefs";
+import { GooTrail } from "@/components/fx/GooTrail";
 import { Preloader } from "@/components/fx/Preloader";
 import { GrainOverlay } from "@/components/fx/GrainOverlay";
 import { ScrollProgress } from "@/components/fx/ScrollProgress";
@@ -81,6 +83,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Preloader />
+        <GooDefs />
+        <GooTrail />
         <CustomCursor />
         <ScrollProgress />
         <GrainOverlay />

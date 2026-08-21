@@ -12,6 +12,7 @@ import { ArrowDown } from "lucide-react";
 import { caseStudies, type CaseStudy } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RollingCounter } from "@/components/fx/RollingCounter";
+import { Spotlight } from "@/components/fx/Spotlight";
 import { cn } from "@/lib/utils";
 
 export type CaseStackProps = {
@@ -108,6 +109,10 @@ function CaseCard({
         style={fx ? { scale, transformOrigin: "center top" } : undefined}
         className="relative flex overflow-hidden rounded-[2rem] border border-paper/10 bg-carbon shadow-[inset_0_1px_0_rgb(245_246_245/0.06),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[86vh]"
       >
+        {/* Spotlight: kart zemininde fareyle gezen yeşil ışık.
+           Karartma katmanı (dim) sarmalayıcının DIŞINDA kalır ki stack
+           efekti ışığın üzerinde çalışmaya devam etsin. */}
+        <Spotlight className="flex w-full" size={520} opacity={0.08}>
         {/* iç glow */}
         <div
           aria-hidden
@@ -176,6 +181,7 @@ function CaseCard({
             ))}
           </div>
         </div>
+        </Spotlight>
 
         {/* karartma katmanı (stack efekti) */}
         <motion.div

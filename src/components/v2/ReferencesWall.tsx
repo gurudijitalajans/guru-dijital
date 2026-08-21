@@ -3,6 +3,7 @@ import { references, awards } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Marquee } from "@/components/ui/Marquee";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { GlowBorder } from "@/components/fx/GlowBorder";
 import { cn } from "@/lib/utils";
 
 export type ReferencesWallProps = {
@@ -58,7 +59,14 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
         <StaggerGroup className="grid gap-5 md:grid-cols-2 md:gap-6" stagger={0.12}>
           {awards.map((a) => (
             <StaggerItem key={a.title} className="h-full">
-              <article className="relative h-full overflow-hidden rounded-3xl border border-guru/40 bg-carbon p-7 shadow-[0_0_60px_rgb(16_216_108/0.15)] md:p-9">
+              {/* Neon çerçeve: hover'da dönen conic-gradient; statikte sönük
+                 yeşil çerçeve GlowBorder içinden gelir (eski border kaldırıldı) */}
+              <GlowBorder
+                always={false}
+                radius="1.5rem"
+                className="h-full shadow-[0_0_60px_rgb(16_216_108/0.15)]"
+              >
+              <article className="relative h-full overflow-hidden rounded-[calc(1.5rem_-_1px)] bg-carbon p-7 md:p-9">
                 <div
                   aria-hidden
                   className="grain-blob -right-20 -top-20 h-48 w-48 opacity-20"
@@ -78,6 +86,7 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
                   {a.desc}
                 </p>
               </article>
+              </GlowBorder>
             </StaggerItem>
           ))}
         </StaggerGroup>

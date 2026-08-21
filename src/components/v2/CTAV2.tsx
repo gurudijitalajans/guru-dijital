@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { site } from "@/lib/data";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Reveal } from "@/components/ui/Reveal";
+import { AuroraCanvas } from "@/components/fx/AuroraCanvas";
 import { cn, parseAccent } from "@/lib/utils";
 
 export type CTAV2Props = {
@@ -26,7 +27,8 @@ export function CTAV2({ className }: CTAV2Props) {
         className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-guru/70 to-transparent"
       />
 
-      {/* arka plan grain bloblar */}
+      {/* arka plan: düşük yoğunluklu aurora + grain bloblar */}
+      <AuroraCanvas className="absolute inset-0 h-full w-full" intensity={0.4} />
       <div
         aria-hidden
         className="grain-blob left-[-12%] top-[8%] h-72 w-72 opacity-30 md:h-[26rem] md:w-[26rem]"

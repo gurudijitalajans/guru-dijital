@@ -2,10 +2,13 @@ import { HeroV2 } from "@/components/v2/HeroV2";
 import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { ServicesIndex } from "@/components/v2/ServicesIndex";
 import { CaseStack } from "@/components/v2/CaseStack";
+import { Showreel } from "@/components/v2/Showreel";
 import { ProcessRail } from "@/components/v2/ProcessRail";
 import { WorkShowcase } from "@/components/v2/WorkShowcase";
 import { ReferencesWall } from "@/components/v2/ReferencesWall";
 import { CTAV2 } from "@/components/v2/CTAV2";
+import { SectionDivider } from "@/components/v2/SectionDivider";
+import { ManifestoBand } from "@/components/v2/ManifestoBand";
 import { services } from "@/lib/data";
 
 export default function Home() {
@@ -28,10 +31,15 @@ export default function Home() {
         </VelocityMarquee>
       </div>
 
+      <ManifestoBand />
       <ServicesIndex />
       <CaseStack />
+      <SectionDivider from="coal" to="ink" />
+      <Showreel />
+      <SectionDivider from="ink" to="ink" flip />
       <ProcessRail />
       <WorkShowcase />
+      <SectionDivider from="ink" to="coal" />
       <ReferencesWall />
       <CTAV2 />
     </>

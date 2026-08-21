@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import {
@@ -12,6 +11,7 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 import { products, type Product } from "@/lib/data";
+import { LiquidImage } from "@/components/fx/LiquidImage";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
@@ -119,18 +119,20 @@ function ShowcaseCard({
           layout.media
         )}
       >
-        {/* Parallax katmanı — görsel scale-110 olduğundan kenar açığı vermez */}
+        {/* Parallax katmanı — görsel scale-110 olduğundan kenar açığı vermez.
+            LiquidImage kendi relative sarmalayıcısını ve object-cover'ı getirir;
+            hover zoom sınıfları imgClassName ile iç <img>'e aktarılır. */}
         <motion.div
           style={{ y: reduce ? 0 : y }}
           className="absolute inset-0 will-change-transform"
           aria-hidden
         >
-          <Image
+          <LiquidImage
             src={product.image}
             alt={product.imageAlt}
-            fill
             sizes={layout.sizes}
-            className="scale-110 object-cover transition-transform duration-700 ease-out group-hover:scale-[1.17] motion-reduce:transition-none motion-reduce:group-hover:scale-110"
+            className="absolute inset-0"
+            imgClassName="scale-110 transition-transform duration-700 ease-out group-hover:scale-[1.17] motion-reduce:transition-none motion-reduce:group-hover:scale-110"
           />
         </motion.div>
 

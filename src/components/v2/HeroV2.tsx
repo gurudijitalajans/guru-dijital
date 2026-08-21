@@ -4,6 +4,10 @@ import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { ArrowDown } from "lucide-react";
 import { DotField } from "@/components/fx/DotField";
+import { AuroraCanvas } from "@/components/fx/AuroraCanvas";
+import { Sparkles } from "@/components/fx/Sparkles";
+import { ShimmerText } from "@/components/fx/ShimmerText";
+import { Scramble } from "@/components/fx/Scramble";
 import { GButton } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { site } from "@/lib/data";
@@ -72,11 +76,11 @@ export function HeroV2() {
       ref={sectionRef}
       className="relative flex min-h-[100svh] flex-col overflow-hidden bg-coal text-paper"
     >
-      {/* ---- arka plan: interaktif nokta alanı + neon glow ---- */}
+      {/* ---- arka plan: WebGL aurora + interaktif nokta alanı ---- */}
       <div className="absolute inset-0" aria-hidden>
-        <DotField className="absolute inset-0 h-full w-full" />
+        <AuroraCanvas className="absolute inset-0 h-full w-full" intensity={0.7} />
+        <DotField className="absolute inset-0 h-full w-full opacity-60" />
         <div className="grain-blob left-[-14%] top-[-12%] h-64 w-64 md:h-[26rem] md:w-[26rem]" />
-        <div className="grain-blob bottom-[-16%] right-[-10%] h-56 w-56 opacity-25 md:h-96 md:w-96" />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-ink/60" />
       </div>
 
@@ -96,21 +100,28 @@ export function HeroV2() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-guru opacity-60 motion-reduce:animate-none" />
             <span className="relative inline-flex size-2 rounded-full bg-guru shadow-[0_0_12px_rgb(16_216_108/0.8)]" />
           </span>
-          {"2025 Google Partner'ı · Google Ads Impact Awards adayı"}
+          <Scramble
+            text="2025 Google Partner'ı · Google Ads Impact Awards adayı"
+            delay={0.4}
+            duration={1.1}
+          />
         </motion.p>
 
-        {/* dev display başlık */}
-        <h1 className="mt-6 font-extrabold lowercase leading-[0.95] tracking-[-0.04em]">
+        {/* dev display başlık — çevresinde ışıltı partikülleri */}
+        <h1 className="relative mt-6 w-fit font-extrabold lowercase leading-[0.95] tracking-[-0.04em]">
+          <Sparkles className="absolute -inset-x-10 -inset-y-8" density={12} />
           <CharReveal
             text="unlock the"
             delay={0.12}
             className="headline-outline-light text-[clamp(3rem,15vw,9rem)]"
           />
-          <CharReveal
-            text="next level"
-            delay={0.44}
-            className="text-guru text-[clamp(3rem,15vw,9rem)] drop-shadow-[0_0_28px_rgb(16_216_108/0.35)]"
-          />
+          <ShimmerText interval={5}>
+            <CharReveal
+              text="next level"
+              delay={0.44}
+              className="text-guru text-[clamp(3rem,15vw,9rem)] drop-shadow-[0_0_28px_rgb(16_216_108/0.35)]"
+            />
+          </ShimmerText>
         </h1>
 
         {/* değer cümlesi */}
@@ -120,9 +131,7 @@ export function HeroV2() {
           transition={{ duration: 0.75, delay: 0.95, ease: EASE }}
           className="mt-6 max-w-xl text-[15px] leading-relaxed text-mist/75 md:mt-8 md:text-lg"
         >
-          {
-            "Sosyal medyadan performans pazarlamasına, tasarımdan web'e — markanızı bir üst seviyeye taşıyan entegre dijital çözümler üretiyoruz."
-          }
+          {"Markanızı bir üst seviyeye taşıyan entegre dijital çözümler."}
         </motion.p>
 
         {/* aksiyonlar */}
