@@ -44,7 +44,7 @@ const inputCls = (hasError: boolean) =>
     "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/20 hover:border-paper/30 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-paper/30 hover:border-paper/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
 const labelCls = "block text-[13px] font-medium text-paper/80";

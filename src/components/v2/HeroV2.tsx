@@ -119,7 +119,7 @@ export function HeroV2() {
           <CharReveal
             text="Markanızı bir üst"
             delay={0.12}
-            className="headline-outline-light text-[clamp(1.8rem,8.4vw,6.8rem)]"
+            className="text-paper text-[clamp(1.8rem,8.4vw,6.8rem)]"
           />
           <ShimmerText interval={5}>
             <CharReveal

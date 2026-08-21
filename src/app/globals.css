@@ -85,7 +85,7 @@ body {
   color: transparent;
 }
 .headline-outline-light {
-  -webkit-text-stroke: 1.5px rgb(245 246 245 / 0.22);
+  -webkit-text-stroke: 1.5px rgb(245 246 245 / 0.34);
   color: transparent;
 }
 

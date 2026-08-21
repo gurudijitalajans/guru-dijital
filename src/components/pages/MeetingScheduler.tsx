@@ -77,7 +77,7 @@ const inputCls = (hasError: boolean) =>
     "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/20 hover:border-paper/30 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-paper/30 hover:border-paper/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
 const labelCls = "block text-[13px] font-medium text-paper/80";
@@ -87,7 +87,7 @@ const chipCls = (selected: boolean) =>
     "flex min-h-11 items-center justify-center rounded-xl border transition-colors duration-200",
     selected
       ? "border-guru bg-guru text-ink"
-      : "border-paper/20 bg-ink/70 text-paper/70 hover:border-paper/30 hover:text-paper"
+      : "border-paper/30 bg-ink/70 text-paper/70 hover:border-paper/45 hover:text-paper"
   );
 
 function FieldError({ id, message }: { id: string; message?: string }) {
