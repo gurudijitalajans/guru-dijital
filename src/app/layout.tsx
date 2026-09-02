@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Poppins } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0e100f",
+  themeColor: "#f6f7f6",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -77,8 +78,13 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" className={`${poppins.variable} h-full antialiased`}>
+    <html lang="tr" suppressHydrationWarning className={`${poppins.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        {/* Tema sınıfı ilk boyamadan önce uygulanır (flash yok).
+            Varsayılan: gündüz; yalnız kayıtlı "dark" tercihi geceyi açar. */}
+        <Script id="guru-theme-init" strategy="beforeInteractive">
+          {`try{if(localStorage.getItem("guru-theme")!=="dark")document.documentElement.classList.add("light")}catch(e){document.documentElement.classList.add("light")}`}
+        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

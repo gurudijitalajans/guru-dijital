@@ -29,7 +29,7 @@ export function SectionHeading({
           <div
             className={cn(
               "mb-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em]",
-              dark ? "text-paper/60" : "text-smoke"
+              dark ? "text-fg/60" : "text-smoke"
             )}
           >
             <span className="inline-block size-2 bg-guru" aria-hidden />
@@ -44,7 +44,10 @@ export function SectionHeading({
             Tag === "h1"
               ? "text-4xl sm:text-5xl md:text-6xl"
               : "text-3xl sm:text-4xl md:text-5xl",
-            dark ? "text-paper" : "text-ink"
+            /* Başlık her zaman tema tokenı: zeminler (page/band/card) tema ile
+               döndüğü için sabit ink burada gece modunda görünmez kalırdı.
+               dark prop'u yalnız eyebrow/sub tonunu seçer. */
+            "text-fg"
           )}
         >
           {parts.map((p, i) => (
@@ -59,7 +62,7 @@ export function SectionHeading({
           <p
             className={cn(
               "mt-5 text-base leading-relaxed md:text-lg",
-              dark ? "text-paper/70" : "text-smoke"
+              dark ? "text-fg/70" : "text-smoke"
             )}
           >
             {sub}

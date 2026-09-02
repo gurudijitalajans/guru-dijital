@@ -44,7 +44,7 @@ export function RotatingBadge({
             d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
           />
         </defs>
-        <text className="fill-paper/70 text-[7px] font-semibold uppercase tracking-[0.12em]">
+        <text className="fill-fg/70 text-[7px] font-semibold uppercase tracking-[0.12em]">
           {/* textLength: metni çember uzunluğuna kilitler, kesilme/bindirme olmaz */}
           <textPath href="#guru-badge-circle" textLength={237} lengthAdjust="spacingAndGlyphs">
             {text}

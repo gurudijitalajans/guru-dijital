@@ -30,7 +30,7 @@ export function ManifestoBand({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        "relative overflow-hidden bg-ink py-20 md:py-28",
+        "relative overflow-hidden bg-band py-20 md:py-28",
         className
       )}
       aria-label="Manifesto"
@@ -57,7 +57,7 @@ export function ManifestoBand({ className }: { className?: string }) {
                   ? "text-guru drop-shadow-[0_0_24px_rgb(16_216_108/0.3)]"
                   : w.tone === "outline"
                     ? "headline-outline-light hover:text-guru hover:[-webkit-text-stroke:0px]"
-                    : "text-paper hover:text-guru"
+                    : "text-fg hover:text-guru"
               )}
             >
               {w.t}

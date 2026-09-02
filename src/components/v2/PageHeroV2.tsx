@@ -20,7 +20,7 @@ export type PageHeroV2Props = {
 };
 
 /**
- * Tüm iç sayfaların koyu (bg-coal) hero'su. Başlık kelime bazlı maske
+ * Tüm iç sayfaların koyu (bg-page) hero'su. Başlık kelime bazlı maske
  * reveal ile MOUNT anında animasyonlanır — hero her zaman sayfanın en
  * üstünde göründüğü için whileInView'e gerek yoktur.
  */
@@ -49,7 +49,7 @@ export function PageHeroV2({
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-b border-paper/10 bg-coal",
+        "relative overflow-hidden border-b border-fg/10 bg-page",
         minimal
           ? "pb-10 pt-28 md:pb-14 md:pt-36"
           : "pb-16 pt-36 md:pb-24 md:pt-44",
@@ -58,7 +58,7 @@ export function PageHeroV2({
     >
       {/* Çok hafif nokta deseni (CSS radial-gradient — canvas yok) */}
       <div
-        className="absolute inset-0 bg-[radial-gradient(rgb(245_246_245/0.05)_1px,transparent_1px)] bg-[size:26px_26px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]"
+        className="absolute inset-0 bg-[radial-gradient(color-mix(in_oklab,var(--color-fg)_5%,transparent)_1px,transparent_1px)] bg-[size:26px_26px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]"
         aria-hidden
       />
       {/* Sağ üstte sönük yeşil radial glow */}
@@ -74,7 +74,7 @@ export function PageHeroV2({
           initial={{ opacity: 0, y: reduce ? 0 : 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="mb-5 inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-paper/60"
+          className="mb-5 inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-fg/60"
         >
           <span
             className="inline-block size-2 bg-guru shadow-[0_0_14px_rgb(16_216_108/0.8)]"
@@ -85,7 +85,7 @@ export function PageHeroV2({
 
         {/* Başlık — kelime bazlı maske reveal (mount'ta) */}
         <h1
-          className="max-w-4xl text-5xl font-extrabold leading-[1.04] tracking-[-0.04em] text-paper sm:text-6xl lg:text-7xl"
+          className="max-w-4xl text-5xl font-extrabold leading-[1.04] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl"
           aria-label={title.replaceAll("*", "")}
         >
           <span className="inline-flex flex-wrap gap-x-[0.26em]" aria-hidden>
@@ -120,7 +120,7 @@ export function PageHeroV2({
             initial={{ opacity: 0, y: reduce ? 0 : 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: subDelay, ease: EASE }}
-            className="mt-6 max-w-2xl text-base leading-relaxed text-paper/65 md:text-lg"
+            className="mt-6 max-w-2xl text-base leading-relaxed text-fg/65 md:text-lg"
           >
             {sub}
           </motion.p>

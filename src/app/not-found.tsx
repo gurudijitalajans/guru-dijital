@@ -4,7 +4,7 @@ import { Magnetic } from "@/components/ui/Magnetic";
 
 export default function NotFound() {
   return (
-    <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-coal px-5 text-center">
+    <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-page px-5 text-center">
       <div className="grain-blob left-1/2 top-1/3 h-80 w-80 -translate-x-1/2 opacity-30 md:h-[28rem] md:w-[28rem]" aria-hidden />
 
       <p
@@ -14,10 +14,10 @@ export default function NotFound() {
         404
       </p>
 
-      <h1 className="mt-2 text-2xl font-bold tracking-tight text-paper md:text-3xl">
+      <h1 className="mt-2 text-2xl font-bold tracking-tight text-fg md:text-3xl">
         <Scramble text="Bu sayfa bir üst seviyeye taşınmış olabilir." />
       </h1>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-paper/60 md:text-base">
+      <p className="mt-3 max-w-md text-sm leading-relaxed text-fg/60 md:text-base">
         Aradığınız sayfa bulunamadı ya da adresi değişti.
       </p>
 
@@ -32,7 +32,7 @@ export default function NotFound() {
             href="/iletisim"
             variant="outline"
             size="lg"
-            className="border-paper/25 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+            className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
           >
             Bize Ulaşın
           </GButton>

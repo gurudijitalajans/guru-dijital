@@ -36,7 +36,7 @@ export function ProductsShowcase() {
                       <Icon className="size-7 md:size-8" strokeWidth={1.8} />
                     </span>
                     {p.comingSoon && (
-                      <span className="inline-flex items-center gap-2 rounded-full border border-guru/40 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-guru">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-[color:light-dark(rgb(11_169_85/0.5),rgb(16_216_108/0.4))] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-[color:light-dark(var(--color-guru-deep),var(--color-guru))]">
                         <span
                           className="size-1.5 rounded-full bg-guru motion-safe:animate-pulse"
                           aria-hidden
@@ -47,22 +47,22 @@ export function ProductsShowcase() {
                   </div>
 
                   {/* Ad + tagline + kısa açıklama */}
-                  <h2 className="mt-6 text-2xl font-extrabold tracking-[-0.03em] text-paper md:text-3xl">
+                  <h2 className="mt-6 text-2xl font-extrabold tracking-[-0.03em] text-fg md:text-3xl">
                     {p.name}
                   </h2>
-                  <p className="mt-2 text-base font-medium text-paper/80">
+                  <p className="mt-2 text-base font-medium text-fg/80">
                     {p.tagline}
                   </p>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-paper/55">
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-fg/55">
                     {p.desc}
                   </p>
 
                   {/* Üç özellik maddesi */}
-                  <ul className="mt-6 space-y-2.5 border-t border-paper/10 pt-6">
+                  <ul className="mt-6 space-y-2.5 border-t border-fg/10 pt-6">
                     {p.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-center gap-3 text-sm text-paper/70"
+                        className="flex items-center gap-3 text-sm text-fg/70"
                       >
                         <span
                           className="size-1.5 shrink-0 rounded-full bg-guru shadow-[0_0_8px_rgb(16_216_108/0.6)]"
@@ -77,7 +77,7 @@ export function ProductsShowcase() {
                     <GButton
                       href="/iletisim"
                       variant="dark"
-                      className="w-full border border-paper/15 sm:w-auto"
+                      className="w-full border border-fg/15 sm:w-auto"
                     >
                       Haberdar Et
                     </GButton>

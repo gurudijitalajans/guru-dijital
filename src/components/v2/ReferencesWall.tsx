@@ -25,8 +25,8 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
 
   return (
     // Zemin: coal — önündeki SectionDivider to="coal" ve ardından gelen
-    // CTAV2 (bg-coal) ile birebir aynı hex; ton dikişi kalmaz.
-    <section className={cn("overflow-x-clip bg-coal py-24 md:py-32", className)}>
+    // CTAV2 (bg-page) ile birebir aynı hex; ton dikişi kalmaz.
+    <section className={cn("overflow-x-clip bg-page py-24 md:py-32", className)}>
       <div className="container-g">
         <SectionHeading
           dark
@@ -68,7 +68,7 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
                 radius="1.5rem"
                 className="h-full shadow-[0_0_60px_rgb(16_216_108/0.15)]"
               >
-              <article className="relative h-full overflow-hidden rounded-[calc(1.5rem_-_1px)] bg-carbon p-7 md:p-9">
+              <article className="relative h-full overflow-hidden rounded-[calc(1.5rem_-_1px)] bg-card p-7 md:p-9">
                 <div
                   aria-hidden
                   className="grain-blob -right-20 -top-20 h-48 w-48 opacity-20"
@@ -81,10 +81,10 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
                     {a.year}
                   </span>
                 </div>
-                <h3 className="relative mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">
+                <h3 className="relative mt-6 text-xl font-bold tracking-tight text-fg md:text-2xl">
                   {a.title}
                 </h3>
-                <p className="relative mt-3 text-sm leading-relaxed text-paper/60 md:text-[15px]">
+                <p className="relative mt-3 text-sm leading-relaxed text-fg/60 md:text-[15px]">
                   {a.desc}
                 </p>
               </article>
@@ -99,7 +99,7 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
 
 function ReferencePill({ name }: { name: string }) {
   return (
-    <span className="mx-2 inline-flex whitespace-nowrap rounded-full border border-paper/15 px-5 py-2.5 text-sm font-medium text-paper/70 transition-colors duration-300 hover:border-guru/40 hover:text-guru md:px-6 md:py-3 md:text-base">
+    <span className="mx-2 inline-flex whitespace-nowrap rounded-full border border-fg/15 px-5 py-2.5 text-sm font-medium text-fg/70 transition-colors duration-300 hover:border-guru/40 hover:text-guru md:px-6 md:py-3 md:text-base">
       {name}
     </span>
   );

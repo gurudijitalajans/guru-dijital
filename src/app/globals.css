@@ -11,6 +11,13 @@
   --color-smoke: #6f6a68;
   --color-taupe: #5a5454;
 
+  /* Tema-duyarlı anlamsal tokenlar (varsayılan: gece modu değerleri).
+     ink SABİT koyu kalır: yeşil zeminlerdeki metin her temada koyudur. */
+  --color-page: #0e100f;  /* sayfa zemini */
+  --color-band: #0a0b0a;  /* alternatif bant zemini */
+  --color-card: #181b19;  /* kart zemini */
+  --color-fg: #f5f6f5;    /* ana metin + çizgiler */
+
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --shadow-soft: 0 24px 60px -24px rgb(10 11 10 / 0.18);
@@ -36,6 +43,45 @@ html {
   color-scheme: dark;
 }
 
+/* ---- Gündüz modu (beyaz zemin): anlamsal tokenlar yeniden eşlenir ---- */
+html.light {
+  color-scheme: light;
+  --color-page: #f6f7f6;
+  --color-band: #ecefec;
+  --color-card: #ffffff;
+  --color-fg: #0c0e0d;
+  --color-smoke: #5b625d;
+}
+
+/* Gündüz modunda koyu temaya özel FX katmanları */
+html.light .fx-aurora {
+  display: none;
+}
+html.light .fx-dots {
+  opacity: 0.3;
+}
+html.light .fx-goo {
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+/* Blob yoğunluğu: eleman bazlı opacity utility'lerini ezmemek için
+   opaklık yerine gradyan alfası düşürülür */
+html.light .grain-blob {
+  background: radial-gradient(closest-side, rgb(16 216 108 / 0.45), transparent 72%);
+}
+
+/* Tema anahtarı ikonları: gece modunda güneş (aydınlığa geç), gündüzde ay */
+.theme-icon-sun { display: block; }
+.theme-icon-moon { display: none; }
+html.light .theme-icon-sun { display: none; }
+html.light .theme-icon-moon { display: block; }
+
+/* Tema-bağımlı logo görünürlüğü */
+.logo-dark-theme { display: inline-block; }
+.logo-light-theme { display: none; }
+html.light .logo-dark-theme { display: none; }
+html.light .logo-light-theme { display: inline-block; }
+
 /* Lenis smooth-scroll aktifken native smooth kapanır */
 html[data-lenis] {
   scroll-behavior: auto;
@@ -48,8 +94,8 @@ html[data-cursor-on] * {
 }
 
 body {
-  background: var(--color-coal);
-  color: var(--color-paper);
+  background: var(--color-page);
+  color: var(--color-fg);
   font-family: var(--font-sans);
   overflow-x: clip;
 }
@@ -85,7 +131,7 @@ body {
   color: transparent;
 }
 .headline-outline-light {
-  -webkit-text-stroke: 1.5px rgb(245 246 245 / 0.34);
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-fg) 34%, transparent);
   color: transparent;
 }
 

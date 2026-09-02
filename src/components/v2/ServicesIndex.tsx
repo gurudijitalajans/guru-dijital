@@ -63,7 +63,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
     <section
       id="hizmetler"
       className={cn(
-        "relative overflow-hidden bg-coal py-24 md:py-32",
+        "relative overflow-hidden bg-page py-24 md:py-32",
         className
       )}
     >
@@ -78,13 +78,13 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
         <div className="mb-14 flex flex-col gap-6 md:mb-20 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <Reveal y={16}>
-              <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+              <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
                 <span className="inline-block size-2 bg-guru" aria-hidden />
                 Neler Yapıyoruz
               </p>
             </Reveal>
             <Reveal delay={0.05}>
-              <h2 className="text-balance text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] text-paper sm:text-5xl md:text-6xl">
+              <h2 className="text-balance text-4xl font-extrabold leading-[1.02] tracking-[-0.04em] text-fg sm:text-5xl md:text-6xl">
                 Markanızı büyüten{" "}
                 <span className="text-guru">altı</span> disiplin
               </h2>
@@ -93,7 +93,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
           <Reveal delay={0.12} className="shrink-0">
             <Link
               href="/hizmetler"
-              className="group inline-flex items-center gap-2 py-3 -my-3 text-sm font-semibold text-paper/60 transition-colors duration-300 hover:text-guru"
+              className="group inline-flex items-center gap-2 py-3 -my-3 text-sm font-semibold text-fg/60 transition-colors duration-300 hover:text-guru"
             >
               Tüm hizmetleri incele
               <ArrowUpRight
@@ -115,7 +115,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
             {services.map((service, i) => (
               <StaggerItem
                 key={service.slug}
-                className="border-t border-paper/10 last:border-b"
+                className="border-t border-fg/10 last:border-b"
               >
                 <Link
                   href={`/hizmetler/${service.slug}`}
@@ -132,17 +132,17 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
                   {/* Sol: numara + hizmet adı */}
                   <span className="flex min-w-0 items-baseline gap-4 md:gap-7">
                     <span
-                      className="shrink-0 text-xs font-semibold tabular-nums tracking-[0.12em] text-paper/30 md:text-sm"
+                      className="shrink-0 text-xs font-semibold tabular-nums tracking-[0.12em] text-fg/30 md:text-sm"
                       aria-hidden
                     >
                       {service.no}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-2xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-3xl md:text-4xl lg:text-5xl">
+                      <span className="block text-2xl font-bold tracking-[-0.03em] text-fg transition-colors duration-500 group-hover:text-guru sm:text-3xl md:text-4xl lg:text-5xl">
                         {service.title}
                       </span>
                       {/* Kısa açıklama mobil/tablet'te başlık altında görünür */}
-                      <span className="mt-1 block text-xs leading-relaxed text-paper/45 lg:hidden">
+                      <span className="mt-1 block text-xs leading-relaxed text-fg/45 lg:hidden">
                         {service.short}
                       </span>
                     </span>
@@ -150,11 +150,11 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
 
                   {/* Sağ: kısa açıklama (yalnız lg) + dairesel ok */}
                   <span className="flex shrink-0 items-center gap-6">
-                    <span className="hidden max-w-[16rem] text-sm leading-relaxed text-paper/45 lg:block">
+                    <span className="hidden max-w-[16rem] text-sm leading-relaxed text-fg/45 lg:block">
                       {service.short}
                     </span>
                     <span
-                      className="grid size-10 shrink-0 place-items-center rounded-full border border-paper/15 text-paper/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-13"
+                      className="grid size-10 shrink-0 place-items-center rounded-full border border-fg/15 text-fg/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-13"
                       aria-hidden
                     >
                       <ArrowUpRight className="size-4 md:size-5" strokeWidth={2} />
@@ -180,7 +180,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
                   rotate: active !== null ? 4 : 0,
                 }}
                 transition={{ duration: 0.5, ease: EASE }}
-                className="relative -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-paper/10 bg-carbon shadow-[0_24px_80px_-24px_rgb(16_216_108/0.35)]"
+                className="relative -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-fg/10 bg-card shadow-[0_24px_80px_-24px_rgb(16_216_108/0.35)]"
                 style={{ width: PREVIEW_W, height: PREVIEW_H }}
               >
                 {services.map((service, i) => (
@@ -196,7 +196,9 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
                     )}
                   />
                 ))}
-                {/* Alt bilgi şeridi */}
+                {/* Alt bilgi şeridi. Zemin gradyanı bilerek sabit koyu (from-ink),
+                   bu yüzden üzerindeki metin de sabit açık kalır (text-paper):
+                   text-fg gündüz modunda koyulaşıp koyu-üstü-koyu kalırdı. */}
                 <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-ink/80 to-transparent px-4 pb-3 pt-8 text-[11px] font-semibold uppercase tracking-[0.14em] text-paper/80">
                   {active !== null ? services[active].no : ""}
                   <span className="text-guru">İncele</span>

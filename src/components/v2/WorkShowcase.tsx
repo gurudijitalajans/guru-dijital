@@ -114,7 +114,7 @@ function ShowcaseCard({
       <article
         ref={ref}
         className={cn(
-          "relative h-full overflow-hidden rounded-[1.75rem] border border-paper/10 bg-carbon",
+          "relative h-full overflow-hidden rounded-[1.75rem] border border-fg/10 bg-card",
           "transition-shadow duration-500 group-hover:shadow-[0_0_70px_-24px_rgb(16_216_108/0.4)]",
           layout.media
         )}
@@ -143,27 +143,27 @@ function ShowcaseCard({
         />
 
         {/* Sıra numarası rozeti */}
-        <span className="absolute left-4 top-4 rounded-full border border-paper/15 bg-ink/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-paper/80 backdrop-blur-sm">
+        <span className="absolute left-4 top-4 rounded-full border border-fg/15 bg-band/50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-fg/80 backdrop-blur-sm">
           {String(index + 1).padStart(2, "0")}
         </span>
 
         {/* Alttan kayan başlık şeridi */}
         <div
           className={cn(
-            "absolute inset-x-3 bottom-3 flex items-center justify-between gap-4 rounded-[1.25rem] border border-paper/10 bg-ink/70 px-5 py-4 backdrop-blur-md",
+            "absolute inset-x-3 bottom-3 flex items-center justify-between gap-4 rounded-[1.25rem] border border-fg/10 bg-band/70 px-5 py-4 backdrop-blur-md",
             fine &&
               "translate-y-[115%] opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none"
           )}
         >
           <div className="min-w-0">
-            <h3 className="truncate text-base font-bold tracking-tight text-paper md:text-lg">
+            <h3 className="truncate text-base font-bold tracking-tight text-fg md:text-lg">
               {product.title}
             </h3>
             <div className="mt-1 flex flex-wrap gap-x-2.5 gap-y-0.5">
               {product.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-[11px] font-medium uppercase tracking-[0.12em] text-paper/55"
+                  className="text-[11px] font-medium uppercase tracking-[0.12em] text-fg/55"
                 >
                   {tag}
                 </span>
@@ -190,7 +190,7 @@ export function WorkShowcase() {
   ).filter((p): p is Work => Boolean(p));
 
   return (
-    <section className="relative overflow-hidden bg-ink py-20 md:py-28">
+    <section className="relative overflow-hidden bg-band py-20 md:py-28">
       {/* Sönük yeşil ambiyans */}
       <div className="grain-blob -right-48 top-8 h-96 w-96 opacity-20" aria-hidden />
 
@@ -207,7 +207,7 @@ export function WorkShowcase() {
             <GButton
               href="/urunler"
               variant="outline"
-              className="border-paper/25 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+              className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
             >
               Tüm Ürünler
             </GButton>
@@ -236,7 +236,7 @@ export function WorkShowcase() {
           <GButton
             href="/urunler"
             variant="outline"
-            className="w-full border-paper/25 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+            className="w-full border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
           >
             Tüm Ürünler
           </GButton>

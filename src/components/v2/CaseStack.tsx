@@ -48,7 +48,7 @@ export function CaseStack({ className }: CaseStackProps) {
 
   return (
     // DİKKAT: sticky çalışsın diye bu section'a overflow-hidden VERİLMEZ.
-    <section className={cn("bg-coal py-24 md:py-32", className)}>
+    <section className={cn("bg-page py-24 md:py-32", className)}>
       <div className="container-g">
         <SectionHeading
           dark
@@ -107,7 +107,7 @@ function CaseCard({
     >
       <motion.article
         style={fx ? { scale, transformOrigin: "center top" } : undefined}
-        className="relative flex overflow-hidden rounded-[2rem] border border-paper/10 bg-carbon shadow-[inset_0_1px_0_rgb(245_246_245/0.06),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[86vh]"
+        className="relative flex overflow-hidden rounded-[2rem] border border-fg/10 bg-card shadow-[inset_0_1px_0_color-mix(in_oklab,var(--color-fg)_6%,transparent),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[86vh]"
       >
         {/* Spotlight: kart zemininde fareyle gezen yeşil ışık.
            Karartma katmanı (dim) sarmalayıcının DIŞINDA kalır ki stack
@@ -126,7 +126,7 @@ function CaseCard({
         {/* kart no */}
         <span
           aria-hidden
-          className="absolute right-6 top-6 text-sm font-semibold tracking-[0.2em] text-paper/30 md:right-10 md:top-10"
+          className="absolute right-6 top-6 text-sm font-semibold tracking-[0.2em] text-fg/30 md:right-10 md:top-10"
         >
           0{index + 1} / 0{total}
         </span>
@@ -134,14 +134,14 @@ function CaseCard({
         <div className="relative grid w-full items-center gap-10 p-6 py-12 sm:p-8 sm:py-14 md:grid-cols-2 md:gap-12 md:p-12 lg:p-16">
           {/* sol: sektör + başlık + özet + not */}
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-paper/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-paper/60">
+            <span className="inline-flex items-center gap-2 rounded-full border border-fg/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-fg/60">
               <span aria-hidden className="inline-block size-1.5 rounded-full bg-guru" />
               {cs.sector}
             </span>
-            <h3 className="mt-6 text-balance text-3xl font-extrabold leading-[1.02] tracking-[-0.04em] text-paper sm:text-4xl lg:text-5xl">
+            <h3 className="mt-6 text-balance text-3xl font-extrabold leading-[1.02] tracking-[-0.04em] text-fg sm:text-4xl lg:text-5xl">
               {cs.title}
             </h3>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-paper/65 md:text-base">
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-fg/65 md:text-base">
               {cs.summary}
             </p>
             <p className="mt-7 inline-flex max-w-full items-start gap-2 rounded-2xl border border-guru/25 bg-guru/10 px-4 py-2 text-xs font-medium text-guru md:items-center md:rounded-full md:text-sm">
@@ -155,7 +155,7 @@ function CaseCard({
             {cs.stats.map((s) => (
               <div
                 key={s.label}
-                className="relative rounded-2xl border border-paper/10 bg-coal/50 p-4 md:p-5"
+                className="relative rounded-2xl border border-fg/10 bg-page/50 p-4 md:p-5"
               >
                 {/* Ok rozeti satır akışının dışında (absolute sağ-üst):
                    dar ekranda sayaçla aynı satır genişliğini paylaşmaz */}
@@ -174,7 +174,7 @@ function CaseCard({
                   suffix={s.suffix}
                   down={s.down}
                 />
-                <p className="mt-2 text-xs leading-snug text-paper/55 md:text-sm">
+                <p className="mt-2 text-xs leading-snug text-fg/55 md:text-sm">
                   {s.label}
                 </p>
               </div>
@@ -186,7 +186,7 @@ function CaseCard({
         {/* karartma katmanı (stack efekti) */}
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-[2rem] bg-coal"
+          className="pointer-events-none absolute inset-0 rounded-[2rem] bg-page"
           style={fx ? { opacity: dim } : { opacity: 0 }}
         />
       </motion.article>
@@ -212,7 +212,7 @@ function RollingStat({
       suffix={suffix}
       className={cn(
         "text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl md:text-4xl lg:text-[2.6rem]",
-        down ? "text-guru" : "text-paper"
+        down ? "text-guru" : "text-fg"
       )}
     />
   );

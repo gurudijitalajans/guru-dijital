@@ -32,7 +32,7 @@ export function PageCurtain({ children }: PageCurtainProps) {
           {/* Siyah katman — yeşilin hemen arkasından süpürür */}
           <motion.div
             aria-hidden
-            className="pointer-events-none fixed inset-0 z-[97] bg-coal"
+            className="pointer-events-none fixed inset-0 z-[97] bg-page"
             initial={{ y: "-100%" }}
             animate={{ y: "100%" }}
             transition={{ duration: 0.62, delay: 0.07, ease: EASE }}

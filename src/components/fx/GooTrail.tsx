@@ -120,13 +120,17 @@ export function GooTrail() {
   }, [enabled, mx, my]);
 
   // SSR + ilk istemci render'ı: bloblarsız sabit kapsayıcı (null DEĞİL).
+  // Görünür-durum opaklığı sınıftan gelir (opacity-50): inline style,
+  // globals'daki "html.light .fx-goo { opacity: 0.35 }" kuralını ezerdi.
+  // Inline opacity yalnız gizliyken (0) yazılır; SSR'da enabled=false
+  // olduğundan ilk render her zaman opacity:0 ile başlar (hydration nötr).
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[110] mix-blend-screen transition-opacity duration-300"
+      className="fx-goo pointer-events-none fixed inset-0 z-[110] opacity-50 mix-blend-screen transition-opacity duration-300"
       style={{
         filter: "url(#guru-goo)",
-        opacity: enabled && visible ? 0.5 : 0,
+        opacity: enabled && visible ? undefined : 0,
       }}
     >
       {enabled &&

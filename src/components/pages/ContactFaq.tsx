@@ -30,7 +30,7 @@ export function ContactFaq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <div className="mx-auto max-w-3xl divide-y divide-paper/10 rounded-3xl border border-paper/10 bg-carbon px-6 md:px-8">
+    <div className="mx-auto max-w-3xl divide-y divide-fg/10 rounded-3xl border border-fg/10 bg-card px-6 md:px-8">
       {faqs.map((item, i) => {
         const isOpen = open === i;
         return (
@@ -50,7 +50,7 @@ export function ContactFaq() {
               <span
                 className={cn(
                   "text-[15px] font-semibold tracking-tight transition-all duration-300 group-hover:translate-x-3 md:text-base",
-                  isOpen ? "text-paper" : "text-paper/80 group-hover:text-paper"
+                  isOpen ? "text-fg" : "text-fg/80 group-hover:text-fg"
                 )}
               >
                 {item.q}
@@ -62,7 +62,7 @@ export function ContactFaq() {
                   "flex size-8 shrink-0 items-center justify-center rounded-full transition-[background-color,color,scale] duration-300 group-hover:scale-110",
                   isOpen
                     ? "bg-guru text-ink"
-                    : "bg-paper/10 text-paper/70 group-hover:bg-paper/20 group-hover:text-paper"
+                    : "bg-fg/10 text-fg/70 group-hover:bg-fg/20 group-hover:text-fg"
                 )}
                 aria-hidden
               >
@@ -79,7 +79,7 @@ export function ContactFaq() {
                   transition={{ duration: 0.4, ease: EASE }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-5 pr-2 text-sm leading-relaxed text-paper/60 md:pb-6 md:pr-12 md:text-[15px]">
+                  <p className="pb-5 pr-2 text-sm leading-relaxed text-fg/60 md:pb-6 md:pr-12 md:text-[15px]">
                     {item.a}
                   </p>
                 </motion.div>

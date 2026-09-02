@@ -54,7 +54,7 @@ export function ShimmerText({ children, className, interval = 4 }: ShimmerTextPr
         className="pointer-events-none absolute inset-0 select-none text-transparent will-change-[background-position] [&_*]:text-transparent!"
         style={{
           backgroundImage:
-            "linear-gradient(105deg, transparent 42%, rgba(245, 246, 245, 0.9) 50%, transparent 58%)",
+            "linear-gradient(105deg, transparent 42%, color-mix(in oklab, var(--color-fg) 90%, transparent) 50%, transparent 58%)",
           backgroundSize: "250% 100%",
           backgroundRepeat: "no-repeat",
           backgroundPosition: SWEEP_REST,

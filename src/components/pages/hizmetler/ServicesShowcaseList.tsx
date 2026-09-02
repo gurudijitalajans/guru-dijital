@@ -74,7 +74,7 @@ export function ServicesShowcaseList() {
         {services.map((service, i) => (
           <StaggerItem
             key={service.slug}
-            className="border-t border-paper/10 last:border-b"
+            className="border-t border-fg/10 last:border-b"
           >
             <Link
               href={`/hizmetler/${service.slug}`}
@@ -89,17 +89,17 @@ export function ServicesShowcaseList() {
               {/* Sol: numara + hizmet adı (+ lg altı kısa açıklama) */}
               <span className="flex min-w-0 items-baseline gap-4 md:gap-8">
                 <span
-                  className="shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-paper/30 md:text-base"
+                  className="shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-fg/30 md:text-base"
                   aria-hidden
                 >
                   {service.no}
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-4xl font-bold tracking-[-0.03em] text-paper transition-colors duration-500 group-hover:text-guru sm:text-5xl lg:text-6xl">
+                  <span className="block text-4xl font-bold tracking-[-0.03em] text-fg transition-colors duration-500 group-hover:text-guru sm:text-5xl lg:text-6xl">
                     {service.title}
                   </span>
                   {/* Kısa açıklama lg'de sağ kolonda; lg altında başlığın altında */}
-                  <span className="mt-2 block text-sm leading-relaxed text-paper/50 lg:hidden">
+                  <span className="mt-2 block text-sm leading-relaxed text-fg/50 lg:hidden">
                     {service.short}
                   </span>
                 </span>
@@ -107,11 +107,11 @@ export function ServicesShowcaseList() {
 
               {/* Sağ: kısa açıklama (yalnız lg) + dairesel ok */}
               <span className="flex shrink-0 items-center gap-6 md:gap-8">
-                <span className="hidden max-w-[16rem] text-sm leading-relaxed text-paper/45 lg:block">
+                <span className="hidden max-w-[16rem] text-sm leading-relaxed text-fg/45 lg:block">
                   {service.short}
                 </span>
                 <span
-                  className="grid size-12 shrink-0 place-items-center rounded-full border border-paper/15 text-paper/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-14"
+                  className="grid size-12 shrink-0 place-items-center rounded-full border border-fg/15 text-fg/70 transition-all duration-500 group-hover:rotate-45 group-hover:border-guru group-hover:bg-guru group-hover:text-ink md:size-14"
                   aria-hidden
                 >
                   <ArrowUpRight className="size-5 md:size-6" strokeWidth={2} />
@@ -137,7 +137,7 @@ export function ServicesShowcaseList() {
               rotate: active !== null ? -4 : 0,
             }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="relative -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-paper/10 bg-carbon shadow-[0_24px_80px_-24px_rgb(16_216_108/0.35)]"
+            className="relative -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-fg/10 bg-card shadow-[0_24px_80px_-24px_light-dark(rgb(16_216_108/0.2),rgb(16_216_108/0.35))]"
             style={{ width: PREVIEW_W, height: PREVIEW_H }}
           >
             {services.map((service, i) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -91,14 +91,14 @@ export function Preloader() {
     <div ref={overlayRef} aria-hidden className="fixed inset-0 z-[100]">
       {/* Üst perde — %50.5 ile olası 1px dikiş çizgisi önlenir */}
       <motion.div
-        className="absolute inset-x-0 top-0 h-[50.5%] bg-ink"
+        className="absolute inset-x-0 top-0 h-[50.5%] bg-band"
         initial={false}
         animate={exiting ? { y: "-101%" } : { y: 0 }}
         transition={{ duration: 0.6, ease: EASE }}
       />
       {/* Alt perde */}
       <motion.div
-        className="absolute inset-x-0 bottom-0 h-[50.5%] bg-ink"
+        className="absolute inset-x-0 bottom-0 h-[50.5%] bg-band"
         initial={false}
         animate={exiting ? { y: "101%" } : { y: 0 }}
         transition={{ duration: 0.6, ease: EASE }}
@@ -111,16 +111,11 @@ export function Preloader() {
         animate={exiting ? { opacity: 0, y: -18 } : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: EASE }}
       >
-        <Image
-          src="/logo-light.png"
-          alt="Guru Dijital"
-          width={720}
-          height={306}
-          priority
-          className="h-auto w-36 md:w-44"
-        />
+        <span className="inline-flex">
+          <BrandLogo priority className="h-auto w-36 md:w-44" />
+        </span>
         <div className="w-56 max-w-full">
-          <div className="h-px w-full overflow-hidden rounded-full bg-paper/15">
+          <div className="h-px w-full overflow-hidden rounded-full bg-fg/15">
             <div
               className="h-full bg-guru"
               style={{
@@ -131,7 +126,7 @@ export function Preloader() {
           </div>
           <div className="mt-3 flex items-baseline justify-between text-xs text-smoke">
             <span className="uppercase tracking-[0.3em]">yükleniyor</span>
-            <span className="font-semibold tabular-nums text-paper">
+            <span className="font-semibold tabular-nums text-fg">
               {progress}
             </span>
           </div>

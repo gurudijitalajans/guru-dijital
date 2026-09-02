@@ -49,7 +49,7 @@ export default function UrunlerPage() {
       <SectionDivider from="coal" to="ink" flip />
 
       {/* Özel çözüm bandı */}
-      <section className="relative overflow-hidden bg-ink py-16 text-paper md:py-24">
+      <section className="relative overflow-hidden bg-band py-16 text-fg md:py-24">
         <div
           className="grain-blob -right-28 -top-24 h-80 w-80 opacity-20"
           aria-hidden
@@ -60,7 +60,7 @@ export default function UrunlerPage() {
               <h2 className="max-w-xl text-balance text-3xl font-extrabold leading-[1.06] tracking-[-0.03em] sm:text-4xl md:text-5xl">
                 <AccentText text="İşletmenize *özel* çözüm mü gerekiyor?" />
               </h2>
-              <p className="mt-4 max-w-lg text-base leading-relaxed text-paper/65 md:text-lg">
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-fg/65 md:text-lg">
                 İhtiyacınızı dinleyelim; size uygun kurulumu birlikte planlayalım.
               </p>
             </div>

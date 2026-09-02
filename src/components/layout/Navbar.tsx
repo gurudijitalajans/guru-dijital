@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Menu, X, Mail } from "lucide-react";
@@ -10,6 +9,8 @@ import { InstagramIcon } from "@/components/ui/icons";
 import { navLinks, site } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { GButton } from "@/components/ui/Button";
+import { BrandLogo } from "@/components/ui/BrandLogo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -73,21 +74,13 @@ export default function Navbar() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300",
         scrolled && !open
-          ? "border-b border-paper/10 bg-coal/80 backdrop-blur-xl"
+          ? "border-b border-fg/10 bg-page/80 backdrop-blur-xl"
           : "bg-transparent"
       )}
     >
       <div className="container-g flex h-16 items-center justify-between md:h-20">
         <Link href="/" className="relative z-[60] shrink-0" aria-label="Guru Dijital Ajans | Ana Sayfa">
-          <Image
-            src="/logo-light.png"
-            alt="Guru Dijital Ajans"
-            width={720}
-            height={306}
-            priority
-            sizes="(min-width: 768px) 120px, 100px"
-            className="h-9 w-auto md:h-10"
-          />
+          <BrandLogo priority className="h-9 w-auto md:h-10" />
         </Link>
 
         {/* Desktop nav */}
@@ -103,7 +96,7 @@ export default function Navbar() {
                 href={link.href}
                 className={cn(
                   "relative text-sm font-medium transition-colors duration-200",
-                  active ? "text-paper" : "text-paper/60 hover:text-paper"
+                  active ? "text-fg" : "text-fg/60 hover:text-fg"
                 )}
               >
                 {link.label}
@@ -119,7 +112,8 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           <GButton href="/iletisim" size="md" variant="green">
             Teklif Al
           </GButton>
@@ -129,7 +123,7 @@ export default function Navbar() {
         <button
           className={cn(
             "relative z-[60] flex size-11 items-center justify-center rounded-full transition-colors lg:hidden",
-            "bg-paper/10 text-paper"
+            "bg-fg/10 text-fg"
           )}
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
@@ -144,7 +138,7 @@ export default function Navbar() {
         {open && (
           <motion.div
             ref={overlayRef}
-            className="fixed inset-0 z-50 flex flex-col bg-coal text-paper lg:hidden"
+            className="fixed inset-0 z-50 flex flex-col bg-page text-fg lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -173,10 +167,10 @@ export default function Navbar() {
                       href={link.href}
                       className={cn(
                         "flex items-baseline gap-4 py-3 text-4xl font-bold tracking-tight sm:text-5xl",
-                        active ? "text-guru" : "text-paper hover:text-guru"
+                        active ? "text-guru" : "text-fg hover:text-guru"
                       )}
                     >
-                      <span className="text-sm font-semibold text-paper/40">
+                      <span className="text-sm font-semibold text-fg/40">
                         0{i + 1}
                       </span>
                       {link.label}
@@ -187,31 +181,32 @@ export default function Navbar() {
               </div>
             </nav>
             <motion.div
-              className="container-g flex items-center justify-between border-t border-paper/10 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
+              className="container-g flex items-center justify-between border-t border-fg/10 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.35 }}
             >
               <div className="flex gap-3">
+                <ThemeToggle />
                 <a
                   href={site.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="flex size-11 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
+                  className="flex size-11 items-center justify-center rounded-full bg-fg/10 transition-colors hover:bg-guru hover:text-ink"
                 >
                   <InstagramIcon className="size-5" />
                 </a>
                 <a
                   href={`mailto:${site.email}`}
                   aria-label="E-posta"
-                  className="flex size-11 items-center justify-center rounded-full bg-paper/10 transition-colors hover:bg-guru hover:text-ink"
+                  className="flex size-11 items-center justify-center rounded-full bg-fg/10 transition-colors hover:bg-guru hover:text-ink"
                 >
                   <Mail className="size-5" />
                 </a>
               </div>
-              <span className="text-sm text-paper/50">Unlock the next level</span>
+              <span className="text-sm text-fg/50">Unlock the next level</span>
             </motion.div>
           </motion.div>
         )}

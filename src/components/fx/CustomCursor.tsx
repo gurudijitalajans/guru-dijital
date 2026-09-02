@@ -109,6 +109,10 @@ export function CustomCursor() {
         <motion.div
           className={cn(
             "absolute inset-0 rounded-full border-[1.5px]",
+            /* Halka rengi bilerek SABİT açık (paper): mix-blend-difference
+               yalnız açık kaynakla her zeminde tersleme üretir. border-fg
+               gündüzde koyulaşır ve koyu kaynakla difference zemine eşittir
+               (halka kaybolur). Gece fg == paper, görünüm birebir aynı. */
             mode === "view"
               ? "border-transparent bg-guru"
               : "border-paper mix-blend-difference"

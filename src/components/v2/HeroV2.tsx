@@ -75,14 +75,14 @@ export function HeroV2() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-coal text-paper"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-page text-fg"
     >
       {/* ---- arka plan: WebGL aurora + interaktif nokta alanı ---- */}
       <div className="absolute inset-0" aria-hidden>
-        <AuroraCanvas className="absolute inset-0 h-full w-full" intensity={0.7} />
-        <DotField className="absolute inset-0 h-full w-full opacity-60" />
+        <AuroraCanvas className="fx-aurora absolute inset-0 h-full w-full" intensity={0.7} />
+        <DotField className="fx-dots absolute inset-0 h-full w-full opacity-60" />
         <div className="grain-blob left-[-14%] top-[-12%] h-64 w-64 md:h-[26rem] md:w-[26rem]" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-ink/60" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-band/60" />
       </div>
 
       {/* ---- içerik (scroll parallax ile kayar, DotField sabit kalır) ---- */}
@@ -95,7 +95,7 @@ export function HeroV2() {
           initial={{ opacity: 0, y: reduce ? 0 : 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05, ease: EASE }}
-          className="flex flex-wrap items-center gap-2.5 text-xs font-medium tracking-wide text-mist/70 md:text-sm"
+          className="flex flex-wrap items-center gap-2.5 text-xs font-medium tracking-wide text-smoke/70 md:text-sm"
         >
           <span className="relative flex size-2 shrink-0" aria-hidden>
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-guru opacity-60 motion-reduce:animate-none" />
@@ -119,7 +119,7 @@ export function HeroV2() {
           <CharReveal
             text="Markanızı bir üst"
             delay={0.12}
-            className="text-paper text-[clamp(1.8rem,8.4vw,6.8rem)]"
+            className="text-fg text-[clamp(1.8rem,8.4vw,6.8rem)]"
           />
           <ShimmerText interval={5}>
             <CharReveal
@@ -135,7 +135,7 @@ export function HeroV2() {
           initial={{ opacity: 0, y: reduce ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.95, ease: EASE }}
-          className="mt-6 max-w-xl text-[15px] leading-relaxed text-mist/75 md:mt-8 md:text-lg"
+          className="mt-6 max-w-xl text-[15px] leading-relaxed text-smoke/75 md:mt-8 md:text-lg"
         >
           {"Strateji, tasarım, içerik, performans ve işletme ürünleri: hepsi tek çatıda."}
         </motion.p>
@@ -152,7 +152,7 @@ export function HeroV2() {
               href="/iletisim"
               variant="green"
               size="lg"
-              className="shadow-[0_0_36px_-6px_rgb(16_216_108/0.55)] hover:bg-paper hover:text-ink"
+              className="shadow-[0_0_36px_-6px_rgb(16_216_108/0.4)] hover:bg-fg hover:text-page"
             >
               Teklif Al
             </GButton>
@@ -162,7 +162,7 @@ export function HeroV2() {
               href="/hizmetler"
               variant="outline"
               size="lg"
-              className="border-paper/25 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+              className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
             >
               Hizmetlerimiz
             </GButton>
@@ -174,7 +174,7 @@ export function HeroV2() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.35, ease: EASE }}
-          className="mt-10 text-[11px] font-semibold uppercase tracking-[0.34em] text-paper/35"
+          className="mt-10 text-[11px] font-semibold uppercase tracking-[0.34em] text-fg/35"
         >
           Unlock the next level
         </motion.p>

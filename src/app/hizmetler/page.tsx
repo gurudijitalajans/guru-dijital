@@ -40,7 +40,7 @@ export default function HizmetlerPage() {
       <SectionDivider from="coal" to="ink" />
 
       {/* Kısa CTA şeridi; rozet hero'ya taşındı, sağda label-roll buton */}
-      <section className="relative overflow-hidden bg-ink py-16 md:py-24">
+      <section className="relative overflow-hidden bg-band py-16 md:py-24">
         <div
           className="grain-blob -bottom-28 -right-24 h-80 w-80 opacity-20"
           aria-hidden
@@ -48,11 +48,11 @@ export default function HizmetlerPage() {
         <div className="container-g relative flex flex-col items-center gap-10 text-center md:flex-row md:justify-between md:gap-12 md:text-left">
           <Reveal>
             <div>
-              <p className="inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-paper/50">
+              <p className="inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-fg/50">
                 <span className="inline-block size-2 bg-guru" aria-hidden />
                 Sıradaki Proje
               </p>
-              <h2 className="mt-4 max-w-xl text-balance text-3xl font-extrabold tracking-[-0.03em] text-paper sm:text-4xl md:text-5xl">
+              <h2 className="mt-4 max-w-xl text-balance text-3xl font-extrabold tracking-[-0.03em] text-fg sm:text-4xl md:text-5xl">
                 <ShimmerText interval={5}>
                   Aklınızdaki işi <span className="text-guru">birlikte</span>{" "}
                   büyütelim

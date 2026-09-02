@@ -14,7 +14,7 @@ import { products } from "@/lib/data";
  */
 export function ProductsStrip() {
   return (
-    <section className="relative overflow-hidden border-y border-paper/10 bg-ink py-20 md:py-28">
+    <section className="relative overflow-hidden border-y border-fg/10 bg-band py-20 md:py-28">
       <div className="grain-blob right-[-8%] top-[-30%] h-72 w-72 opacity-20" aria-hidden />
 
       <div className="container-g">
@@ -29,7 +29,7 @@ export function ProductsStrip() {
             <GButton
               href="/urunler"
               variant="outline"
-              className="border-paper/25 text-paper hover:border-paper hover:bg-paper hover:text-ink"
+              className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
             >
               Ürünleri İncele
             </GButton>
@@ -45,7 +45,7 @@ export function ProductsStrip() {
                   <Link
                     href="/urunler"
                     data-cursor
-                    className="group flex h-full flex-col rounded-2xl border border-paper/10 bg-carbon p-6 transition-colors duration-300 hover:border-guru/40"
+                    className="group flex h-full flex-col rounded-2xl border border-fg/10 bg-card p-6 transition-colors duration-300 hover:border-guru/40"
                   >
                     <div className="flex items-center justify-between">
                       <span className="grid size-12 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
@@ -57,13 +57,13 @@ export function ProductsStrip() {
                         </span>
                       )}
                     </div>
-                    <h3 className="mt-5 text-lg font-bold tracking-tight text-paper">
+                    <h3 className="mt-5 text-lg font-bold tracking-tight text-fg">
                       {p.name}
                     </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-paper/55">
+                    <p className="mt-1.5 text-sm leading-relaxed text-fg/55">
                       {p.tagline}
                     </p>
-                    <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-paper/70 transition-colors group-hover:text-guru">
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-fg/70 transition-colors group-hover:text-guru">
                       İncele
                       <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </span>
@@ -78,7 +78,7 @@ export function ProductsStrip() {
           <GButton
             href="/urunler"
             variant="outline"
-            className="w-full border-paper/25 text-paper"
+            className="w-full border-fg/25 text-fg"
           >
             Ürünleri İncele
           </GButton>

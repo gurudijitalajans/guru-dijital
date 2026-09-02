@@ -6,12 +6,14 @@ import type { ReactNode } from "react";
 type Variant = "dark" | "green" | "outline" | "light";
 type Size = "md" | "lg";
 
+/* Tema-duyarlı varyantlar: fg/base tokenları gündüz/gece modunda otomatik
+   ters döner; ink sabit koyudur (yeşil zemin üstü metin her temada koyu). */
 const variants: Record<Variant, string> = {
-  dark: "bg-ink text-paper hover:bg-guru hover:text-ink",
-  green: "bg-guru text-ink hover:bg-ink hover:text-paper",
+  dark: "bg-fg text-page hover:bg-guru hover:text-ink",
+  green: "bg-guru text-ink hover:bg-fg hover:text-page",
   outline:
-    "border border-ink/15 bg-transparent text-ink hover:border-ink hover:bg-ink hover:text-paper",
-  light: "bg-paper text-ink hover:bg-guru hover:text-ink",
+    "border border-fg/20 bg-transparent text-fg hover:border-fg hover:bg-fg hover:text-page",
+  light: "bg-card text-fg hover:bg-guru hover:text-ink",
 };
 
 const sizes: Record<Size, string> = {

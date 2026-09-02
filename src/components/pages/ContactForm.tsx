@@ -41,18 +41,22 @@ function validate(values: Values): Errors {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
+    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/30 hover:border-paper/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-fg/30 hover:border-fg/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
-const labelCls = "block text-[13px] font-medium text-paper/80";
+const labelCls = "block text-[13px] font-medium text-fg/80";
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="text-[12px] font-medium text-red-400">
+    <p
+      id={id}
+      role="alert"
+      className="text-[12px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
+    >
       {message}
     </p>
   );
@@ -116,7 +120,7 @@ export function ContactForm() {
   }
 
   return (
-    <div className="rounded-3xl border border-paper/10 bg-carbon p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8 [color-scheme:dark]">
+    <div className="rounded-3xl border border-fg/10 bg-card p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8">
       <AnimatePresence mode="wait" initial={false}>
         {submitted ? (
           <motion.div
@@ -129,18 +133,18 @@ export function ContactForm() {
           >
             {/* Kutlama ışıltıları: dekoratif, pointer-events yok */}
             <Sparkles density={10} className="opacity-80" />
-            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_rgba(16,216,108,0.25)]">
+            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_light-dark(rgb(16_216_108/0.14),rgb(16_216_108/0.25))]">
               <CheckCircle2 className="size-8" strokeWidth={2} />
             </span>
-            <h3 className="mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">
+            <h3 className="mt-6 text-xl font-bold tracking-tight text-fg md:text-2xl">
               Talebiniz e-posta uygulamanızda açıldı
             </h3>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-paper/60">
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-fg/60">
               Gönder butonuna basmanız yeterli. E-posta uygulamanız açılmadıysa
               mesajınızı doğrudan{" "}
               <a
                 href={`mailto:${site.email}`}
-                className="font-semibold text-paper underline decoration-guru decoration-2 underline-offset-2"
+                className="font-semibold text-fg underline decoration-guru decoration-2 underline-offset-2"
               >
                 {site.email}
               </a>{" "}
@@ -151,7 +155,7 @@ export function ContactForm() {
                 type="button"
                 onClick={copyEmail}
                 aria-live="polite"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-guru/70 hover:text-guru active:scale-[0.98]"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-guru/70 hover:text-guru active:scale-[0.98]"
               >
                 {copied ? (
                   <Check className="size-4 text-guru" strokeWidth={2.4} />
@@ -168,7 +172,7 @@ export function ContactForm() {
                   setSubmitted(false);
                   setCopied(false);
                 }}
-                className="min-h-11 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-paper hover:bg-paper hover:text-ink active:scale-[0.98]"
+                className="min-h-11 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-fg hover:bg-fg hover:text-page active:scale-[0.98]"
               >
                 Yeni mesaj yaz
               </button>
@@ -184,7 +188,7 @@ export function ContactForm() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/60 px-3.5 py-1.5 text-xs font-medium leading-none text-paper/70">
+            <div className="inline-flex items-center gap-2 rounded-full border border-fg/15 bg-band/60 px-3.5 py-1.5 text-xs font-medium leading-none text-fg/70">
               <Clock className="size-3.5 shrink-0 text-guru" strokeWidth={2.2} />
               Ortalama yanıt: aynı gün
             </div>
@@ -230,7 +234,7 @@ export function ContactForm() {
 
               <div className="space-y-2">
                 <label htmlFor="cf-phone" className={labelCls}>
-                  Telefon <span className="text-paper/45">(opsiyonel)</span>
+                  Telefon <span className="text-fg/45">(opsiyonel)</span>
                 </label>
                 <input
                   id="cf-phone"
@@ -258,7 +262,7 @@ export function ContactForm() {
                   className={cn(
                     inputCls(Boolean(errors.service)),
                     "h-12",
-                    !values.service && "text-paper/35"
+                    !values.service && "text-fg/35"
                   )}
                 >
                   <option value="" disabled>
@@ -304,7 +308,7 @@ export function ContactForm() {
                   strokeWidth={2.2}
                 />
               </button>
-              <p className="text-xs leading-relaxed text-paper/50">
+              <p className="text-xs leading-relaxed text-fg/50">
                 Gönderdiğinizde mesajınız e-posta uygulamanızda hazırlanır.
               </p>
             </div>

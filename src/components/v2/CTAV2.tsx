@@ -19,7 +19,7 @@ export function CTAV2({ className }: CTAV2Props) {
 
   return (
     <section
-      className={cn("relative overflow-x-clip bg-coal py-28 md:py-40", className)}
+      className={cn("relative overflow-x-clip bg-page py-28 md:py-40", className)}
     >
       {/* üst kenarda ince yeşil çizgi */}
       <div
@@ -28,7 +28,7 @@ export function CTAV2({ className }: CTAV2Props) {
       />
 
       {/* arka plan: düşük yoğunluklu aurora + grain bloblar */}
-      <AuroraCanvas className="absolute inset-0 h-full w-full" intensity={0.4} />
+      <AuroraCanvas className="fx-aurora absolute inset-0 h-full w-full" intensity={0.4} />
       <div
         aria-hidden
         className="grain-blob left-[-12%] top-[8%] h-72 w-72 opacity-30 md:h-[26rem] md:w-[26rem]"
@@ -40,7 +40,7 @@ export function CTAV2({ className }: CTAV2Props) {
 
       <div className="container-g relative flex flex-col items-center text-center">
         <Reveal>
-          <h2 className="text-balance font-extrabold leading-[0.95] tracking-[-0.04em] text-paper text-[clamp(3rem,10vw,8rem)]">
+          <h2 className="text-balance font-extrabold leading-[0.95] tracking-[-0.04em] text-fg text-[clamp(3rem,10vw,8rem)]">
             {parts.map((p, i) => (
               <span key={i} className={p.accent ? "text-guru" : undefined}>
                 {p.t}
@@ -54,7 +54,7 @@ export function CTAV2({ className }: CTAV2Props) {
             <Link
               href="/iletisim"
               aria-label="İletişime geç: Projeni konuşalım"
-              className="group flex size-[128px] flex-col items-center justify-center gap-1 rounded-full bg-guru text-ink shadow-[0_0_80px_rgb(16_216_108/0.35)] transition-transform duration-500 ease-out hover:scale-110 md:size-[150px]"
+              className="group flex size-[128px] flex-col items-center justify-center gap-1 rounded-full bg-guru text-ink shadow-[0_0_80px_rgb(16_216_108/0.25)] transition-transform duration-500 ease-out hover:scale-110 md:size-[150px]"
             >
               <ArrowUpRight
                 className="size-8 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 md:size-9"
@@ -70,7 +70,7 @@ export function CTAV2({ className }: CTAV2Props) {
         <Reveal delay={0.25} className="mt-10 md:mt-14">
           <a
             href={`mailto:${site.email}`}
-            className="inline-block py-3 -my-3 text-sm text-paper/60 transition-colors duration-300 hover:text-guru md:text-base"
+            className="inline-block py-3 -my-3 text-sm text-fg/60 transition-colors duration-300 hover:text-guru md:text-base"
           >
             {site.email}
           </a>

@@ -74,26 +74,30 @@ type SchedulerErrors = {
 
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-ink/70 px-4 text-base text-paper outline-none transition-colors duration-200 placeholder:text-paper/35 md:text-sm",
+    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/35 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-paper/30 hover:border-paper/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      : "border-fg/30 hover:border-fg/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
   );
 
-const labelCls = "block text-[13px] font-medium text-paper/80";
+const labelCls = "block text-[13px] font-medium text-fg/80";
 
 const chipCls = (selected: boolean) =>
   cn(
     "flex min-h-11 items-center justify-center rounded-xl border transition-colors duration-200",
     selected
       ? "border-guru bg-guru text-ink"
-      : "border-paper/30 bg-ink/70 text-paper/70 hover:border-paper/45 hover:text-paper"
+      : "border-fg/30 bg-band/70 text-fg/70 hover:border-fg/45 hover:text-fg"
   );
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="text-[12px] font-medium text-red-400">
+    <p
+      id={id}
+      role="alert"
+      className="text-[12px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
+    >
       {message}
     </p>
   );
@@ -143,7 +147,7 @@ export function MeetingScheduler() {
 
   return (
     <Spotlight className="mx-auto max-w-3xl overflow-hidden rounded-3xl" size={520} opacity={0.07}>
-      <div className="rounded-3xl border border-paper/10 bg-carbon p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8 [color-scheme:dark]">
+      <div className="rounded-3xl border border-fg/10 bg-card p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8">
         {days === null ? (
           /* SSR + hydration iskeleti: tarih üretimi istemciye kalır. */
           <div
@@ -154,7 +158,7 @@ export function MeetingScheduler() {
             <span className="flex size-12 items-center justify-center rounded-2xl bg-guru/12 text-guru">
               <CalendarClock className="size-6" strokeWidth={2} />
             </span>
-            <p className="text-sm font-medium text-paper/60">Günler yükleniyor</p>
+            <p className="text-sm font-medium text-fg/60">Günler yükleniyor</p>
           </div>
         ) : (
           <AnimatePresence mode="wait" initial={false}>
@@ -169,19 +173,19 @@ export function MeetingScheduler() {
               >
                 {/* Kutlama ışıltıları: dekoratif, pointer-events yok */}
                 <Sparkles density={10} className="opacity-80" />
-                <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_rgba(16,216,108,0.25)]">
+                <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_light-dark(rgb(16_216_108/0.14),rgb(16_216_108/0.25))]">
                   <CheckCircle2 className="size-8" strokeWidth={2} />
                 </span>
-                <h3 className="mt-6 text-xl font-bold tracking-tight text-paper md:text-2xl">
+                <h3 className="mt-6 text-xl font-bold tracking-tight text-fg md:text-2xl">
                   Talebiniz e-posta uygulamanızda hazırlandı
                 </h3>
                 {selectedDay && time && (
-                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-paper/15 bg-ink/60 px-4 py-1.5 text-sm font-semibold text-paper">
+                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-fg/15 bg-band/60 px-4 py-1.5 text-sm font-semibold text-fg">
                     <CalendarClock className="size-4 shrink-0 text-guru" strokeWidth={2.2} />
                     {selectedDay.full} {time}
                   </p>
                 )}
-                <p className="mt-3 max-w-sm text-sm leading-relaxed text-paper/60">
+                <p className="mt-3 max-w-sm text-sm leading-relaxed text-fg/60">
                   Gönder butonuna basmanız yeterli. Aynı gün onay dönüşü
                   yapıyoruz.
                 </p>
@@ -191,7 +195,7 @@ export function MeetingScheduler() {
                     setTime(null);
                     setSubmitted(false);
                   }}
-                  className="mt-7 min-h-11 rounded-full border border-paper/25 px-6 py-3 text-sm font-semibold text-paper transition-all duration-300 hover:border-paper hover:bg-paper hover:text-ink active:scale-[0.98]"
+                  className="mt-7 min-h-11 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-fg hover:bg-fg hover:text-page active:scale-[0.98]"
                 >
                   Farklı saat seç
                 </button>
@@ -322,7 +326,7 @@ export function MeetingScheduler() {
 
                   <div className="space-y-2 sm:col-span-2">
                     <label htmlFor="ms-note" className={labelCls}>
-                      Kısa not <span className="text-paper/45">(opsiyonel)</span>
+                      Kısa not <span className="text-fg/45">(opsiyonel)</span>
                     </label>
                     <textarea
                       id="ms-note"
@@ -347,7 +351,7 @@ export function MeetingScheduler() {
                       strokeWidth={2.2}
                     />
                   </button>
-                  <p className="text-xs leading-relaxed text-paper/50">
+                  <p className="text-xs leading-relaxed text-fg/50">
                     Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
                   </p>
                 </div>

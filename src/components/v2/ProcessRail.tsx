@@ -46,7 +46,7 @@ export function ProcessRail({ className }: ProcessRailProps) {
   const isLg = useIsLg();
 
   return (
-    <section id="surec" className={cn("relative bg-ink", className)}>
+    <section id="surec" className={cn("relative bg-band", className)}>
       {!staticOnly && isLg && <DesktopRail className="hidden lg:block" />}
       <VerticalSteps className={staticOnly ? undefined : "lg:hidden"} />
     </section>
@@ -80,15 +80,15 @@ function DesktopRail({ className }: { className?: string }) {
         {/* Üst şerit: eyebrow + kaydırma ipucu */}
         <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between px-10 pt-9 md:px-16">
           <div>
-            <p className="inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+            <p className="inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
               <span className="inline-block size-2 bg-guru" aria-hidden />
               Nasıl Çalışıyoruz
             </p>
-            <p className="mt-2 text-lg font-extrabold tracking-[-0.04em] text-paper">
+            <p className="mt-2 text-lg font-extrabold tracking-[-0.04em] text-fg">
               Dört adımda <span className="text-guru">sonuç</span>
             </p>
           </div>
-          <p className="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-[0.16em] text-paper/40">
+          <p className="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-[0.16em] text-fg/40">
             kaydırmaya devam
             <MoveRight
               className="size-4 animate-pulse text-guru motion-reduce:animate-none"
@@ -112,7 +112,7 @@ function DesktopRail({ className }: { className?: string }) {
 
         {/* Alt ilerleme çizgisi */}
         <div className="absolute inset-x-0 bottom-0 z-10 px-10 pb-9 md:px-16">
-          <div className="h-px w-full overflow-hidden bg-paper/10">
+          <div className="h-px w-full overflow-hidden bg-fg/10">
             <motion.div
               className="h-full origin-left bg-guru"
               style={{ scaleX: scrollYProgress }}
@@ -153,7 +153,7 @@ function RailPanel({
   const fill = useTransform(progress, input, output);
 
   return (
-    <div className="relative flex h-full w-screen shrink-0 flex-col justify-center border-l border-paper/10 px-12 first:border-l-0 md:px-20">
+    <div className="relative flex h-full w-screen shrink-0 flex-col justify-center border-l border-fg/10 px-12 first:border-l-0 md:px-20">
       <div className="relative w-fit leading-none" aria-hidden>
         <span className="headline-outline-light block text-[8rem] font-extrabold tracking-[-0.04em] xl:text-[11rem]">
           {step.no}
@@ -162,16 +162,16 @@ function RailPanel({
           className="absolute inset-0 block text-[8rem] font-extrabold tracking-[-0.04em] text-guru xl:text-[11rem]"
           style={{
             opacity: fill,
-            textShadow: "0 0 48px rgb(16 216 108 / 0.45)",
+            textShadow: "0 0 48px rgb(16 216 108 / 0.3)",
           }}
         >
           {step.no}
         </motion.span>
       </div>
-      <h3 className="mt-7 max-w-xl text-3xl font-extrabold tracking-[-0.04em] text-paper md:text-5xl">
+      <h3 className="mt-7 max-w-xl text-3xl font-extrabold tracking-[-0.04em] text-fg md:text-5xl">
         {step.title}
       </h3>
-      <p className="mt-5 max-w-md text-base leading-relaxed text-paper/60 md:text-lg">
+      <p className="mt-5 max-w-md text-base leading-relaxed text-fg/60 md:text-lg">
         {step.desc}
       </p>
     </div>
@@ -194,13 +194,13 @@ function VerticalSteps({ className }: { className?: string }) {
 
       <div className="container-g relative">
         <Reveal y={16}>
-          <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+          <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
             <span className="inline-block size-2 bg-guru" aria-hidden />
             Nasıl Çalışıyoruz
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h2 className="text-3xl font-extrabold leading-[1.05] tracking-[-0.04em] text-paper sm:text-4xl">
+          <h2 className="text-3xl font-extrabold leading-[1.05] tracking-[-0.04em] text-fg sm:text-4xl">
             Dört adımda <span className="text-guru">sonuç</span>
           </h2>
         </Reveal>
@@ -208,17 +208,17 @@ function VerticalSteps({ className }: { className?: string }) {
         <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2" stagger={0.09}>
           {processSteps.map((step) => (
             <StaggerItem key={step.no} className="h-full">
-              <article className="h-full rounded-2xl border border-paper/10 bg-carbon/50 p-6">
+              <article className="h-full rounded-2xl border border-fg/10 bg-card/50 p-6">
                 <span
                   className="block text-4xl font-extrabold tracking-[-0.04em] text-guru"
                   aria-hidden
                 >
                   {step.no}
                 </span>
-                <h3 className="mt-4 text-xl font-bold tracking-[-0.02em] text-paper">
+                <h3 className="mt-4 text-xl font-bold tracking-[-0.02em] text-fg">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-paper/60">
+                <p className="mt-2 text-sm leading-relaxed text-fg/60">
                   {step.desc}
                 </p>
               </article>

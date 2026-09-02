@@ -87,7 +87,7 @@ export default function HakkimizdaPage() {
             src="/work/unlock-cover.webp"
             alt="Guru Dijital marka kapak görseli"
             sizes="380px"
-            className="aspect-[1600/1187] w-[380px] rounded-2xl border border-paper/10"
+            className="aspect-[1600/1187] w-[380px] rounded-2xl border border-fg/10"
           />
         }
       >
@@ -100,7 +100,7 @@ export default function HakkimizdaPage() {
         <div className="container-g space-y-9 md:space-y-12">
           {manifesto.map((line, i) => (
             <Reveal key={line.accent} delay={i * 0.06} className={line.indent}>
-              <p className="max-w-4xl text-2xl font-semibold leading-[1.25] tracking-tight text-paper sm:text-3xl md:text-4xl lg:text-5xl">
+              <p className="max-w-4xl text-2xl font-semibold leading-[1.25] tracking-tight text-fg sm:text-3xl md:text-4xl lg:text-5xl">
                 {line.pre}
                 <span className="text-guru">{line.accent}</span>
                 {line.post}
@@ -134,10 +134,10 @@ export default function HakkimizdaPage() {
                         <card.icon className="size-5" strokeWidth={2} />
                       </span>
                       <div>
-                        <h3 className="text-lg font-bold tracking-tight text-paper md:text-xl">
+                        <h3 className="text-lg font-bold tracking-tight text-fg md:text-xl">
                           {card.title}
                         </h3>
-                        <p className="mt-1.5 text-sm leading-relaxed text-paper/55">
+                        <p className="mt-1.5 text-sm leading-relaxed text-fg/55">
                           {card.desc}
                         </p>
                       </div>
@@ -153,9 +153,9 @@ export default function HakkimizdaPage() {
       <SectionDivider from="coal" to="ink" />
 
       {/* Sayılarla Guru: tek sıra kompakt bant */}
-      <section className="bg-ink py-14 text-paper md:py-16">
+      <section className="bg-band py-14 text-fg md:py-16">
         <div className="container-g">
-          <p className="mb-10 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-paper/60">
+          <p className="mb-10 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
             <span className="inline-block size-2 bg-guru" aria-hidden />
             Sayılarla Guru
           </p>
@@ -166,13 +166,13 @@ export default function HakkimizdaPage() {
                   className={
                     i === 0
                       ? "px-2 text-center"
-                      : "px-2 text-center lg:border-l lg:border-paper/10"
+                      : "px-2 text-center lg:border-l lg:border-fg/10"
                   }
                 >
                   <p className="text-4xl font-extrabold tracking-tight md:text-5xl">
                     <RollingCounter value={s.value} suffix={s.suffix} />
                   </p>
-                  <p className="mt-2 text-sm font-medium text-paper/60">{s.label}</p>
+                  <p className="mt-2 text-sm font-medium text-fg/60">{s.label}</p>
                 </div>
               </StaggerItem>
             ))}
@@ -189,13 +189,13 @@ export default function HakkimizdaPage() {
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-x-14 gap-y-8 sm:grid-cols-2 md:mt-16">
             {values.map((v) => (
               <StaggerItem key={v.title}>
-                <div className="flex gap-4 border-t border-paper/10 pt-6">
+                <div className="flex gap-4 border-t border-fg/10 pt-6">
                   <span className="mt-1.5 inline-block size-2 shrink-0 bg-guru" aria-hidden />
                   <div>
-                    <h3 className="text-base font-bold tracking-tight text-paper">
+                    <h3 className="text-base font-bold tracking-tight text-fg">
                       {v.title}
                     </h3>
-                    <p className="mt-1 text-sm leading-relaxed text-paper/55">{v.desc}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-fg/55">{v.desc}</p>
                   </div>
                 </div>
               </StaggerItem>

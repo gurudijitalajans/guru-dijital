@@ -72,7 +72,7 @@ function FrameStrip({ frames }: { frames: Frame[] }) {
       {frames.map((f) => (
         <div
           key={f.src}
-          className="relative h-40 shrink-0 overflow-hidden rounded-xl border border-paper/10 bg-carbon md:h-56"
+          className="relative h-40 shrink-0 overflow-hidden rounded-xl border border-fg/10 bg-card md:h-56"
           style={{ aspectRatio: `${f.w} / ${f.h}` }}
         >
           <Image
@@ -105,9 +105,14 @@ function OutlineTicker({ playState }: { playState: "running" | "paused" }) {
         {[0, 1].map((copy) => (
           <div key={copy} className="flex shrink-0 items-center">
             {Array.from({ length: 3 }, (_, i) => (
+              /* Stroke bilerek SABİT açık (paper): bu yazı mix-blend-difference
+                 katmanında yaşar. headline-outline-light gündüzde koyu fg stroke
+                 üretir ve koyu kaynakla difference, zeminin kendisine eşittir
+                 (yazı görünmez olur). Açık stroke her iki temada da tersleme
+                 yapar; gece görünümü fg == paper olduğundan birebir aynıdır. */
               <span
                 key={i}
-                className="headline-outline-light whitespace-nowrap px-8 text-[15vw] font-extrabold uppercase leading-none tracking-tight md:text-[10vw]"
+                className="whitespace-nowrap px-8 text-[15vw] font-extrabold uppercase leading-none tracking-tight text-transparent [-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--color-paper)_34%,transparent)] md:text-[10vw]"
               >
                 Showreel <span className="text-guru">✦</span> 2025
               </span>
@@ -167,7 +172,7 @@ export function Showreel() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-ink py-16 md:py-24"
+      className="relative overflow-hidden bg-band py-16 md:py-24"
       aria-label="Showreel: İşlerimizden kareler"
     >
       <h2 className="sr-only">Showreel: İşlerimizden kareler</h2>
@@ -185,7 +190,7 @@ export function Showreel() {
             {STATIC_ROW.map((f) => (
               <div
                 key={f.src}
-                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-paper/10 bg-carbon"
+                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-fg/10 bg-card"
               >
                 <Image
                   src={f.src}

@@ -18,12 +18,12 @@ export default function Home() {
       <HeroV2 />
 
       {/* scroll hızına tepkili hizmet marquee'si */}
-      <div className="border-y border-paper/10 bg-ink py-5" aria-hidden>
+      <div className="border-y border-fg/10 bg-band py-5" aria-hidden>
         <VelocityMarquee baseVelocity={0.7}>
           {services.map((s) => (
             <span
               key={s.slug}
-              className="mx-6 inline-flex items-center gap-6 text-sm font-semibold uppercase tracking-[0.18em] text-paper/70"
+              className="mx-6 inline-flex items-center gap-6 text-sm font-semibold uppercase tracking-[0.18em] text-fg/70"
             >
               {s.title}
               <span className="text-guru">✦</span>

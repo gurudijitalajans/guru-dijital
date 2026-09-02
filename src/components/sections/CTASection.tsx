@@ -42,7 +42,7 @@ export function CTASection({
               </GButton>
             </Magnetic>
             <Magnetic>
-              <GButton href="/hizmetler" size="lg" variant="outline" className="border-ink/25">
+              <GButton href="/hizmetler" size="lg" variant="outline" className="border-ink/25 text-ink">
                 Hizmetleri İncele
               </GButton>
             </Magnetic>

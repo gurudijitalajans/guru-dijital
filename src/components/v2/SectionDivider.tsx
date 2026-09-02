@@ -32,9 +32,9 @@ export type SectionDividerProps = {
 
 /** Tema token hex'leri (globals.css ile senkron) */
 const TONE_HEX: Record<SectionTone, string> = {
-  coal: "#0e100f",
-  ink: "#0a0b0a",
-  carbon: "#181b19",
+  coal: "var(--color-page)",
+  ink: "var(--color-band)",
+  carbon: "var(--color-card)",
 };
 
 // İki morph durumu — komut yapıları birebir aynı (M L C C L Z),
@@ -99,7 +99,7 @@ export function SectionDivider({
         <motion.path
           d={reduced ? LINE_A : lineD}
           fill="none"
-          stroke="#10d86c"
+          stroke="var(--color-guru)"
           strokeOpacity={0.14}
           strokeWidth={5}
           vectorEffect="non-scaling-stroke"
@@ -107,7 +107,7 @@ export function SectionDivider({
         <motion.path
           d={reduced ? LINE_A : lineD}
           fill="none"
-          stroke="#10d86c"
+          stroke="var(--color-guru)"
           strokeOpacity={0.55}
           strokeWidth={1.5}
           vectorEffect="non-scaling-stroke"
