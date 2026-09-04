@@ -68,7 +68,8 @@ export function PageHeroV2({
       />
 
       <div className="container-g relative grid items-center gap-10 lg:grid-cols-[1fr_auto]">
-        <div>
+        {/* min-w-0: uzun tek kelimeler grid hücresini viewport dışına genişletmesin */}
+        <div className="min-w-0">
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: reduce ? 0 : 14 }}
@@ -84,8 +85,9 @@ export function PageHeroV2({
         </motion.div>
 
         {/* Başlık — kelime bazlı maske reveal (mount'ta) */}
+        {/* overflow-wrap:anywhere: dar ekranda sığmayan tek kelime kırpılmak yerine bölünür */}
         <h1
-          className="max-w-4xl text-5xl font-extrabold leading-[1.04] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl"
+          className="max-w-4xl text-[2.75rem] font-extrabold leading-[1.04] tracking-[-0.04em] text-fg [overflow-wrap:anywhere] sm:text-6xl lg:text-7xl"
           aria-label={title.replaceAll("*", "")}
         >
           <span className="inline-flex flex-wrap gap-x-[0.26em]" aria-hidden>

@@ -4,7 +4,7 @@ import { Mail, ArrowUpRight } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
 import { FooterWordmark } from "@/components/v2/FooterWordmark";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { navLinks, services, site } from "@/lib/data";
+import { navLinks, products, services, site } from "@/lib/data";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -30,8 +30,8 @@ export default function Footer() {
       </div>
 
       {/* Columns */}
-      <div className="container-g grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr_1.2fr] md:py-16">
-        <div>
+      <div className="container-g grid gap-12 py-14 sm:grid-cols-2 md:py-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+        <div className="sm:col-span-2 lg:col-span-1">
           <BrandLogo className="h-10 w-auto" />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-fg/60">
             Stratejik iletişimden performans pazarlamasına; markanızı dijitalde
@@ -69,6 +69,24 @@ export default function Footer() {
                   className="inline-block py-1.5 -my-1 text-sm text-fg/70 transition-colors hover:text-guru"
                 >
                   {s.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav aria-label="Ürünler">
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-fg/40">
+            Ürünler
+          </h3>
+          <ul className="space-y-2.5">
+            {products.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/urunler/${p.slug}`}
+                  className="inline-block py-1.5 -my-1 text-sm text-fg/70 transition-colors hover:text-guru"
+                >
+                  {p.name}
                 </Link>
               </li>
             ))}

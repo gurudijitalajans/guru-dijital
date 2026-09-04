@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { services, site } from "@/lib/data";
+import { products, services, site } from "@/lib/data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -19,5 +19,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...serviceRoutes];
+  const productRoutes: MetadataRoute.Sitemap = products.map((p) => ({
+    url: `${site.url}/urunler/${p.slug}`,
+    lastModified,
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...productRoutes];
 }

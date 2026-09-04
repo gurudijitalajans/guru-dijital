@@ -431,8 +431,9 @@ export type SoftwareProduct = {
   desc: string;
   features: string[];
   icon: LucideIcon;
-  /* Detaylı tanıtım içeriği müşteriden gelene dek kartlar "Yakında" rozetiyle yayında */
-  comingSoon?: boolean;
+  /* Ürün mockup görseli (public/products) */
+  image: string;
+  imageAlt: string;
 };
 
 export const products: SoftwareProduct[] = [
@@ -447,7 +448,8 @@ export const products: SoftwareProduct[] = [
       "Talepleri ekibe yönlendirme",
     ],
     icon: Bot,
-    comingSoon: true,
+    image: "/products/guru-chatbot.svg",
+    imageAlt: "Guru Chatbot yönetim paneli: konuşma listesi, aktif sohbet ve yanıt istatistikleri",
   },
   {
     slug: "guru-crm",
@@ -460,7 +462,8 @@ export const products: SoftwareProduct[] = [
       "Raporlama ve hatırlatmalar",
     ],
     icon: Users,
-    comingSoon: true,
+    image: "/products/guru-crm.svg",
+    imageAlt: "Guru CRM satış hattı: fırsat kartları, KPI şeridi ve gelir grafiği",
   },
   {
     slug: "guru-operation",
@@ -473,7 +476,8 @@ export const products: SoftwareProduct[] = [
       "Süreç performans takibi",
     ],
     icon: Workflow,
-    comingSoon: true,
+    image: "/products/guru-operation.svg",
+    imageAlt: "Guru Operation görev panosu, ekip kapasitesi ve haftalık zaman çizelgesi",
   },
   {
     slug: "guru-business",
@@ -486,7 +490,8 @@ export const products: SoftwareProduct[] = [
       "Öncelikli destek",
     ],
     icon: Briefcase,
-    comingSoon: true,
+    image: "/products/guru-business.svg",
+    imageAlt: "Guru Business genel bakış panosu: KPI'lar, modüller ve gelir dağılımı",
   },
 ];
 

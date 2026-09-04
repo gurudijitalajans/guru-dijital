@@ -10,9 +10,9 @@ import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { SectionDivider } from "@/components/v2/SectionDivider";
 
 export const metadata: Metadata = {
-  title: "Ürünler",
+  title: "Ürünler | Guru Chatbot, CRM, Operation ve Business",
   description:
-    "Guru Chatbot, Guru CRM, Guru Operation ve Guru Business; işletmenizi büyüten yazılım ürünlerimiz çok yakında.",
+    "Guru Chatbot, Guru CRM, Guru Operation ve Guru Business: işletmenizi büyüten yazılım ürünlerimizi keşfedin, demo talep edin.",
 };
 
 /* PageHeroV2 eyebrow'u yalnızca JSX içinde render eder; Scramble SSR'da düz

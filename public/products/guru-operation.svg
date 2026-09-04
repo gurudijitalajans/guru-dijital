@@ -1,0 +1,425 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" width="1600" height="1100" role="img" aria-labelledby="op-title op-desc" font-family="Poppins, Inter, system-ui, sans-serif">
+  <title id="op-title">Guru Operation: görev panosu, ekip kapasitesi ve haftalık zaman çizelgesi</title>
+  <desc id="op-desc">Koyu temalı Guru Operation uygulama ekranı. Solda Yapılacak, Devam, Kontrol ve Tamam sütunlarından oluşan öncelik rozetli görev panosu; sağ üstte beş kişilik ekibin kapasite çubukları; sağ altta bugün çizgisi bulunan haftalık zaman çizelgesi.</desc>
+  <defs>
+    <clipPath id="op-win"><rect x="30" y="30" width="1540" height="1040" rx="24"/></clipPath>
+    <filter id="op-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="40"/></filter>
+    <filter id="op-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter>
+    <linearGradient id="op-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#131615"/><stop offset="1" stop-color="#0e100f"/></linearGradient>
+    <symbol id="op-ic-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
+    <symbol id="op-ic-check" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></symbol>
+    <symbol id="op-ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.8 0 5 2.2 5 5"/></symbol>
+    <symbol id="op-ic-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="op-ic-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="6" rx="2"/><rect x="14" y="15" width="7" height="6" rx="2"/><path d="M6.5 9v4a2 2 0 0 0 2 2h9"/></symbol>
+    <symbol id="op-ic-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="op-ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+  </defs>
+
+  <!-- Yeşil dış parıltı -->
+  <rect x="80" y="90" width="1440" height="940" rx="60" fill="#10d86c" opacity="0.22" filter="url(#op-glow)"/>
+
+  <!-- Uygulama penceresi -->
+  <rect x="30" y="30" width="1540" height="1040" rx="24" fill="url(#op-bg)" filter="url(#op-shadow)"/>
+
+  <g clip-path="url(#op-win)">
+    <!-- Tarayıcı üst çubuğu -->
+    <rect x="30" y="30" width="1540" height="64" fill="#141716"/>
+    <line x1="30" y1="94.5" x2="1570" y2="94.5" stroke="#262a27"/>
+    <circle cx="62" cy="62" r="7" fill="#ff5f57"/>
+    <circle cx="86" cy="62" r="7" fill="#febc2e"/>
+    <circle cx="110" cy="62" r="7" fill="#28c840"/>
+    <rect x="150" y="45" width="640" height="34" rx="17" fill="#181b19" stroke="#262a27"/>
+    <rect x="172" y="59" width="11" height="9" rx="2" fill="#5b625d"/>
+    <path d="M174.5 59v-3a3 3 0 0 1 6 0v3" fill="none" stroke="#5b625d" stroke-width="1.6"/>
+    <text x="194" y="68" font-size="18" fill="#9aa19c">app.gurudijital.com.tr/operation</text>
+    <path d="M1481 71h18c-2-2.5-2.5-4.5-2.5-7.5v-2.5a6.5 6.5 0 0 0-13 0v2.5c0 3-.5 5-2.5 7.5z" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M1487 74a3 3 0 0 0 6 0" fill="none" stroke="#9aa19c" stroke-width="1.8"/>
+    <circle cx="1497" cy="55" r="4.5" fill="#ff6b6b"/>
+    <circle cx="1536" cy="62" r="16" fill="#10d86c"/>
+    <text x="1536" y="68" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+
+    <!-- Sol menü -->
+    <rect x="30" y="95" width="240" height="975" fill="#121413"/>
+    <line x1="270.5" y1="95" x2="270.5" y2="1070" stroke="#222724"/>
+    <text x="58" y="146" font-size="32" font-weight="700" fill="#f5f6f5" letter-spacing="-0.5">guru</text>
+    <circle cx="136" cy="140" r="5" fill="#10d86c"/>
+    <text x="58" y="174" font-size="18" font-weight="600" fill="#10d86c" letter-spacing="2">OPERATION</text>
+
+    <rect x="30" y="218" width="4" height="28" rx="2" fill="#10d86c"/>
+    <rect x="46" y="210" width="208" height="44" rx="10" fill="#10d86c" fill-opacity="0.14"/>
+    <use href="#op-ic-grid" x="58" y="221" width="22" height="22" fill="none" stroke="#10d86c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="239" font-size="18" font-weight="600" fill="#10d86c">Pano</text>
+
+    <use href="#op-ic-check" x="58" y="269" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="287" font-size="18" fill="#c9cfcb">Görevler</text>
+    <rect x="212" y="270" width="42" height="24" rx="12" fill="#262a27"/>
+    <text x="233" y="288" font-size="18" font-weight="600" fill="#f5f6f5" text-anchor="middle">12</text>
+
+    <use href="#op-ic-users" x="58" y="317" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="335" font-size="18" fill="#c9cfcb">Ekip</text>
+
+    <use href="#op-ic-cal" x="58" y="365" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="383" font-size="18" fill="#c9cfcb">Zaman Çizelgesi</text>
+
+    <use href="#op-ic-flow" x="58" y="413" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="431" font-size="18" fill="#c9cfcb">Süreçler</text>
+
+    <use href="#op-ic-chart" x="58" y="461" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="479" font-size="18" fill="#c9cfcb">Raporlar</text>
+
+    <use href="#op-ic-gear" x="58" y="509" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="527" font-size="18" fill="#c9cfcb">Ayarlar</text>
+
+    <!-- Sol menü alt: süreç sağlığı kartı -->
+    <rect x="46" y="860" width="208" height="96" rx="12" fill="#181b19" stroke="#222724"/>
+    <text x="62" y="890" font-size="18" fill="#5b625d">Süreç sağlığı</text>
+    <text x="62" y="928" font-size="26" font-weight="700" fill="#10d86c">%96</text>
+    <text x="130" y="928" font-size="18" fill="#c9cfcb">zamanında</text>
+
+    <line x1="46" y1="982" x2="254" y2="982" stroke="#222724"/>
+    <circle cx="76" cy="1024" r="18" fill="#10d86c"/>
+    <text x="76" y="1030" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+    <text x="106" y="1020" font-size="18" font-weight="600" fill="#f5f6f5">Elif Koç</text>
+    <text x="106" y="1044" font-size="18" fill="#5b625d">Yönetici</text>
+
+    <!-- İçerik başlığı -->
+    <text x="300" y="152" font-size="30" font-weight="700" fill="#f5f6f5">Operasyon Panosu</text>
+    <text x="300" y="184" font-size="18" fill="#5b625d">4 Eylül 2026, Cuma · 12 açık görev · 3 görev kontrol bekliyor</text>
+    <rect x="1248" y="126" width="128" height="44" rx="12" fill="none" stroke="#2b302d"/>
+    <text x="1312" y="155" font-size="18" font-weight="500" fill="#f5f6f5" text-anchor="middle">Filtrele</text>
+    <rect x="1392" y="126" width="148" height="44" rx="12" fill="#10d86c"/>
+    <text x="1466" y="155" font-size="18" font-weight="600" fill="#0e100f" text-anchor="middle">+ Yeni Görev</text>
+
+    <!-- ================= GÖREV PANOSU ================= -->
+    <rect x="300" y="206" width="792" height="834" rx="16" fill="#181b19" stroke="#222724"/>
+
+    <!-- Sütun başlıkları -->
+    <circle cx="324" cy="240" r="5" fill="#9aa19c"/>
+    <text x="338" y="246" font-size="18" font-weight="600" fill="#f5f6f5">Yapılacak</text>
+    <rect x="464" y="228" width="30" height="24" rx="12" fill="#262a27"/>
+    <text x="479" y="246" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">5</text>
+
+    <circle cx="518" cy="240" r="5" fill="#4da3ff"/>
+    <text x="532" y="246" font-size="18" font-weight="600" fill="#f5f6f5">Devam</text>
+    <rect x="658" y="228" width="30" height="24" rx="12" fill="#262a27"/>
+    <text x="673" y="246" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">4</text>
+
+    <circle cx="712" cy="240" r="5" fill="#ffb547"/>
+    <text x="726" y="246" font-size="18" font-weight="600" fill="#f5f6f5">Kontrol</text>
+    <rect x="852" y="228" width="30" height="24" rx="12" fill="#262a27"/>
+    <text x="867" y="246" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">3</text>
+
+    <circle cx="906" cy="240" r="5" fill="#10d86c"/>
+    <text x="920" y="246" font-size="18" font-weight="600" fill="#f5f6f5">Tamam</text>
+    <rect x="1046" y="228" width="30" height="24" rx="12" fill="#262a27"/>
+    <text x="1061" y="246" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">6</text>
+
+    <!-- Sütun: Yapılacak -->
+    <g transform="translate(316 270)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="86" height="26" rx="13" fill="#ff6b6b" fill-opacity="0.16"/>
+      <text x="55" y="31" font-size="18" font-weight="600" fill="#ff6b6b" text-anchor="middle">Yüksek</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">8 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Eylül üretim</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">planı onayı</text>
+      <circle cx="29" cy="109" r="17" fill="#10d86c"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">AK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-148</text>
+    </g>
+    <g transform="translate(316 414)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="62" height="26" rx="13" fill="#ffb547" fill-opacity="0.16"/>
+      <text x="43" y="31" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Orta</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">11 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Tedarikçi</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">sözleşmesi</text>
+      <circle cx="29" cy="109" r="17" fill="#4da3ff"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">MD</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-151</text>
+    </g>
+    <g transform="translate(316 558)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="78" height="26" rx="13" fill="#4da3ff" fill-opacity="0.16"/>
+      <text x="51" y="31" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">Düşük</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">15 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Depo sayım</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">formu</text>
+      <circle cx="29" cy="109" r="17" fill="#ffb547"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">SY</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-153</text>
+    </g>
+    <g transform="translate(316 702)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="62" height="26" rx="13" fill="#ffb547" fill-opacity="0.16"/>
+      <text x="43" y="31" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Orta</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">12 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Kargo SLA</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">raporu</text>
+      <circle cx="29" cy="109" r="17" fill="#c084fc"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">BT</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-155</text>
+    </g>
+    <g transform="translate(316 846)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="78" height="26" rx="13" fill="#4da3ff" fill-opacity="0.16"/>
+      <text x="51" y="31" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">Düşük</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">18 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Yeni personel</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">oryantasyonu</text>
+      <circle cx="29" cy="109" r="17" fill="#ff6b6b"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-156</text>
+    </g>
+    <rect x="316" y="992" width="178" height="36" rx="10" fill="none" stroke="#2b302d" stroke-dasharray="6 5"/>
+    <text x="405" y="1016" font-size="18" fill="#5b625d" text-anchor="middle">+ Görev ekle</text>
+
+    <!-- Sütun: Devam -->
+    <g transform="translate(510 270)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="86" height="26" rx="13" fill="#ff6b6b" fill-opacity="0.16"/>
+      <text x="55" y="31" font-size="18" font-weight="600" fill="#ff6b6b" text-anchor="middle">Yüksek</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">5 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Fatura</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">entegrasyonu</text>
+      <circle cx="29" cy="109" r="17" fill="#4da3ff"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">MD</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-139</text>
+    </g>
+    <g transform="translate(510 414)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="62" height="26" rx="13" fill="#ffb547" fill-opacity="0.16"/>
+      <text x="43" y="31" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Orta</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">9 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Müşteri</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">onboarding akışı</text>
+      <circle cx="29" cy="109" r="17" fill="#ff6b6b"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-142</text>
+    </g>
+    <g transform="translate(510 558)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="62" height="26" rx="13" fill="#ffb547" fill-opacity="0.16"/>
+      <text x="43" y="31" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Orta</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">10 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Sipariş takip</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">ekranı</text>
+      <circle cx="29" cy="109" r="17" fill="#ffb547"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">SY</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-144</text>
+    </g>
+    <g transform="translate(510 702)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="78" height="26" rx="13" fill="#4da3ff" fill-opacity="0.16"/>
+      <text x="51" y="31" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">Düşük</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">6 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Haftalık</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">kapasite planı</text>
+      <circle cx="29" cy="109" r="17" fill="#10d86c"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">AK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-146</text>
+    </g>
+
+    <!-- Sütun: Kontrol -->
+    <g transform="translate(704 270)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="86" height="26" rx="13" fill="#ff6b6b" fill-opacity="0.16"/>
+      <text x="55" y="31" font-size="18" font-weight="600" fill="#ff6b6b" text-anchor="middle">Yüksek</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">4 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Stok uyarı</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">eşikleri</text>
+      <circle cx="29" cy="109" r="17" fill="#c084fc"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">BT</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-131</text>
+    </g>
+    <g transform="translate(704 414)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="62" height="26" rx="13" fill="#ffb547" fill-opacity="0.16"/>
+      <text x="43" y="31" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Orta</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">5 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Servis randevu</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">şablonu</text>
+      <circle cx="29" cy="109" r="17" fill="#ff6b6b"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-135</text>
+    </g>
+    <g transform="translate(704 558)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="78" height="26" rx="13" fill="#4da3ff" fill-opacity="0.16"/>
+      <text x="51" y="31" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">Düşük</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">7 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#f5f6f5">Teslimat rota</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#f5f6f5">planı</text>
+      <circle cx="29" cy="109" r="17" fill="#ffb547"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">SY</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-137</text>
+    </g>
+
+    <!-- Sütun: Tamam -->
+    <g transform="translate(898 270)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="60" height="26" rx="13" fill="#10d86c" fill-opacity="0.16"/>
+      <text x="42" y="31" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Bitti</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">1 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#c9cfcb">Ağustos kapanış</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#c9cfcb">raporu</text>
+      <circle cx="29" cy="109" r="17" fill="#10d86c"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">AK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-120</text>
+    </g>
+    <g transform="translate(898 414)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="60" height="26" rx="13" fill="#10d86c" fill-opacity="0.16"/>
+      <text x="42" y="31" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Bitti</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">29 Ağu</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#c9cfcb">Bayi fiyat</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#c9cfcb">listesi</text>
+      <circle cx="29" cy="109" r="17" fill="#4da3ff"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">MD</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-124</text>
+    </g>
+    <g transform="translate(898 558)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="60" height="26" rx="13" fill="#10d86c" fill-opacity="0.16"/>
+      <text x="42" y="31" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Bitti</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">2 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#c9cfcb">CRM</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#c9cfcb">senkronizasyonu</text>
+      <circle cx="29" cy="109" r="17" fill="#c084fc"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">BT</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-127</text>
+    </g>
+    <g transform="translate(898 702)">
+      <rect width="178" height="132" rx="12" fill="#1e2220" stroke="#2b302d"/>
+      <rect x="12" y="12" width="60" height="26" rx="13" fill="#10d86c" fill-opacity="0.16"/>
+      <text x="42" y="31" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Bitti</text>
+      <text x="166" y="31" font-size="18" fill="#5b625d" text-anchor="end">3 Eyl</text>
+      <text x="12" y="62" font-size="18" font-weight="500" fill="#c9cfcb">Kalite kontrol</text>
+      <text x="12" y="85" font-size="18" font-weight="500" fill="#c9cfcb">listesi</text>
+      <circle cx="29" cy="109" r="17" fill="#ff6b6b"/>
+      <text x="29" y="115" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+      <text x="54" y="115" font-size="18" fill="#5b625d">OP-129</text>
+    </g>
+    <text x="910" y="876" font-size="18" font-weight="600" fill="#10d86c">+2 görev daha</text>
+
+    <!-- ================= EKİP KAPASİTESİ ================= -->
+    <rect x="1108" y="206" width="432" height="350" rx="16" fill="#181b19" stroke="#222724"/>
+    <text x="1124" y="242" font-size="22" font-weight="700" fill="#f5f6f5">Ekip Kapasitesi</text>
+    <rect x="1436" y="222" width="88" height="28" rx="14" fill="#10d86c" fill-opacity="0.14"/>
+    <text x="1480" y="242" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Ort. %73</text>
+    <text x="1124" y="270" font-size="18" fill="#5b625d">Bu hafta · 31 Ağu - 6 Eyl</text>
+
+    <g transform="translate(0 306)">
+      <circle cx="1141" cy="0" r="17" fill="#10d86c"/>
+      <text x="1141" y="6" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">AK</text>
+      <text x="1170" y="6" font-size="18" fill="#f5f6f5">Ayşe Kaya</text>
+      <rect x="1312" y="-6" width="160" height="12" rx="6" fill="#262a27"/>
+      <rect x="1312" y="-6" width="147" height="12" rx="6" fill="#ff6b6b"/>
+      <text x="1524" y="6" font-size="18" font-weight="600" fill="#ff6b6b" text-anchor="end">%92</text>
+    </g>
+    <g transform="translate(0 356)">
+      <circle cx="1141" cy="0" r="17" fill="#4da3ff"/>
+      <text x="1141" y="6" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">MD</text>
+      <text x="1170" y="6" font-size="18" fill="#f5f6f5">Mehmet Demir</text>
+      <rect x="1312" y="-6" width="160" height="12" rx="6" fill="#262a27"/>
+      <rect x="1312" y="-6" width="125" height="12" rx="6" fill="#10d86c"/>
+      <text x="1524" y="6" font-size="18" font-weight="600" fill="#10d86c" text-anchor="end">%78</text>
+    </g>
+    <g transform="translate(0 406)">
+      <circle cx="1141" cy="0" r="17" fill="#ffb547"/>
+      <text x="1141" y="6" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">SY</text>
+      <text x="1170" y="6" font-size="18" fill="#f5f6f5">Selin Yılmaz</text>
+      <rect x="1312" y="-6" width="160" height="12" rx="6" fill="#262a27"/>
+      <rect x="1312" y="-6" width="102" height="12" rx="6" fill="#10d86c"/>
+      <text x="1524" y="6" font-size="18" font-weight="600" fill="#10d86c" text-anchor="end">%64</text>
+    </g>
+    <g transform="translate(0 456)">
+      <circle cx="1141" cy="0" r="17" fill="#c084fc"/>
+      <text x="1141" y="6" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">BT</text>
+      <text x="1170" y="6" font-size="18" fill="#f5f6f5">Burak Taş</text>
+      <rect x="1312" y="-6" width="160" height="12" rx="6" fill="#262a27"/>
+      <rect x="1312" y="-6" width="136" height="12" rx="6" fill="#ffb547"/>
+      <text x="1524" y="6" font-size="18" font-weight="600" fill="#ffb547" text-anchor="end">%85</text>
+    </g>
+    <g transform="translate(0 506)">
+      <circle cx="1141" cy="0" r="17" fill="#ff6b6b"/>
+      <text x="1141" y="6" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">EK</text>
+      <text x="1170" y="6" font-size="18" fill="#f5f6f5">Elif Koç</text>
+      <rect x="1312" y="-6" width="160" height="12" rx="6" fill="#262a27"/>
+      <rect x="1312" y="-6" width="77" height="12" rx="6" fill="#10d86c"/>
+      <text x="1524" y="6" font-size="18" font-weight="600" fill="#10d86c" text-anchor="end">%48</text>
+    </g>
+
+    <!-- ================= HAFTALIK ZAMAN ÇİZELGESİ ================= -->
+    <rect x="1108" y="580" width="432" height="460" rx="16" fill="#181b19" stroke="#222724"/>
+    <text x="1124" y="616" font-size="22" font-weight="700" fill="#f5f6f5">Haftalık Zaman Çizelgesi</text>
+    <rect x="1436" y="598" width="88" height="28" rx="14" fill="#262a27"/>
+    <text x="1480" y="618" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">36. Hafta</text>
+
+    <!-- Hafta sonu gölgesi -->
+    <rect x="1448" y="640" width="80" height="372" fill="#f5f6f5" opacity="0.03"/>
+
+    <!-- Bugün vurgusu (Cuma) -->
+    <rect x="1410" y="640" width="36" height="52" rx="8" fill="#10d86c" fill-opacity="0.16"/>
+
+    <!-- Gün başlıkları -->
+    <text x="1268" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Pzt</text>
+    <text x="1268" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">31</text>
+    <text x="1308" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Sal</text>
+    <text x="1308" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">1</text>
+    <text x="1348" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Çar</text>
+    <text x="1348" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">2</text>
+    <text x="1388" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Per</text>
+    <text x="1388" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">3</text>
+    <text x="1428" y="662" font-size="18" fill="#10d86c" text-anchor="middle">Cum</text>
+    <text x="1428" y="686" font-size="18" font-weight="700" fill="#10d86c" text-anchor="middle">4</text>
+    <text x="1468" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Cmt</text>
+    <text x="1468" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">5</text>
+    <text x="1508" y="662" font-size="18" fill="#5b625d" text-anchor="middle">Paz</text>
+    <text x="1508" y="686" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">6</text>
+
+    <!-- Izgara -->
+    <path d="M1248 700v312M1288 700v312M1328 700v312M1368 700v312M1408 700v312M1448 700v312M1488 700v312M1528 700v312" stroke="#232826" stroke-width="1"/>
+    <path d="M1124 744h404M1124 788h404M1124 832h404M1124 876h404M1124 920h404M1124 964h404" stroke="#1f2422" stroke-width="1"/>
+
+    <!-- Satırlar -->
+    <g transform="translate(0 700)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Üretim planı</text>
+      <rect x="1251" y="11" width="114" height="22" rx="11" fill="#10d86c"/>
+    </g>
+    <g transform="translate(0 744)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Fatura testi</text>
+      <rect x="1291" y="11" width="154" height="22" rx="11" fill="#4da3ff" fill-opacity="0.3"/>
+      <rect x="1291" y="11" width="100" height="22" rx="11" fill="#4da3ff"/>
+    </g>
+    <g transform="translate(0 788)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Onboarding</text>
+      <rect x="1331" y="11" width="154" height="22" rx="11" fill="#ffb547" fill-opacity="0.3"/>
+      <rect x="1331" y="11" width="62" height="22" rx="11" fill="#ffb547"/>
+    </g>
+    <g transform="translate(0 832)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Stok eşikleri</text>
+      <rect x="1251" y="11" width="154" height="22" rx="11" fill="#c084fc"/>
+    </g>
+    <g transform="translate(0 876)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Sipariş takip</text>
+      <rect x="1371" y="11" width="154" height="22" rx="11" fill="#10d86c" fill-opacity="0.3"/>
+      <rect x="1371" y="11" width="46" height="22" rx="11" fill="#10d86c"/>
+    </g>
+    <g transform="translate(0 920)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">SLA raporu</text>
+      <rect x="1411" y="11" width="74" height="22" rx="11" fill="#4da3ff" fill-opacity="0.3"/>
+      <rect x="1411" y="11" width="22" height="22" rx="11" fill="#4da3ff"/>
+    </g>
+    <g transform="translate(0 964)">
+      <text x="1124" y="28" font-size="18" fill="#f5f6f5">Haftalık plan</text>
+      <rect x="1251" y="11" width="74" height="22" rx="11" fill="#ffb547"/>
+    </g>
+
+    <!-- Bugün çizgisi -->
+    <line x1="1428" y1="696" x2="1428" y2="1012" stroke="#10d86c" stroke-width="2" stroke-dasharray="6 4"/>
+    <circle cx="1428" cy="698" r="5" fill="#10d86c"/>
+  </g>
+
+  <!-- Pencere kenarlığı -->
+  <rect x="30" y="30" width="1540" height="1040" rx="24" fill="none" stroke="#2f3532" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,280 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" width="1600" height="1100" role="img" aria-labelledby="biz-title biz-desc" font-family="Poppins, Inter, system-ui, sans-serif">
+  <title id="biz-title">Guru Business genel bakış panosu</title>
+  <desc id="biz-desc">Koyu temalı Guru Business uygulama ekranı. Üstte aktif müşteri, aylık gelir, açık görev ve bot çözüm oranı KPI kartları; ortada Chatbot, CRM ve Operation modül kutuları ile gelir kaynağı dağılımını gösteren halka grafik; altta son aktiviteler zaman akışı.</desc>
+  <defs>
+    <clipPath id="biz-win"><rect x="30" y="30" width="1540" height="1040" rx="24"/></clipPath>
+    <filter id="biz-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="40"/></filter>
+    <filter id="biz-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="24" stdDeviation="24" flood-color="#000000" flood-opacity="0.55"/></filter>
+    <linearGradient id="biz-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#131615"/><stop offset="1" stop-color="#0e100f"/></linearGradient>
+    <linearGradient id="biz-spark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10d86c" stop-opacity="0.28"/><stop offset="1" stop-color="#10d86c" stop-opacity="0"/></linearGradient>
+    <symbol id="biz-ic-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
+    <symbol id="biz-ic-chat" viewBox="0 0 24 24"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z"/><path d="M8 9h8M8 13h5"/></symbol>
+    <symbol id="biz-ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14c2.8 0 5 2.2 5 5"/></symbol>
+    <symbol id="biz-ic-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="6" rx="2"/><rect x="14" y="15" width="7" height="6" rx="2"/><path d="M6.5 9v4a2 2 0 0 0 2 2h9"/></symbol>
+    <symbol id="biz-ic-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="biz-ic-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M8 13h8M8 17h6"/></symbol>
+    <symbol id="biz-ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+  </defs>
+
+  <!-- Yeşil dış parıltı -->
+  <rect x="80" y="90" width="1440" height="940" rx="60" fill="#10d86c" opacity="0.22" filter="url(#biz-glow)"/>
+
+  <!-- Uygulama penceresi -->
+  <rect x="30" y="30" width="1540" height="1040" rx="24" fill="url(#biz-bg)" filter="url(#biz-shadow)"/>
+
+  <g clip-path="url(#biz-win)">
+    <!-- Tarayıcı üst çubuğu -->
+    <rect x="30" y="30" width="1540" height="64" fill="#141716"/>
+    <line x1="30" y1="94.5" x2="1570" y2="94.5" stroke="#262a27"/>
+    <circle cx="62" cy="62" r="7" fill="#ff5f57"/>
+    <circle cx="86" cy="62" r="7" fill="#febc2e"/>
+    <circle cx="110" cy="62" r="7" fill="#28c840"/>
+    <rect x="150" y="45" width="640" height="34" rx="17" fill="#181b19" stroke="#262a27"/>
+    <rect x="172" y="59" width="11" height="9" rx="2" fill="#5b625d"/>
+    <path d="M174.5 59v-3a3 3 0 0 1 6 0v3" fill="none" stroke="#5b625d" stroke-width="1.6"/>
+    <text x="194" y="68" font-size="18" fill="#9aa19c">app.gurudijital.com.tr/business</text>
+    <path d="M1481 71h18c-2-2.5-2.5-4.5-2.5-7.5v-2.5a6.5 6.5 0 0 0-13 0v2.5c0 3-.5 5-2.5 7.5z" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M1487 74a3 3 0 0 0 6 0" fill="none" stroke="#9aa19c" stroke-width="1.8"/>
+    <circle cx="1497" cy="55" r="4.5" fill="#ff6b6b"/>
+    <circle cx="1536" cy="62" r="16" fill="#10d86c"/>
+    <text x="1536" y="68" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">CA</text>
+
+    <!-- Sol menü -->
+    <rect x="30" y="95" width="240" height="975" fill="#121413"/>
+    <line x1="270.5" y1="95" x2="270.5" y2="1070" stroke="#222724"/>
+    <text x="58" y="146" font-size="32" font-weight="700" fill="#f5f6f5" letter-spacing="-0.5">guru</text>
+    <circle cx="136" cy="140" r="5" fill="#10d86c"/>
+    <text x="58" y="174" font-size="18" font-weight="600" fill="#10d86c" letter-spacing="2">BUSINESS</text>
+
+    <rect x="30" y="218" width="4" height="28" rx="2" fill="#10d86c"/>
+    <rect x="46" y="210" width="208" height="44" rx="10" fill="#10d86c" fill-opacity="0.14"/>
+    <use href="#biz-ic-grid" x="58" y="221" width="22" height="22" fill="none" stroke="#10d86c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="239" font-size="18" font-weight="600" fill="#10d86c">Genel Bakış</text>
+
+    <use href="#biz-ic-chat" x="58" y="269" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="287" font-size="18" fill="#c9cfcb">Chatbot</text>
+    <circle cx="240" cy="281" r="5" fill="#10d86c"/>
+
+    <use href="#biz-ic-users" x="58" y="317" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="335" font-size="18" fill="#c9cfcb">CRM</text>
+    <circle cx="240" cy="329" r="5" fill="#10d86c"/>
+
+    <use href="#biz-ic-flow" x="58" y="365" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="383" font-size="18" fill="#c9cfcb">Operation</text>
+    <circle cx="240" cy="377" r="5" fill="#10d86c"/>
+
+    <use href="#biz-ic-chart" x="58" y="413" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="431" font-size="18" fill="#c9cfcb">Raporlar</text>
+
+    <use href="#biz-ic-doc" x="58" y="461" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="479" font-size="18" fill="#c9cfcb">Faturalar</text>
+
+    <use href="#biz-ic-gear" x="58" y="509" width="22" height="22" fill="none" stroke="#9aa19c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="92" y="527" font-size="18" fill="#c9cfcb">Ayarlar</text>
+
+    <!-- Sol menü alt: paket kartı -->
+    <rect x="46" y="860" width="208" height="96" rx="12" fill="#181b19" stroke="#222724"/>
+    <text x="62" y="890" font-size="18" fill="#5b625d">Paket</text>
+    <text x="62" y="920" font-size="22" font-weight="700" fill="#f5f6f5">Business</text>
+    <rect x="62" y="932" width="176" height="8" rx="4" fill="#262a27"/>
+    <rect x="62" y="932" width="118" height="8" rx="4" fill="#10d86c"/>
+
+    <line x1="46" y1="982" x2="254" y2="982" stroke="#222724"/>
+    <circle cx="76" cy="1024" r="18" fill="#10d86c"/>
+    <text x="76" y="1030" font-size="18" font-weight="700" fill="#0e100f" text-anchor="middle">CA</text>
+    <text x="106" y="1020" font-size="18" font-weight="600" fill="#f5f6f5">Cem Arslan</text>
+    <text x="106" y="1044" font-size="18" fill="#5b625d">Genel Müdür</text>
+
+    <!-- İçerik başlığı -->
+    <text x="300" y="152" font-size="30" font-weight="700" fill="#f5f6f5">Genel Bakış</text>
+    <text x="300" y="184" font-size="18" fill="#5b625d">4 Eylül 2026, Cuma</text>
+    <circle cx="491" cy="178" r="5" fill="#10d86c"/>
+    <text x="504" y="184" font-size="18" fill="#10d86c">Tüm modüller çalışıyor</text>
+    <rect x="1216" y="126" width="160" height="44" rx="12" fill="none" stroke="#2b302d"/>
+    <text x="1284" y="155" font-size="18" font-weight="500" fill="#f5f6f5" text-anchor="middle">Son 30 gün</text>
+    <path d="M1352 144l6 7 6-7" fill="none" stroke="#9aa19c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1392" y="126" width="148" height="44" rx="12" fill="#10d86c"/>
+    <text x="1466" y="155" font-size="18" font-weight="600" fill="#0e100f" text-anchor="middle">Rapor İndir</text>
+
+    <!-- ================= KPI KARTLARI ================= -->
+    <g transform="translate(300 206)">
+      <rect width="295" height="140" rx="16" fill="#181b19" stroke="#222724"/>
+      <text x="20" y="36" font-size="18" fill="#5b625d">Aktif Müşteri</text>
+      <text x="20" y="84" font-size="36" font-weight="700" fill="#f5f6f5">1.248</text>
+      <path d="M195 80L207 74L219 77L231 66L243 62L255 56L267 50L275 46V92H195Z" fill="url(#biz-spark)"/>
+      <polyline points="195,80 207,74 219,77 231,66 243,62 255,56 267,50 275,46" fill="none" stroke="#10d86c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="20" y="100" width="80" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <path d="M30 116L35 108L40 116Z" fill="#10d86c"/>
+      <text x="46" y="118" font-size="18" font-weight="600" fill="#10d86c">%8,4</text>
+      <text x="110" y="118" font-size="18" fill="#5b625d">geçen aya göre</text>
+    </g>
+    <g transform="translate(615 206)">
+      <rect width="295" height="140" rx="16" fill="#181b19" stroke="#222724"/>
+      <text x="20" y="36" font-size="18" fill="#5b625d">Aylık Gelir</text>
+      <text x="20" y="84" font-size="36" font-weight="700" fill="#f5f6f5">₺684.500</text>
+      <path d="M195 76L207 70L219 78L231 64L243 68L255 54L267 50L275 46V92H195Z" fill="url(#biz-spark)"/>
+      <polyline points="195,76 207,70 219,78 231,64 243,68 255,54 267,50 275,46" fill="none" stroke="#10d86c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="20" y="100" width="90" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <path d="M30 116L35 108L40 116Z" fill="#10d86c"/>
+      <text x="46" y="118" font-size="18" font-weight="600" fill="#10d86c">%12,1</text>
+      <text x="120" y="118" font-size="18" fill="#5b625d">geçen aya göre</text>
+    </g>
+    <g transform="translate(930 206)">
+      <rect width="295" height="140" rx="16" fill="#181b19" stroke="#222724"/>
+      <text x="20" y="36" font-size="18" fill="#5b625d">Açık Görev</text>
+      <text x="20" y="84" font-size="36" font-weight="700" fill="#f5f6f5">37</text>
+      <path d="M195 50L207 58L219 54L231 66L243 70L255 76L267 74L275 84V92H195Z" fill="url(#biz-spark)"/>
+      <polyline points="195,50 207,58 219,54 231,66 243,70 255,76 267,74 275,84" fill="none" stroke="#10d86c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="20" y="100" width="52" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <path d="M30 108L35 116L40 108Z" fill="#10d86c"/>
+      <text x="46" y="118" font-size="18" font-weight="600" fill="#10d86c">6</text>
+      <text x="82" y="118" font-size="18" fill="#5b625d">geçen haftaya göre</text>
+    </g>
+    <g transform="translate(1245 206)">
+      <rect width="295" height="140" rx="16" fill="#181b19" stroke="#222724"/>
+      <text x="20" y="36" font-size="18" fill="#5b625d">Bot Çözüm Oranı</text>
+      <text x="20" y="84" font-size="36" font-weight="700" fill="#f5f6f5">%87</text>
+      <path d="M195 72L207 66L219 68L231 60L243 58L255 56L267 50L275 48V92H195Z" fill="url(#biz-spark)"/>
+      <polyline points="195,72 207,66 219,68 231,60 243,58 255,56 267,50 275,48" fill="none" stroke="#10d86c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="20" y="100" width="80" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <path d="M30 116L35 108L40 116Z" fill="#10d86c"/>
+      <text x="46" y="118" font-size="18" font-weight="600" fill="#10d86c">%3,2</text>
+      <text x="110" y="118" font-size="18" fill="#5b625d">geçen aya göre</text>
+    </g>
+
+    <!-- ================= MODÜL KUTULARI ================= -->
+    <g transform="translate(300 370)">
+      <rect width="700" height="124" rx="16" fill="#181b19" stroke="#222724"/>
+      <rect x="20" y="20" width="44" height="44" rx="12" fill="#10d86c" fill-opacity="0.15"/>
+      <use href="#biz-ic-chat" x="30" y="30" width="24" height="24" fill="none" stroke="#10d86c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="82" y="42" font-size="22" font-weight="700" fill="#f5f6f5">Guru Chatbot</text>
+      <rect x="562" y="20" width="118" height="28" rx="14" fill="#10d86c" fill-opacity="0.14"/>
+      <circle cx="580" cy="34" r="5" fill="#10d86c"/>
+      <text x="592" y="40" font-size="18" font-weight="600" fill="#10d86c">Çalışıyor</text>
+      <text x="82" y="70" font-size="18" fill="#5b625d">3 kanal bağlı · Web, WhatsApp, Instagram</text>
+      <text x="82" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">412</tspan><tspan fill="#5b625d"> sohbet bugün</tspan></text>
+      <text x="300" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">4 sn</tspan><tspan fill="#5b625d"> ort. yanıt</tspan></text>
+      <text x="490" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">%94</tspan><tspan fill="#5b625d"> memnuniyet</tspan></text>
+    </g>
+    <g transform="translate(300 508)">
+      <rect width="700" height="124" rx="16" fill="#181b19" stroke="#222724"/>
+      <rect x="20" y="20" width="44" height="44" rx="12" fill="#4da3ff" fill-opacity="0.15"/>
+      <use href="#biz-ic-users" x="30" y="30" width="24" height="24" fill="none" stroke="#4da3ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="82" y="42" font-size="22" font-weight="700" fill="#f5f6f5">Guru CRM</text>
+      <rect x="562" y="20" width="118" height="28" rx="14" fill="#10d86c" fill-opacity="0.14"/>
+      <circle cx="580" cy="34" r="5" fill="#10d86c"/>
+      <text x="592" y="40" font-size="18" font-weight="600" fill="#10d86c">Çalışıyor</text>
+      <text x="82" y="70" font-size="18" fill="#5b625d">2 satış ekibi · 14 kullanıcı · 3.812 müşteri kaydı</text>
+      <text x="82" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">86</tspan><tspan fill="#5b625d"> açık fırsat</tspan></text>
+      <text x="300" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">₺1,2M</tspan><tspan fill="#5b625d"> satış hattı</tspan></text>
+      <text x="490" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">%31</tspan><tspan fill="#5b625d"> kapanış oranı</tspan></text>
+    </g>
+    <g transform="translate(300 646)">
+      <rect width="700" height="124" rx="16" fill="#181b19" stroke="#222724"/>
+      <rect x="20" y="20" width="44" height="44" rx="12" fill="#ffb547" fill-opacity="0.15"/>
+      <use href="#biz-ic-flow" x="30" y="30" width="24" height="24" fill="none" stroke="#ffb547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="82" y="42" font-size="22" font-weight="700" fill="#f5f6f5">Guru Operation</text>
+      <rect x="562" y="20" width="118" height="28" rx="14" fill="#10d86c" fill-opacity="0.14"/>
+      <circle cx="580" cy="34" r="5" fill="#10d86c"/>
+      <text x="592" y="40" font-size="18" font-weight="600" fill="#10d86c">Çalışıyor</text>
+      <text x="82" y="70" font-size="18" fill="#5b625d">5 aktif süreç · 24 kullanıcı · 36. hafta planı yayında</text>
+      <text x="82" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">37</tspan><tspan fill="#5b625d"> açık görev</tspan></text>
+      <text x="300" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">%73</tspan><tspan fill="#5b625d"> ekip kapasitesi</tspan></text>
+      <text x="490" y="104" font-size="18"><tspan font-weight="700" fill="#f5f6f5">12</tspan><tspan fill="#5b625d"> tamamlanan iş</tspan></text>
+    </g>
+
+    <!-- ================= GELİR KAYNAĞI DAĞILIMI ================= -->
+    <rect x="1024" y="370" width="516" height="400" rx="16" fill="#181b19" stroke="#222724"/>
+    <text x="1040" y="406" font-size="22" font-weight="700" fill="#f5f6f5">Gelir Kaynağı Dağılımı</text>
+    <text x="1040" y="434" font-size="18" fill="#5b625d">Ağustos 2026 · 4 kaynak</text>
+    <rect x="1436" y="388" width="88" height="28" rx="14" fill="#262a27"/>
+    <text x="1480" y="408" font-size="18" font-weight="600" fill="#c9cfcb" text-anchor="middle">Aylık</text>
+
+    <!-- Halka grafik: r=92, çevre 578.05 -->
+    <g transform="rotate(-90 1160 600)">
+      <circle cx="1160" cy="600" r="92" fill="none" stroke="#232826" stroke-width="30"/>
+      <circle cx="1160" cy="600" r="92" fill="none" stroke="#10d86c" stroke-width="30" stroke-dasharray="238.78 600" stroke-dashoffset="-2"/>
+      <circle cx="1160" cy="600" r="92" fill="none" stroke="#4da3ff" stroke-width="30" stroke-dasharray="157.85 600" stroke-dashoffset="-244.78"/>
+      <circle cx="1160" cy="600" r="92" fill="none" stroke="#ffb547" stroke-width="30" stroke-dasharray="100.05 600" stroke-dashoffset="-406.63"/>
+      <circle cx="1160" cy="600" r="92" fill="none" stroke="#c084fc" stroke-width="30" stroke-dasharray="65.37 600" stroke-dashoffset="-510.68"/>
+    </g>
+    <text x="1160" y="596" font-size="26" font-weight="700" fill="#f5f6f5" text-anchor="middle">₺684,5K</text>
+    <text x="1160" y="622" font-size="18" fill="#5b625d" text-anchor="middle">toplam gelir</text>
+
+    <!-- Açıklama -->
+    <g transform="translate(0 522)">
+      <circle cx="1308" cy="-6" r="7" fill="#10d86c"/>
+      <text x="1326" y="0" font-size="18" fill="#f5f6f5">E-ticaret</text>
+      <text x="1524" y="0" font-size="18" font-weight="700" fill="#10d86c" text-anchor="end">%42</text>
+      <text x="1326" y="24" font-size="18" fill="#5b625d">₺287.490</text>
+    </g>
+    <g transform="translate(0 570)">
+      <circle cx="1308" cy="-6" r="7" fill="#4da3ff"/>
+      <text x="1326" y="0" font-size="18" fill="#f5f6f5">Kurumsal Hizmet</text>
+      <text x="1524" y="0" font-size="18" font-weight="700" fill="#4da3ff" text-anchor="end">%28</text>
+      <text x="1326" y="24" font-size="18" fill="#5b625d">₺191.660</text>
+    </g>
+    <g transform="translate(0 618)">
+      <circle cx="1308" cy="-6" r="7" fill="#ffb547"/>
+      <text x="1326" y="0" font-size="18" fill="#f5f6f5">Abonelik</text>
+      <text x="1524" y="0" font-size="18" font-weight="700" fill="#ffb547" text-anchor="end">%18</text>
+      <text x="1326" y="24" font-size="18" fill="#5b625d">₺123.210</text>
+    </g>
+    <g transform="translate(0 666)">
+      <circle cx="1308" cy="-6" r="7" fill="#c084fc"/>
+      <text x="1326" y="0" font-size="18" fill="#f5f6f5">Danışmanlık</text>
+      <text x="1524" y="0" font-size="18" font-weight="700" fill="#c084fc" text-anchor="end">%12</text>
+      <text x="1326" y="24" font-size="18" fill="#5b625d">₺82.140</text>
+    </g>
+    <line x1="1040" y1="722" x2="1524" y2="722" stroke="#222724"/>
+    <text x="1040" y="752" font-size="18" fill="#5b625d">Geçen aya göre</text>
+    <path d="M1180 750L1185 742L1190 750Z" fill="#10d86c"/>
+    <text x="1196" y="752" font-size="18" font-weight="600" fill="#10d86c">%12,1 artış</text>
+    <text x="1524" y="752" font-size="18" fill="#5b625d" text-anchor="end">Hedef: ₺700.000</text>
+
+    <!-- ================= SON AKTİVİTELER ================= -->
+    <rect x="300" y="794" width="1240" height="246" rx="16" fill="#181b19" stroke="#222724"/>
+    <text x="316" y="830" font-size="22" font-weight="700" fill="#f5f6f5">Son Aktiviteler</text>
+    <text x="1524" y="830" font-size="18" font-weight="600" fill="#10d86c" text-anchor="end">Tümünü gör</text>
+    <line x1="392" y1="862" x2="392" y2="1016" stroke="#2b302d" stroke-width="2"/>
+
+    <g transform="translate(0 872)">
+      <text x="316" y="0" font-size="18" fill="#5b625d">14:32</text>
+      <circle cx="392" cy="-6" r="6" fill="#10d86c" stroke="#181b19" stroke-width="3"/>
+      <rect x="416" y="-19" width="110" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <text x="471" y="-1" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Chatbot</text>
+      <text x="542" y="0" font-size="18"><tspan fill="#f5f6f5">"Kargom nerede?" sorusu otomatik yanıtlandı</tspan><tspan fill="#5b625d"> · Ahmet Yıldız · Web sitesi</tspan></text>
+    </g>
+    <g transform="translate(0 908)">
+      <text x="316" y="0" font-size="18" fill="#5b625d">14:05</text>
+      <circle cx="392" cy="-6" r="6" fill="#4da3ff" stroke="#181b19" stroke-width="3"/>
+      <rect x="416" y="-19" width="110" height="24" rx="12" fill="#4da3ff" fill-opacity="0.14"/>
+      <text x="471" y="-1" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">CRM</text>
+      <text x="542" y="0" font-size="18"><tspan fill="#f5f6f5">Teklif gönderildi: Demir Lojistik, ₺48.000</tspan><tspan fill="#5b625d"> · Mehmet Demir</tspan></text>
+    </g>
+    <g transform="translate(0 944)">
+      <text x="316" y="0" font-size="18" fill="#5b625d">13:41</text>
+      <circle cx="392" cy="-6" r="6" fill="#ffb547" stroke="#181b19" stroke-width="3"/>
+      <rect x="416" y="-19" width="110" height="24" rx="12" fill="#ffb547" fill-opacity="0.14"/>
+      <text x="471" y="-1" font-size="18" font-weight="600" fill="#ffb547" text-anchor="middle">Operation</text>
+      <text x="542" y="0" font-size="18"><tspan fill="#f5f6f5">OP-131 Stok uyarı eşikleri kontrole alındı</tspan><tspan fill="#5b625d"> · Burak Taş</tspan></text>
+    </g>
+    <g transform="translate(0 980)">
+      <text x="316" y="0" font-size="18" fill="#5b625d">12:58</text>
+      <circle cx="392" cy="-6" r="6" fill="#4da3ff" stroke="#181b19" stroke-width="3"/>
+      <rect x="416" y="-19" width="110" height="24" rx="12" fill="#4da3ff" fill-opacity="0.14"/>
+      <text x="471" y="-1" font-size="18" font-weight="600" fill="#4da3ff" text-anchor="middle">CRM</text>
+      <text x="542" y="0" font-size="18"><tspan fill="#f5f6f5">Yeni fırsat oluşturuldu: Kaya Mobilya, ilk görüşme 9 Eylül</tspan><tspan fill="#5b625d"> · Selin Yılmaz</tspan></text>
+    </g>
+    <g transform="translate(0 1016)">
+      <text x="316" y="0" font-size="18" fill="#5b625d">11:20</text>
+      <circle cx="392" cy="-6" r="6" fill="#10d86c" stroke="#181b19" stroke-width="3"/>
+      <rect x="416" y="-19" width="110" height="24" rx="12" fill="#10d86c" fill-opacity="0.14"/>
+      <text x="471" y="-1" font-size="18" font-weight="600" fill="#10d86c" text-anchor="middle">Chatbot</text>
+      <text x="542" y="0" font-size="18"><tspan fill="#f5f6f5">WhatsApp üzerinden 3 randevu talebi ekibe aktarıldı</tspan><tspan fill="#5b625d"> · Servis ekibi</tspan></text>
+    </g>
+  </g>
+
+  <!-- Pencere kenarlığı -->
+  <rect x="30" y="30" width="1540" height="1040" rx="24" fill="none" stroke="#2f3532" stroke-width="1.5"/>
+</svg>

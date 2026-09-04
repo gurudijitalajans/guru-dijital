@@ -62,8 +62,21 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function ContactForm() {
-  const [values, setValues] = useState<Values>(initialValues);
+export type ContactFormProps = {
+  /** Ürün sayfalarında konu ön seçimi (örn. "Guru CRM"); listede yoksa seçenek olarak eklenir. */
+  defaultService?: string;
+  /** E-posta konu ön eki; varsayılan "Web Sitesi İletişim Formu". */
+  subjectPrefix?: string;
+};
+
+export function ContactForm({
+  defaultService,
+  subjectPrefix = "Web Sitesi İletişim Formu",
+}: ContactFormProps = {}) {
+  const [values, setValues] = useState<Values>(() => ({
+    ...initialValues,
+    service: defaultService ?? "",
+  }));
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -102,7 +115,7 @@ export function ContactForm() {
       setErrors(nextErrors);
       return;
     }
-    const subject = `Web Sitesi İletişim Formu | ${values.service}`;
+    const subject = `${subjectPrefix} | ${values.service}`;
     const body = [
       `Ad Soyad: ${values.name.trim()}`,
       `E-posta: ${values.email.trim()}`,
@@ -268,6 +281,9 @@ export function ContactForm() {
                   <option value="" disabled>
                     Hizmet seçin
                   </option>
+                  {defaultService && !services.some((s) => s.title === defaultService) && (
+                    <option value={defaultService}>{defaultService}</option>
+                  )}
                   {services.map((s) => (
                     <option key={s.slug} value={s.title}>
                       {s.title}

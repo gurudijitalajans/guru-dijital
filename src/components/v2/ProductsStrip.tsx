@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -10,7 +11,7 @@ import { products } from "@/lib/data";
 
 /**
  * Ana sayfa ürün şeridi: ajansın işletmeye yönelik 4 yazılım ürünü.
- * Kompakt kartlar; detay sayfası /urunler.
+ * Her kart ürün mockup'ıyla açılır ve kendi ürün sayfasına bağlanır.
  */
 export function ProductsStrip() {
   return (
@@ -43,24 +44,31 @@ export function ProductsStrip() {
               <StaggerItem key={p.slug} className="h-full">
                 <Spotlight className="h-full overflow-hidden rounded-2xl" opacity={0.08}>
                   <Link
-                    href="/urunler"
+                    href={`/urunler/${p.slug}`}
                     data-cursor
-                    className="group flex h-full flex-col rounded-2xl border border-fg/10 bg-card p-6 transition-colors duration-300 hover:border-guru/40"
+                    className="group flex h-full flex-col rounded-2xl border border-fg/10 bg-card p-4 transition-colors duration-300 hover:border-guru/40 sm:p-5"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="grid size-12 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
-                        <Icon className="size-6" strokeWidth={2} />
-                      </span>
-                      {p.comingSoon && (
-                        <span className="rounded-full border border-guru/40 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-guru">
-                          Yakında
-                        </span>
-                      )}
+                    {/* Mockup önizleme */}
+                    <div className="relative overflow-hidden rounded-xl border border-fg/10 bg-band">
+                      <Image
+                        src={p.image}
+                        alt={p.imageAlt}
+                        width={1600}
+                        height={1100}
+                        sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
+                        className="block h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                      />
                     </div>
-                    <h3 className="mt-5 text-lg font-bold tracking-tight text-fg">
-                      {p.name}
-                    </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-fg/55">
+
+                    <div className="mt-5 flex items-center gap-3">
+                      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
+                        <Icon className="size-5" strokeWidth={2} />
+                      </span>
+                      <h3 className="text-lg font-bold tracking-tight text-fg">
+                        {p.name}
+                      </h3>
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-fg/55">
                       {p.tagline}
                     </p>
                     <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-fg/70 transition-colors group-hover:text-guru">

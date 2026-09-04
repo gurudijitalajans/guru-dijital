@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { products } from "@/lib/data";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { GlowBorder } from "@/components/fx/GlowBorder";
@@ -10,6 +12,7 @@ import { GButton } from "@/components/ui/Button";
  * Server component: animasyon ve etkileşim tamamı client alt bileşenlerde
  * (StaggerGroup/Item, GlowBorder, Spotlight). Kart hover'ı `group/card`
  * adlı grupla izlenir; GButton'un kendi isimsiz `group`u ile çakışmaz.
+ * Her kart ürünün mockup ekranını gösterir ve ürün sayfasına bağlanır.
  */
 export function ProductsShowcase() {
   return (
@@ -19,6 +22,7 @@ export function ProductsShowcase() {
     >
       {products.map((p) => {
         const Icon = p.icon;
+        const href = `/urunler/${p.slug}`;
         return (
           <StaggerItem key={p.slug} className="h-full">
             <GlowBorder radius="1.5rem" className="group/card h-full">
@@ -26,39 +30,55 @@ export function ProductsShowcase() {
                 className="h-full overflow-hidden rounded-[calc(1.5rem-1px)]"
                 opacity={0.08}
               >
-                <article className="flex h-full flex-col p-7 sm:p-8 lg:p-10">
-                  {/* Üst satır: ikon rozeti + Yakında pili */}
-                  <div className="flex items-start justify-between gap-4">
+                <article className="flex h-full flex-col p-5 sm:p-7 lg:p-8">
+                  {/* Ürün mockup ekranı */}
+                  <Link
+                    href={href}
+                    aria-label={`${p.name} ürün sayfası`}
+                    data-cursor
+                    className="relative block overflow-hidden rounded-2xl border border-fg/10 bg-band"
+                  >
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-8 -top-10 h-24 rounded-full bg-guru/25 blur-3xl opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
+                    />
+                    {/* SVG kaynak: next/image olduğu gibi sunar (optimize etmez) */}
+                    <Image
+                      src={p.image}
+                      alt={p.imageAlt}
+                      width={1600}
+                      height={1100}
+                      sizes="(min-width: 1024px) 560px, 100vw"
+                      className="relative block h-auto w-full transition-transform duration-700 ease-out group-hover/card:scale-[1.03]"
+                    />
+                  </Link>
+
+                  {/* Ad + ikon */}
+                  <div className="mt-6 flex items-center gap-4">
                     <span
-                      className="grid size-14 shrink-0 place-items-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover/card:bg-guru group-hover/card:text-ink md:size-16"
+                      className="grid size-12 shrink-0 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover/card:bg-guru group-hover/card:text-ink md:size-14"
                       aria-hidden
                     >
-                      <Icon className="size-7 md:size-8" strokeWidth={1.8} />
+                      <Icon className="size-6 md:size-7" strokeWidth={1.8} />
                     </span>
-                    {p.comingSoon && (
-                      <span className="inline-flex items-center gap-2 rounded-full border border-[color:light-dark(rgb(11_169_85/0.5),rgb(16_216_108/0.4))] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-[color:light-dark(var(--color-guru-deep),var(--color-guru))]">
-                        <span
-                          className="size-1.5 rounded-full bg-guru motion-safe:animate-pulse"
-                          aria-hidden
-                        />
-                        Yakında
-                      </span>
-                    )}
+                    <div className="min-w-0">
+                      <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-fg md:text-3xl">
+                        <Link href={href} className="transition-colors hover:text-guru">
+                          {p.name}
+                        </Link>
+                      </h2>
+                      <p className="mt-0.5 text-sm font-medium text-fg/70 md:text-base">
+                        {p.tagline}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Ad + tagline + kısa açıklama */}
-                  <h2 className="mt-6 text-2xl font-extrabold tracking-[-0.03em] text-fg md:text-3xl">
-                    {p.name}
-                  </h2>
-                  <p className="mt-2 text-base font-medium text-fg/80">
-                    {p.tagline}
-                  </p>
-                  <p className="mt-3 max-w-md text-sm leading-relaxed text-fg/55">
+                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-fg/55">
                     {p.desc}
                   </p>
 
                   {/* Üç özellik maddesi */}
-                  <ul className="mt-6 space-y-2.5 border-t border-fg/10 pt-6">
+                  <ul className="mt-5 space-y-2.5 border-t border-fg/10 pt-5">
                     {p.features.map((f) => (
                       <li
                         key={f}
@@ -73,13 +93,20 @@ export function ProductsShowcase() {
                     ))}
                   </ul>
 
-                  <div className="mt-auto pt-8">
+                  <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row">
                     <GButton
-                      href="/iletisim"
+                      href={href}
                       variant="dark"
                       className="w-full border border-fg/15 sm:w-auto"
                     >
-                      Haberdar Et
+                      Ürünü İncele
+                    </GButton>
+                    <GButton
+                      href={`${href}#demo`}
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                    >
+                      Demo Talep Et
                     </GButton>
                   </div>
                 </article>

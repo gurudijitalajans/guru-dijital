@@ -103,7 +103,12 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function MeetingScheduler() {
+export type MeetingSchedulerProps = {
+  /** Görüşme konusu (örn. "Guru CRM Demo"); e-posta konusuna ve gövdesine eklenir. */
+  topic?: string;
+};
+
+export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
   const days = useBusinessDays();
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
@@ -132,12 +137,15 @@ export function MeetingScheduler() {
       setErrors(nextErrors);
       return;
     }
-    const subject = `Toplantı Talebi | ${selectedDay.full} ${time}`;
+    const subject = topic
+      ? `Toplantı Talebi | ${topic} | ${selectedDay.full} ${time}`
+      : `Toplantı Talebi | ${selectedDay.full} ${time}`;
     const bodyLines = [
       `Ad Soyad: ${name.trim()}`,
       `E-posta: ${email.trim()}`,
       `Tarih ve Saat: ${selectedDay.full} ${time}`,
     ];
+    if (topic) bodyLines.push(`Konu: ${topic}`);
     if (note.trim()) bodyLines.push("", `Not: ${note.trim()}`);
     window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
       subject
