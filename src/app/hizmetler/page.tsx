@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/PageHero";
 import { Scramble } from "@/components/fx/Scramble";
 import { ShimmerText } from "@/components/fx/ShimmerText";
@@ -6,13 +5,15 @@ import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { SectionDivider } from "@/components/v2/SectionDivider";
 import { Reveal } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
-import { ServicesShowcaseList } from "@/components/pages/hizmetler/ServicesShowcaseList";
+import { ServicePanels } from "@/components/pages/hizmetler/ServicePanels";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Hizmetler",
   description:
-    "Sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı; markanızı büyüten altı başlıkta entegre dijital çözümler.",
-};
+    "Sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı: markanızı büyüten altı başlıkta entegre çözümler.",
+  path: "/hizmetler",
+});
 
 export default function HizmetlerPage() {
   return (
@@ -26,15 +27,14 @@ export default function HizmetlerPage() {
         aside={<RotatingBadge size={120} />}
       />
 
-      {/* Hizmet indeksi — dev tipografili satırlar + imleci takip eden önizleme */}
-      <section className="relative overflow-hidden pb-24 pt-14 md:pb-32 md:pt-20">
-        <div
-          className="grain-blob left-[-12%] top-[14%] h-[24rem] w-[24rem] opacity-20"
-          aria-hidden
-        />
-        <div className="container-g relative">
-          <ServicesShowcaseList />
+      {/* Hizmet panelleri: md+ ve yeterli yükseklikte sticky yığın, mobilde dikey kartlar.
+          DİKKAT: sticky çalışsın diye bu section'a overflow-hidden VERİLMEZ; dekoratif
+          blob kendi kırpılan (absolute + overflow-hidden) katmanında durur. */}
+      <section className="relative bg-page pb-24 pt-10 md:pb-32 md:pt-14">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+          <div className="grain-blob left-[-12%] top-[14%] h-[24rem] w-[24rem] opacity-20" />
         </div>
+        <ServicePanels />
       </section>
 
       <SectionDivider from="coal" to="ink" />

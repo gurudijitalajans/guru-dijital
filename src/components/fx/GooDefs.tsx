@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
 /**
- * Goo (sıvı damla) SVG filtre tanımı — Server Component.
+ * Goo (sıvı damla) SVG filtre tanımı: Server Component.
  * Layout'a BİR KEZ konur; görünmez (0x0, absolute) bir SVG içinde durur.
  * Kullanım: herhangi bir elemana style={{ filter: "url(#guru-goo)" }}.
  *

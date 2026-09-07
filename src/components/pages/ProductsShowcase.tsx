@@ -7,20 +7,22 @@ import { Spotlight } from "@/components/fx/Spotlight";
 import { GButton } from "@/components/ui/Button";
 
 /**
- * ProductsShowcase — işletmeye yönelik yazılım ürünlerinin 2x2 dev kart vitrini.
+ * ProductsShowcase: işletmeye yönelik yazılım ürünlerinin 2x2 dev kart vitrini.
  *
  * Server component: animasyon ve etkileşim tamamı client alt bileşenlerde
  * (StaggerGroup/Item, GlowBorder, Spotlight). Kart hover'ı `group/card`
  * adlı grupla izlenir; GButton'un kendi isimsiz `group`u ile çakışmaz.
  * Her kart ürünün mockup ekranını gösterir ve ürün sayfasına bağlanır.
+ * Izgara md'den itibaren iki sütun (tablet'te 4 kart alt alta dizilmez);
+ * ilk mockup sayfanın LCP öğesi olduğundan preload ile erken yüklenir.
  */
 export function ProductsShowcase() {
   return (
     <StaggerGroup
       stagger={0.1}
-      className="grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-2 xl:gap-8"
+      className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 xl:gap-8"
     >
-      {products.map((p) => {
+      {products.map((p, i) => {
         const Icon = p.icon;
         const href = `/urunler/${p.slug}`;
         return (
@@ -30,7 +32,7 @@ export function ProductsShowcase() {
                 className="h-full overflow-hidden rounded-[calc(1.5rem-1px)]"
                 opacity={0.08}
               >
-                <article className="flex h-full flex-col p-5 sm:p-7 lg:p-8">
+                <article className="flex h-full flex-col p-5 md:p-6 lg:p-8">
                   {/* Ürün mockup ekranı */}
                   <Link
                     href={href}
@@ -42,13 +44,17 @@ export function ProductsShowcase() {
                       aria-hidden
                       className="pointer-events-none absolute inset-x-8 -top-10 h-24 rounded-full bg-guru/25 blur-3xl opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
                     />
-                    {/* SVG kaynak: next/image olduğu gibi sunar (optimize etmez) */}
+                    {/* SVG kaynak: next/image olduğu gibi sunar (optimize etmez).
+                        İlk kart her genişlikte ilk ekranda (LCP): preload; ikinci
+                        kart md+ iki sütunda ilk ekranda: eager; kalanlar lazy. */}
                     <Image
                       src={p.image}
                       alt={p.imageAlt}
                       width={1600}
                       height={1100}
-                      sizes="(min-width: 1024px) 560px, 100vw"
+                      preload={i === 0}
+                      loading={i < 2 ? "eager" : "lazy"}
+                      sizes="(min-width: 1024px) 560px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)"
                       className="relative block h-auto w-full transition-transform duration-700 ease-out group-hover/card:scale-[1.03]"
                     />
                   </Link>
@@ -56,14 +62,19 @@ export function ProductsShowcase() {
                   {/* Ad + ikon */}
                   <div className="mt-6 flex items-center gap-4">
                     <span
-                      className="grid size-12 shrink-0 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover/card:bg-guru group-hover/card:text-ink md:size-14"
+                      className="grid size-12 shrink-0 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover/card:bg-guru group-hover/card:text-ink lg:size-14"
                       aria-hidden
                     >
-                      <Icon className="size-6 md:size-7" strokeWidth={1.8} />
+                      <Icon className="size-6 lg:size-7" strokeWidth={1.8} />
                     </span>
                     <div className="min-w-0">
-                      <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-fg md:text-3xl">
-                        <Link href={href} className="transition-colors hover:text-guru">
+                      <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-fg lg:text-3xl">
+                        {/* Dikey iç boşluk dokunma hedefini 44px'e çıkarır; negatif
+                            marj satır ritmini korur */}
+                        <Link
+                          href={href}
+                          className="inline-block py-1.5 -my-1.5 transition-colors hover:text-guru"
+                        >
                           {p.name}
                         </Link>
                       </h2>
@@ -93,18 +104,19 @@ export function ProductsShowcase() {
                     ))}
                   </ul>
 
-                  <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row">
+                  {/* md'de iki sütunlu dar kartta butonlar alt alta, lg'de yan yana */}
+                  <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row md:flex-col lg:flex-row">
                     <GButton
                       href={href}
                       variant="dark"
-                      className="w-full border border-fg/15 sm:w-auto"
+                      className="w-full border border-fg/15 sm:w-auto md:w-full lg:w-auto"
                     >
                       Ürünü İncele
                     </GButton>
                     <GButton
                       href={`${href}#demo`}
                       variant="outline"
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto md:w-full lg:w-auto"
                     >
                       Demo Talep Et
                     </GButton>

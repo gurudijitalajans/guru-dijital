@@ -10,7 +10,19 @@ import { ReferencesWall } from "@/components/v2/ReferencesWall";
 import { CTAV2 } from "@/components/v2/CTAV2";
 import { SectionDivider } from "@/components/v2/SectionDivider";
 import { ManifestoBand } from "@/components/v2/ManifestoBand";
-import { services } from "@/lib/data";
+import { services, site } from "@/lib/data";
+import { pageMetadata } from "@/lib/seo";
+
+/* Ana sayfa metadata: canonical "/" + OG/Twitter url'i kök layout'tan değil,
+   sayfa yolundan türer. Başlık mutlak (kök şablon "| Guru Dijital Ajans" eklemez). */
+export const metadata = pageMetadata({
+  title: `${site.name} | ${site.tagline}`,
+  absoluteTitle: true,
+  description: site.description,
+  path: "/",
+});
+
+const DIVIDER_GAP = "-mt-6 -mb-6 md:mt-0 md:-mb-px";
 
 export default function Home() {
   return (
@@ -36,12 +48,14 @@ export default function Home() {
       <ServicesIndex />
       <ProductsStrip />
       <CaseStack />
-      <SectionDivider from="coal" to="ink" />
+      {/* Mobilde divider komşu bölümlerin dolgusuna 24px biner (boşluk birikmesin);
+          md+'da bileşenin kendi -mb-px örtüşmesi korunur. */}
+      <SectionDivider from="coal" to="ink" className={DIVIDER_GAP} />
       <Showreel />
-      <SectionDivider from="ink" to="ink" flip />
+      <SectionDivider from="ink" to="ink" flip className={DIVIDER_GAP} />
       <ProcessRail />
       <WorkShowcase />
-      <SectionDivider from="ink" to="coal" />
+      <SectionDivider from="ink" to="coal" className={DIVIDER_GAP} />
       <ReferencesWall />
       <CTAV2 />
     </>

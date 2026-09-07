@@ -5,12 +5,12 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
 
 /**
- * SectionDivider — bölümler arası kavisli geçiş bandı.
+ * SectionDivider: bölümler arası kavisli geçiş bandı.
  *
  * Üstteki bölümün rengi (from) zemin, alttaki bölümün rengi (to) kavisli
  * path olarak dolar; kavisin sırtında ince yeşil stroke vurgusu (halo + çizgi).
  * Scroll'a bağlı hafif morph: iki sabit path d string'i arasında useTransform
- * interpolasyonu — girdi aralığı kesinlikle [0,1] içinde ve artan.
+ * interpolasyonu; girdi aralığı kesinlikle [0,1] içinde ve artan.
  *
  * Hydration güvenliği: SSR'da MotionValue'nun ilk değeri (progress 0 → FILL_A)
  * render edilir, istemcinin ilk render'ı ile birebir aynıdır. Reduced-motion
@@ -37,7 +37,7 @@ const TONE_HEX: Record<SectionTone, string> = {
   carbon: "var(--color-card)",
 };
 
-// İki morph durumu — komut yapıları birebir aynı (M L C C L Z),
+// İki morph durumu; komut yapıları birebir aynı (M L C C L Z),
 // motion d string'lerindeki sayıları güvenle interpolate eder.
 // Dikiş sızıntısı önlemi: fill, viewBox alt/yan kenarlarını 1-2px TAŞAR
 // (y=91, x=-2/1442). Kenarla çakışan path antialiasing'i divider'ın son
@@ -71,7 +71,7 @@ export function SectionDivider({
     target: ref,
     offset: ["start end", "end start"],
   });
-  // Girdi aralığı [0,1] içinde ve artan — kural gereği
+  // Girdi aralığı [0,1] içinde ve artan (kural gereği)
   const fillD = useTransform(scrollYProgress, [0, 1], [FILL_A, FILL_B]);
   const lineD = useTransform(scrollYProgress, [0, 1], [LINE_A, LINE_B]);
 

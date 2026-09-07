@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 /**
- * ShimmerText — büyük başlıklarda periyodik parlama süpürmesi.
+ * ShimmerText: büyük başlıklarda periyodik parlama süpürmesi.
  *
  * Teknik: asıl metin olduğu gibi render edilir (rengi ASLA değişmez);
  * üzerine aynı metnin aria-hidden bir kopyası absolute overlay olarak biner.
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
  * linear-gradient vardır; motion backgroundPosition'ı animate ederek
  * parlamayı belirli aralıklarla soldan sağa süpürür.
  *
- * Hydration güvenliği: SSR ve istemcinin ilk render'ı birebir aynıdır —
+ * Hydration güvenliği: SSR ve istemcinin ilk render'ı birebir aynıdır -
  * overlay statik gradyan pozisyonuyla (parlama ekran dışında, görünmez)
  * render edilir; süpürme yalnız mount SONRASI, matchMedia useEffect'te
  * okunduktan sonra state ile başlar. Reduced-motion'da süpürme hiç başlamaz.
@@ -45,7 +45,7 @@ export function ShimmerText({ children, className, interval = 4 }: ShimmerTextPr
 
   return (
     <span className={cn("relative inline-block", className)}>
-      {/* asıl metin — ana rengi değişmez */}
+      {/* asıl metin: ana rengi değişmez */}
       <span>{children}</span>
 
       {/* parlama katmanı: aynı metnin clip'li aria-hidden kopyası */}

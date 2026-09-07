@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -32,7 +33,8 @@ export function GButton({
   type,
   disabled,
 }: {
-  href?: string;
+  /** İç rota (Route) ya da "#demo" gibi yerel çapa / dış adres */
+  href?: Route | string;
   children: ReactNode;
   variant?: Variant;
   size?: Size;
@@ -80,8 +82,7 @@ export function GButton({
   }
   if (href) {
     return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <Link href={href as any} className={cls}>
+      <Link href={href} className={cls}>
         {inner}
       </Link>
     );

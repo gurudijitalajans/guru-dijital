@@ -11,7 +11,7 @@ export type ReferencesWallProps = {
 };
 
 /**
- * Referans duvarı: 30+ marka üç marquee şeridinde akar
+ * Referans duvarı: markalar üç marquee şeridinde akar
  * (normal / ters / yavaş), altında yeşil glow'lu ödül kartları.
  * Animasyonlar CSS marquee + client alt bileşenlerde; bu bileşen server'da kalır.
  */
@@ -24,15 +24,16 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
   ];
 
   return (
-    // Zemin: coal — önündeki SectionDivider to="coal" ve ardından gelen
+    // Zemin: coal; önündeki SectionDivider to="coal" ve ardından gelen
     // CTAV2 (bg-page) ile birebir aynı hex; ton dikişi kalmaz.
-    <section className={cn("overflow-x-clip bg-page py-24 md:py-32", className)}>
+    <section className={cn("overflow-x-clip bg-page py-16 md:py-32", className)}>
       <div className="container-g">
         <SectionHeading
           dark
           center
           eyebrow="Referanslar"
-          title="*30+* markanın yol arkadaşıyız"
+          /* Sayı veriden türer: hakkımızda sayfasıyla ayrışmaz */
+          title={`*${references.length}* markanın yol arkadaşıyız`}
           sub="Yerelden globale; sağlıktan e-ticarete her sektörden markayla aynı masada üretiyoruz."
         />
       </div>

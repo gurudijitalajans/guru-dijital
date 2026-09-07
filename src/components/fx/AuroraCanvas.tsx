@@ -4,11 +4,15 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * AuroraCanvas — ham WebGL (three.js yok) fragment shader aurora arka planı.
+ * AuroraCanvas: ham WebGL (three.js yok) fragment shader aurora arka planı.
  *
  * - 3 oktav simplex fbm + domain warp ile koyu zeminde çok yavaş akan
  *   aurora perdeleri; palet siyah → koyu teal → guru-deep → marka yeşili
  *   (#10d86c). Kenarlar vinyet ile koyulaşır, dither ile banding kırılır.
+ * - Gündüz teması (html.light): u_light uniform'u 1'e çekilir; taban beyaz,
+ *   teal/deep açık nane tonlarına karışır. globals.css'teki mix-blend-mode:
+ *   multiply ile beyaz zemine hafif yıkama verir, koyu alan üretmez. Tema
+ *   sınıfı MutationObserver ile izlenir (anahtar değişince anında geçer).
  * - interactive: fare pozisyonu lerp ile yumuşak gecikmeli akar, aurora'yı
  *   lokal büker/parlatır; son 5 fare noktası exp-blend metaball alanı olarak
  *   "gooey" bir iz bırakır.
@@ -24,7 +28,7 @@ import { cn } from "@/lib/utils";
 
 export type AuroraCanvasProps = {
   className?: string;
-  /** Genel parlaklık ölçeği (0–1). Varsayılan: 0.6 */
+  /** Genel parlaklık ölçeği (0-1). Varsayılan: 0.6 */
   intensity?: number;
   /** Fare bükmesi + gooey metaball izi. Varsayılan: true */
   interactive?: boolean;
@@ -32,7 +36,7 @@ export type AuroraCanvasProps = {
 
 const TRAIL_COUNT = 5;
 
-/* Basit fullscreen üçgen — vertex başına yalnız clip-space pozisyon. */
+/* Basit fullscreen üçgen: vertex başına yalnız clip-space pozisyon. */
 const VERT = `
 attribute vec2 a_pos;
 void main() {
@@ -54,9 +58,10 @@ precision mediump float;
 
 uniform float u_time;
 uniform vec2  u_res;
-uniform vec2  u_mouse;                 // 0–1 normalize, y yukarı
-uniform vec3  u_trail[${TRAIL_COUNT}]; // xy: 0–1 konum, z: güç (0–1)
-uniform float u_intensity;             // 0–1 parlaklık ölçeği
+uniform vec2  u_mouse;                 // 0-1 normalize, y yukarı
+uniform vec3  u_trail[${TRAIL_COUNT}]; // xy: 0-1 konum, z: güç (0-1)
+uniform float u_intensity;             // 0-1 parlaklık ölçeği
+uniform float u_light;                 // 0 gece (koyu palet), 1 gündüz (açık palet)
 
 /* ---- 2D simplex gürültü (Ashima Arts, kamu malı türev) ---- */
 vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
@@ -85,7 +90,7 @@ float snoise(vec2 v) {
   return 130.0 * dot(m, g);
 }
 
-/* 3 oktav fbm — perde dokusu için yeterli, ucuz. */
+/* 3 oktav fbm: perde dokusu için yeterli, ucuz. */
 float fbm(vec2 p) {
   float f = 0.0;
   float a = 0.5;
@@ -103,12 +108,12 @@ float hash12(vec2 p) {
 }
 
 void main() {
-  vec2 st = gl_FragCoord.xy / u_res;        // 0–1 ekran uzayı
+  vec2 st = gl_FragCoord.xy / u_res;        // 0-1 ekran uzayı
   float aspect = u_res.x / max(u_res.y, 1.0);
   vec2 p = vec2(st.x * aspect, st.y);       // en-boy düzeltmeli uzay
   float t = u_time * 0.05;                  // çok yavaş zaman akışı
 
-  /* Fare: gauss etki alanı — hem bükme hem parlatma için. */
+  /* Fare: gauss etki alanı: hem bükme hem parlatma için. */
   vec2 m = vec2(u_mouse.x * aspect, u_mouse.y);
   float md = distance(p, m);
   float minf = exp(-md * md * 7.0);
@@ -130,14 +135,17 @@ void main() {
   /* Dikey şekillendirme: üstte yoğun, alta doğru süzülür. */
   float veil = mix(0.4, 1.0, smoothstep(0.05, 0.95, st.y));
 
-  /* Palet: siyah → koyu teal → guru-deep (#0ba955) → guru (#10d86c).
-     Teal'in G kanalı B'den belirgin yüksek — cyan/mora kayma yok. */
-  vec3 colTeal = vec3(0.016, 0.230, 0.168);
-  vec3 colDeep = vec3(0.043, 0.663, 0.333);
+  /* Palet (gece): siyah → koyu teal → guru-deep (#0ba955) → guru (#10d86c).
+     Teal'in G kanalı B'den belirgin yüksek: cyan/mora kayma yok.
+     Gündüz (u_light=1): taban beyaz, teal/deep açık nane; multiply ile
+     beyaz sayfaya yumuşak yıkama verir. */
+  vec3 base    = mix(vec3(0.0), vec3(1.0), u_light);
+  vec3 colTeal = mix(vec3(0.016, 0.230, 0.168), vec3(0.72, 0.95, 0.84), u_light);
+  vec3 colDeep = mix(vec3(0.043, 0.663, 0.333), vec3(0.45, 0.88, 0.66), u_light);
   vec3 colGuru = vec3(0.063, 0.847, 0.424);
 
   float lum = clamp(curtain + wash, 0.0, 1.0);
-  vec3 col = mix(vec3(0.0), colTeal, smoothstep(0.04, 0.45, lum));
+  vec3 col = mix(base, colTeal, smoothstep(0.04, 0.45, lum));
   col = mix(col, colDeep, smoothstep(0.42, 0.78, lum));
   col = mix(col, colGuru, smoothstep(0.74, 1.0, lum) * 0.65);
 
@@ -147,7 +155,7 @@ void main() {
   col += colGuru * minf * (0.18 + 0.35 * curtain);
   alpha += minf * (0.10 + 0.22 * curtain);
 
-  /* Gooey iz: son ${TRAIL_COUNT} noktanın exp-blend metaball alanı —
+  /* Gooey iz: son ${TRAIL_COUNT} noktanın exp-blend metaball alanı -
      alanlar toplandığı için bloblar birbirine yumuşakça kaynar. */
   float field = 0.0;
   for (int i = 0; i < ${TRAIL_COUNT}; i++) {
@@ -169,7 +177,7 @@ void main() {
   alpha = clamp(alpha + dn * 0.004, 0.0, 1.0);
   col = clamp(col + dn * 0.006, 0.0, 1.0);
 
-  /* Premultiplied alpha çıkışı — canvas sayfa üstüne doğal kompozit olur. */
+  /* Premultiplied alpha çıkışı: canvas sayfa üstüne doğal kompozit olur. */
   gl_FragColor = vec4(col * alpha, alpha);
 }
 `;
@@ -199,7 +207,7 @@ export function AuroraCanvas({
   interactive = true,
 }: AuroraCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // İlk render'da HERKESE fallback — WebGL yalnız mount sonrası açılır (hydration birebir).
+  // İlk render'da HERKESE fallback: WebGL yalnız mount sonrası açılır (hydration birebir).
   const [glActive, setGlActive] = useState(false);
 
   // Prop'lar ref üzerinden okunur ki ana GL efekti yeniden kurulmasın
@@ -241,7 +249,7 @@ export function AuroraCanvas({
     };
   }, []);
 
-  /* ---- WebGL kurulumu — tamamen mount sonrası, yalnız glActive iken ---- */
+  /* ---- WebGL kurulumu: tamamen mount sonrası, yalnız glActive iken ---- */
   useEffect(() => {
     if (!glActive) return;
     const canvas = canvasRef.current;
@@ -266,15 +274,20 @@ export function AuroraCanvas({
     let uMouse: WebGLUniformLocation | null = null;
     let uTrail: WebGLUniformLocation | null = null;
     let uIntensity: WebGLUniformLocation | null = null;
+    let uLight: WebGLUniformLocation | null = null;
 
     let rafId: number | null = null;
     let visible = true;
     let disposed = false;
     const start = performance.now();
 
+    // Tema: html.light → 1 (açık palet). Sınıf değişimi MutationObserver ile izlenir.
+    const root = document.documentElement;
+    let light = root.classList.contains("light") ? 1 : 0;
+
     // Fare: hedef (tx,ty) ham işaretçi, (x,y) lerp'lenmiş akışkan konum.
     const mouse = { x: -10, y: -10, tx: -10, ty: -10, seen: false };
-    // Son 5 iz noktası: [x, y, güç] × 5 — karede alloc yok.
+    // Son 5 iz noktası: [x, y, güç] × 5: karede alloc yok.
     const trail = new Float32Array(TRAIL_COUNT * 3);
 
     /** Program + buffer + uniform konumları; context restore'da da çağrılır. */
@@ -307,7 +320,7 @@ export function AuroraCanvas({
 
       buffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      // Fullscreen üçgen — clip-space'i tek üçgenle örter.
+      // Fullscreen üçgen: clip-space'i tek üçgenle örter.
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array([-1, -1, 3, -1, -1, 3]),
@@ -324,6 +337,7 @@ export function AuroraCanvas({
         gl.getUniformLocation(prog, "u_trail[0]") ??
         gl.getUniformLocation(prog, "u_trail");
       uIntensity = gl.getUniformLocation(prog, "u_intensity");
+      uLight = gl.getUniformLocation(prog, "u_light");
       gl.clearColor(0, 0, 0, 0);
       return true;
     };
@@ -358,7 +372,7 @@ export function AuroraCanvas({
     function frame(now: number) {
       rafId = null;
       // gl `let` olduğundan (context restore'da yeniden kurulur) TS daralması
-      // closure'a taşınmaz — yerel sabit üzerinden kullan.
+      // closure'a taşınmaz: yerel sabit üzerinden kullan.
       const g = gl;
       if (disposed || !visible || !g || g.isContextLost()) return;
 
@@ -372,13 +386,14 @@ export function AuroraCanvas({
         mouse.x += (mouse.tx - mouse.x) * 0.06;
         mouse.y += (mouse.ty - mouse.y) * 0.06;
       }
-      // İz güçleri her karede sönümlenir — gooey iz eriyerek kaybolur.
+      // İz güçleri her karede sönümlenir: gooey iz eriyerek kaybolur.
       for (let i = 0; i < TRAIL_COUNT; i++) trail[i * 3 + 2] *= 0.94;
 
       g.uniform1f(uTime, (now - start) / 1000);
       g.uniform2f(uMouse, mouse.x, mouse.y);
       g.uniform3fv(uTrail, trail);
       g.uniform1f(uIntensity, clamp01(intensityRef.current));
+      g.uniform1f(uLight, light);
       g.clear(g.COLOR_BUFFER_BIT);
       g.drawArrays(g.TRIANGLES, 0, 3);
       schedule();
@@ -394,7 +409,7 @@ export function AuroraCanvas({
       mouse.tx = nx;
       mouse.ty = ny;
       if (!mouse.seen) {
-        // İlk temasta snap — ekran dışından süpürme animasyonu olmasın.
+        // İlk temasta snap: ekran dışından süpürme animasyonu olmasın.
         mouse.x = nx;
         mouse.y = ny;
         mouse.seen = true;
@@ -415,7 +430,7 @@ export function AuroraCanvas({
       stop();
     };
     const onContextRestored = () => {
-      // Eski program/buffer bağlamla birlikte geçersizleşti — sıfırdan kur.
+      // Eski program/buffer bağlamla birlikte geçersizleşti: sıfırdan kur.
       if (setup()) {
         resize();
         schedule();
@@ -440,6 +455,15 @@ export function AuroraCanvas({
     const ro = new ResizeObserver(() => resize());
     ro.observe(canvas);
 
+    const themeObserver = new MutationObserver(() => {
+      const next = root.classList.contains("light") ? 1 : 0;
+      if (next !== light) {
+        light = next;
+        schedule(); // ekran dışındaysa bir sonraki görünümde yeni paletle çizer
+      }
+    });
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["class"] });
+
     window.addEventListener("pointermove", onPointerMove, { passive: true });
 
     if (!setup()) {
@@ -448,13 +472,14 @@ export function AuroraCanvas({
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
       io.disconnect();
       ro.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       setGlActive(false);
       return;
     }
     resize();
-    // İlk kareyi senkron çiz — fallback'ten geçişte boş canvas görünmesin.
+    // İlk kareyi senkron çiz: fallback'ten geçişte boş canvas görünmesin.
     // (resize bir rAF kuyruklamış olabilir; çift döngü olmasın diye önce durdur.)
     stop();
     frame(performance.now());
@@ -464,6 +489,7 @@ export function AuroraCanvas({
       stop();
       io.disconnect();
       ro.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);

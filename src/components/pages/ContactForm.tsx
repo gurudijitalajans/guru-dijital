@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Check, CheckCircle2, Clock, Copy } from "lucide-react";
 import { Sparkles } from "@/components/fx/Sparkles";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const OTHER_OPTION = "Diğer";
 
 type Values = {
   name: string;
@@ -28,6 +29,9 @@ const initialValues: Values = {
   message: "",
 };
 
+/* Hata varsa ilk hatalı alana kaydırılır ve odaklanır (sabit header altında kalmasın). */
+const FIELD_ORDER = ["name", "email", "service", "message"] as const;
+
 function validate(values: Values): Errors {
   const errors: Errors = {};
   if (!values.name.trim()) errors.name = "Lütfen adınızı ve soyadınızı yazın.";
@@ -39,9 +43,28 @@ function validate(values: Values): Errors {
   return errors;
 }
 
+/* HYDRATION GÜVENLİĞİ: /iletisim?hizmet=<slug> ön seçimi yalnız istemci
+   snapshot'ında okunur; sunucu snapshot'ı "" olduğundan SSR ile ilk istemci
+   render birebir aynıdır, gerçek değer hydration sonrası tek re-render ile gelir.
+   useSyncExternalStore sayesinde effect içinde setState gerekmez ve sayfa
+   statik kalır (searchParams okumak sayfayı dinamik render'a çevirirdi). */
+const subscribeUrl = (onChange: () => void) => {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+};
+const getUrlService = () =>
+  new URLSearchParams(window.location.search).get("hizmet") ?? "";
+const getServerUrlService = () => "";
+
+function useUrlService(): string {
+  const raw = useSyncExternalStore(subscribeUrl, getUrlService, getServerUrlService);
+  if (!raw) return "";
+  return services.find((s) => s.slug === raw || s.title === raw)?.title ?? "";
+}
+
 const inputCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/35 md:text-sm",
+    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/50 md:text-sm",
     hasError
       ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
       : "border-fg/30 hover:border-fg/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
@@ -55,7 +78,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
     <p
       id={id}
       role="alert"
-      className="text-[12px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
+      className="text-[13px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
     >
       {message}
     </p>
@@ -67,20 +90,45 @@ export type ContactFormProps = {
   defaultService?: string;
   /** E-posta konu ön eki; varsayılan "Web Sitesi İletişim Formu". */
   subjectPrefix?: string;
+  /** Konu alanı etiketi; ürün sayfalarında "İlgilendiğiniz ürün". */
+  serviceLabel?: string;
+  /** Verilirse hizmet listesi yerine bu seçenekler (+ "Diğer") listelenir. */
+  serviceOptions?: string[];
+  /**
+   * Listedeki bir başlığı ön seçer (örn. "Web Tasarım"). Verilmezse
+   * /iletisim?hizmet=<slug> URL parametresi aynı işi otomatik yapar.
+   */
+  initialService?: string;
 };
 
 export function ContactForm({
   defaultService,
   subjectPrefix = "Web Sitesi İletişim Formu",
+  serviceLabel = "İlgilendiğiniz hizmet",
+  serviceOptions,
+  initialService,
 }: ContactFormProps = {}) {
-  const [values, setValues] = useState<Values>(() => ({
-    ...initialValues,
-    service: defaultService ?? "",
-  }));
+  const options = serviceOptions ?? services.map((s) => s.title);
+  const optionList =
+    defaultService && !options.includes(defaultService)
+      ? [defaultService, ...options]
+      : options;
+  const urlService = useUrlService();
+  const isOption = (v?: string): v is string =>
+    Boolean(v) && (optionList.includes(v as string) || v === OTHER_OPTION);
+  /* Ön seçim önceliği: açık prop > ürün bağlamı > URL parametresi.
+     Kullanıcı seçim yapınca values.service her zaman kazanır; "Yeni mesaj yaz"
+     sonrasında ön seçim yeniden devreye girer. */
+  const presetService =
+    [initialService, defaultService, urlService].find(isOption) ?? "";
+
+  const [values, setValues] = useState<Values>(initialValues);
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
+
+  const service = values.service || presetService;
 
   useEffect(() => {
     // Yalnız unmount temizliği: bekleyen "kopyalandı" zamanlayıcısını iptal et.
@@ -110,19 +158,24 @@ export function ContactForm({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const nextErrors = validate(values);
-    if (Object.values(nextErrors).some(Boolean)) {
+    const effective: Values = { ...values, service };
+    const nextErrors = validate(effective);
+    const firstKey = FIELD_ORDER.find((k) => nextErrors[k]);
+    if (firstKey) {
       setErrors(nextErrors);
+      const target = document.getElementById(`cf-${firstKey}`);
+      target?.scrollIntoView({ block: "center" });
+      if (target instanceof HTMLElement) target.focus({ preventScroll: true });
       return;
     }
-    const subject = `${subjectPrefix} | ${values.service}`;
+    const subject = `${subjectPrefix} | ${service}`;
     const body = [
-      `Ad Soyad: ${values.name.trim()}`,
-      `E-posta: ${values.email.trim()}`,
-      values.phone.trim() ? `Telefon: ${values.phone.trim()}` : null,
-      `İlgilenilen Hizmet: ${values.service}`,
+      `Ad Soyad: ${effective.name.trim()}`,
+      `E-posta: ${effective.email.trim()}`,
+      effective.phone.trim() ? `Telefon: ${effective.phone.trim()}` : null,
+      `İlgilenilen Hizmet: ${service}`,
       "",
-      values.message.trim(),
+      effective.message.trim(),
     ]
       .filter(Boolean)
       .join("\n");
@@ -144,8 +197,8 @@ export function ContactForm({
             transition={{ duration: 0.5, ease: EASE }}
             className="relative flex min-h-96 flex-col items-center justify-center overflow-hidden text-center"
           >
-            {/* Kutlama ışıltıları: dekoratif, pointer-events yok */}
-            <Sparkles density={10} className="opacity-80" />
+            {/* Kutlama ışıltıları: dekoratif, pointer-events yok; düşük yoğunluk metni örtmesin */}
+            <Sparkles density={6} className="opacity-80" />
             <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_light-dark(rgb(16_216_108/0.14),rgb(16_216_108/0.25))]">
               <CheckCircle2 className="size-8" strokeWidth={2} />
             </span>
@@ -263,33 +316,30 @@ export function ContactForm({
 
               <div className="space-y-2">
                 <label htmlFor="cf-service" className={labelCls}>
-                  İlgilendiğiniz hizmet <span className="text-guru">*</span>
+                  {serviceLabel} <span className="text-guru">*</span>
                 </label>
                 <select
                   id="cf-service"
                   name="service"
-                  value={values.service}
+                  value={service}
                   onChange={(e) => set("service", e.target.value)}
                   aria-invalid={Boolean(errors.service)}
                   aria-describedby={errors.service ? "cf-service-error" : undefined}
                   className={cn(
                     inputCls(Boolean(errors.service)),
                     "h-12",
-                    !values.service && "text-fg/35"
+                    !service && "text-fg/50"
                   )}
                 >
                   <option value="" disabled>
                     Hizmet seçin
                   </option>
-                  {defaultService && !services.some((s) => s.title === defaultService) && (
-                    <option value={defaultService}>{defaultService}</option>
-                  )}
-                  {services.map((s) => (
-                    <option key={s.slug} value={s.title}>
-                      {s.title}
+                  {optionList.map((title) => (
+                    <option key={title} value={title}>
+                      {title}
                     </option>
                   ))}
-                  <option value="Diğer">Diğer / Emin değilim</option>
+                  <option value={OTHER_OPTION}>Diğer / Emin değilim</option>
                 </select>
                 <FieldError id="cf-service-error" message={errors.service} />
               </div>
@@ -316,11 +366,11 @@ export function ContactForm({
             <div className="mt-8 space-y-3">
               <button
                 type="submit"
-                className="group inline-flex h-12 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-guru px-8 text-[15px] font-semibold text-ink transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(16,216,108,0.3)] active:scale-[0.985] sm:w-auto md:h-14"
+                className="group inline-flex h-12 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-guru px-6 text-[15px] font-semibold text-ink transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(16,216,108,0.3)] active:scale-[0.985] sm:w-auto sm:px-8 md:h-14"
               >
                 Mesajı Gönder
                 <ArrowRight
-                  className="size-[18px] transition-transform duration-300 group-hover:translate-x-1"
+                  className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-1"
                   strokeWidth={2.2}
                 />
               </button>

@@ -4,11 +4,11 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Sparkles — bir alanın üzerinde yumuşakça beliren/sönen minik ışıltı partikülleri.
+ * Sparkles: bir alanın üzerinde yumuşakça beliren/sönen minik ışıltı partikülleri.
  *
  * - Partiküller rastgele konum/boyut/faz ile doğar, sinüs zarfıyla parlar ve söner;
  *   çoğunluk yumuşak yuvarlak glow noktası, ara sıra 4 uçlu çapraz parıltı.
- * - TÜM rastgelelik useEffect içinde üretilir — SSR çıktısına asla sızmaz
+ * - TÜM rastgelelik useEffect içinde üretilir: SSR çıktısına asla sızmaz
  *   (ilk render boş bir canvas'tır, iki tarafta da birebir aynı).
  * - Performans: glow/çapraz sprite'ları bir kez offscreen canvas'a çizilir,
  *   her karede yalnız drawImage yapılır (karede gradient/obje alloc yok).
@@ -30,7 +30,7 @@ type Particle = {
   y: number;
   /** taban ölçek (px, yarıçap benzeri) */
   size: number;
-  /** doğum zamanı (performance.now ms) — gelecekte olabilir (gecikmeli doğum) */
+  /** doğum zamanı (performance.now ms): gelecekte olabilir (gecikmeli doğum) */
   birth: number;
   /** yaşam süresi (ms) */
   dur: number;

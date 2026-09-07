@@ -1,10 +1,15 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+/**
+ * Görünüme girince yumuşak yukarı kayma + opaklık.
+ * Hydration notu: initial SABİT (reduce'a göre dallanmaz); reduced-motion'da
+ * transform animasyonunu layout'taki MotionConfig reducedMotion="user" atlar.
+ */
 export function Reveal({
   children,
   className,
@@ -18,11 +23,10 @@ export function Reveal({
   y?: number;
   once?: boolean;
 }) {
-  const reduce = useReducedMotion();
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: reduce ? 0 : y }}
+      initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once, margin: "-10% 0px" }}
       transition={{ duration: 0.7, delay, ease: EASE }}

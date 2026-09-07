@@ -86,7 +86,7 @@ function WordmarkLetter({
   return (
     <motion.span
       ref={ref}
-      className="headline-outline-light inline-block text-[20vw] font-extrabold lowercase leading-[0.9] tracking-[-0.06em]"
+      className="headline-outline-light inline-block text-[30vw] font-extrabold lowercase leading-[0.9] tracking-[-0.06em] sm:text-[20vw]"
       style={interactive ? { y, color } : undefined}
     >
       {char}

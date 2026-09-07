@@ -5,24 +5,26 @@ import {
   motion,
   useAnimationFrame,
   useMotionValue,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   useVelocity,
 } from "motion/react";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 /**
- * VelocityMarquee — scroll hızına tepki veren sonsuz akış bandı.
+ * VelocityMarquee: scroll hızına tepki veren sonsuz akış bandı.
  *
  * Klasik framer velocity-marquee deseni: useScroll → useVelocity → useSpring
  * → useAnimationFrame. Scroll hızlandıkça bant hızlanır, yön scroll yönüne
- * uyar. İçerik 4x tekrar edilir; track %-25..0 aralığında sarılarak (wrap)
- * hiç boşluk bırakmaz. Reduced-motion'da sabit yavaş akış.
+ * uyar. İçerik `copies` kez tekrar edilir; track (-100/copies)%..0 aralığında
+ * sarılarak (wrap) hiç boşluk bırakmaz.
+ * Reduced-motion'da bant DURUR (WCAG 2.2.2: 5 sn'den uzun otomatik hareket yok);
+ * ilk kopya statik görünür kalır. Tercih SSR güvenli hook ile okunur.
  */
 
-const COPIES = 4;
+const DEFAULT_COPIES = 4;
 
 /** v değerini [min, max) aralığına sarar (negatifler dahil). */
 function wrap(min: number, max: number, v: number): number {
@@ -34,15 +36,18 @@ export type VelocityMarqueeProps = {
   children: ReactNode;
   /** Temel akış hızı (%/sn). Negatif değer başlangıç yönünü ters çevirir. Varsayılan: 3 */
   baseVelocity?: number;
+  /** Yan yana dizilen kopya sayısı (varsayılan 4; kısa bantlar 2-3 kullanabilir) */
+  copies?: number;
   className?: string;
 };
 
 export function VelocityMarquee({
   children,
   baseVelocity = 3,
+  copies = DEFAULT_COPIES,
   className,
 }: VelocityMarqueeProps) {
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   /* Görünürlük kapısı: ekran dışındayken kare başına transform yazılmaz.
      Ref üzerinden okunur (state değil) → re-render yok, hydration nötr. */
@@ -60,8 +65,8 @@ export function VelocityMarquee({
   });
   const directionFactor = useRef(1);
 
-  // Track 4 kopyadan oluşur → bir kopya genişliği = track'in %25'i.
-  const x = useTransform(baseX, (v) => `${wrap(-100 / COPIES, 0, v)}%`);
+  // Track `copies` kopyadan oluşur → bir kopya genişliği = track'in (100/copies)%'i.
+  const x = useTransform(baseX, (v) => `${wrap(-100 / copies, 0, v)}%`);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -77,14 +82,9 @@ export function VelocityMarquee({
   }, []);
 
   useAnimationFrame((_time, delta) => {
+    if (reduce) return; // reduced-motion: bant statik durur
     if (!visibleRef.current) return; // ekran dışında: transform yazma
     const dt = Math.min(delta, 64) / 1000; // sekme arka plana düşünce sıçramayı önle
-
-    if (reduce) {
-      // Reduced-motion: scroll'a bağlanmadan sabit, yavaş akış
-      baseX.set(baseX.get() + baseVelocity * 0.35 * dt);
-      return;
-    }
 
     let moveBy = directionFactor.current * baseVelocity * dt;
     const vf = velocityFactor.get();
@@ -98,7 +98,7 @@ export function VelocityMarquee({
   return (
     <div ref={containerRef} className={cn("overflow-hidden", className)}>
       <motion.div className="flex w-max flex-nowrap will-change-transform" style={{ x }}>
-        {Array.from({ length: COPIES }, (_, i) => (
+        {Array.from({ length: copies }, (_, i) => (
           <div key={i} className="flex shrink-0 items-center" aria-hidden={i > 0}>
             {children}
           </div>

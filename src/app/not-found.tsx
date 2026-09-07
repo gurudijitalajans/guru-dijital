@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { GButton } from "@/components/ui/Button";
 import { Scramble } from "@/components/fx/Scramble";
 import { Magnetic } from "@/components/ui/Magnetic";
+
+export const metadata: Metadata = {
+  title: "Sayfa Bulunamadı",
+  description:
+    "Aradığınız sayfa bulunamadı ya da adresi değişti. Ana sayfaya dönün veya projenizi konuşmak için bize ulaşın.",
+};
 
 export default function NotFound() {
   return (
@@ -34,7 +41,7 @@ export default function NotFound() {
             size="lg"
             className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
           >
-            Bize Ulaşın
+            Projenizi Konuşalım
           </GButton>
         </Magnetic>
       </div>

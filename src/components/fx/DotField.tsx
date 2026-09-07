@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * DotField — koyu zemin üzerinde interaktif nokta alanı.
+ * DotField: zemin üzerinde interaktif nokta alanı.
  *
  * - İnce işaretçide (pointer: fine): noktalar imlece yaklaşınca parlar ve
  *   hafifçe imlece çekilir; imleç uzaklaşınca yumuşak lerp ile yerine döner.
- * - Kaba işaretçide (dokunmatik): etkileşimsiz, hafif parlaklık dalgası.
- * - prefers-reduced-motion: reduce → tamamen statik tek kare.
+ * - Kaba işaretçide (dokunmatik) ve prefers-reduced-motion: reduce'da tamamen
+ *   statik tek kare: rAF döngüsü hiç kurulmaz (pil/jank maliyeti yok).
  * - devicePixelRatio duyarlı, ResizeObserver'lı; IntersectionObserver ile
  *   ekran dışındayken rAF tamamen durur. Noktalar settle olunca da döngü
  *   durur, pointer hareketiyle yeniden başlar (gereksiz çizim yok).
@@ -22,10 +22,9 @@ type Dot = {
   y: number;
   a: number;
   ba: number;
-  phase: number;
 };
 
-type Mode = "interactive" | "wave" | "static";
+type Mode = "interactive" | "static";
 
 export type DotFieldProps = {
   className?: string;
@@ -56,7 +55,7 @@ export function DotField({
     const reducedMq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fineMq = window.matchMedia("(pointer: fine)");
     const computeMode = (): Mode =>
-      reducedMq.matches ? "static" : fineMq.matches ? "interactive" : "wave";
+      reducedMq.matches ? "static" : fineMq.matches ? "interactive" : "static";
 
     let mode: Mode = computeMode();
     let dots: Dot[] = [];
@@ -80,7 +79,7 @@ export function DotField({
           const bx = c * gap;
           const by = r * gap;
           const ba = 0.07 + Math.random() * 0.1; // sönük taban parlaklık
-          dots.push({ bx, by, x: bx, y: by, a: ba, ba, phase: (bx + by) * 0.02 });
+          dots.push({ bx, by, x: bx, y: by, a: ba, ba });
         }
       }
     };
@@ -100,40 +99,33 @@ export function DotField({
       ctx.globalAlpha = 1;
     };
 
-    /** Bir kare çizer; hâlâ hareket varsa true döner. */
-    const drawFrame = (now: number): boolean => {
+    /** Bir kare çizer (interactive); hâlâ hareket varsa true döner. */
+    const drawFrame = (): boolean => {
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = fill;
       let moving = false;
 
       for (const d of dots) {
-        if (mode === "wave") {
-          // dokunmatik: etkileşimsiz, hafif parlaklık dalgası
-          d.x = d.bx;
-          d.y = d.by;
-          d.a = d.ba + 0.1 * (0.5 + 0.5 * Math.sin(now * 0.0012 + d.phase));
-        } else {
-          let tx = d.bx;
-          let ty = d.by;
-          let ta = d.ba;
-          if (pointer.active) {
-            const dx = pointer.x - d.bx;
-            const dy = pointer.y - d.by;
-            const dist2 = dx * dx + dy * dy;
-            if (dist2 < RADIUS * RADIUS) {
-              const dist = Math.sqrt(dist2);
-              const t = 1 - dist / RADIUS;
-              const e = t * t * (3 - 2 * t); // smoothstep
-              tx = d.bx + (dx / (dist || 1)) * e * PULL;
-              ty = d.by + (dy / (dist || 1)) * e * PULL;
-              ta = d.ba + (0.9 - d.ba) * e;
-            }
+        let tx = d.bx;
+        let ty = d.by;
+        let ta = d.ba;
+        if (pointer.active) {
+          const dx = pointer.x - d.bx;
+          const dy = pointer.y - d.by;
+          const dist2 = dx * dx + dy * dy;
+          if (dist2 < RADIUS * RADIUS) {
+            const dist = Math.sqrt(dist2);
+            const t = 1 - dist / RADIUS;
+            const e = t * t * (3 - 2 * t); // smoothstep
+            tx = d.bx + (dx / (dist || 1)) * e * PULL;
+            ty = d.by + (dy / (dist || 1)) * e * PULL;
+            ta = d.ba + (0.9 - d.ba) * e;
           }
-          d.x += (tx - d.x) * LERP;
-          d.y += (ty - d.y) * LERP;
-          d.a += (ta - d.a) * LERP;
-          if (Math.abs(tx - d.x) > 0.05 || Math.abs(ta - d.a) > 0.003) moving = true;
         }
+        d.x += (tx - d.x) * LERP;
+        d.y += (ty - d.y) * LERP;
+        d.a += (ta - d.a) * LERP;
+        if (Math.abs(tx - d.x) > 0.05 || Math.abs(ta - d.a) > 0.003) moving = true;
 
         ctx.globalAlpha = d.a;
         ctx.beginPath();
@@ -144,22 +136,13 @@ export function DotField({
       return moving;
     };
 
-    /* ---- rAF döngüsü: yalnız gerektiğinde çalışır ---- */
-    // Wave (dokunmatik) modunda kare hızı ~24fps'e düşürülür: dalga yavaş bir
-    // parlaklık salınımı olduğundan 60fps redraw pil/jank maliyetine değmez.
-    const WAVE_FRAME_MS = 1000 / 24;
-    let lastWaveDraw = 0;
-    const tick = (now: number) => {
+    /* ---- rAF döngüsü: yalnız interactive modda ve hareket varken çalışır ---- */
+    const tick = () => {
       rafId = null;
       if (disposed || !visible || mode === "static") return;
-      if (mode === "wave" && now - lastWaveDraw < WAVE_FRAME_MS) {
-        schedule(); // bu kare çizim yok; sıradaki kareyi bekle
-        return;
-      }
-      if (mode === "wave") lastWaveDraw = now;
-      const moving = drawFrame(now);
-      // wave sürekli akar; interactive settle olunca durur (pointermove yeniden başlatır)
-      if (mode === "wave" || moving) schedule();
+      const moving = drawFrame();
+      // settle olunca durur; pointermove yeniden başlatır
+      if (moving) schedule();
     };
     const schedule = () => {
       if (rafId == null && visible && mode !== "static") {
@@ -186,7 +169,7 @@ export function DotField({
       build();
       if (mode === "static") drawStatic();
       else {
-        drawFrame(performance.now());
+        drawFrame();
         schedule();
       }
     };

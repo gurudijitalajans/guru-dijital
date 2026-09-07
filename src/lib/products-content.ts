@@ -34,12 +34,21 @@ export type ProductDetail = {
   slug: string;
   seo: { title: string; description: string; keywords: string[] };
   hero: { eyebrow: string; headline: string; sub: string; ctaLabel: string };
-  /** Ürün mockup görseli (public/products/*.svg) */
+  /** Ürün mockup görseli (public/products/*.svg). Alt metni tek kaynaktan,
+      data.ts'teki liste kaydından (products[].imageAlt) gelir. */
   image: string;
-  imageAlt: string;
+  /** Ekran turu noktaları: mockup'a oransal (0-1) konumlar, sırasıyla
+      features[0..2] ile eşleşir. Verilmezse ScreenTour varsayılanı kullanır. */
+  hotspots?: { x: number; y: number }[];
   features: { icon: LucideIcon; title: string; desc: string }[];
   steps: { title: string; desc: string }[];
   useCases: { title: string; desc: string }[];
+  /** "Sayılarla" bandı. Yalnız ürün/özellik ifadeleri (kanal sayısı, kurulum
+      süresi, kayıt kapsamı); kaynaksız performans yüzdesi KULLANILMAZ
+      (Ticari Reklam Yönetmeliği: ispat yükü ajansta).
+      TODO(client): Müşteri pilot verisi paylaşırsa yüzdeler geri eklenir ve
+      banda "Pilot müşterilerde 3 aylık ortalama" dipnotu (text-xs text-fg/50)
+      konur. */
   stats: { value: number; suffix: string; label: string }[];
   faq: { q: string; a: string }[];
   integrations: string[];
@@ -75,7 +84,12 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-chatbot.svg",
-    imageAlt: "Guru Chatbot yönetim paneli ve müşteriyle sohbet penceresi",
+    /* Bot yanıt balonu, kanal ikonlu konuşma listesi, "Ekibe Aktar" düğmesi */
+    hotspots: [
+      { x: 0.62, y: 0.44 },
+      { x: 0.235, y: 0.4 },
+      { x: 0.67, y: 0.78 },
+    ],
     features: [
       {
         icon: Bot,
@@ -141,10 +155,10 @@ export const productDetails: Record<string, ProductDetail> = {
       },
     ],
     stats: [
-      { value: 80, suffix: "%", label: "Otomatik yanıtlanan soru" },
-      { value: 5, suffix: "x", label: "Daha hızlı ilk yanıt" },
-      { value: 24, suffix: "", label: "Saat kesintisiz hizmet" },
-      { value: 35, suffix: "%", label: "Daha fazla nitelikli talep" },
+      { value: 24, suffix: "/7", label: "Kesintisiz müşteri yanıtı" },
+      { value: 3, suffix: "", label: "Kanal, tek gelen kutusu" },
+      { value: 100, suffix: "%", label: "Konuşma geçmişi kayıt altında" },
+      { value: 1, suffix: "\u00A0gün", label: "Standart kurulum süresi" },
     ],
     faq: [
       {
@@ -204,7 +218,12 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-crm.svg",
-    imageAlt: "Guru CRM satış hattı panosu ve müşteri kartları",
+    /* Aday sütunundaki müşteri kartı, satış hattı sütun başlıkları, Teklif sütunu */
+    hotspots: [
+      { x: 0.3, y: 0.42 },
+      { x: 0.56, y: 0.34 },
+      { x: 0.675, y: 0.52 },
+    ],
     features: [
       {
         icon: Users,
@@ -270,10 +289,10 @@ export const productDetails: Record<string, ProductDetail> = {
       },
     ],
     stats: [
-      { value: 40, suffix: "%", label: "Daha hızlı teklif süreci" },
-      { value: 30, suffix: "%", label: "Daha az kaybolan fırsat" },
       { value: 100, suffix: "%", label: "Görüşme geçmişi kayıt altında" },
-      { value: 15, suffix: "dk", label: "Haftalık rapor hazırlığı" },
+      { value: 1, suffix: "\u00A0tık", label: "Markalı teklif taslağı" },
+      { value: 15, suffix: "\u00A0dk", label: "Haftalık rapor hazırlığı" },
+      { value: 1, suffix: "\u00A0hafta", label: "Temel kurulum süresi" },
     ],
     faq: [
       {
@@ -333,7 +352,12 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-operation.svg",
-    imageAlt: "Guru Operation görev panosu ve ekip takvimi",
+    /* Görev panosu başlığı, Devam sütunundaki görev kartı, Ekip Kapasitesi paneli */
+    hotspots: [
+      { x: 0.27, y: 0.23 },
+      { x: 0.375, y: 0.44 },
+      { x: 0.83, y: 0.34 },
+    ],
     features: [
       {
         icon: Workflow,
@@ -399,10 +423,10 @@ export const productDetails: Record<string, ProductDetail> = {
       },
     ],
     stats: [
-      { value: 30, suffix: "%", label: "Daha az koordinasyon süresi" },
-      { value: 90, suffix: "%", label: "Zamanında tamamlanan iş" },
-      { value: 10, suffix: "dk", label: "Günlük planlama süresi" },
-      { value: 2, suffix: "x", label: "Daha hızlı adımlar arası devir" },
+      { value: 4, suffix: "", label: "Aşamalı görev panosu" },
+      { value: 100, suffix: "%", label: "Görevde sorumlu ve teslim tarihi" },
+      { value: 1, suffix: "\u00A0tık", label: "CRM fırsatından operasyon işine" },
+      { value: 2, suffix: "\u00A0hafta", label: "Süreç şablonları canlıda" },
     ],
     faq: [
       {
@@ -462,7 +486,12 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-business.svg",
-    imageAlt: "Guru Business genel bakış panosu: chatbot, CRM ve operasyon özetleri",
+    /* Modül kutuları, Aktif Müşteri KPI kartı, gelir dağılımı halka grafiği */
+    hotspots: [
+      { x: 0.4, y: 0.51 },
+      { x: 0.28, y: 0.25 },
+      { x: 0.725, y: 0.54 },
+    ],
     features: [
       {
         icon: Layers,
@@ -529,9 +558,9 @@ export const productDetails: Record<string, ProductDetail> = {
     ],
     stats: [
       { value: 3, suffix: "", label: "Modül, tek panel" },
-      { value: 45, suffix: "%", label: "Daha az manuel veri girişi" },
-      { value: 2, suffix: "x", label: "Daha hızlı talepten teslimata" },
-      { value: 14, suffix: "", label: "Gün içinde ilk modül canlıda" },
+      { value: 1, suffix: "", label: "Veri tabanı, tüm modüller" },
+      { value: 14, suffix: "\u00A0gün", label: "İçinde ilk modül canlıda" },
+      { value: 100, suffix: "%", label: "Modüllerde rol bazlı yetki" },
     ],
     faq: [
       {

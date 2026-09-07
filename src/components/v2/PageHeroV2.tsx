@@ -1,13 +1,14 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { cn, parseAccent } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export type PageHeroV2Props = {
-  eyebrow: string;
+  /** Düz metin ya da <Scramble/> gibi bir düğüm */
+  eyebrow: ReactNode;
   /** *Yıldız* işaretli kelimeler marka yeşiline boyanır. */
   title: string;
   sub?: string;
@@ -21,8 +22,12 @@ export type PageHeroV2Props = {
 
 /**
  * Tüm iç sayfaların koyu (bg-page) hero'su. Başlık kelime bazlı maske
- * reveal ile MOUNT anında animasyonlanır — hero her zaman sayfanın en
+ * reveal ile MOUNT anında animasyonlanır; hero her zaman sayfanın en
  * üstünde göründüğü için whileInView'e gerek yoktur.
+ *
+ * Hydration: initial değerleri SABİTTİR (reduced-motion'a göre dallanmaz).
+ * Azaltılmış hareket tercihi layout'taki MotionConfig reducedMotion="user"
+ * ile uygulanır: transform animasyonları atlanır, opacity kalır.
  */
 export function PageHeroV2({
   eyebrow,
@@ -33,8 +38,6 @@ export function PageHeroV2({
   className,
   minimal = false,
 }: PageHeroV2Props) {
-  const reduce = useReducedMotion();
-
   /* "*yeşil* kelime" işaretlerini kelime listesine aç */
   const words: { w: string; accent: boolean }[] = [];
   for (const part of parseAccent(title)) {
@@ -42,6 +45,7 @@ export function PageHeroV2({
       if (w.trim() !== "") words.push({ w, accent: part.accent });
     }
   }
+  const plainTitle = title.replaceAll("*", "");
 
   const wordStagger = 0.05;
   const subDelay = 0.3 + Math.min(words.length * wordStagger, 0.35);
@@ -56,7 +60,7 @@ export function PageHeroV2({
         className
       )}
     >
-      {/* Çok hafif nokta deseni (CSS radial-gradient — canvas yok) */}
+      {/* Çok hafif nokta deseni (CSS radial-gradient, canvas yok) */}
       <div
         className="absolute inset-0 bg-[radial-gradient(color-mix(in_oklab,var(--color-fg)_5%,transparent)_1px,transparent_1px)] bg-[size:26px_26px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]"
         aria-hidden
@@ -72,7 +76,7 @@ export function PageHeroV2({
         <div className="min-w-0">
         {/* Eyebrow */}
         <motion.div
-          initial={{ opacity: 0, y: reduce ? 0 : 14 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: EASE }}
           className="mb-5 inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-fg/60"
@@ -84,12 +88,11 @@ export function PageHeroV2({
           {eyebrow}
         </motion.div>
 
-        {/* Başlık — kelime bazlı maske reveal (mount'ta) */}
+        {/* Başlık: kelime bazlı maske reveal (mount'ta). Ekran okuyucu için
+            düz kopya sr-only; görsel kopya aria-hidden. */}
         {/* overflow-wrap:anywhere: dar ekranda sığmayan tek kelime kırpılmak yerine bölünür */}
-        <h1
-          className="max-w-4xl text-[2.75rem] font-extrabold leading-[1.04] tracking-[-0.04em] text-fg [overflow-wrap:anywhere] sm:text-6xl lg:text-7xl"
-          aria-label={title.replaceAll("*", "")}
-        >
+        <h1 className="max-w-4xl text-[clamp(2.25rem,12vw,2.75rem)] font-extrabold leading-[1.04] tracking-[-0.04em] text-fg [overflow-wrap:anywhere] sm:text-6xl lg:text-7xl">
+          <span className="sr-only">{plainTitle}</span>
           <span className="inline-flex flex-wrap gap-x-[0.26em]" aria-hidden>
             {words.map((word, i) => (
               <span
@@ -99,9 +102,9 @@ export function PageHeroV2({
                 <motion.span
                   className={cn(
                     "inline-block will-change-transform",
-                    word.accent && "text-guru"
+                    word.accent && "text-guru-text"
                   )}
-                  initial={{ y: reduce ? 0 : "115%" }}
+                  initial={{ y: "115%" }}
                   animate={{ y: 0 }}
                   transition={{
                     duration: 0.8,
@@ -119,7 +122,7 @@ export function PageHeroV2({
         {/* Alt metin */}
         {sub && (
           <motion.p
-            initial={{ opacity: 0, y: reduce ? 0 : 18 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: subDelay, ease: EASE }}
             className="mt-6 max-w-2xl text-base leading-relaxed text-fg/65 md:text-lg"
@@ -131,7 +134,7 @@ export function PageHeroV2({
         {/* Slot */}
         {children && (
           <motion.div
-            initial={{ opacity: 0, y: reduce ? 0 : 18 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: subDelay + 0.1, ease: EASE }}
             className="mt-8"

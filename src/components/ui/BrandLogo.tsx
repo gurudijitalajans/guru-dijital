@@ -5,15 +5,19 @@ import { cn } from "@/lib/utils";
  * Tema-duyarlı marka logosu: iki sürüm de render edilir, görünürlüğü
  * globals.css'teki .logo-dark-theme / .logo-light-theme kuralları yönetir
  * (JS yok, hydration nötr, tema geçişinde anında değişir).
+ *
+ * Her iki görsel loading="eager" ile hemen istenir; preload (priority)
+ * kullanılmaz: 7KB'lık logo için görünmeyen tema varyantına da
+ * <link rel=preload> basmak gereksizdi.
  */
 export function BrandLogo({
   className,
-  priority = false,
 }: {
   className?: string;
+  /** @deprecated Etkisiz; geriye dönük uyumluluk için kabul edilir. */
   priority?: boolean;
 }) {
-  const shared = { width: 720, height: 306, priority } as const;
+  const shared = { width: 720, height: 306, loading: "eager" } as const;
   return (
     <>
       {/* Gece: beyaz logo */}

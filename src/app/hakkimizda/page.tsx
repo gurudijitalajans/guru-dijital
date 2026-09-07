@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Award, BadgeCheck, type LucideIcon } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { CTASection } from "@/components/sections/CTASection";
@@ -11,12 +10,14 @@ import { GlowBorder } from "@/components/fx/GlowBorder";
 import { RollingCounter } from "@/components/fx/RollingCounter";
 import { SectionDivider } from "@/components/v2/SectionDivider";
 import { awards, products, references, services, values } from "@/lib/data";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Hakkımızda",
   description:
-    "Guru Dijital'i tanıyın: Google Partner ve Google Ads Impact Awards tanınırlığıyla markaların yol arkadaşıyız.",
-};
+    "Guru Dijital'i tanıyın: Google Partner ve Google Ads Impact Awards adayı ekibimizle markaların yol arkadaşıyız; strateji, tasarım ve teknoloji tek çatıda.",
+  path: "/hakkimizda",
+});
 
 /* Ödül kartları: büyük görsel + yalnız kısa başlık ve tek cümle */
 const awardCards: {
@@ -44,13 +45,13 @@ const awardCards: {
 
 /* Tek sıra istatistik bandı */
 const stats = [
-  { value: references.length, suffix: "+", label: "Marka" },
-  { value: services.length, suffix: "", label: "Uzmanlık" },
-  { value: awards.length, suffix: "", label: "Google Tanınırlığı" },
-  { value: products.length, suffix: "", label: "Ürün" },
+  { value: references.length, suffix: "", label: "Marka" },
+  { value: services.length, suffix: "", label: "Uzmanlık Alanı" },
+  { value: awards.length, suffix: "", label: "Google Onayı" },
+  { value: products.length, suffix: "", label: "Yazılım Ürünü" },
 ];
 
-/* Manifesto: aboutParagraphs'tan damıtılmış tek cümlelik özler */
+/* Manifesto: kuruluş hikayesinden damıtılmış tek cümlelik özler */
 const manifesto: { pre: string; accent: string; post: string; indent?: string }[] = [
   {
     pre: "Yaratıcılığın markalar için ",
@@ -79,7 +80,7 @@ export default function HakkimizdaPage() {
         // runtime'da güvenlidir, prop tipi string olduğu için cast gerekir.
         eyebrow={(<Scramble text="Biz Kimiz" duration={1.1} />) as unknown as string}
         title="Markaların *yol arkadaşıyız*"
-        sub="Strateji, tasarım ve teknoloji; tek çatıda."
+        sub="Strateji, tasarım ve teknoloji: tek çatıda."
         aside={
           // Aside lg altında render edilmez (hidden lg:block); priority/preload
           // mobilde gereksiz indirme yaratacağı için bilinçli olarak yok.
@@ -91,9 +92,20 @@ export default function HakkimizdaPage() {
           />
         }
       >
-        {/* Başlık çevresinde düşük yoğunluklu ışıltı — container'ı kaplar */}
-        <Sparkles density={9} />
+        {/* Işıltı yalnız başlık bandında kalır: alt metnin okunurluğunu bozmaz */}
+        <Sparkles density={5} className="inset-x-0 top-0 h-1/2" />
       </PageHero>
+
+      {/* Kapak bandı: aside lg altında gizli olduğundan mobil/tablette
+          sayfanın görsel açılışını bu tam genişlik bant üstlenir. */}
+      <section className="container-g lg:hidden" aria-hidden>
+        <LiquidImage
+          src="/work/unlock-cover.webp"
+          alt=""
+          sizes="(min-width: 768px) 90vw, 100vw"
+          className="-mt-8 aspect-[16/9] w-full rounded-2xl border border-fg/10 md:aspect-[21/9]"
+        />
+      </section>
 
       {/* Manifesto bandı: 3 kısa cümle, büyük tipografi */}
       <section className="py-20 md:py-28">
@@ -102,7 +114,7 @@ export default function HakkimizdaPage() {
             <Reveal key={line.accent} delay={i * 0.06} className={line.indent}>
               <p className="max-w-4xl text-2xl font-semibold leading-[1.25] tracking-tight text-fg sm:text-3xl md:text-4xl lg:text-5xl">
                 {line.pre}
-                <span className="text-guru">{line.accent}</span>
+                <span className="text-guru-text">{line.accent}</span>
                 {line.post}
               </p>
             </Reveal>
@@ -119,7 +131,7 @@ export default function HakkimizdaPage() {
             title="Google'ın *takdir* ettiği işler"
           />
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:mt-16 lg:grid-cols-2">
-            {awardCards.map((card) => (
+            {awardCards.map((card, i) => (
               <StaggerItem key={card.title} className="h-full">
                 <GlowBorder className="h-full" radius="1.5rem" always={false}>
                   <div className="flex h-full flex-col overflow-hidden rounded-[calc(1.5rem-1px)]">
@@ -127,7 +139,8 @@ export default function HakkimizdaPage() {
                       src={card.image}
                       alt={card.alt}
                       sizes="(min-width: 1024px) 50vw, 100vw"
-                      className="aspect-[1600/1131] w-full"
+                      priority={i === 0}
+                      className="aspect-[1600/1131] w-full bg-band ring-1 ring-fg/10"
                     />
                     <div className="flex items-start gap-4 p-6 md:p-7">
                       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-guru/12 text-guru">

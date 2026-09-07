@@ -1,37 +1,27 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { Mail, ArrowUpRight } from "lucide-react";
+import { Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
 import { FooterWordmark } from "@/components/v2/FooterWordmark";
-import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { navLinks, products, services, site } from "@/lib/data";
+import { awards, navLinks, products, services, site } from "@/lib/data";
+
+/* Liste linkleri: 44px dokunma hedefi (py-3 + 20px satır), negatif dikey
+   marjla görsel sıklık korunur. */
+const listLinkCls = "-my-1 block py-3 text-sm text-fg/70 transition-colors hover:text-guru";
+const headingCls = "mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-fg/60";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const partnerYear = awards.find((a) => a.title === "Google Partner")?.year;
+
   return (
-    <footer className="relative overflow-hidden bg-page text-fg">
+    <footer className="relative overflow-hidden border-t border-fg/10 bg-page text-fg">
       <div className="grain-blob -left-32 top-10 h-80 w-80 opacity-30" aria-hidden />
 
-      {/* CTA band */}
-      <div className="container-g flex flex-col items-start justify-between gap-8 border-b border-fg/10 py-16 md:flex-row md:items-center md:py-20">
-        <p className="max-w-xl text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-          Markanızı bir <span className="text-guru">sonraki seviyeye</span> taşıyalım.
-        </p>
-        <div className="flex items-center gap-8">
-          <RotatingBadge size={116} className="hidden lg:inline-block" />
-          <Link
-            href="/iletisim"
-            className="group inline-flex items-center gap-2 rounded-full bg-guru px-7 py-3.5 font-semibold text-ink transition-all duration-300 hover:bg-fg hover:text-page active:scale-[0.98]"
-          >
-            Projenizi Konuşalım
-            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Columns */}
-      <div className="container-g grid gap-12 py-14 sm:grid-cols-2 md:py-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
-        <div className="sm:col-span-2 lg:col-span-1">
+      {/* Columns: mobilde iki kolon; "Sayfalar" mobil menüyle birebir aynı
+          olduğundan yalnız lg+ ekranda gösterilir. */}
+      <div className="container-g grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:py-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] lg:gap-12">
+        <div className="col-span-2 lg:col-span-1">
           <BrandLogo className="h-10 w-auto" />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-fg/60">
             Stratejik iletişimden performans pazarlamasına; markanızı dijitalde
@@ -57,17 +47,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <nav aria-label="Hizmetler">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-fg/40">
-            Hizmetler
-          </h3>
-          <ul className="space-y-2.5">
+        <nav aria-label="Hizmetler" className="min-w-0">
+          <h3 className={headingCls}>Hizmetler</h3>
+          <ul className="space-y-1">
             {services.map((s) => (
               <li key={s.slug}>
-                <Link
-                  href={`/hizmetler/${s.slug}`}
-                  className="inline-block py-1.5 -my-1 text-sm text-fg/70 transition-colors hover:text-guru"
-                >
+                <Link href={`/hizmetler/${s.slug}`} className={listLinkCls}>
                   {s.title}
                 </Link>
               </li>
@@ -75,17 +60,12 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <nav aria-label="Ürünler">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-fg/40">
-            Ürünler
-          </h3>
-          <ul className="space-y-2.5">
+        <nav aria-label="Ürünler" className="min-w-0">
+          <h3 className={headingCls}>Ürünler</h3>
+          <ul className="space-y-1">
             {products.map((p) => (
               <li key={p.slug}>
-                <Link
-                  href={`/urunler/${p.slug}`}
-                  className="inline-block py-1.5 -my-1 text-sm text-fg/70 transition-colors hover:text-guru"
-                >
+                <Link href={`/urunler/${p.slug}`} className={listLinkCls}>
                   {p.name}
                 </Link>
               </li>
@@ -93,17 +73,12 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <nav aria-label="Sayfalar">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-fg/40">
-            Sayfalar
-          </h3>
-          <ul className="space-y-2.5">
+        <nav aria-label="Sayfalar" className="hidden min-w-0 lg:block">
+          <h3 className={headingCls}>Sayfalar</h3>
+          <ul className="space-y-1">
             {navLinks.map((l) => (
               <li key={l.href}>
-                <Link
-                  href={l.href}
-                  className="inline-block py-1.5 -my-1 text-sm text-fg/70 transition-colors hover:text-guru"
-                >
+                <Link href={l.href} className={listLinkCls}>
                   {l.label}
                 </Link>
               </li>
@@ -111,13 +86,11 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div>
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-fg/40">
-            İletişim
-          </h3>
-          <ul className="space-y-2.5 text-sm text-fg/70">
+        <div className="col-span-2 min-w-0 lg:col-span-1">
+          <h3 className={headingCls}>İletişim</h3>
+          <ul className="space-y-1 text-sm text-fg/70">
             <li>
-              <a href={`mailto:${site.email}`} className="inline-block py-1.5 -my-1 transition-colors hover:text-guru">
+              <a href={`mailto:${site.email}`} className="-my-1 block break-all py-3 transition-colors hover:text-guru">
                 {site.email}
               </a>
             </li>
@@ -126,25 +99,25 @@ export default function Footer() {
                 href={site.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block py-1.5 -my-1 transition-colors hover:text-guru"
+                className="-my-1 block py-3 transition-colors hover:text-guru"
               >
                 instagram/@gurudijital
               </a>
             </li>
-            <li className="text-fg/40">gurudijital.com.tr</li>
+            <li className="py-1 text-fg/60">gurudijital.com.tr</li>
           </ul>
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-fg/15 px-4 py-2 text-xs text-fg/60">
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-fg/15 px-4 py-2 text-xs text-fg/70">
             <span className="size-1.5 bg-guru" aria-hidden />
-            Google Partner · 2025
+            Google Partner{partnerYear ? ` · ${partnerYear}` : ""}
           </div>
         </div>
       </div>
 
       {/* Giant interactive wordmark: alt bara taşmadan, nefes payıyla oturur */}
-      <FooterWordmark className="mt-[calc(72px-4.65vw)] mb-[calc(72px+3.4vw)]" />
+      <FooterWordmark className="mb-10 mt-8 md:mt-[calc(72px-4.65vw)] md:mb-[calc(72px+3.4vw)]" />
 
       <div className="border-t border-fg/10">
-        <div className="container-g flex flex-col items-center justify-between gap-2 py-6 text-xs text-fg/40 sm:flex-row">
+        <div className="container-g flex flex-col items-center justify-between gap-2 py-5 text-xs text-fg/60 sm:flex-row">
           <p>© {year} {site.name}. Tüm hakları saklıdır.</p>
           <p>Unlock the next level</p>
         </div>

@@ -1,10 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
+import { motion, useScroll, useSpring } from "motion/react";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 /**
  * Sayfanın en üstünde 2px yeşil scroll ilerleme çizgisi.
  * Reduced-motion'da spring yumuşatması kapatılır, ham progress kullanılır.
+ * Tercih SSR güvenli hook ile okunur (sunucu = false, ilk render SSR ile aynı).
  */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -13,7 +15,7 @@ export function ScrollProgress() {
     damping: 26,
     mass: 0.4,
   });
-  const reduce = useReducedMotion();
+  const reduce = usePrefersReducedMotion();
 
   return (
     <motion.div

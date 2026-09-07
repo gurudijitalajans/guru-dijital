@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "motion/react";
+import { motion, useInView } from "motion/react";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
@@ -28,8 +29,10 @@ export function RollingCounter({
   const ref = useRef<HTMLSpanElement>(null);
   // ÖNEMLİ: şeritler overflow-hidden sütunların içinde kaydığı için görünürlük
   // gözlemcisi kayan şeride değil, bu DIŞ sarmalayıcıya bağlanır.
-  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
-  const reduce = useReducedMotion();
+  // Alt kenar payı küçük tutulur (40px): viewport'un alt kenarındaki
+  // istatistikler "000" olarak beklemesin, görünür olur olmaz yerine otursun.
+  const inView = useInView(ref, { once: true, margin: "0px 0px -40px 0px" });
+  const reduce = usePrefersReducedMotion();
 
   const decimals = value % 1 === 0 ? 0 : 1;
   const formatted = value.toLocaleString("tr-TR", {
@@ -39,8 +42,8 @@ export function RollingCounter({
   const label = `${prefix}${formatted}${suffix}`;
 
   // Hydration notu: reduced-motion'da farklı (düz) bir ağaç render etmek SSR ile
-  // istemcinin ilk render'ını ayrıştırır (useReducedMotion SSR'da null, istemcide
-  // true). Ağaç her durumda aynı kalır; reduce yalnızca animasyonu süresizleştirir.
+  // istemcinin ilk render'ını ayrıştırır. Ağaç her durumda aynı kalır; reduce
+  // (SSR güvenli hook, sunucuda false) yalnızca animasyonu süresizleştirir.
   return (
     <span
       ref={ref}

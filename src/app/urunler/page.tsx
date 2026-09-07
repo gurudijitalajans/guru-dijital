@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { PageHero, AccentText } from "@/components/layout/PageHero";
-import { CTASection } from "@/components/sections/CTASection";
 import { ProductsShowcase } from "@/components/pages/ProductsShowcase";
 import { Reveal } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
@@ -8,12 +7,16 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { Scramble } from "@/components/fx/Scramble";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { SectionDivider } from "@/components/v2/SectionDivider";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Ürünler | Guru Chatbot, CRM, Operation ve Business",
+/* Başlık 51 karakter (kök şablon eklenmez), açıklama 150 karakter; canonical + OG tek yerden. */
+export const metadata: Metadata = pageMetadata({
+  title: "Guru Ürünleri | Chatbot, CRM, Operation ve Business",
+  absoluteTitle: true,
   description:
-    "Guru Chatbot, Guru CRM, Guru Operation ve Guru Business: işletmenizi büyüten yazılım ürünlerimizi keşfedin, demo talep edin.",
-};
+    "Guru Chatbot, CRM, Operation ve Business: müşteri iletişimi, satış ve operasyonu tek çatıda yöneten işletme yazılımlarımızı keşfedin, demo talep edin.",
+  path: "/urunler",
+});
 
 /* PageHeroV2 eyebrow'u yalnızca JSX içinde render eder; Scramble SSR'da düz
    metin bastığı için ReactNode olarak güvenle geçer (tip daraltması string). */
@@ -48,7 +51,7 @@ export default function UrunlerPage() {
 
       <SectionDivider from="coal" to="ink" flip />
 
-      {/* Özel çözüm bandı */}
+      {/* Özel çözüm bandı: sayfanın tek kapanış CTA'sı (genel CTASection bilinçli olarak yok) */}
       <section className="relative overflow-hidden bg-band py-16 text-fg md:py-24">
         <div
           className="grain-blob -right-28 -top-24 h-80 w-80 opacity-20"
@@ -74,8 +77,6 @@ export default function UrunlerPage() {
           </Reveal>
         </div>
       </section>
-
-      <CTASection />
     </>
   );
 }

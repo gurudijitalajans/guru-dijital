@@ -8,7 +8,7 @@ import {
 } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
-/** Blob çapları (px) — imlece en yakın olan en büyük, kademeli küçülür. */
+/** Blob çapları (px): imlece en yakın olan en büyük, kademeli küçülür. */
 const SIZES = [36, 30, 25, 21, 17, 14] as const;
 
 /**
@@ -25,7 +25,7 @@ const springCfg = (i: number) => ({
 const IDLE_MS = 200;
 
 /**
- * GooTrail — imlecin arkasından akan sıvı yeşil damla izi.
+ * GooTrail: imlecin arkasından akan sıvı yeşil damla izi.
  * - 6 blob, useMotionValue → useSpring zinciriyle birbirini takip eder.
  * - Kapsayıcıya GooDefs'teki #guru-goo filtresi uygulanır; bloblar birbirine
  *   yapışıp akışkan damla gibi ayrılır.
@@ -48,7 +48,7 @@ export function GooTrail() {
   const idleRef = useRef(false);
   const idleTimer = useRef<number | undefined>(undefined);
 
-  // İmleç kaynağı — ekran dışında başlar (SSR'a rastgelelik sızmaz, sabit değer).
+  // İmleç kaynağı: ekran dışında başlar (SSR'a rastgelelik sızmaz, sabit değer).
   const mx = useMotionValue(-200);
   const my = useMotionValue(-200);
 

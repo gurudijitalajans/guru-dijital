@@ -10,7 +10,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const faqs = [
   {
     q: "Hangi şehirlerle çalışıyorsunuz?",
-    a: "Türkiye genelinde ve global ölçekte çalışıyoruz. Süreçlerimiz tamamen uzaktan yürütülebiliyor; toplantıları online yapıyor, işleri şeffaf araçlar üzerinden birlikte takip ediyoruz.",
+    a: "Türkiye genelinde ve global ölçekte çalışıyoruz. Süreçlerimiz tamamen uzaktan yürütülebiliyor; toplantıları çevrim içi yapıyor, işleri şeffaf araçlar üzerinden birlikte takip ediyoruz.",
   },
   {
     q: "Süreç nasıl başlıyor?",

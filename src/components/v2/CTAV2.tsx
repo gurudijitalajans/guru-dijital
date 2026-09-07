@@ -15,7 +15,7 @@ export type CTAV2Props = {
  * Magnetic ve Reveal client alt bileşenler; bu bileşen server'da kalır.
  */
 export function CTAV2({ className }: CTAV2Props) {
-  const parts = parseAccent("Projeni *konuşalım*");
+  const parts = parseAccent("Projenizi *konuşalım*");
 
   return (
     <section
@@ -42,7 +42,7 @@ export function CTAV2({ className }: CTAV2Props) {
         <Reveal>
           <h2 className="text-balance font-extrabold leading-[0.95] tracking-[-0.04em] text-fg text-[clamp(3rem,10vw,8rem)]">
             {parts.map((p, i) => (
-              <span key={i} className={p.accent ? "text-guru" : undefined}>
+              <span key={i} className={p.accent ? "text-guru-text" : undefined}>
                 {p.t}
               </span>
             ))}
@@ -53,7 +53,7 @@ export function CTAV2({ className }: CTAV2Props) {
           <Magnetic strength={0.35}>
             <Link
               href="/iletisim"
-              aria-label="İletişime geç: Projeni konuşalım"
+              aria-label="İletişime geçin: Projenizi konuşalım"
               className="group flex size-[128px] flex-col items-center justify-center gap-1 rounded-full bg-guru text-ink shadow-[0_0_80px_rgb(16_216_108/0.25)] transition-transform duration-500 ease-out hover:scale-110 md:size-[150px]"
             >
               <ArrowUpRight

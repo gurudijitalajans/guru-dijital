@@ -8,8 +8,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: site.description,
     start_url: "/",
     display: "standalone",
-    background_color: "#0e100f",
-    theme_color: "#0e100f",
+    /* Gündüz varsayılan tema ile aynı zemin: PWA açılış ekranı ile ilk boyama uyuşur */
+    background_color: "#f6f7f6",
+    theme_color: "#f6f7f6",
     icons: [
       { src: "/icon.png", sizes: "512x512", type: "image/png" },
       { src: "/favicon32.png", sizes: "32x32", type: "image/png" },

@@ -21,7 +21,7 @@ export const site = {
   shortName: "Guru Dijital",
   tagline: "Unlock the next level",
   description:
-    "Guru Dijital; sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı alanlarında entegre çözümler sunan dijital ajans.",
+    "Guru Dijital: sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımında entegre çözümler sunan dijital ajans.",
   url: "https://www.gurudijital.com.tr",
   instagram: "https://www.instagram.com/gurudijital",
   email: "info@gurudijital.com.tr",
@@ -48,6 +48,8 @@ export type Service = {
   outro?: string;
   images: { src: string; alt: string; ratio?: string }[];
   keywords: string[];
+  /** Arama sonucu açıklaması (140-160 karakter); yoksa short kullanılır */
+  seoDescription?: string;
 };
 
 export const services: Service[] = [
@@ -77,6 +79,8 @@ export const services: Service[] = [
       { src: "/work/sosyal-medya-telefon.webp", alt: "Guru Dijital Instagram hesabı telefon mockup" },
       { src: "/work/instagram-postlar.webp", alt: "Instagram gönderi tasarımları" },
     ],
+    seoDescription:
+      "Platforma özel strateji, içerik, topluluk yönetimi ve Meta, TikTok, LinkedIn reklam kampanyalarıyla markanızı doğru kitleyle buluşturan sosyal medya yönetimi.",
     keywords: ["strateji", "içerik planı", "topluluk yönetimi", "Meta Ads", "raporlama"],
   },
   {
@@ -85,7 +89,7 @@ export const services: Service[] = [
     title: "Grafik Tasarım",
     headline: "Markanıza değer katan tasarımlar",
     short:
-      "Logo ve kurumsal kimlikten ambalaja; markanızın görsel dilini estetik ve stratejik bir bütünlükle kuruyoruz.",
+      "Logo ve kurumsal kimlikten ambalaja: markanızın görsel dilini estetik ve stratejik bir bütünlükle kuruyoruz.",
     icon: Palette,
     intro: [
       "Görsel tasarım, markanızın dış dünyaya attığı ilk adımdır ve doğru atıldığında güçlü bir etki yaratır. Markanızın kimliğini yansıtan özgün ve yaratıcı tasarımlar üreterek mesajınızı hedef kitlenize estetik ve stratejik bir bütünlük içinde ulaştırıyoruz.",
@@ -107,6 +111,8 @@ export const services: Service[] = [
       { src: "/work/ambalaj-etiket.webp", alt: "Ambalaj ve etiket tasarımları" },
       { src: "/work/katalog-brosur.webp", alt: "Katalog ve broşür tasarımları" },
     ],
+    seoDescription:
+      "Logo ve kurumsal kimlikten ambalaj, katalog ve broşüre: markanızın görsel dilini estetik ve stratejik bir bütünlükle kuran grafik tasarım hizmeti.",
     keywords: ["logo", "kurumsal kimlik", "katalog", "ambalaj", "afiş"],
   },
   {
@@ -131,8 +137,9 @@ export const services: Service[] = [
     ],
     images: [
       { src: "/work/instagram-post-kare.webp", alt: "Sosyal medya gönderi tasarımları" },
-      { src: "/tiles/icerik-uretimi.webp", alt: "Guru marka deseni" },
     ],
+    seoDescription:
+      "Marka diline özel metin yazarlığı, sosyal medya metinleri, SEO uyumlu web ve blog içerikleri ve kreatif konseptlerle hedef kitlenize dokunan içerikler.",
     keywords: ["metin yazarlığı", "SEO içerik", "kreatif konsept", "hikâyeleştirme"],
   },
   {
@@ -156,12 +163,14 @@ export const services: Service[] = [
       "Bakım, güncelleme ve teknik destek",
     ],
     outro:
-      "ekoda.com.tr, askahotels.com, esdoinsaat.com, secengross.com ve usreokullari.com dahil birçok markanın web sitesini tasarladık ve yayına aldık.",
+      "Ekoda, Aska Hotels, Esdo İnşaat, Secen Gross ve USRE Okulları dahil birçok markanın web sitesini tasarladık ve yayına aldık.",
     images: [
       { src: "/work/web-siteleri.webp", alt: "Yayında olan web sitesi projeleri" },
       { src: "/work/web-mockup-dark.webp", alt: "Web tasarım laptop mockup" },
       { src: "/work/web-siteleri-2.webp", alt: "Web tasarım projeleri laptop mockupları" },
     ],
+    seoDescription:
+      "Mobil uyumlu, hızlı ve SEO dostu kurumsal web sitesi ve e-ticaret tasarımı; bakım ve teknik destekle ziyaretçilerinizi müşteriye dönüştüren web tasarım hizmeti.",
     keywords: ["kurumsal site", "e-ticaret", "responsive", "SEO", "bakım & destek"],
   },
   {
@@ -176,7 +185,7 @@ export const services: Service[] = [
       "Dijital pazarlama sadece görünür olmak değil; doğru zamanda, doğru yerde, doğru kitleyle buluşmaktır. Guru Dijital olarak markanız için veriye dayalı, sonuç odaklı dijital stratejiler geliştiriyoruz.",
       "Tüm süreci uçtan uca yönetiyor; hedef kitle analizi, mecra seçimi, reklam kurgusu, bütçe optimizasyonu ve performans takibini tek merkezden sağlıyoruz.",
     ],
-    offeringsTitle: "Hizmetlerimiz",
+    offeringsTitle: "Pazarlama çözümlerimiz",
     offerings: [
       "Google & Meta Ads kampanya yönetimi",
       "TikTok, LinkedIn ve diğer platform kampanyaları",
@@ -184,10 +193,12 @@ export const services: Service[] = [
       "ROAS odaklı analiz ve düzenli raporlama",
     ],
     outro:
-      "Dijital pazarlamayı bir reklam gideri değil, markanızı büyüten stratejik bir yatırım olarak görüyoruz. 2025'te Google Partner'ı olduk ve Google Ads Impact Awards'ta 'Data Innovation' kategorisinde aday gösterildik.",
+      "Dijital pazarlamayı bir reklam gideri değil, markanızı büyüten stratejik bir yatırım olarak görüyoruz. 2025'te Google Partner'ı olduk ve Google Ads Impact Awards'ta Data Innovation kategorisinde aday gösterildik.",
     images: [
       { src: "/work/dijital-pazarlama.webp", alt: "Dijital pazarlama kreatif kolaj" },
     ],
+    seoDescription:
+      "Google Partner ajans olarak Google ve Meta Ads, TikTok ve LinkedIn kampanyalarını ROAS odaklı yönetiyor; reklam bütçenizi ölçülebilir büyümeye dönüştürüyoruz.",
     keywords: ["Google Ads", "Meta Ads", "dönüşüm", "ROAS", "remarketing"],
   },
   {
@@ -196,7 +207,7 @@ export const services: Service[] = [
     title: "Video Tasarımı",
     headline: "Hikâyenizi harekete geçirin",
     short:
-      "Reels ve reklam videolarından kurumsal tanıtımlara; markanızı hareketli içerikle anlatıyoruz.",
+      "Reels ve reklam videolarından kurumsal tanıtımlara: markanızı hareketli içerikle anlatıyoruz.",
     icon: Clapperboard,
     intro: [
       "Video, dijitalde en yüksek etkileşimi alan içerik formatı. Markanızın hikâyesini; kurgusu, müziği ve grafikleriyle bütünleşen videolarla anlatıyoruz.",
@@ -212,8 +223,9 @@ export const services: Service[] = [
     ],
     images: [
       { src: "/work/sosyal-icerik-cita.webp", alt: "Hareketli içerik kreatif tasarımı" },
-      { src: "/tiles/video-tasarimi.webp", alt: "Guru marka deseni" },
     ],
+    seoDescription:
+      "Reels, TikTok ve Shorts videolarından motion graphics, reklam filmi ve kurumsal tanıtım filmlerine: markanızı hareketli içerikle anlatan video tasarımı hizmeti.",
     keywords: ["reels", "motion graphics", "reklam filmi", "kurgu"],
   },
 ];
@@ -235,9 +247,9 @@ export const caseStudies: CaseStudy[] = [
   {
     id: "klinik",
     sector: "Sağlık / Klinik",
-    title: "Aynı bütçeyle 3 kat fazla hasta",
+    title: "Aynı bütçeyle %300 daha fazla hasta",
     summary:
-      "Kliniğin dijital reklam süreçleri devraldığımızda sonuçlar potansiyelin oldukça altındaydı. Reklam bütçesini artırmadan, stratejiyi tamamen yenileyerek yalnızca 3 ayda etkileyici bir dönüşüm sağladık.",
+      "Kliniğin dijital reklam süreçlerini devraldığımızda sonuçlar potansiyelin oldukça altındaydı. Reklam bütçesini artırmadan, stratejiyi tamamen yenileyerek yalnızca 3 ayda etkileyici bir dönüşüm sağladık.",
     note: "Reklam bütçesi artırılmadan, 3 ayda",
     stats: [
       { value: 300, suffix: "%", label: "Yurtdışı hasta sayısı artışı" },
@@ -254,7 +266,7 @@ export const caseStudies: CaseStudy[] = [
     title: "Satış odaklı strateji, ölçülebilir büyüme",
     summary:
       "Yönetimini devraldığımız e-ticaret markasında; satış odaklı strateji, doğru hedefleme ve sürekli optimizasyonla kısa sürede güçlü bir performans artışı sağladık.",
-    note: "Dönemsel kampanyalarda önceki cironun %96 üzerine çıktık",
+    note: "Kampanya dönemlerinde önceki ciroyu %96 aştık",
     stats: [
       { value: 60, suffix: "%", label: "Ciro artışı" },
       { value: 96, suffix: "%", label: "Kampanya dönemi ciro artışı" },
@@ -318,7 +330,7 @@ export const awards = [
   {
     title: "Google Ads Impact Awards",
     year: "2025",
-    desc: "Veri odaklı çalışmalarımızla 'Data Innovation' kategorisinde Google tarafından aday gösterildik.",
+    desc: "Veri odaklı çalışmalarımızla Data Innovation kategorisinde Google tarafından aday gösterildik.",
   },
 ];
 
@@ -498,13 +510,6 @@ export const products: SoftwareProduct[] = [
 /* ------------------------------------------------------------------ */
 /*  Hakkımızda                                                         */
 /* ------------------------------------------------------------------ */
-
-export const aboutParagraphs = [
-  "İletişim kurmanın gücüne, yaratıcılığın markalar için dönüştürücü bir etki yaratabileceğine inanan bir ekip olarak yola çıktık. İlk projelerimizi tasarlarken bizi harekete geçiren en güçlü motivasyon, işimize yalnızca bir “hizmet” olarak değil, bir “değer üretme süreci” olarak yaklaşmaktı. Amacımız; birlikte çalıştığımız markaların hikâyelerine katkı sunmak, onları özgün bir bakış açısıyla ifade etmek ve hedef kitleleriyle gerçek bir bağ kurmalarını sağlamaktı.",
-  "Yıllar içinde değişen teknolojilere, gelişen dijital dinamiklere ve dönüşen tüketici davranışlarına hızla adapte olduk. Ancak ilk günkü heyecanımızdan, üretme tutkumuzdan ve işimize duyduğumuz saygıdan hiçbir şey kaybetmedik. Sürekli gelişen, öğrenen ve dönüşen bir yapıyla bugün geldiğimiz noktada; stratejik iletişimden dijital kampanya yönetimine, yaratıcı içerik üretiminden sosyal medya ve performans pazarlamasına, medya planlamasından marka konumlandırmaya kadar geniş bir yelpazede entegre çözümler sunuyoruz.",
-  "Guru Dijital olarak yerel pazarlarda olduğu kadar global ölçekte de birçok markayla çalışıyor, her projeye aynı özen ve aynı detaycılıkla yaklaşıyoruz. Çünkü bizim için her marka; sadece bir müşteri değil, birlikte yol aldığımız bir yol arkadaşı, her proje ise sadece bir görev değil, ortak bir hayalin gerçeğe dönüşme sürecidir.",
-  "Bizce iyi bir iş; yalnızca sonuçla değil, sürece gösterilen özenle, verilen emekle ve her gün yeniden daha iyisini hedeflemekle mümkündür. Bu anlayışla çalışıyor, işimize duyduğumuz tutkuyu ve ilkelerimizi geleceğe de kararlılıkla taşıyoruz.",
-];
 
 export const values = [
   {

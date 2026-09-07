@@ -3,7 +3,7 @@
 import { useInView } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
 
-/** Varsayılan karakter havuzu — scramble sırasında rastgele seçilir. */
+/** Varsayılan karakter havuzu: scramble sırasında rastgele seçilir. */
 const DEFAULT_CHARSET = "abcdefghijklmnoprstuvyzXO#%&*+=0123456789";
 
 export type ScrambleProps = {
@@ -23,20 +23,21 @@ export type ScrambleProps = {
 };
 
 /**
- * Scramble — metin şifre-çözme (decrypt) efekti.
+ * Scramble: metin şifre-çözme (decrypt) efekti.
  * - HYDRATION: SSR ve ilk istemci render'ında DÜZ NİHAİ METİN basılır; efekt
  *   yalnızca mount + görünüme girme sonrası başlar (birebir eşleşme garantili).
  * - Ara kareler React state'i yerine text node'un `data`sına imperatif yazılır:
  *   kare başına re-render yok, react-hooks/set-state-in-effect ihlali yok.
- *   (textContent yerine `Text.data` mutasyonu — React'in sahip olduğu text
+ *   (textContent yerine `Text.data` mutasyonu: React'in sahip olduğu text
  *   node korunur, prop değişiminde React güncellemeye devam edebilir.)
  * - Görünüme girince rAF döngüsüyle karakterler soldan sağa rastgele
  *   karakterlerden geçerek çözülür (ease-out cephe ilerleyişi).
  * - Reduced-motion tercihi mount sonrası matchMedia ile okunur; varsa efekt
  *   hiç oynamaz, metin düz kalır.
  * - Türkçe karakterler (ğüşıöçİ) Array.from ile code-point bazlı işlenir.
- * - Erişilebilirlik: kapsayıcıda aria-label={text}; karışık ara kareler
- *   ekran okuyucudan gizlenir (aria-hidden iç span — yapı hep aynı).
+ * - Erişilebilirlik: rol'süz span üzerindeki aria-label bazı ekran
+ *   okuyucularca yok sayıldığından nihai metin sr-only bir span ile verilir;
+ *   karışık ara kareler aria-hidden görsel kopyada kalır (yapı hep aynı).
  */
 export function Scramble({
   text,
@@ -79,7 +80,7 @@ export function Scramble({
     if (playedRef.current) return;
     playedRef.current = true;
 
-    // Reduced-motion mount sonrası okunur — DOM hiç değişmez, efekt atlanır.
+    // Reduced-motion mount sonrası okunur: DOM hiç değişmez, efekt atlanır.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Grapheme/code-point bazlı bölme: "ğüşıöçİ" gibi karakterler bozulmaz.
@@ -109,7 +110,7 @@ export function Scramble({
         if (i < front || /\s/.test(ch)) {
           out += ch;
         } else {
-          // Rastgelelik yalnızca burada (rAF içinde) — SSR'a asla sızmaz.
+          // Rastgelelik yalnızca burada (rAF içinde): SSR'a asla sızmaz.
           out += pool[Math.floor(Math.random() * pool.length)];
         }
       }
@@ -130,7 +131,8 @@ export function Scramble({
   }, [inView, text, charset, duration, delay, once, writeFrame]);
 
   return (
-    <Tag ref={ref} className={className} aria-label={text}>
+    <Tag ref={ref} className={className}>
+      <span className="sr-only">{text}</span>
       <span aria-hidden ref={innerRef}>
         {text}
       </span>

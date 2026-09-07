@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
-  useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
@@ -13,6 +12,7 @@ import { caseStudies, type CaseStudy } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RollingCounter } from "@/components/fx/RollingCounter";
 import { Spotlight } from "@/components/fx/Spotlight";
+import { usePrefersReducedMotion } from "@/components/fx/usePrefersReducedMotion";
 import { cn } from "@/lib/utils";
 
 export type CaseStackProps = {
@@ -27,7 +27,8 @@ export type CaseStackProps = {
  */
 export function CaseStack({ className }: CaseStackProps) {
   const stackRef = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  /* SSR anlık görüntüsü false: hydration sonrası tek re-render ile gerçek tercih */
+  const reduce = usePrefersReducedMotion();
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -100,14 +101,16 @@ function CaseCard({
 
   return (
     /* Kısa viewport'ta (alçak laptop/zoom) 92vh'lik alan karta yetmeyip alt
-       istatistik satırını kalıcı gizleyebilir — sticky yalnız >=600px yükseklikte */
+       istatistik satırını kalıcı gizleyebilir; sticky yalnız >=600px yükseklikte */
     <div
       className="md:[@media(min-height:600px)]:sticky md:[@media(min-height:600px)]:top-[8vh]"
       style={{ zIndex: index + 1 }}
     >
       <motion.article
         style={fx ? { scale, transformOrigin: "center top" } : undefined}
-        className="relative flex overflow-hidden rounded-[2rem] border border-fg/10 bg-card shadow-[inset_0_1px_0_color-mix(in_oklab,var(--color-fg)_6%,transparent),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[86vh]"
+        /* Kart yüksekliği: tablet/alçak ekranda 60vh (içerik ~600px, boş alt kalmaz);
+           yalnız geniş ve yüksek (>=900px) viewport'ta 86vh sahne yüksekliği */
+        className="relative flex overflow-hidden rounded-[2rem] border border-fg/10 bg-card shadow-[inset_0_1px_0_color-mix(in_oklab,var(--color-fg)_6%,transparent),inset_0_0_120px_rgb(16_216_108/0.05)] md:min-h-[60vh] lg:[@media(min-height:900px)]:min-h-[86vh]"
       >
         {/* Spotlight: kart zemininde fareyle gezen yeşil ışık.
            Karartma katmanı (dim) sarmalayıcının DIŞINDA kalır ki stack
@@ -144,14 +147,15 @@ function CaseCard({
             <p className="mt-5 max-w-md text-sm leading-relaxed text-fg/65 md:text-base">
               {cs.summary}
             </p>
-            <p className="mt-7 inline-flex max-w-full items-start gap-2 rounded-2xl border border-guru/25 bg-guru/10 px-4 py-2 text-xs font-medium text-guru md:items-center md:rounded-full md:text-sm">
+            <p className="mt-7 inline-flex max-w-full items-start gap-2 rounded-2xl border border-guru/25 bg-guru/10 px-4 py-2 text-xs font-medium text-guru-text md:items-center md:rounded-full md:text-sm">
               <span aria-hidden className="mt-[5px] inline-block size-1.5 shrink-0 rounded-full bg-guru md:mt-0" />
               {cs.note}
             </p>
           </div>
 
-          {/* sağ: istatistik ızgarası */}
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
+          {/* sağ: istatistik ızgarası. Tek sayıda istatistikte son kart iki
+             sütuna yayılır (sağ altta boş hücre kalmaz). */}
+          <div className="grid grid-cols-2 gap-3 md:gap-4 [&>*:last-child:nth-child(odd)]:col-span-2">
             {cs.stats.map((s) => (
               <div
                 key={s.label}
@@ -212,7 +216,7 @@ function RollingStat({
       suffix={suffix}
       className={cn(
         "text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl md:text-4xl lg:text-[2.6rem]",
-        down ? "text-guru" : "text-fg"
+        down ? "text-guru-text" : "text-fg"
       )}
     />
   );

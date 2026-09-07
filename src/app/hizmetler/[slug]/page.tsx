@@ -2,26 +2,32 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
-import { caseStudies, services, webProjects } from "@/lib/data";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { caseStudies, services } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/layout/PageHero";
-import { CTASection } from "@/components/sections/CTASection";
+import { CTAV2 } from "@/components/v2/CTAV2";
+import { GButton } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { Scramble } from "@/components/fx/Scramble";
 import { LiquidImage } from "@/components/fx/LiquidImage";
-import { Spotlight } from "@/components/fx/Spotlight";
 import { Sparkles } from "@/components/fx/Sparkles";
 import { GlowBorder } from "@/components/fx/GlowBorder";
 import { RollingCounter } from "@/components/fx/RollingCounter";
 import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { SectionDivider } from "@/components/v2/SectionDivider";
+import { ServiceSignature } from "@/components/pages/hizmetler/ServiceSignature";
+import {
+  serviceShowcase,
+  showcaseSources,
+} from "@/components/pages/hizmetler/service-showcase";
 
-/** "Sosyal Medya Yönetimi" → "Sosyal Medya *Yönetimi*" (son kelime yeşil). */
+/** "Sosyal Medya Yönetimi" → "Sosyal Medya *Yönetimi*" (son kelime yeşil); tek kelime vurgusuz kalır. */
 function accentLastWord(text: string) {
   const words = text.trim().split(" ");
-  if (words.length < 2) return `*${text}*`;
+  if (words.length < 2) return text;
   return `${words.slice(0, -1).join(" ")} *${words[words.length - 1]}*`;
 }
 
@@ -36,6 +42,9 @@ function firstSentences(text: string, count: number) {
     .join(" ");
 }
 
+/** Hero aside (lg+) ve mobil kapak aynı sizes'ı kullanır → tek istek, tek preload. */
+const COVER_SIZES = "(min-width: 1280px) 460px, (min-width: 1024px) 380px, 100vw";
+
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
 }
@@ -48,10 +57,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) return {};
-  return {
+  return pageMetadata({
     title: service.title,
-    description: service.short,
-  };
+    description: service.seoDescription ?? service.short,
+    path: `/hizmetler/${service.slug}`,
+  });
 }
 
 export default async function HizmetDetayPage({
@@ -66,7 +76,18 @@ export default async function HizmetDetayPage({
   const service = services[index];
   const prev = services[(index - 1 + services.length) % services.length];
   const next = services[(index + 1) % services.length];
-  const [cover, ...gallery] = service.images;
+
+  const config = serviceShowcase[service.slug];
+  const showcase = config?.showcase;
+  const cover = config?.hero ?? service.images[0];
+
+  /* Galeri: marka deseni karoları ve vitrinde zaten görünen kareler elenir;
+     boş kalınca bölüm hiç basılmaz. */
+  const used = new Set([cover.src, ...showcaseSources(showcase)]);
+  const gallery = service.images.filter(
+    (img) => !img.src.startsWith("/tiles/") && !used.has(img.src)
+  );
+  const showGallery = showcase?.kind !== "reel" && gallery.length > 0;
 
   const stats =
     service.slug === "dijital-pazarlama"
@@ -88,43 +109,38 @@ export default async function HizmetDetayPage({
         }
         title={accentLastWord(service.title)}
         sub={service.headline}
-      />
-
-      {/* Giriş + kapak görseli; lg'de görsel kolonu daha geniş (tam genişlik) */}
-      <section className="pb-20 md:pb-28 md:pt-2">
-        <div className="container-g grid items-center gap-10 md:grid-cols-2 md:gap-16 lg:grid-cols-[1fr_1.1fr]">
-          <div>
-            <Reveal>
-              <p className="text-lg leading-relaxed text-fg/70 md:text-xl md:leading-relaxed">
-                {firstSentences(service.intro[0], 2)}
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div className="mt-8 flex flex-wrap gap-2">
-                {service.keywords.map((k) => (
-                  <span
-                    key={k}
-                    className="inline-flex items-center gap-2 rounded-full border border-fg/15 px-3.5 py-1.5 text-xs font-medium text-fg/60"
-                  >
-                    <span className="size-1.5 bg-guru" aria-hidden />
-                    {k}
-                  </span>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-          <Reveal delay={0.1}>
-            {/* Kapak: hover'da sıvı dalgalanma — link değil, data-cursor yok */}
-            <LiquidImage
-              src={cover.src}
-              alt={cover.alt}
-              priority
-              sizes="(min-width: 1024px) 55vw, (min-width: 768px) 50vw, 100vw"
-              className="aspect-[4/3] rounded-3xl border border-fg/10 shadow-[0_0_50px_rgba(16,216,108,0.07)]"
-            />
-          </Reveal>
+        aside={
+          <LiquidImage
+            src={cover.src}
+            alt={cover.alt}
+            priority
+            sizes={COVER_SIZES}
+            className="aspect-[4/3] w-[380px] rounded-3xl border border-fg/10 bg-card shadow-[0_0_50px_rgba(16,216,108,0.07)] xl:w-[460px]"
+          />
+        }
+      >
+        <div className="flex flex-wrap gap-3">
+          <GButton href={`/iletisim?hizmet=${service.slug}`} variant="green" size="lg">
+            Teklif Al
+          </GButton>
+          <GButton href="#kapsam" variant="outline" size="lg" arrow={false}>
+            Kapsamı İncele
+          </GButton>
         </div>
-      </section>
+      </PageHero>
+
+      {/* Vitrin anı: manifesto + anahtar kelimeler + hizmete özgü gösterim.
+          Telefon akışı kapağı zaten içerdiğinden mobil kapak onda basılmaz. */}
+      <ServiceSignature
+        showcase={showcase}
+        manifesto={firstSentences(service.intro[0], 1)}
+        keywords={service.keywords}
+        cover={
+          showcase?.kind === "phone-feed"
+            ? null
+            : { src: cover.src, alt: cover.alt, sizes: COVER_SIZES }
+        }
+      />
 
       {/* Dijital pazarlama: vaka istatistikleri (koyu bant) */}
       {stats && (
@@ -144,7 +160,7 @@ export default async function HizmetDetayPage({
                     <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-fg/40">
                       {stat.sector}
                     </p>
-                    <p className="mt-2 text-4xl font-bold tracking-tight text-guru md:text-5xl">
+                    <p className="mt-2 text-4xl font-bold tracking-tight text-guru-text md:text-5xl">
                       <RollingCounter
                         value={stat.value}
                         prefix={stat.prefix ?? ""}
@@ -162,47 +178,43 @@ export default async function HizmetDetayPage({
 
       <SectionDivider from="coal" to="ink" />
 
-      {/* Sunduklarımız — spotlight'lı kartlar, dev numaralar */}
-      <section className="bg-band py-20 md:py-28">
+      {/* Kapsam: editorial satırlar (numara, başlık, dahil işareti) */}
+      <section id="kapsam" className="scroll-mt-28 bg-band py-20 md:py-28">
         <div className="container-g">
           <SectionHeading dark eyebrow="Kapsam" title={accentLastWord(service.offeringsTitle)} />
-          <StaggerGroup className="mt-12 grid gap-5 md:grid-cols-2">
+          <StaggerGroup className="mt-12 md:mt-14">
             {service.offerings.map((offering, i) => (
-              <StaggerItem key={offering} className="h-full">
-                <Spotlight
-                  size={380}
-                  opacity={0.09}
-                  className="h-full overflow-hidden rounded-3xl border border-fg/10 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-guru/40"
-                >
-                  <div className="flex h-full items-start gap-5 p-7 md:gap-6 md:p-8">
-                    <span
-                      className="headline-outline-light shrink-0 text-5xl font-extrabold leading-none md:text-6xl"
-                      aria-hidden
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p className="min-w-0 pt-1.5 font-medium leading-snug text-fg md:pt-2 md:text-lg">
-                      {offering}
-                    </p>
-                  </div>
-                </Spotlight>
+              <StaggerItem key={offering} className="border-t border-fg/10 last:border-b">
+                <div className="group flex items-center gap-4 py-5 transition-[padding,background-color] duration-500 sm:gap-6 md:gap-8 md:py-7 lg:hover:bg-guru/5 lg:hover:pl-6">
+                  <span className="w-8 shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-guru-text">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="min-w-0 flex-1 text-lg font-bold tracking-[-0.02em] text-fg sm:text-xl md:text-2xl lg:text-3xl">
+                    {offering}
+                  </p>
+                  <span
+                    aria-hidden
+                    className="grid size-10 shrink-0 place-items-center rounded-full border border-fg/15 text-fg/60 transition-all duration-500 group-hover:border-guru group-hover:bg-guru group-hover:text-ink"
+                  >
+                    <Check className="size-4" strokeWidth={2.2} />
+                  </span>
+                </div>
               </StaggerItem>
             ))}
           </StaggerGroup>
         </div>
       </section>
 
-      <SectionDivider from="ink" to="coal" flip />
-
-      {/* Görseller: 3+ karede tek sıra akan bant, aksi halde sıvı görsel ızgarası */}
-      {gallery.length >= 3 ? (
-        <section className="overflow-hidden pb-20 pt-14 md:pb-28 md:pt-16">
+      {/* Görseller: yalnız vitrinde gösterilmeyen ek kareler kaldıysa;
+          3+ karede tek sıra akan bant, aksi halde sıvı görsel ızgarası */}
+      {showGallery && gallery.length >= 3 ? (
+        <section className="overflow-hidden border-t border-fg/10 pb-20 pt-14 md:pb-28 md:pt-16">
           <div className="container-g">
             <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
           </div>
           <Reveal className="mt-12 md:mt-14">
             <VelocityMarquee baseVelocity={0.8}>
-              {gallery.map((img) => (
+              {gallery.map((img, i) => (
                 <div
                   key={img.src}
                   className="relative mx-2.5 aspect-[4/3] w-64 shrink-0 overflow-hidden rounded-2xl border border-fg/10 sm:w-80 md:mx-3 md:w-96"
@@ -212,6 +224,7 @@ export default async function HizmetDetayPage({
                     alt={img.alt}
                     fill
                     sizes="(min-width: 768px) 384px, (min-width: 640px) 320px, 256px"
+                    loading={i < 3 ? "eager" : undefined}
                     className="object-cover"
                   />
                 </div>
@@ -219,8 +232,8 @@ export default async function HizmetDetayPage({
             </VelocityMarquee>
           </Reveal>
         </section>
-      ) : gallery.length > 0 ? (
-        <section className="pb-20 pt-14 md:pb-28 md:pt-16">
+      ) : showGallery ? (
+        <section className="border-t border-fg/10 pb-20 pt-14 md:pb-28 md:pt-16">
           <div className="container-g">
             <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
             <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 md:gap-6">
@@ -245,13 +258,13 @@ export default async function HizmetDetayPage({
         </section>
       ) : null}
 
-      {/* Kapanış vurgusu — düşük yoğunluklu ışıltı */}
+      {/* Kapanış vurgusu: düşük yoğunluklu ışıltı */}
       {service.outro && (
         <section className="relative overflow-hidden border-y border-fg/10 bg-page py-20 text-fg md:py-28">
           <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
           <Sparkles density={8} className="opacity-70" />
           <span
-            className="headline-outline-light pointer-events-none absolute -right-6 -top-8 select-none text-[6rem] font-extrabold leading-none sm:text-[10rem] md:text-[16rem]"
+            className="headline-outline-light pointer-events-none absolute right-2 top-2 select-none text-[5rem] font-extrabold leading-none sm:-right-6 sm:-top-8 sm:text-[10rem] md:text-[16rem]"
             aria-hidden
           >
             {service.no}
@@ -269,51 +282,7 @@ export default async function HizmetDetayPage({
         </section>
       )}
 
-      {/* Web tasarım: canlı projeler */}
-      {service.slug === "web-tasarim" && (
-        <section className="py-20 md:py-28">
-          <div className="container-g">
-            <SectionHeading
-              dark
-              eyebrow="Yayında"
-              title="Canlı web *projelerimiz*"
-              sub="Tasarlayıp yayına aldığımız sitelerden bazıları."
-            />
-            <StaggerGroup className="mt-12 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-              {webProjects.map((project) => (
-                <StaggerItem key={project.url} className="h-full">
-                  <a
-                    href={`https://${project.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex h-full flex-col justify-between gap-8 rounded-3xl border border-fg/10 bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-guru/40 hover:shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-7"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
-                          Canlı site
-                        </span>
-                        <h3 className="mt-2 text-xl font-semibold tracking-tight">
-                          {project.name}
-                        </h3>
-                      </div>
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-fg/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
-                        <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                    <span className="inline-flex items-center gap-2 text-sm font-medium text-fg/60 transition-colors duration-300 group-hover:text-guru">
-                      <span className="size-1.5 bg-guru" aria-hidden />
-                      {project.url}
-                    </span>
-                  </a>
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
-          </div>
-        </section>
-      )}
-
-      {/* Önceki / sonraki hizmet — hover'da dönen neon çerçeve, eşit yükseklik */}
+      {/* Önceki / sonraki hizmet: hover'da dönen neon çerçeve, eşit yükseklik */}
       <section className="border-t border-fg/10 py-16 md:py-20">
         <div className="container-g grid gap-5 sm:grid-cols-2">
           <Reveal className="h-full">
@@ -333,7 +302,7 @@ export default async function HizmetDetayPage({
                   <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
                     Önceki Hizmet
                   </span>
-                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight md:text-xl">
+                  <span className="mt-1 block text-base font-semibold tracking-tight md:text-lg">
                     {prev.title}
                   </span>
                 </span>
@@ -357,7 +326,7 @@ export default async function HizmetDetayPage({
                   <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
                     Sonraki Hizmet
                   </span>
-                  <span className="mt-1 block truncate text-lg font-semibold tracking-tight md:text-xl">
+                  <span className="mt-1 block text-base font-semibold tracking-tight md:text-lg">
                     {next.title}
                   </span>
                 </span>
@@ -367,7 +336,7 @@ export default async function HizmetDetayPage({
         </div>
       </section>
 
-      <CTASection />
+      <CTAV2 />
     </>
   );
 }

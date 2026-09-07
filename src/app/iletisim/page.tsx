@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Globe, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Check, Mail, MapPin, Phone } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -12,12 +12,14 @@ import { ContactForm } from "@/components/pages/ContactForm";
 import { ContactFaq } from "@/components/pages/ContactFaq";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
 import { site } from "@/lib/data";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "İletişim",
   description:
-    "Projenizi konuşalım: e-posta, Instagram veya iletişim formu üzerinden Guru Dijital'e ulaşın. Aynı gün dönüş yapıyoruz.",
-};
+    "Projenizi konuşalım: e-posta, Instagram, iletişim formu veya toplantı planlayarak Guru Dijital'e ulaşın. İlk görüşme ücretsiz, aynı gün dönüş yapıyoruz.",
+  path: "/iletisim",
+});
 
 type ContactItem = {
   label: string;
@@ -41,13 +43,6 @@ function buildContactItems(): ContactItem[] {
       href: site.instagram,
       external: true,
       icon: <InstagramIcon className="size-5" />,
-    },
-    {
-      label: "Web",
-      value: site.url.replace(/^https?:\/\/(www\.)?/, ""),
-      href: site.url,
-      external: true,
-      icon: <Globe className="size-5" strokeWidth={2} />,
     },
   ];
 
@@ -82,6 +77,16 @@ function buildContactItems(): ContactItem[] {
   return items;
 }
 
+const externalAttrs = (item: ContactItem) =>
+  item.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+
+/* Masaüstü kanal sütununun altındaki "ne bekleyebilirsiniz" kartı */
+const expectations = [
+  "Aynı gün dönüş",
+  "İlk keşif görüşmesi ücretsiz",
+  "Yaklaşık 30 dakikalık çevrim içi görüşme",
+];
+
 /* PageHeroV2 eyebrow'u runtime'da ReactNode kabul eder (div içinde {eyebrow});
    tip yüzeyi string olduğundan güvenli daraltmayla geçilir. */
 const heroEyebrow = (
@@ -104,7 +109,7 @@ export default function IletisimPage() {
             <RotatingBadge
               size={100}
               href="#iletisim-form"
-              label="Forma git: Projeni konuşalım"
+              label="Forma gidin: Projenizi konuşalım"
             />
           </div>
         </div>
@@ -112,8 +117,28 @@ export default function IletisimPage() {
 
       {/* İletişim kanalları + form */}
       <section id="iletisim-form" className="scroll-mt-28 pb-20 md:pb-28">
-        <div className="container-g grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-          <StaggerGroup className="flex flex-col gap-4">
+        <div className="container-g grid items-start gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+          {/* Mobil/tablet: kanallar kompakt çip satırı, form ilk ekranda kalır */}
+          <ul className="flex flex-wrap gap-2 lg:hidden" aria-label="İletişim kanalları">
+            {contactItems.map((item) => (
+              <li key={item.label}>
+                <a
+                  href={item.href}
+                  {...externalAttrs(item)}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-fg/15 bg-card px-4 text-sm font-medium text-fg transition-colors duration-300 hover:border-guru/40 active:border-guru/60"
+                >
+                  <span className="text-guru-text" aria-hidden>
+                    {item.icon}
+                  </span>
+                  <span className="sr-only">{item.label}: </span>
+                  {item.value}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Masaüstü: kanal kartları */}
+          <StaggerGroup className="hidden flex-col gap-4 lg:flex">
             {contactItems.map((item) => (
               <StaggerItem key={item.label}>
                 <Spotlight
@@ -123,16 +148,14 @@ export default function IletisimPage() {
                 >
                   <a
                     href={item.href}
-                    {...(item.external
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
+                    {...externalAttrs(item)}
                     className="group flex min-h-[96px] items-center gap-4 rounded-3xl border border-fg/10 bg-card p-6 transition-colors duration-300 hover:border-guru/40"
                   >
                     <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-guru/12 text-guru transition-colors duration-300 group-hover:bg-guru group-hover:text-ink">
                       {item.icon}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-fg/50">
+                      <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-fg/50">
                         {item.label}
                       </span>
                       <span className="mt-1.5 block break-all text-[15px] font-semibold text-fg md:text-base">
@@ -147,16 +170,35 @@ export default function IletisimPage() {
               <div className="relative overflow-hidden rounded-3xl border border-fg/10 bg-band p-6 text-fg shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-7">
                 <div className="grain-blob -right-16 -top-16 h-48 w-48 opacity-40" aria-hidden />
                 <p className="relative text-lg font-bold leading-snug tracking-tight">
-                  Bir üst seviyeye <span className="text-guru">hazır mısınız?</span>
+                  Ne bekleyebilirsiniz?
                 </p>
-                <p className="relative mt-2 text-sm leading-relaxed text-fg/60">
-                  Markanızı büyütmek için tek mesaj yeter.
-                </p>
+                <ul className="relative mt-4 space-y-2.5 text-sm leading-relaxed text-fg/70">
+                  {expectations.map((text) => (
+                    <li key={text} className="flex items-start gap-2.5">
+                      <Check
+                        className="mt-1 size-4 shrink-0 text-guru-text"
+                        strokeWidth={2.4}
+                        aria-hidden
+                      />
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="#toplanti"
+                  className="group relative mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-guru-text transition-colors duration-300 hover:text-guru"
+                >
+                  Ya da doğrudan toplantı planlayın
+                  <ArrowRight
+                    className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1"
+                    strokeWidth={2.2}
+                  />
+                </a>
               </div>
             </StaggerItem>
           </StaggerGroup>
 
-          <Reveal delay={0.1}>
+          <Reveal className="min-w-0" delay={0.1}>
             <ContactForm />
           </Reveal>
         </div>
@@ -208,7 +250,7 @@ export default function IletisimPage() {
                 key={i}
                 className="mx-5 inline-flex items-center gap-5 text-sm font-semibold uppercase tracking-[0.22em] text-fg/20 md:text-base"
               >
-                projeni konuşalım
+                projenizi konuşalım
                 <span className="text-guru/35">✦</span>
                 aynı gün dönüş
                 <span className="text-guru/35">✦</span>

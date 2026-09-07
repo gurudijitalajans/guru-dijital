@@ -4,7 +4,7 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * GlowBorder — dönen conic-gradient neon çerçeve.
+ * GlowBorder: dönen conic-gradient neon çerçeve.
  *
  * @property ile --angle kaydı globals'a eklenemediği için açı, rAF döngüsünde
  * doğrudan style.setProperty("--angle", ...) ile güncellenir; SSR'da statik
@@ -128,14 +128,14 @@ export function GlowBorder({
       className={cn("relative p-px", className)}
       style={{ borderRadius: radius }}
     >
-      {/* Statik nötr çerçeve zemini — kart standardı border-fg/10 tonunda
+      {/* Statik nötr çerçeve zemini: kart standardı border-fg/10 tonunda
          (reduced-motion / coarse fallback'te de tek görünür çizgi budur) */}
       <div
         aria-hidden
         className="absolute inset-0 bg-fg/10"
         style={{ borderRadius: radius }}
       />
-      {/* Dönen neon katman — ilk render'da görünmez, mount sonrası açılır */}
+      {/* Dönen neon katman: ilk render'da görünmez, mount sonrası açılır */}
       <div
         ref={glowRef}
         aria-hidden

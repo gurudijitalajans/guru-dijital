@@ -1,8 +1,12 @@
 import type { MetadataRoute } from "next";
 import { products, services, site } from "@/lib/data";
 
+/* İçerik (data.ts / products-content.ts) değiştikçe elle güncellenir; her
+   istekte "bugün" yazmak lastmod sinyalini anlamsızlaştırırdı. */
+const CONTENT_UPDATED = "2026-09-07";
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+  const lastModified = new Date(CONTENT_UPDATED);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: site.url, lastModified, changeFrequency: "monthly", priority: 1 },

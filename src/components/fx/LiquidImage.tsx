@@ -11,7 +11,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /**
- * LiquidImage — hover'da sıvı gibi dalgalanan görsel.
+ * LiquidImage: hover'da sıvı gibi dalgalanan görsel.
  *
  * Çalışma prensibi:
  * - next/image, relative bir sarmalayıcı içinde `fill` ile render edilir.
@@ -33,7 +33,7 @@ import { cn } from "@/lib/utils";
  * ...rest ile sarmalayıcıya geçirilir.
  */
 
-/** Maksimum displacement (px) — hover zarfı 1'e ulaşınca uygulanan değer. */
+/** Maksimum displacement (px): hover zarfı 1'e ulaşınca uygulanan değer. */
 const MAX_SCALE = 26;
 /** Zarf yaklaşım hızı (saniye başına üstel katsayı). */
 const EASE_RATE = 7;
@@ -45,7 +45,7 @@ export type LiquidImageProps = {
   sizes?: string;
   /** Sarmalayıcı div sınıfları (boyut/oran buradan gelir). */
   className?: string;
-  /** LCP görseli işareti — Next 16'da `preload` prop'una çevrilir. */
+  /** LCP görseli işareti: Next 16'da `preload` prop'una çevrilir. */
   priority?: boolean;
   /** İç <img> için ek sınıflar (ör. mevcut hover zoom davranışı). */
   imgClassName?: string;
@@ -70,11 +70,11 @@ export function LiquidImage({
   const turbRef = useRef<SVGFETurbulenceElement>(null);
   const dispRef = useRef<SVGFEDisplacementMapElement>(null);
 
-  /** Efekt izni: pointer:fine && !reduced-motion — yalnız mount sonrası dolar. */
+  /** Efekt izni: pointer:fine && !reduced-motion: yalnız mount sonrası dolar. */
   const enabledRef = useRef(false);
   /** Hedef zarf: hover'da 1, ayrılınca 0. */
   const targetRef = useRef(0);
-  /** Mevcut zarf değeri (0..1) — render tetiklemeden rAF içinde güncellenir. */
+  /** Mevcut zarf değeri (0..1): render tetiklemeden rAF içinde güncellenir. */
   const envRef = useRef(0);
 
   /** SVG filtresi yalnız aktifken DOM'da bulunur (idle maliyet 0). */
@@ -178,7 +178,7 @@ export function LiquidImage({
         />
       </div>
 
-      {/* Instance'a özel SVG filtresi — yalnız hover aktifken DOM'da */}
+      {/* Instance'a özel SVG filtresi: yalnız hover aktifken DOM'da */}
       {active && (
         <svg aria-hidden className="pointer-events-none absolute h-0 w-0">
           <defs>

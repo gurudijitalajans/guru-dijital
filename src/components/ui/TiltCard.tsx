@@ -1,10 +1,22 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import type { ReactNode, PointerEvent } from "react";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/components/fx/usePrefersReducedMotion";
 
-/** 3D tilt card with a soft cursor glare. */
+/**
+ * 3D tilt kartı + imleci izleyen yumuşak parlama.
+ * Yalnız fare işaretçisinde eğilir; reduced-motion tercihinde imleci takip etmez.
+ * Parlama konumu useMotionTemplate ile canlı bağlanır (ilk değer %50/%50,
+ * SSR ile birebir aynı).
+ */
 export function TiltCard({
   children,
   className,
@@ -26,9 +38,11 @@ export function TiltCard({
   });
   const glareX = useTransform(px, [0, 1], ["20%", "80%"]);
   const glareY = useTransform(py, [0, 1], ["20%", "80%"]);
+  const glare = useMotionTemplate`radial-gradient(420px circle at ${glareX} ${glareY}, rgb(255 255 255 / 0.14), transparent 55%)`;
+  const reduce = usePrefersReducedMotion();
 
   function onMove(e: PointerEvent<HTMLDivElement>) {
-    if (e.pointerType !== "mouse") return;
+    if (reduce || e.pointerType !== "mouse") return;
     const rect = e.currentTarget.getBoundingClientRect();
     px.set((e.clientX - rect.left) / rect.width);
     py.set((e.clientY - rect.top) / rect.height);
@@ -50,9 +64,7 @@ export function TiltCard({
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(420px circle at ${glareX.get()} ${glareY.get()}, rgb(255 255 255 / 0.14), transparent 55%)`,
-        }}
+        style={{ background: glare }}
       />
     </motion.div>
   );

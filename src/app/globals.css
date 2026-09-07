@@ -17,6 +17,9 @@
   --color-band: #0a0b0a;  /* alternatif bant zemini */
   --color-card: #181b19;  /* kart zemini */
   --color-fg: #f5f6f5;    /* ana metin + çizgiler */
+  /* Yeşil METİN için token: gece parlak yeşil, gündüz koyu yeşil (WCAG AA).
+     bg-guru dolguları, noktalar ve glow'lar text-guru/bg-guru ile parlak kalır. */
+  --color-guru-text: #10d86c;
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
@@ -25,17 +28,11 @@
 
   --animate-marquee: marquee 95s linear infinite;
   --animate-marquee-slow: marquee 150s linear infinite;
-  --animate-float: float 7s ease-in-out infinite;
 }
 
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
 }
 
 html {
@@ -50,15 +47,19 @@ html.light {
   --color-band: #ecefec;
   --color-card: #ffffff;
   --color-fg: #0c0e0d;
-  --color-smoke: #5b625d;
+  --color-smoke: #4a504c;
+  --color-guru-text: #047a3a; /* page 5.08:1, card 5.45:1, band 4.71:1 */
 }
 
-/* Gündüz modunda koyu temaya özel FX katmanları */
+/* Gündüz modunda FX katmanları: aurora kapatılmaz, açık nane paletiyle
+   (shader u_light=1) multiply karışımında beyaz zemine hafif yıkama verir.
+   Koyu alan üretmez (taban beyaz), metin kontrastı korunur. */
 html.light .fx-aurora {
-  display: none;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
 }
 html.light .fx-dots {
-  opacity: 0.3;
+  opacity: 0.45;
 }
 html.light .fx-goo {
   mix-blend-mode: multiply;
@@ -68,6 +69,13 @@ html.light .fx-goo {
    opaklık yerine gradyan alfası düşürülür */
 html.light .grain-blob {
   background: radial-gradient(closest-side, rgb(16 216 108 / 0.45), transparent 72%);
+}
+
+/* Dokunmatikte imleç izi (goo) anlamsız: filtreli tam ekran katman hiç boyanmasın */
+@media (pointer: coarse) {
+  .fx-goo {
+    display: none;
+  }
 }
 
 /* Tema anahtarı ikonları: gece modunda güneş (aydınlığa geç), gündüzde ay */
@@ -87,10 +95,32 @@ html[data-lenis] {
   scroll-behavior: auto;
 }
 
-/* Özel imleç aktifken native imleç gizlenir */
-html[data-cursor-on],
-html[data-cursor-on] * {
+/* Özel imleç aktifken (CustomCursor html'e gd-cursor ekler) native imleç gizlenir */
+html.gd-cursor,
+html.gd-cursor * {
   cursor: none !important;
+}
+
+/* Tekrar ziyaret: layout'taki beforeInteractive script sessionStorage'a bakıp
+   html[data-preloaded] yazar; açılış perdesi hydration'ı beklemeden gizlenir */
+html[data-preloaded] #guru-preloader {
+  display: none;
+}
+
+/* Rota geçişi içerik girişi (PageCurtain): JS'siz de oynar, dokunmatikte kısa,
+   reduced-motion'da kapalı. backwards: bitince animasyon stili kalmaz. */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+.page-enter {
+  animation: page-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
+}
+@media (pointer: coarse) {
+  .page-enter {
+    animation-duration: 0.5s;
+    animation-delay: 0s;
+  }
 }
 
 body {
@@ -126,10 +156,6 @@ body {
   background: radial-gradient(closest-side, rgb(16 216 108 / 0.85), transparent 72%);
 }
 
-.headline-outline {
-  -webkit-text-stroke: 1.5px rgb(10 11 10 / 0.14);
-  color: transparent;
-}
 .headline-outline-light {
   -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-fg) 34%, transparent);
   color: transparent;
@@ -160,5 +186,6 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
+  .page-enter { animation: none; }
   html { scroll-behavior: auto; }
 }

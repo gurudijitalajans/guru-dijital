@@ -11,7 +11,10 @@ type CursorMode = "default" | "hover" | "view";
 /**
  * Özel imleç: 8px yeşil nokta + 36px karışım halkası (mix-blend-difference).
  * - Yalnızca pointer:fine + reduced-motion kapalıyken render edilir.
- * - Hover hedefleri (a, button, [data-cursor]) halkayı 2.2x büyütür.
+ * - Native imleç, html'e eklenen `gd-cursor` sınıfı + globals.css kuralıyla
+ *   gizlenir (tek mekanizma; inline <style> yok).
+ * - Hover hedefleri (a, button, [data-cursor]): halka 1.8x büyür, içi boş ve
+ *   yarı saydam kalır; nokta gizlenir ki düğme etiketini örtmesin.
  * - [data-cursor="view"] hedefinde halka dolar ve "İncele" yazısı belirir.
  * - Event delegation ile çalışır; tüm listener'lar cleanup'lıdır.
  */
@@ -42,11 +45,7 @@ export function CustomCursor() {
   useEffect(() => {
     if (!enabled) return;
 
-    // Native imleci gizle (cleanup'ta geri gelir).
-    const style = document.createElement("style");
-    style.textContent =
-      "html.gd-cursor, html.gd-cursor * { cursor: none !important; }";
-    document.head.appendChild(style);
+    // Native imleci gizle (globals.css: html.gd-cursor * { cursor: none }); cleanup'ta geri gelir.
     document.documentElement.classList.add("gd-cursor");
 
     const onMove = (e: MouseEvent) => {
@@ -87,14 +86,23 @@ export function CustomCursor() {
       document.documentElement.removeEventListener("mouseleave", onLeave);
       document.documentElement.removeEventListener("mouseenter", onEnter);
       document.documentElement.classList.remove("gd-cursor");
-      style.remove();
     };
   }, [enabled, x, y]);
 
   if (!enabled) return null;
 
   const ringScale =
-    mode === "default" ? (pressed ? 0.85 : 1) : pressed ? 1.9 : 2.2;
+    mode === "default"
+      ? pressed
+        ? 0.85
+        : 1
+      : mode === "hover"
+        ? pressed
+          ? 1.55
+          : 1.8
+        : pressed
+          ? 1.9
+          : 2.2;
 
   return (
     <>
@@ -108,16 +116,20 @@ export function CustomCursor() {
       >
         <motion.div
           className={cn(
-            "absolute inset-0 rounded-full border-[1.5px]",
+            "absolute inset-0 rounded-full bg-transparent",
             /* Halka rengi bilerek SABİT açık (paper): mix-blend-difference
                yalnız açık kaynakla her zeminde tersleme üretir. border-fg
                gündüzde koyulaşır ve koyu kaynakla difference zemine eşittir
-               (halka kaybolur). Gece fg == paper, görünüm birebir aynı. */
+               (halka kaybolur). Gece fg == paper, görünüm birebir aynı.
+               Hover: içi boş, biraz kalın (2px) ve yarı saydam halka;
+               etiketi örtmez, yalnız çevreler. */
             mode === "view"
-              ? "border-transparent bg-guru"
-              : "border-paper mix-blend-difference"
+              ? "border-[1.5px] border-transparent bg-guru"
+              : mode === "hover"
+                ? "border-2 border-paper mix-blend-difference"
+                : "border-[1.5px] border-paper mix-blend-difference"
           )}
-          animate={{ scale: ringScale }}
+          animate={{ scale: ringScale, opacity: mode === "hover" ? 0.6 : 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 22 }}
         />
         <motion.span
@@ -130,13 +142,13 @@ export function CustomCursor() {
         </motion.span>
       </motion.div>
 
-      {/* Nokta */}
+      {/* Nokta: yalnız serbest alanda; hover/view hedefinde gizlenir (etiketi örtmesin) */}
       <motion.div
         aria-hidden
         className="pointer-events-none fixed left-0 top-0 z-[121] -ml-1 -mt-1 size-2 rounded-full bg-guru"
         style={{ x, y, boxShadow: "0 0 10px rgb(16 216 108 / 0.8)" }}
         animate={{
-          opacity: visible && mode !== "view" ? 1 : 0,
+          opacity: visible && mode === "default" ? 1 : 0,
           scale: pressed ? 0.7 : 1,
         }}
         transition={{ duration: 0.15 }}

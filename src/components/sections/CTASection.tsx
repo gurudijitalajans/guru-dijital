@@ -4,7 +4,7 @@ import { GButton } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
- * Full-width dark CTA band with a marquee headline — used at the bottom of
+ * Full-width dark CTA band with a marquee headline, used at the bottom of
  * most pages, above the footer.
  */
 export function CTASection({
@@ -16,9 +16,13 @@ export function CTASection({
 }) {
   return (
     <section className="relative overflow-hidden bg-guru py-20 text-ink md:py-28">
-      <div className="pointer-events-none absolute inset-x-0 top-6 select-none opacity-[0.16]" aria-hidden>
+      {/* Motto vurgusuz: mobilde gizli, masaüstünde düşük opaklıkta arka plan */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-4 hidden select-none opacity-[0.08] md:block"
+        aria-hidden
+      >
         <Marquee slow>
-          <span className="whitespace-nowrap pr-8 text-5xl font-extrabold tracking-tight md:text-8xl">
+          <span className="whitespace-nowrap pr-8 text-6xl font-extrabold tracking-tight md:text-7xl">
             Unlock the next level · Unlock the next level ·
           </span>
         </Marquee>

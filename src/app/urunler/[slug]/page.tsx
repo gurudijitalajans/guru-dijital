@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, type LucideIcon } from "lucide-react";
@@ -9,7 +8,6 @@ import { PageHero } from "@/components/layout/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
-import { TiltCard } from "@/components/ui/TiltCard";
 import { Scramble } from "@/components/fx/Scramble";
 import { Spotlight } from "@/components/fx/Spotlight";
 import { GlowBorder } from "@/components/fx/GlowBorder";
@@ -19,6 +17,8 @@ import { SectionDivider } from "@/components/v2/SectionDivider";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
 import { ProductFaq } from "@/components/pages/urunler/ProductFaq";
+import { ScreenTour } from "@/components/pages/urunler/ScreenTour";
+import { DemoSwitch } from "@/components/pages/urunler/DemoSwitch";
 
 type Params = Promise<{ slug: string }>;
 
@@ -27,13 +27,24 @@ function productName(slug: string) {
   return products.find((p) => p.slug === slug)?.name ?? productDetails[slug].hero.eyebrow;
 }
 
+/** Mockup alt metni tek kaynaktan (data.ts liste kaydı); yoksa ürün adı. */
+function productImageAlt(slug: string) {
+  return products.find((p) => p.slug === slug)?.imageAlt ?? `${productName(slug)} paneli`;
+}
+
 /* Liste kaydındaki ikonlar (önceki/sonraki kartlar). Modül seviyesinde
    kurulur: render sırasında bileşen üretilmez (react-hooks/static-components). */
 const iconBySlug: Record<string, LucideIcon | undefined> = Object.fromEntries(
   products.map((p) => [p.slug, p.icon])
 );
 
+/* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri. */
+const productNames = products.map((p) => p.name);
+
 const pad = (n: number) => String(n).padStart(2, "0");
+
+/* Ekran turunda anlatılan özellik sayısı; kalanlar kart ızgarasında listelenir. */
+const TOUR_COUNT = 3;
 
 export function generateStaticParams() {
   return productSlugs.map((slug) => ({ slug }));
@@ -59,7 +70,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title: product.seo.title,
       description: product.seo.description,
       /* Mockup SVG; sosyal ağ önizlemeleri SVG'yi desteklemediği için site OG görseli. */
-      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: product.imageAlt }],
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: productImageAlt(slug) }],
     },
   };
 }
@@ -71,27 +82,45 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
 
   const product = productDetails[slug];
   const name = productName(slug);
+  const imageAlt = productImageAlt(slug);
   const prevSlug = productSlugs[(index - 1 + productSlugs.length) % productSlugs.length];
   const nextSlug = productSlugs[(index + 1) % productSlugs.length];
   const PrevIcon = iconBySlug[prevSlug];
   const NextIcon = iconBySlug[nextSlug];
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name,
-    description: product.seo.description,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: `${site.url}/urunler/${product.slug}`,
-    image: `${site.url}${product.image}`,
-    inLanguage: "tr",
-    provider: {
-      "@type": "Organization",
-      name: site.name,
-      url: site.url,
+  /* Ekran turu yalnız serileştirilebilir veri alır (ikon bileşeni client'a geçmez). */
+  const tourFeatures = product.features
+    .slice(0, TOUR_COUNT)
+    .map(({ title, desc }) => ({ title, desc }));
+  const gridFeatures = product.features.slice(TOUR_COUNT);
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name,
+      description: product.seo.description,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: `${site.url}/urunler/${product.slug}`,
+      image: `${site.url}${product.image}`,
+      inLanguage: "tr",
+      provider: {
+        "@type": "Organization",
+        name: site.name,
+        url: site.url,
+      },
     },
-  };
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: product.faq.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ];
 
   return (
     <>
@@ -105,8 +134,13 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       <PageHero
         // PageHeroV2 eyebrow'u JSX child olarak basar; Scramble elementi
         // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
+        // lang="en": İngilizce ürün adı CSS uppercase'te noktalı İ almasın (Operation, Business).
         eyebrow={
-          (<Scramble text={product.hero.eyebrow} duration={1.1} />) as unknown as string
+          (
+            <span lang="en">
+              <Scramble text={product.hero.eyebrow} duration={1.1} />
+            </span>
+          ) as unknown as string
         }
         title={product.hero.headline}
         sub={product.hero.sub}
@@ -122,49 +156,26 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </PageHero>
 
-      {/* 2. Mockup: tam genişlik, tilt kart, arkada yeşil blob */}
-      <section className="relative overflow-hidden pb-20 pt-14 md:pb-28 md:pt-20">
-        <div
-          className="grain-blob left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 opacity-30 md:h-[40rem] md:w-[40rem]"
-          aria-hidden
-        />
-        <div className="container-g relative">
-          <Reveal>
-            {/* group: TiltCard'ın glare katmanı group-hover ile açılır; perspective 3D derinlik verir */}
-            <div className="group relative [perspective:1400px]">
-              {/* Yumuşak yeşil glow: görselin arkasında, hafifçe aşağı kaymış */}
-              <div
-                className="pointer-events-none absolute inset-x-6 -bottom-4 top-8 rounded-[2.5rem] bg-guru/20 blur-3xl md:inset-x-14"
-                aria-hidden
-              />
-              <TiltCard max={4} className="rounded-3xl">
-                {/* SVG kaynak: next/image olduğu gibi sunar; LCP adayı olduğu için priority */}
-                <Image
-                  src={product.image}
-                  alt={product.imageAlt}
-                  width={1600}
-                  height={1100}
-                  priority
-                  sizes="(min-width: 1280px) 1216px, 100vw"
-                  className="h-auto w-full rounded-3xl border border-fg/10 bg-card shadow-[0_0_80px_rgba(16,216,108,0.14)]"
-                />
-              </TiltCard>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* 2. Ekran turu: masaüstünde pinned mockup + sıralı noktalar, mobilde yakın kadrajlar */}
+      <ScreenTour
+        name={name}
+        image={product.image}
+        imageAlt={imageAlt}
+        features={tourFeatures}
+        hotspots={product.hotspots}
+      />
 
-      {/* 3. Özellikler: 3 sütun, spotlight'lı kartlar */}
-      <section className="pb-20 md:pb-28">
+      {/* 3. Diğer özellikler: 3 sütun, spotlight'lı kartlar */}
+      <section className="pb-14 md:pb-28">
         <div className="container-g">
           <SectionHeading
             dark
             eyebrow="Özellikler"
             title="Neler *yapar*?"
-            sub="Günlük işi hafifleten, ekibinizin zamanını geri kazandıran özellikler."
+            sub="Turdaki üç özelliğe ek olarak ekibinizin zamanını geri kazandıran yetenekler."
           />
-          <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-3">
-            {product.features.map((feature) => {
+          <StaggerGroup className="mt-10 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-3">
+            {gridFeatures.map((feature) => {
               const Icon = feature.icon;
               return (
                 <StaggerItem key={feature.title} className="h-full">
@@ -175,7 +186,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                   >
                     <article className="flex h-full flex-col p-7 md:p-8">
                       <span
-                        className="grid size-12 shrink-0 place-items-center rounded-2xl bg-guru/12 text-guru"
+                        className="grid size-12 shrink-0 place-items-center rounded-2xl bg-guru/12 text-guru-text"
                         aria-hidden
                       >
                         <Icon className="size-6" strokeWidth={1.9} />
@@ -198,7 +209,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       <SectionDivider from="coal" to="ink" />
 
       {/* 4. Nasıl çalışır: yatay adımlar, bg-band */}
-      <section className="relative overflow-hidden bg-band py-20 md:py-28">
+      <section className="relative overflow-hidden bg-band py-14 md:py-28">
         <div className="grain-blob -bottom-24 -left-32 h-80 w-80 opacity-20" aria-hidden />
         <div className="container-g relative">
           <SectionHeading
@@ -208,7 +219,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
             sub="Kurulumu birlikte yapıyor, ekibinizi eğitiyor ve ilk haftadan itibaren yanınızda kalıyoruz."
           />
           <StaggerGroup
-            className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4"
+            className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4"
             stagger={0.1}
           >
             {product.steps.map((step, i) => (
@@ -238,8 +249,8 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
 
       <SectionDivider from="ink" to="coal" flip />
 
-      {/* 5. Kullanım senaryoları: 3 kart, hover'da dönen neon çerçeve */}
-      <section className="pb-20 pt-14 md:pb-28 md:pt-16">
+      {/* 5. Kullanım senaryoları: satır dokusu (kart üstüne kart ritmini kırar) */}
+      <section className="pb-14 pt-14 md:pb-28 md:pt-16">
         <div className="container-g">
           <SectionHeading
             dark
@@ -247,47 +258,41 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
             title="Kimler için *uygun*?"
             sub="Farklı sektörlerde, farklı ekip büyüklüklerinde aynı netlikte çalışır."
           />
-          <StaggerGroup className="mt-12 grid gap-5 md:mt-14 md:grid-cols-3">
+          <StaggerGroup className="mt-10 md:mt-14">
             {product.useCases.map((useCase, i) => (
-              <StaggerItem key={useCase.title} className="h-full">
-                <GlowBorder
-                  radius="1.5rem"
-                  speed={5}
-                  className="h-full transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <article className="flex h-full flex-col p-7 md:p-8">
-                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-guru">
-                      Senaryo {pad(i + 1)}
-                    </span>
-                    <h3 className="mt-3 text-xl font-bold tracking-tight text-fg md:text-2xl">
-                      {useCase.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-fg/60 md:text-[15px]">
-                      {useCase.desc}
-                    </p>
-                  </article>
-                </GlowBorder>
+              <StaggerItem key={useCase.title} className="border-t border-fg/10 last:border-b">
+                <article className="grid gap-2 py-6 md:grid-cols-[7rem_1fr_1.35fr] md:gap-8 md:py-8">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-guru-text">
+                    Senaryo {pad(i + 1)}
+                  </span>
+                  <h3 className="text-xl font-bold tracking-tight text-fg md:text-2xl">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-fg/60 md:max-w-xl md:text-[15px]">
+                    {useCase.desc}
+                  </p>
+                </article>
               </StaggerItem>
             ))}
           </StaggerGroup>
         </div>
       </section>
 
-      {/* 6. Sayısal faydalar: bg-band şeridi, odometre sayaçlar */}
-      <section className="relative overflow-hidden border-y border-fg/10 bg-band py-16 md:py-20">
+      {/* 6. Sayısal faydalar: bg-band şeridi, odometre sayaçlar (yalnız ürün/özellik ifadeleri) */}
+      <section className="relative overflow-hidden border-y border-fg/10 bg-band py-14 md:py-20">
         <div className="grain-blob -right-32 -top-24 h-80 w-80 opacity-25" aria-hidden />
         <div className="container-g relative">
           <Reveal y={16}>
             <p className="mb-10 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
               <span className="inline-block size-2 bg-guru" aria-hidden />
-              Sayılarla {name}
+              Sayılarla <span lang="en">{name}</span>
             </p>
           </Reveal>
           <StaggerGroup className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
             {product.stats.map((stat) => (
               <StaggerItem key={stat.label}>
                 <div className="border-l-2 border-guru pl-4 sm:pl-5">
-                  <p className="text-3xl font-bold tracking-tight text-guru sm:text-4xl md:text-5xl">
+                  <p className="text-3xl font-bold tracking-tight text-guru-text sm:text-4xl md:text-5xl">
                     <RollingCounter value={stat.value} suffix={stat.suffix} />
                   </p>
                   <p className="mt-2 text-sm leading-snug text-fg/60">{stat.label}</p>
@@ -299,7 +304,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 7. Entegrasyonlar: pill listesi */}
-      <section className="py-20 md:py-28">
+      <section className="py-14 md:py-28">
         <div className="container-g grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <SectionHeading
             dark
@@ -327,7 +332,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 8. SSS */}
-      <section className="border-t border-fg/10 py-20 md:py-28">
+      <section className="border-t border-fg/10 py-14 md:py-28">
         <div className="container-g">
           <SectionHeading
             center
@@ -336,7 +341,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
             title="Aklınıza takılan *sorular*"
             sub="Kısa yanıtlar; detayları demo görüşmesinde birlikte netleştiririz."
           />
-          <div className="mt-12 md:mt-16">
+          <div className="mt-10 md:mt-16">
             <Reveal>
               <ProductFaq items={product.faq} idPrefix={`${product.slug}-faq`} />
             </Reveal>
@@ -344,8 +349,8 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      {/* 10. Önceki / sonraki ürün (dairesel): hover'da dönen neon çerçeve */}
-      <section className="border-t border-fg/10 py-16 md:py-20">
+      {/* 9. Önceki / sonraki ürün (dairesel): hover'da dönen neon çerçeve */}
+      <section className="border-t border-fg/10 py-14 md:py-20">
         <div className="container-g grid gap-5 sm:grid-cols-2">
           <Reveal className="h-full">
             <GlowBorder
@@ -366,7 +371,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                   </span>
                   <span className="mt-1 flex items-center gap-2 text-lg font-semibold tracking-tight md:text-xl">
                     {PrevIcon && (
-                      <PrevIcon className="size-5 shrink-0 text-guru" strokeWidth={2} aria-hidden />
+                      <PrevIcon className="size-5 shrink-0 text-guru-text" strokeWidth={2} aria-hidden />
                     )}
                     <span className="truncate">{productName(prevSlug)}</span>
                   </span>
@@ -393,7 +398,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                   </span>
                   <span className="mt-1 flex flex-row-reverse items-center gap-2 text-lg font-semibold tracking-tight md:text-xl">
                     {NextIcon && (
-                      <NextIcon className="size-5 shrink-0 text-guru" strokeWidth={2} aria-hidden />
+                      <NextIcon className="size-5 shrink-0 text-guru-text" strokeWidth={2} aria-hidden />
                     )}
                     <span className="truncate">{productName(nextSlug)}</span>
                   </span>
@@ -404,10 +409,10 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      {/* 9. Demo talebi: sayfanın sonu (CTASection yok) */}
+      {/* 10. Demo talebi: sayfanın sonu (CTASection yok); mobilde tek form, lg+ iki sütun */}
       <section
         id="demo"
-        className="relative scroll-mt-28 overflow-hidden border-t border-fg/10 bg-page py-20 md:py-28"
+        className="relative scroll-mt-28 overflow-hidden border-t border-fg/10 bg-page py-14 md:py-28"
       >
         <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
         <div className="grain-blob -bottom-32 -right-32 h-80 w-80 opacity-15" aria-hidden />
@@ -419,27 +424,17 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
             title="Demo *talep edin*"
             sub={`${name} için formu doldurun ya da doğrudan toplantı planlayın; aynı gün dönüş yapalım.`}
           />
-          <div className="mt-12 grid items-start gap-8 md:mt-16 lg:grid-cols-2 lg:gap-10">
-            {/* min-w-0: takvim çipleri gibi geniş içerikler grid hücresini viewport dışına taşırmasın */}
-            <Reveal className="min-w-0">
-              <h3 className="mb-4 inline-flex items-center gap-3 text-base font-semibold tracking-tight text-fg">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-guru/12 text-xs font-bold text-guru">
-                  1
-                </span>
-                Formu doldurun
-              </h3>
-              <ContactForm defaultService={name} subjectPrefix="Demo Talebi" />
-            </Reveal>
-            <Reveal delay={0.1} className="min-w-0">
-              <h3 className="mb-4 inline-flex items-center gap-3 text-base font-semibold tracking-tight text-fg">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full bg-guru/12 text-xs font-bold text-guru">
-                  2
-                </span>
-                Ya da toplantı planlayın
-              </h3>
-              <MeetingScheduler topic={`${name} Demo`} />
-            </Reveal>
-          </div>
+          <DemoSwitch
+            form={
+              <ContactForm
+                defaultService={name}
+                subjectPrefix="Demo Talebi"
+                serviceLabel="İlgilendiğiniz ürün"
+                serviceOptions={productNames}
+              />
+            }
+            scheduler={<MeetingScheduler topic={`${name} Demo`} />}
+          />
         </div>
       </section>
     </>

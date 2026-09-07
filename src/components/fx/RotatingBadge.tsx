@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * RotatingBadge — amphora tarzı dönen çember yazı rozeti.
+ * RotatingBadge: amphora tarzı dönen çember yazı rozeti.
  * SVG textPath üzerinde sürekli yavaşça dönen metin + ortada ok;
  * tamamı /iletisim linki. Hover'da dönüş hızlanır, ok 45° döner.
  * Saf CSS animasyonu (SSR güvenli, JS yok); reduced-motion'da durağan.
+ * Çember path id'si useId ile üretilir: aynı sayfada birden fazla rozet
+ * olduğunda id çakışmaz, her textPath kendi çemberine bağlanır.
  */
 export function RotatingBadge({
   className,
   size = 128,
   href = "/iletisim",
-  label = "Teklif al: Projeni konuşalım",
+  label = "Teklif alın: Projenizi konuşalım",
 }: {
   className?: string;
   size?: number;
@@ -22,6 +25,7 @@ export function RotatingBadge({
   label?: string;
 }) {
   const text = "Guru Dijital Ajans ✦ Unlock the next level ✦ ";
+  const pathId = `badge-${useId()}`;
   return (
     <Link
       href={href}
@@ -40,13 +44,13 @@ export function RotatingBadge({
       >
         <defs>
           <path
-            id="guru-badge-circle"
+            id={pathId}
             d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
           />
         </defs>
         <text className="fill-fg/70 text-[7px] font-semibold uppercase tracking-[0.12em]">
           {/* textLength: metni çember uzunluğuna kilitler, kesilme/bindirme olmaz */}
-          <textPath href="#guru-badge-circle" textLength={237} lengthAdjust="spacingAndGlyphs">
+          <textPath href={`#${pathId}`} textLength={237} lengthAdjust="spacingAndGlyphs">
             {text}
           </textPath>
         </text>

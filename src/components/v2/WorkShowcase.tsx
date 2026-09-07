@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
-import { works, type Work } from "@/lib/data";
+import { services, works, type Work } from "@/lib/data";
 import { LiquidImage } from "@/components/fx/LiquidImage";
+import { usePrefersReducedMotion } from "@/components/fx/usePrefersReducedMotion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
@@ -28,35 +25,42 @@ const FEATURED = [
 ] as const;
 
 type CardLayout = {
-  /** Grid kolon davranışı (desktop 12 kolon; mobil tek sütun). */
+  /** Grid kolon davranışı (desktop 12 kolon; lg altı yatay ray). */
   span: string;
   /** Görsel/medya oran sınıfları (kart yüksekliğini belirler). */
   media: string;
   /** next/image responsive sizes. */
   sizes: string;
+  /**
+   * Görsel kutuya sığdırılır (object-contain) ve aynı görselin bulanık kopyası
+   * zemin olur: geniş logo kolajı gibi kırpılmaması gereken işler için
+   * (object-cover kenar sütunlardaki markaları kesiyordu).
+   */
+  contain?: boolean;
 };
 
-/* Üst satır: büyük 7 + 5 — alt satır aynalanmış: 5 + büyük 7 */
+/* Üst satır: büyük 7 + 5; alt satır aynalanmış: 5 + büyük 7 */
 const LAYOUT: CardLayout[] = [
   {
     span: "lg:col-span-7",
     media: "aspect-[4/3] lg:aspect-[16/10]",
-    sizes: "(min-width: 1024px) 56vw, 100vw",
+    sizes: "(min-width: 1024px) 56vw, (min-width: 768px) 46vw, 80vw",
   },
   {
     span: "lg:col-span-5",
     media: "aspect-[4/3] lg:aspect-auto lg:h-full",
-    sizes: "(min-width: 1024px) 40vw, 100vw",
+    sizes: "(min-width: 1024px) 40vw, (min-width: 768px) 46vw, 80vw",
   },
   {
     span: "lg:col-span-5",
     media: "aspect-[4/3] lg:aspect-auto lg:h-full",
-    sizes: "(min-width: 1024px) 40vw, 100vw",
+    sizes: "(min-width: 1024px) 40vw, (min-width: 768px) 46vw, 80vw",
   },
   {
     span: "lg:col-span-7",
     media: "aspect-[4/3] lg:aspect-[16/10]",
-    sizes: "(min-width: 1024px) 56vw, 100vw",
+    sizes: "(min-width: 1024px) 56vw, (min-width: 768px) 46vw, 80vw",
+    contain: true,
   },
 ];
 
@@ -84,18 +88,20 @@ function useFinePointer(): boolean {
 /* ------------------------------------------------------------------ */
 
 function ShowcaseCard({
-  product,
+  work,
   index,
   layout,
   fine,
 }: {
-  product: Work;
+  work: Work;
   index: number;
   layout: CardLayout;
   fine: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  /* SSR anlık görüntüsü false → SSR ve ilk istemci render'ı birebir aynı;
+     gerçek tercih hydration sonrası tek re-render ile devreye girer. */
+  const reduce = usePrefersReducedMotion();
 
   /* Kart viewport'tan geçerken görsel dikeyde ±%8 kayar (iç parallax). */
   const { scrollYProgress } = useScroll({
@@ -104,11 +110,15 @@ function ShowcaseCard({
   });
   const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
 
+  /* İş, ait olduğu hizmetin sayfasına gider (ürünler sayfasına değil). */
+  const serviceTitle =
+    services.find((s) => s.slug === work.serviceSlug)?.title ?? "Hizmet";
+
   return (
     <Link
-      href="/urunler"
+      href={`/hizmetler/${work.serviceSlug}`}
       data-cursor="view"
-      aria-label={`${product.title}: tüm ürünleri gör`}
+      aria-label={`${work.title}: ${serviceTitle} sayfasına git`}
       className="group block h-full"
     >
       <article
@@ -119,20 +129,34 @@ function ShowcaseCard({
           layout.media
         )}
       >
-        {/* Parallax katmanı — görsel scale-110 olduğundan kenar açığı vermez.
-            LiquidImage kendi relative sarmalayıcısını ve object-cover'ı getirir;
+        {/* Parallax katmanı. Cover kartlarda görsel scale-110 olduğundan kenar
+            açığı vermez; contain kartta bulanık zemin kopyası scale-125 ile
+            kenarları kapatır. LiquidImage kendi relative sarmalayıcısını getirir;
             hover zoom sınıfları imgClassName ile iç <img>'e aktarılır. */}
         <motion.div
-          style={{ y: reduce ? 0 : y }}
+          style={reduce ? undefined : { y }}
           className="absolute inset-0 will-change-transform"
           aria-hidden
         >
+          {layout.contain && (
+            <Image
+              src={work.image}
+              alt=""
+              fill
+              sizes={layout.sizes}
+              className="scale-125 object-cover blur-2xl"
+            />
+          )}
           <LiquidImage
-            src={product.image}
-            alt={product.imageAlt}
+            src={work.image}
+            alt={work.imageAlt}
             sizes={layout.sizes}
             className="absolute inset-0"
-            imgClassName="scale-110 transition-transform duration-700 ease-out group-hover:scale-[1.17] motion-reduce:transition-none motion-reduce:group-hover:scale-110"
+            imgClassName={
+              layout.contain
+                ? "object-contain p-3 transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:p-5"
+                : "scale-110 transition-transform duration-700 ease-out group-hover:scale-[1.17] motion-reduce:transition-none motion-reduce:group-hover:scale-110"
+            }
           />
         </motion.div>
 
@@ -156,11 +180,11 @@ function ShowcaseCard({
           )}
         >
           <div className="min-w-0">
-            <h3 className="truncate text-base font-bold tracking-tight text-fg md:text-lg">
-              {product.title}
+            <h3 className="line-clamp-2 text-[15px] font-bold tracking-tight text-fg md:text-lg">
+              {work.title}
             </h3>
             <div className="mt-1 flex flex-wrap gap-x-2.5 gap-y-0.5">
-              {product.tags.slice(0, 3).map((tag) => (
+              {work.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
                   className="text-[11px] font-medium uppercase tracking-[0.12em] text-fg/55"
@@ -190,7 +214,7 @@ export function WorkShowcase() {
   ).filter((p): p is Work => Boolean(p));
 
   return (
-    <section className="relative overflow-hidden bg-band py-20 md:py-28">
+    <section className="relative overflow-hidden bg-band py-14 md:py-28">
       {/* Sönük yeşil ambiyans */}
       <div className="grain-blob -right-48 top-8 h-96 w-96 opacity-20" aria-hidden />
 
@@ -199,30 +223,44 @@ export function WorkShowcase() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
             dark
-            eyebrow="Ürünlerimiz"
+            eyebrow="İşlerimiz"
             title="Somut işler, *görünür* sonuçlar"
-            sub="Logodan ambalaja, kataloğdan web sitesine; hizmetlerimizin rafta ve ekranda duran çıktıları."
+            sub="Logodan ambalaja, katalogdan web sitesine: hizmetlerimizin rafta ve ekranda duran çıktıları."
           />
           <Reveal delay={0.15} className="hidden md:block">
             <GButton
-              href="/urunler"
+              href="/hizmetler"
               variant="outline"
               className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
             >
-              Tüm Ürünler
+              Hizmetleri İncele
             </GButton>
           </Reveal>
         </div>
 
-        {/* Asimetrik editorial grid */}
+        {/* lg altı: yatay snap rayı (dikey yığın yerine, sayfa ~1.400px kısalır);
+            lg+: asimetrik editorial grid. Ray, container dolgusunu -mx ile
+            iptal edip px ile geri verir; scroll-pl ile kartlar dolgu hizasına
+            oturur. Yatay trackpad/dokunma jestleri Lenis'e takılmaz. */}
         <StaggerGroup
-          className="mt-12 grid grid-cols-1 gap-5 md:mt-16 lg:grid-cols-12"
+          className={cn(
+            "mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain",
+            "-mx-5 scroll-pl-5 px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+            "md:mt-16 md:-mx-8 md:scroll-pl-8 md:px-8",
+            "lg:mx-0 lg:grid lg:grid-cols-12 lg:gap-5 lg:overflow-visible lg:px-0 lg:pb-0"
+          )}
           stagger={0.1}
         >
-          {items.map((product, i) => (
-            <StaggerItem key={product.slug} className={LAYOUT[i].span}>
+          {items.map((work, i) => (
+            <StaggerItem
+              key={work.slug}
+              className={cn(
+                "w-[80vw] shrink-0 snap-start sm:w-[58vw] md:w-[46vw] lg:w-auto",
+                LAYOUT[i].span
+              )}
+            >
               <ShowcaseCard
-                product={product}
+                work={work}
                 index={i}
                 layout={LAYOUT[i]}
                 fine={fine}
@@ -234,11 +272,11 @@ export function WorkShowcase() {
         {/* Mobil CTA */}
         <Reveal className="mt-8 md:hidden">
           <GButton
-            href="/urunler"
+            href="/hizmetler"
             variant="outline"
             className="w-full border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
           >
-            Tüm Ürünler
+            Hizmetleri İncele
           </GButton>
         </Reveal>
       </div>

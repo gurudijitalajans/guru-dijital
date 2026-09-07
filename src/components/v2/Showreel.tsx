@@ -13,16 +13,17 @@ import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
 import { cn } from "@/lib/utils";
 
 /**
- * Showreel — tam genişlik "işlerden kareler" bandı.
+ * Showreel: tam genişlik "işlerden kareler" bandı.
  *
  * - İki sıra kesintisiz görsel şeridi: üst sıra sola, alt sıra sağa akar
  *   (VelocityMarquee scroll hızıyla akışı zaten hızlandırır).
- * - Ek katman: scroll velocity'ye bağlı hafif skewX (±4deg clamp) — kendi
+ * - Ek katman: scroll velocity'ye bağlı hafif skewX (±4deg clamp); kendi
  *   useScroll + useVelocity + useSpring zinciriyle, fonksiyon formunda
  *   useTransform (aralık/offset kuralı riski yok).
- * - Ortada bandın üstüne binen mix-blend-difference dev outline yazı, kendi
- *   yavaş CSS marquee'siyle ters yönde (sağa) akar; IntersectionObserver ile
- *   ekran dışında durdurulur.
+ * - Ortada bandın üstüne binen dev outline yazı, kendi yavaş CSS marquee'siyle
+ *   ters yönde (sağa) akar; IntersectionObserver ile ekran dışında durdurulur.
+ *   Gece: mix-blend-difference (açık stroke zemini tersler). Gündüz: blend yok,
+ *   koyu fg stroke (difference açık zeminde yazıyı görünmez kılıyordu).
  * - Reduced-motion: tek statik grid satırı + statik başlık (zarif fallback).
  *
  * Hydration güvenliği: reduced/inView state'leri false başlar, matchMedia ve
@@ -32,7 +33,7 @@ import { cn } from "@/lib/utils";
 type Frame = {
   src: string;
   alt: string;
-  /** Gerçek piksel boyutları — aspect-ratio bunlardan türetilir (CLS yok). */
+  /** Gerçek piksel boyutları; aspect-ratio bunlardan türetilir (CLS yok). */
   w: number;
   h: number;
 };
@@ -62,6 +63,16 @@ const ROW_BOTTOM: Frame[] = [
 /* Reduced-motion fallback: tek statik satır */
 const STATIC_ROW: Frame[] = [ROW_TOP[0], ROW_TOP[1], ROW_TOP[3], ROW_BOTTOM[0]];
 
+/* Bölüme gelindiğinde görünür ilk kareler lazy beklemesin: her sıranın ilk
+   EAGER_FRAMES karesi eager (marquee kopyaları aynı URL'i paylaşır, tarayıcı
+   tekilleştirir → sıra başına 4 ek indirme). */
+const EAGER_FRAMES = 4;
+/* Marquee kopya sayısı: 3 kopya en geniş ekranda da sarmaya yeter (4 → 3,
+   sıra başına 7 daha az <img>). */
+const MARQUEE_COPIES = 3;
+
+const TICKER_TEXT = "Showreel ✦ Guru Dijital";
+
 /* ------------------------------------------------------------------ */
 /*  Görsel şeridi (bir marquee kopyasının içeriği)                     */
 /* ------------------------------------------------------------------ */
@@ -69,16 +80,19 @@ const STATIC_ROW: Frame[] = [ROW_TOP[0], ROW_TOP[1], ROW_TOP[3], ROW_BOTTOM[0]];
 function FrameStrip({ frames }: { frames: Frame[] }) {
   return (
     <div className="flex items-center gap-4 pr-4 md:gap-6 md:pr-6">
-      {frames.map((f) => (
+      {frames.map((f, i) => (
+        /* Kutu zemini bant tonunda (bg-band/60): görsel gelene kadar gündüzde
+           beyaz delik yerine yumuşak koyu tint akar */
         <div
           key={f.src}
-          className="relative h-40 shrink-0 overflow-hidden rounded-xl border border-fg/10 bg-card md:h-56"
+          className="relative h-40 shrink-0 overflow-hidden rounded-xl border border-fg/10 bg-band/60 md:h-56"
           style={{ aspectRatio: `${f.w} / ${f.h}` }}
         >
           <Image
             src={f.src}
             alt={f.alt}
             fill
+            loading={i < EAGER_FRAMES ? "eager" : "lazy"}
             /* Genişlik = satır yüksekliği × oran (mobil 160px, md 224px);
                deterministik, SSR güvenli */
             sizes={`(min-width: 768px) ${Math.round(224 * (f.w / f.h))}px, ${Math.round(160 * (f.w / f.h))}px`}
@@ -105,16 +119,16 @@ function OutlineTicker({ playState }: { playState: "running" | "paused" }) {
         {[0, 1].map((copy) => (
           <div key={copy} className="flex shrink-0 items-center">
             {Array.from({ length: 3 }, (_, i) => (
-              /* Stroke bilerek SABİT açık (paper): bu yazı mix-blend-difference
-                 katmanında yaşar. headline-outline-light gündüzde koyu fg stroke
-                 üretir ve koyu kaynakla difference, zeminin kendisine eşittir
-                 (yazı görünmez olur). Açık stroke her iki temada da tersleme
-                 yapar; gece görünümü fg == paper olduğundan birebir aynıdır. */
+              /* Gece: sabit açık (paper) stroke, sarmalayıcıdaki difference
+                 blend ile zemini tersler. Gündüz: blend yok, koyu fg stroke
+                 (%45) görselin üstünde okunur bir kontur verir. ✦ da aynı
+                 konturu miras alır (dolgu yeşil olsaydı difference katmanında
+                 magentaya dönüyordu). */
               <span
                 key={i}
-                className="whitespace-nowrap px-8 text-[15vw] font-extrabold uppercase leading-none tracking-tight text-transparent [-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--color-paper)_34%,transparent)] md:text-[10vw]"
+                className="whitespace-nowrap px-8 text-[15vw] font-extrabold uppercase leading-none tracking-tight text-transparent [-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--color-paper)_34%,transparent)] md:text-[10vw] [html.light_&]:[-webkit-text-stroke:1.5px_color-mix(in_oklab,var(--color-fg)_45%,transparent)]"
               >
-                Showreel <span className="text-guru">✦</span> 2025
+                {TICKER_TEXT}
               </span>
             ))}
           </div>
@@ -184,13 +198,13 @@ export function Showreel() {
             className="headline-outline-light text-[13vw] font-extrabold uppercase leading-none tracking-tight md:text-[8vw]"
             aria-hidden
           >
-            Showreel ✦ 2025
+            {TICKER_TEXT}
           </p>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {STATIC_ROW.map((f) => (
               <div
                 key={f.src}
-                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-fg/10 bg-card"
+                className="relative aspect-[4/3] overflow-hidden rounded-xl border border-fg/10 bg-band/60"
               >
                 <Image
                   src={f.src}
@@ -214,16 +228,16 @@ export function Showreel() {
               "[-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]"
             )}
           >
-            <VelocityMarquee baseVelocity={-0.8}>
+            <VelocityMarquee baseVelocity={-0.8} copies={MARQUEE_COPIES}>
               <FrameStrip frames={ROW_TOP} />
             </VelocityMarquee>
-            <VelocityMarquee baseVelocity={0.8}>
+            <VelocityMarquee baseVelocity={0.8} copies={MARQUEE_COPIES}>
               <FrameStrip frames={ROW_BOTTOM} />
             </VelocityMarquee>
           </motion.div>
 
-          {/* Bandın üstüne binen dev outline yazı */}
-          <div className="pointer-events-none absolute inset-0 z-10 flex select-none items-center mix-blend-difference">
+          {/* Bandın üstüne binen dev outline yazı: difference blend yalnız gecede */}
+          <div className="pointer-events-none absolute inset-0 z-10 flex select-none items-center [html:not(.light)_&]:mix-blend-difference">
             <OutlineTicker playState={inView ? "running" : "paused"} />
           </div>
         </div>

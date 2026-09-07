@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Spotlight — fare konumunu takip eden radial highlight sarmalayıcısı.
+ * Spotlight: fare konumunu takip eden radial highlight sarmalayıcısı.
  *
  * Overlay konumu CSS değişkenleriyle (--mx/--my) doğrudan style.setProperty
  * üzerinden güncellenir; React state kullanılmaz → mousemove'da re-render yok.
