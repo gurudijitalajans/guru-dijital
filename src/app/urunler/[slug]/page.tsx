@@ -13,7 +13,6 @@ import { Spotlight } from "@/components/fx/Spotlight";
 import { GlowBorder } from "@/components/fx/GlowBorder";
 import { RollingCounter } from "@/components/fx/RollingCounter";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { SectionDivider } from "@/components/v2/SectionDivider";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
 import { ProductFaq } from "@/components/pages/urunler/ProductFaq";
@@ -206,7 +205,6 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      <SectionDivider from="coal" to="ink" />
 
       {/* 4. Nasıl çalışır: yatay adımlar, bg-band */}
       <section className="relative overflow-hidden bg-band py-14 md:py-28">
@@ -224,9 +222,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           >
             {product.steps.map((step, i) => (
               <StaggerItem key={step.title} className="h-full">
-                <div className="relative h-full border-t border-fg/15 pt-6">
-                  {/* Rayın üstünde kısa yeşil vurgu çizgisi */}
-                  <span className="absolute -top-px left-0 h-px w-12 bg-guru" aria-hidden />
+                <div className="relative h-full pt-6">
                   <span
                     className="headline-outline-light block text-6xl font-extrabold leading-none tracking-[-0.04em] md:text-7xl"
                     aria-hidden
@@ -247,7 +243,6 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      <SectionDivider from="ink" to="coal" flip />
 
       {/* 5. Kullanım senaryoları: satır dokusu (kart üstüne kart ritmini kırar) */}
       <section className="pb-14 pt-14 md:pb-28 md:pt-16">
@@ -260,7 +255,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           />
           <StaggerGroup className="mt-10 md:mt-14">
             {product.useCases.map((useCase, i) => (
-              <StaggerItem key={useCase.title} className="border-t border-fg/10 last:border-b">
+              <StaggerItem key={useCase.title}>
                 <article className="grid gap-2 py-6 md:grid-cols-[7rem_1fr_1.35fr] md:gap-8 md:py-8">
                   <span className="text-xs font-semibold uppercase tracking-[0.16em] text-guru-text">
                     Senaryo {pad(i + 1)}
@@ -279,7 +274,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 6. Sayısal faydalar: bg-band şeridi, odometre sayaçlar (yalnız ürün/özellik ifadeleri) */}
-      <section className="relative overflow-hidden border-y border-fg/10 bg-band py-14 md:py-20">
+      <section className="relative overflow-hidden bg-band py-14 md:py-20">
         <div className="grain-blob -right-32 -top-24 h-80 w-80 opacity-25" aria-hidden />
         <div className="container-g relative">
           <Reveal y={16}>
@@ -291,7 +286,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           <StaggerGroup className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
             {product.stats.map((stat) => (
               <StaggerItem key={stat.label}>
-                <div className="border-l-2 border-guru pl-4 sm:pl-5">
+                <div>
                   <p className="text-3xl font-bold tracking-tight text-guru-text sm:text-4xl md:text-5xl">
                     <RollingCounter value={stat.value} suffix={stat.suffix} />
                   </p>
@@ -332,7 +327,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 8. SSS */}
-      <section className="border-t border-fg/10 py-14 md:py-28">
+      <section className="py-14 md:py-28">
         <div className="container-g">
           <SectionHeading
             center
@@ -350,7 +345,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 9. Önceki / sonraki ürün (dairesel): hover'da dönen neon çerçeve */}
-      <section className="border-t border-fg/10 py-14 md:py-20">
+      <section className="py-14 md:py-20">
         <div className="container-g grid gap-5 sm:grid-cols-2">
           <Reveal className="h-full">
             <GlowBorder
@@ -412,7 +407,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       {/* 10. Demo talebi: sayfanın sonu (CTASection yok); mobilde tek form, lg+ iki sütun */}
       <section
         id="demo"
-        className="relative scroll-mt-28 overflow-hidden border-t border-fg/10 bg-page py-14 md:py-28"
+        className="relative scroll-mt-28 overflow-hidden bg-page py-14 md:py-28"
       >
         <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
         <div className="grain-blob -bottom-32 -right-32 h-80 w-80 opacity-15" aria-hidden />

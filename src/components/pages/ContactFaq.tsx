@@ -30,7 +30,7 @@ export function ContactFaq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <div className="mx-auto max-w-3xl divide-y divide-fg/10 rounded-3xl border border-fg/10 bg-card px-6 md:px-8">
+    <div className="mx-auto max-w-3xl rounded-3xl border border-fg/10 bg-card px-6 py-2 md:px-8">
       {faqs.map((item, i) => {
         const isOpen = open === i;
         return (

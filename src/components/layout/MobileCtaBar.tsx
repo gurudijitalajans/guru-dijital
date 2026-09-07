@@ -81,7 +81,7 @@ export function MobileCtaBar() {
           animate={{ y: 0 }}
           exit={{ y: "110%" }}
           transition={{ duration: 0.35, ease: EASE }}
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-fg/10 bg-page/85 backdrop-blur-xl lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 bg-page/85 backdrop-blur-xl lg:hidden"
         >
           <div className="container-g flex items-center justify-between gap-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
             <span className="min-w-0 text-xs font-semibold uppercase tracking-[0.18em] text-fg/60">

@@ -31,7 +31,7 @@ export function ProductFaq({ items, idPrefix = "product-faq", className }: Produ
   return (
     <div
       className={cn(
-        "mx-auto max-w-3xl divide-y divide-fg/10 rounded-3xl border border-fg/10 bg-card px-6 md:px-8",
+        "mx-auto max-w-3xl rounded-3xl border border-fg/10 bg-card px-6 py-2 md:px-8",
         className
       )}
     >

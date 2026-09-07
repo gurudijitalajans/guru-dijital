@@ -125,10 +125,7 @@ export function ServicesIndex({ className }: ServicesIndexProps) {
         >
           <StaggerGroup stagger={0.07}>
             {services.map((service, i) => (
-              <StaggerItem
-                key={service.slug}
-                className="border-t border-fg/10 last:border-b"
-              >
+              <StaggerItem key={service.slug}>
                 <Link
                   href={`/hizmetler/${service.slug}`}
                   data-cursor="view"

@@ -123,7 +123,7 @@ function DesktopRail({ className }: { className?: string }) {
 
         {/* Alt ilerleme çizgisi + 4 adım noktası */}
         <div className="absolute inset-x-0 bottom-0 z-10 px-10 pb-9 md:px-16">
-          <div className="relative h-px w-full bg-fg/10">
+          <div className="relative h-px w-full">
             <motion.div
               className="h-full origin-left bg-guru"
               style={{ scaleX: scrollYProgress }}
@@ -184,7 +184,7 @@ function RailPanel({
   const image = RAIL_IMAGES[step.no];
 
   return (
-    <div className="grid h-full w-screen shrink-0 grid-cols-[1fr_0.8fr] items-center gap-12 border-l border-fg/10 px-12 first:border-l-0 md:px-20">
+    <div className="grid h-full w-screen shrink-0 grid-cols-[1fr_0.8fr] items-center gap-12 px-12 md:px-20">
       <div className="relative">
         <div className="relative w-fit leading-none" aria-hidden>
           <span className="headline-outline-light block text-[8rem] font-extrabold tracking-[-0.04em] xl:text-[11rem]">

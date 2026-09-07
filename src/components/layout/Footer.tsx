@@ -15,7 +15,7 @@ export default function Footer() {
   const partnerYear = awards.find((a) => a.title === "Google Partner")?.year;
 
   return (
-    <footer className="relative overflow-hidden border-t border-fg/10 bg-page text-fg">
+    <footer className="relative overflow-hidden bg-page text-fg">
       <div className="grain-blob -left-32 top-10 h-80 w-80 opacity-30" aria-hidden />
 
       {/* Columns: mobilde iki kolon; "Sayfalar" mobil menüyle birebir aynı
@@ -116,7 +116,7 @@ export default function Footer() {
       {/* Giant interactive wordmark: alt bara taşmadan, nefes payıyla oturur */}
       <FooterWordmark className="mb-10 mt-8 md:mt-[calc(72px-4.65vw)] md:mb-[calc(72px+3.4vw)]" />
 
-      <div className="border-t border-fg/10">
+      <div>
         <div className="container-g flex flex-col items-center justify-between gap-2 py-5 text-xs text-fg/60 sm:flex-row">
           <p>© {year} {site.name}. Tüm hakları saklıdır.</p>
           <p>Unlock the next level</p>

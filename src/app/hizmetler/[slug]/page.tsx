@@ -17,7 +17,6 @@ import { Sparkles } from "@/components/fx/Sparkles";
 import { GlowBorder } from "@/components/fx/GlowBorder";
 import { RollingCounter } from "@/components/fx/RollingCounter";
 import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
-import { SectionDivider } from "@/components/v2/SectionDivider";
 import { ServiceSignature } from "@/components/pages/hizmetler/ServiceSignature";
 import {
   serviceShowcase,
@@ -144,7 +143,7 @@ export default async function HizmetDetayPage({
 
       {/* Dijital pazarlama: vaka istatistikleri (koyu bant) */}
       {stats && (
-        <section className="relative overflow-hidden border-y border-fg/10 bg-page py-20 text-fg md:py-28">
+        <section className="relative overflow-hidden bg-page py-20 text-fg md:py-28">
           <div className="grain-blob -right-32 -top-24 h-80 w-80 opacity-30" aria-hidden />
           <div className="container-g relative">
             <SectionHeading
@@ -156,7 +155,7 @@ export default async function HizmetDetayPage({
             <StaggerGroup className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
               {stats.map((stat) => (
                 <StaggerItem key={stat.label}>
-                  <div className="border-l-2 border-guru pl-5">
+                  <div>
                     <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-fg/40">
                       {stat.sector}
                     </p>
@@ -176,7 +175,6 @@ export default async function HizmetDetayPage({
         </section>
       )}
 
-      <SectionDivider from="coal" to="ink" />
 
       {/* Kapsam: editorial satırlar (numara, başlık, dahil işareti) */}
       <section id="kapsam" className="scroll-mt-28 bg-band py-20 md:py-28">
@@ -184,7 +182,7 @@ export default async function HizmetDetayPage({
           <SectionHeading dark eyebrow="Kapsam" title={accentLastWord(service.offeringsTitle)} />
           <StaggerGroup className="mt-12 md:mt-14">
             {service.offerings.map((offering, i) => (
-              <StaggerItem key={offering} className="border-t border-fg/10 last:border-b">
+              <StaggerItem key={offering}>
                 <div className="group flex items-center gap-4 py-5 transition-[padding,background-color] duration-500 sm:gap-6 md:gap-8 md:py-7 lg:hover:bg-guru/5 lg:hover:pl-6">
                   <span className="w-8 shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-guru-text">
                     {String(i + 1).padStart(2, "0")}
@@ -208,7 +206,7 @@ export default async function HizmetDetayPage({
       {/* Görseller: yalnız vitrinde gösterilmeyen ek kareler kaldıysa;
           3+ karede tek sıra akan bant, aksi halde sıvı görsel ızgarası */}
       {showGallery && gallery.length >= 3 ? (
-        <section className="overflow-hidden border-t border-fg/10 pb-20 pt-14 md:pb-28 md:pt-16">
+        <section className="overflow-hidden pb-20 pt-14 md:pb-28 md:pt-16">
           <div className="container-g">
             <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
           </div>
@@ -233,7 +231,7 @@ export default async function HizmetDetayPage({
           </Reveal>
         </section>
       ) : showGallery ? (
-        <section className="border-t border-fg/10 pb-20 pt-14 md:pb-28 md:pt-16">
+        <section className="pb-20 pt-14 md:pb-28 md:pt-16">
           <div className="container-g">
             <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
             <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 md:gap-6">
@@ -260,7 +258,7 @@ export default async function HizmetDetayPage({
 
       {/* Kapanış vurgusu: düşük yoğunluklu ışıltı */}
       {service.outro && (
-        <section className="relative overflow-hidden border-y border-fg/10 bg-page py-20 text-fg md:py-28">
+        <section className="relative overflow-hidden bg-page py-20 text-fg md:py-28">
           <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
           <Sparkles density={8} className="opacity-70" />
           <span
@@ -283,7 +281,7 @@ export default async function HizmetDetayPage({
       )}
 
       {/* Önceki / sonraki hizmet: hover'da dönen neon çerçeve, eşit yükseklik */}
-      <section className="border-t border-fg/10 py-16 md:py-20">
+      <section className="py-16 md:py-20">
         <div className="container-g grid gap-5 sm:grid-cols-2">
           <Reveal className="h-full">
             <GlowBorder

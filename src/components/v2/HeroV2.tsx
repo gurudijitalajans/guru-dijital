@@ -266,10 +266,6 @@ export function HeroV2() {
         >
           @gurudijital
         </a>
-        <span
-          className="h-12 w-px bg-gradient-to-b from-smoke/50 to-transparent"
-          aria-hidden
-        />
       </motion.div>
 
       {/* ---- sağ altta scroll ipucu: gerçek bağlantı ---- */}

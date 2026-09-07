@@ -19,8 +19,7 @@ import { cn } from "@/lib/utils";
  *
  * - lg+: solda ürün listesi, sağda dev mockup sahnesi. Aktif ürün 7 sn'de bir
  *   ilerler (yavaş slider); hover/focus'ta, bölüm ekran dışındayken ve
- *   reduced-motion'da durur. Liste satırının altındaki ince çizgi kalan
- *   süreyi gösterir.
+ *   reduced-motion'da durur. Aktif ürün yeşil ikon rozetiyle belli olur.
  * - < lg: yatay snap rayı (kullanıcı kaydırır, otomatik akış yok) + nokta
  *   navigasyonu (dokunma hedefi 44px).
  *
@@ -96,7 +95,7 @@ export function ProductsStrip() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden border-y border-fg/10 bg-band py-20 md:py-28"
+      className="relative overflow-hidden bg-band py-20 md:py-28"
     >
       <div className="grain-blob right-[-8%] top-[-30%] h-72 w-72 opacity-20" aria-hidden />
 
@@ -130,12 +129,12 @@ export function ProductsStrip() {
           }}
         >
           <Reveal>
-            <ul className="border-t border-fg/10">
+            <ul>
               {products.map((p, i) => {
                 const Icon = p.icon;
                 const isActive = i === active;
                 return (
-                  <li key={p.slug} className="relative border-b border-fg/10">
+                  <li key={p.slug} className="relative">
                     <Link
                       href={`/urunler/${p.slug}`}
                       onMouseEnter={() => setActive(i)}
@@ -169,14 +168,6 @@ export function ProductsStrip() {
                         aria-hidden
                       />
                     </Link>
-                    {/* kalan süre çizgisi */}
-                    {isActive && !reduce && (
-                      <motion.span
-                        aria-hidden
-                        className="absolute bottom-0 left-0 h-px w-full origin-left bg-guru"
-                        style={{ scaleX: fill }}
-                      />
-                    )}
                   </li>
                 );
               })}

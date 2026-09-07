@@ -183,7 +183,7 @@ function BrowserGrid({ items }: { items: (ShowcaseImage & { sites: LiveSite[] })
           <StaggerItem key={item.src} className="h-full min-w-0">
             <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-fg/10 bg-card">
               {/* Tarayıcı şeridi: dekoratif; adresler aşağıdaki bağlantılarda tekrar eder */}
-              <div className="flex items-center gap-1.5 border-b border-fg/10 px-3.5 py-2.5" aria-hidden>
+              <div className="flex items-center gap-1.5 px-3.5 py-2.5" aria-hidden>
                 <span className="size-2 rounded-full bg-fg/15" />
                 <span className="size-2 rounded-full bg-fg/15" />
                 <span className="size-2 rounded-full bg-fg/15" />

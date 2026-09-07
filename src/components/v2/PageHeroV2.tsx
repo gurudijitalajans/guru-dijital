@@ -53,7 +53,7 @@ export function PageHeroV2({
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-b border-fg/10 bg-page",
+        "relative overflow-hidden bg-page",
         minimal
           ? "pb-10 pt-28 md:pb-14 md:pt-36"
           : "pb-16 pt-36 md:pb-24 md:pt-44",

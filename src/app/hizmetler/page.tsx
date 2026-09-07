@@ -2,7 +2,6 @@ import { PageHero } from "@/components/layout/PageHero";
 import { Scramble } from "@/components/fx/Scramble";
 import { ShimmerText } from "@/components/fx/ShimmerText";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { SectionDivider } from "@/components/v2/SectionDivider";
 import { Reveal } from "@/components/ui/Reveal";
 import { GButton } from "@/components/ui/Button";
 import { ServicePanels } from "@/components/pages/hizmetler/ServicePanels";
@@ -37,7 +36,6 @@ export default function HizmetlerPage() {
         <ServicePanels />
       </section>
 
-      <SectionDivider from="coal" to="ink" />
 
       {/* Kısa CTA şeridi; rozet hero'ya taşındı, sağda label-roll buton */}
       <section className="relative overflow-hidden bg-band py-16 md:py-24">

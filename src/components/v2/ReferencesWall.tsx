@@ -24,7 +24,7 @@ export function ReferencesWall({ className }: ReferencesWallProps) {
   ];
 
   return (
-    // Zemin: coal; önündeki SectionDivider to="coal" ve ardından gelen
+    // Zemin: coal; komşu bölümlerle zemin geçişi doğrudan yapılır
     // CTAV2 (bg-page) ile birebir aynı hex; ton dikişi kalmaz.
     <section className={cn("overflow-x-clip bg-page py-16 md:py-32", className)}>
       <div className="container-g">

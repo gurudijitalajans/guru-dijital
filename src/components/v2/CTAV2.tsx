@@ -21,12 +21,6 @@ export function CTAV2({ className }: CTAV2Props) {
     <section
       className={cn("relative overflow-x-clip bg-page py-28 md:py-40", className)}
     >
-      {/* üst kenarda ince yeşil çizgi */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-guru/70 to-transparent"
-      />
-
       {/* arka plan: düşük yoğunluklu aurora + grain bloblar */}
       <AuroraCanvas className="fx-aurora absolute inset-0 h-full w-full" intensity={0.4} />
       <div

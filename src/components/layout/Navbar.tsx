@@ -125,7 +125,7 @@ export default function Navbar() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300",
         scrolled && !open
-          ? "border-b border-fg/10 bg-page/80 backdrop-blur-xl"
+          ? "bg-page/80 backdrop-blur-xl"
           : "bg-transparent"
       )}
     >
@@ -256,7 +256,7 @@ export default function Navbar() {
               </div>
             </nav>
             <motion.div
-              className="container-g flex items-center justify-between border-t border-fg/10 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
+              className="container-g flex items-center justify-between py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.2 } }}

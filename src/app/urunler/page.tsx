@@ -6,7 +6,6 @@ import { GButton } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Scramble } from "@/components/fx/Scramble";
 import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { SectionDivider } from "@/components/v2/SectionDivider";
 import { pageMetadata } from "@/lib/seo";
 
 /* Başlık 51 karakter (kök şablon eklenmez), açıklama 150 karakter; canonical + OG tek yerden. */
@@ -49,7 +48,6 @@ export default function UrunlerPage() {
         </div>
       </section>
 
-      <SectionDivider from="coal" to="ink" flip />
 
       {/* Özel çözüm bandı: sayfanın tek kapanış CTA'sı (genel CTASection bilinçli olarak yok) */}
       <section className="relative overflow-hidden bg-band py-16 text-fg md:py-24">

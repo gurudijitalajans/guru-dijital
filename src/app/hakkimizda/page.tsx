@@ -8,7 +8,6 @@ import { Sparkles } from "@/components/fx/Sparkles";
 import { LiquidImage } from "@/components/fx/LiquidImage";
 import { GlowBorder } from "@/components/fx/GlowBorder";
 import { RollingCounter } from "@/components/fx/RollingCounter";
-import { SectionDivider } from "@/components/v2/SectionDivider";
 import { awards, products, references, services, values } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
 
@@ -163,7 +162,6 @@ export default function HakkimizdaPage() {
         </div>
       </section>
 
-      <SectionDivider from="coal" to="ink" />
 
       {/* Sayılarla Guru: tek sıra kompakt bant */}
       <section className="bg-band py-14 text-fg md:py-16">
@@ -179,7 +177,7 @@ export default function HakkimizdaPage() {
                   className={
                     i === 0
                       ? "px-2 text-center"
-                      : "px-2 text-center lg:border-l lg:border-fg/10"
+                      : "px-2 text-center"
                   }
                 >
                   <p className="text-4xl font-extrabold tracking-tight md:text-5xl">
@@ -193,7 +191,6 @@ export default function HakkimizdaPage() {
         </div>
       </section>
 
-      <SectionDivider from="ink" to="coal" flip />
 
       {/* Değerler: 2x2 minimal liste */}
       <section className="py-20 md:py-28">
@@ -202,7 +199,7 @@ export default function HakkimizdaPage() {
           <StaggerGroup className="mt-12 grid grid-cols-1 gap-x-14 gap-y-8 sm:grid-cols-2 md:mt-16">
             {values.map((v) => (
               <StaggerItem key={v.title}>
-                <div className="flex gap-4 border-t border-fg/10 pt-6">
+                <div className="flex gap-4 pt-6">
                   <span className="mt-1.5 inline-block size-2 shrink-0 bg-guru" aria-hidden />
                   <div>
                     <h3 className="text-base font-bold tracking-tight text-fg">

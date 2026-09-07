@@ -210,7 +210,7 @@ function PinnedTour({ name, image, imageAlt, features, spots, className }: Varia
 
         {/* Alt ilerleme çizgisi */}
         <div className="container-g relative pb-8">
-          <div className="h-px w-full overflow-hidden bg-fg/10">
+          <div className="h-px w-full overflow-hidden">
             <motion.div
               className="h-full origin-left bg-guru"
               style={{ scaleX: scrollYProgress }}
@@ -361,7 +361,7 @@ function StaticTour({ name, image, imageAlt, features, spots, className }: Varia
         <StaggerGroup className="mt-10 hidden gap-6 md:grid md:grid-cols-3" stagger={0.1}>
           {features.map((feature, i) => (
             <StaggerItem key={feature.title} className="h-full">
-              <div className="flex h-full gap-4 border-t border-fg/10 pt-5">
+              <div className="flex h-full gap-4 pt-5">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-guru text-[11px] font-bold text-ink">
                   {pad(i + 1)}
                 </span>

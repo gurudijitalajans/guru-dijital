@@ -242,7 +242,7 @@ export default function IletisimPage() {
         {/* Dekoratif velocity şeridi: düşük opaklık, tamamen süsleme */}
         <div
           aria-hidden
-          className="mt-16 select-none border-y border-fg/10 py-4 md:mt-20"
+          className="mt-16 select-none py-4 md:mt-20"
         >
           <VelocityMarquee baseVelocity={0.6}>
             {Array.from({ length: 3 }, (_, i) => (

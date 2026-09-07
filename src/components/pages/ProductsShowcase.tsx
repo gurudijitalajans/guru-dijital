@@ -89,7 +89,7 @@ export function ProductsShowcase() {
                   </p>
 
                   {/* Üç özellik maddesi */}
-                  <ul className="mt-5 space-y-2.5 border-t border-fg/10 pt-5">
+                  <ul className="mt-5 space-y-2.5 pt-2">
                     {p.features.map((f) => (
                       <li
                         key={f}
