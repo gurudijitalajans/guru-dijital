@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import { MotionConfig } from "motion/react";
 import { AnnounceBar } from "@/components/site/AnnounceBar";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactTab } from "@/components/site/ContactTab";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
-import { site } from "@/lib/data";
+import { site, umami } from "@/lib/data";
 import "./globals.css";
 
 /* Outfit: ücretsiz, Türkçe karakter destekli; sabit ağırlık dosyaları yerelden.
@@ -96,6 +97,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <ContactTab />
           <MobileCtaBar />
         </MotionConfig>
+        {/* Umami ziyaretçi sayımı: tarayıcının "takip etme" tercihine uyar */}
+        <Script
+          src={umami.scriptUrl}
+          data-website-id={umami.websiteId}
+          data-domains={umami.domains}
+          data-do-not-track="true"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
