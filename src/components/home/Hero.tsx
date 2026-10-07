@@ -22,10 +22,11 @@ export function Hero() {
             Sosyal medyadan web tasarıma, dijital pazarlamadan yazılım ürünlerine: markanızı tek bir büyüme
             planıyla yönetiyoruz.
           </p>
-          <ul className="mx-auto mt-5 flex max-w-[860px] flex-wrap justify-center gap-x-1 gap-y-1 text-[13.5px] text-muted">
+          {/* Dar ekranda satır başına nokta düşmesin: ayraç yalnız lg+ (tek satır) */}
+          <ul className="mx-auto mt-5 flex max-w-[860px] flex-wrap justify-center gap-x-4 gap-y-1 text-[13.5px] text-muted lg:gap-x-1">
             {services.map((s, i) => (
               <li key={s.slug} className="flex items-center">
-                {i > 0 && <span aria-hidden className="mx-2.5 text-[#c5cbd6]">·</span>}
+                {i > 0 && <span aria-hidden className="mx-2.5 hidden text-[#c5cbd6] lg:inline">·</span>}
                 <Link href={`/hizmetler/${s.slug}`} className="py-1 transition-colors hover:text-brand">
                   {s.title}
                 </Link>
