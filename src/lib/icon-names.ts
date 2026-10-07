@@ -44,6 +44,9 @@ export const ICON_OPTIONS = [
   { value: "code", label: "Kod" },
   { value: "lightbulb", label: "Ampul (fikir)" },
   { value: "award", label: "Ödül" },
+  { value: "badge-check", label: "Onay rozeti" },
+  { value: "gem", label: "Mücevher (değer)" },
+  { value: "chart-line", label: "Çizgi grafik (veri)" },
 ] as const;
 
 export type IconName = (typeof ICON_OPTIONS)[number]["value"];

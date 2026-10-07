@@ -1,5 +1,5 @@
+import type { Metadata } from "next";
 import Image from "next/image";
-import { Award, BadgeCheck, ChartLine, Gem, Handshake, Lightbulb, type LucideIcon } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
 import { ClosingCta } from "@/components/site/ClosingCta";
 import { PageIntro } from "@/components/site/PageIntro";
@@ -7,17 +7,16 @@ import { SectionHead } from "@/components/site/SectionHead";
 import { cardCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { LinkedinIcon } from "@/components/ui/icons";
-import { awards, values } from "@/lib/data";
-import { getProducts, getReferences, getServices, getTeam } from "@/lib/content";
+import { getAbout, getProducts, getReferences, getServices, getTeam } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-export const metadata = pageMetadata({
-  title: "Hakkımızda",
-  description:
-    "Guru Dijital'i tanıyın: Google Partner ve Google Ads Impact Awards adayı ekibimizle markaların yol arkadaşıyız; strateji, tasarım ve teknoloji tek çatıda.",
-  path: "/hakkimizda",
-});
+/* Metinler panelden (İçerik > Hakkımızda) */
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getAbout();
+  return pageMetadata({ title: seo.title, description: seo.description, path: "/hakkimizda" });
+}
 
 /** Ad Soyad → "AS" */
 const initials = (name: string) =>
@@ -27,25 +26,6 @@ const initials = (name: string) =>
     .slice(0, 2)
     .map((w) => w.charAt(0).toLocaleUpperCase("tr-TR"))
     .join("");
-
-/* İlkeler: data.ts sırasıyla eşleşen ikonlar */
-const valueIcons: LucideIcon[] = [Gem, Lightbulb, ChartLine, Handshake];
-
-/* Google tanınırlığı: data.ts'teki ödül kayıtlarına görsel ve kısa etiket */
-const awardMeta: Record<string, { image: string; alt: string; badge: string; icon: LucideIcon }> = {
-  "Google Partner": {
-    image: "/work/odul-partner.webp",
-    alt: "2025 Google Partner rozeti",
-    badge: "Partner Rozeti",
-    icon: BadgeCheck,
-  },
-  "Google Ads Impact Awards": {
-    image: "/work/odul-impact.webp",
-    alt: "Google Ads Impact Awards 2025 Data Innovation kategorisi aday belgesi",
-    badge: "Data Innovation Adayı",
-    icon: Award,
-  },
-};
 
 /* Fotoğraf gelene kadar marka mavisi tonlarında baş harf avatarı */
 const avatarTones = [
@@ -59,58 +39,52 @@ const avatarTones = [
 
 export default async function HakkimizdaPage() {
   /* Sayılar yalnız gerçek adetlerden; ekip, referans, hizmet ve ürünler panelden */
-  const [services, products, references, team] = await Promise.all([
+  const [about, services, products, references, team] = await Promise.all([
+    getAbout(),
     getServices(),
     getProducts(),
     getReferences(),
     getTeam(),
   ]);
+  const { intro, story, awards, closing } = about;
   const stats = [
-    { value: references.length, label: "Referans Marka" },
-    { value: services.length, label: "Uzmanlık Alanı" },
-    { value: products.length, label: "Yazılım Ürünü" },
+    { value: references.length, label: about.stats.referencesLabel },
+    { value: services.length, label: about.stats.servicesLabel },
+    { value: products.length, label: about.stats.productsLabel },
   ];
   return (
     <>
-      <PageIntro
-        eyebrow="Biz Kimiz"
-        title="Markaların yol arkadaşıyız"
-        lead="Strateji, tasarım ve teknolojiyi tek çatıda buluşturuyor; markanızı dijitalde sizinle birlikte büyütüyoruz."
-      >
-        <Btn href="/iletisim" variant="primary" size="lg" arrow>
-          Tanışalım
+      <PageIntro eyebrow={intro.eyebrow || undefined} title={intro.title} lead={intro.lead || undefined}>
+        <Btn href={intro.primaryHref} variant="primary" size="lg" arrow>
+          {intro.primaryLabel}
         </Btn>
-        <Btn href="#ekip" variant="light" size="lg">
-          Ekibimizi Tanıyın
-        </Btn>
+        {intro.secondaryLabel && intro.secondaryHref && (
+          <Btn href={intro.secondaryHref} variant="light" size="lg">
+            {intro.secondaryLabel}
+          </Btn>
+        )}
       </PageIntro>
 
       {/* Hikaye + ilkeler */}
       <section className="pb-16 pt-4 md:pb-[72px] md:pt-8">
         <div className="container-g grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16">
           <Reveal>
-            <SectionHead title="Hikayemiz" />
+            <SectionHead title={story.title} />
             <div className="mt-5 max-w-xl space-y-4 text-[16px] leading-relaxed text-body md:text-[16.5px]">
-              <p>
-                Yaratıcılığın markalar için dönüştürücü bir etki yarattığına inanıyoruz. Sosyal medyadan web
-                tasarıma, içerikten dijital pazarlamaya kadar her işi aynı hedefe bakan tek bir ekiple
-                yürütüyoruz.
-              </p>
-              <p>
-                Sağlıktan turizme, perakendeden inşaata farklı sektörlerden markalarla çalışıyor; ajans
-                deneyimimizi işletmelerin günlük işini kolaylaştıran yazılımlara da taşıyoruz.
-              </p>
+              {story.paragraphs.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
             </div>
           </Reveal>
 
           <div>
             <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-medium text-brand">
               <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-              İlkelerimiz
+              {story.valuesLabel}
             </p>
             <StaggerGroup className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-              {values.map((v, i) => {
-                const Icon = valueIcons[i % valueIcons.length];
+              {story.values.map((v) => {
+                const Icon = iconFor(v.icon);
                 return (
                   <StaggerItem key={v.title} className="h-full">
                     <article className={cn(cardCls, "flex h-full gap-4 p-5 sm:block md:p-6")}>
@@ -130,20 +104,20 @@ export default async function HakkimizdaPage() {
         </div>
       </section>
 
-      {/* Google tanınırlığı */}
+      {/* Ödüller ve tanınırlık */}
+      {awards.show && awards.items.length > 0 && (
       <section className={cn("bg-soft", sectionY)}>
         <div className="container-g">
           <Reveal>
             <SectionHead
               center
-              title="Ödüller ve Tanınırlık"
-              lead="2025'te Google Partner olduk; veri odaklı çalışmalarımızla Google Ads Impact Awards'ta aday gösterildik."
+              title={awards.title}
+              lead={awards.lead || undefined}
             />
           </Reveal>
           <StaggerGroup className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-2 md:gap-5">
-            {awards.map((a) => {
-              const meta = awardMeta[a.title];
-              const Icon = meta?.icon ?? Award;
+            {awards.items.map((a) => {
+              const Icon = iconFor(a.icon);
               return (
                 <StaggerItem key={a.title} className="h-full">
                   <article
@@ -152,12 +126,12 @@ export default async function HakkimizdaPage() {
                       "flex h-full flex-col overflow-hidden shadow-[0_0_0_1px_rgb(42_106_202/0.22),0_30px_60px_-42px_rgb(18_65_155/0.55)]"
                     )}
                   >
-                    {meta && (
+                    {a.image && (
                       <Image
-                        src={meta.image}
-                        alt={meta.alt}
-                        width={1600}
-                        height={1131}
+                        src={a.image.src}
+                        alt={a.image.alt}
+                        width={a.image.w}
+                        height={a.image.h}
                         sizes="(min-width: 1072px) 510px, (min-width: 768px) 50vw, 100vw"
                         className="aspect-[1600/1131] h-auto w-full bg-soft object-cover"
                       />
@@ -165,7 +139,7 @@ export default async function HakkimizdaPage() {
                     <div className="flex flex-1 flex-col p-5 md:p-7">
                       <p className="inline-flex items-center gap-2 text-[13px] font-medium text-brand">
                         <Icon className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                        {a.year} · {meta?.badge}
+                        {[a.year, a.badge].filter(Boolean).join(" · ")}
                       </p>
                       <h3 className={cn(cardTitleCls, "mt-2 text-[20px] md:text-[22px]")}>{a.title}</h3>
                       <p className={cn(cardTextCls, "mt-2")}>{a.desc}</p>
@@ -177,15 +151,14 @@ export default async function HakkimizdaPage() {
           </StaggerGroup>
         </div>
       </section>
+      )}
 
       {/* Ekip: ÖRNEK kartlar. TODO(client): fotoğraf, isim, unvan ve LinkedIn (data.ts > team) */}
+      {about.team.show && team.length > 0 && (
       <section id="ekip" className={sectionY}>
         <div className="container-g">
           <Reveal>
-            <SectionHead
-              title="Ekibimiz"
-              lead="Strateji, tasarım, içerik ve performans uzmanlarından oluşan, aynı hedefe odaklı bir ekip."
-            />
+            <SectionHead title={about.team.title} lead={about.team.lead || undefined} />
           </Reveal>
           <StaggerGroup className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:gap-5">
             {team.map((m, i) => (
@@ -243,12 +216,14 @@ export default async function HakkimizdaPage() {
           </StaggerGroup>
         </div>
       </section>
+      )}
 
       {/* Sayılar */}
+      {about.stats.show && (
       <section className={cn("bg-soft", sectionY)}>
         <div className="container-g">
           <Reveal>
-            <SectionHead center title="Sayılarla Guru" />
+            <SectionHead center title={about.stats.title} />
           </Reveal>
           <Reveal className="mx-auto mt-10 max-w-4xl" delay={0.05}>
             {/* dl > div > (dt, dd): görselde sayı üstte (flex-col-reverse) */}
@@ -268,13 +243,10 @@ export default async function HakkimizdaPage() {
           </Reveal>
         </div>
       </section>
+      )}
 
       {/* Kapanış */}
-      <ClosingCta
-        title="Markanızı Birlikte Büyütelim"
-        lead="Hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz."
-        primary={{ href: "/iletisim", label: "Tanışalım" }}
-      />
+      <ClosingCta title={closing.title} lead={closing.lead} primary={{ href: "/iletisim", label: closing.primaryLabel }} />
     </>
   );
 }

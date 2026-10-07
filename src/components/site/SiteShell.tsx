@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactTab } from "@/components/site/ContactTab";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
 import { getPublishedPostCount, getSiteInfo } from "@/lib/cms";
-import { getProducts, getServices } from "@/lib/content";
+import { getAbout, getProducts, getServices } from "@/lib/content";
 import { outfit } from "@/lib/fonts";
 import { buildNavMenu, site } from "@/lib/data";
 
@@ -16,12 +16,15 @@ import { buildNavMenu, site } from "@/lib/data";
  * bağlantısı panelden gelir.
  */
 export async function SiteShell({ children }: { children: React.ReactNode }) {
-  const [info, postCount, services, products] = await Promise.all([
+  const [info, postCount, services, products, about] = await Promise.all([
     getSiteInfo(),
     getPublishedPostCount(),
     getServices(),
     getProducts(),
+    getAbout(),
   ]);
+  const firstAward = about.awards.items[0];
+  const footerBadge = firstAward ? `${firstAward.year} ${firstAward.title}` : undefined;
   const showBlog = postCount > 0;
   const menu = buildNavMenu(services, products);
   if (showBlog) menu.push({ label: "Blog", href: "/blog" });
@@ -68,6 +71,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
             showBlog={showBlog}
             services={footerServices}
             products={footerProducts}
+            badge={footerBadge}
           />
           <ContactTab whatsapp={info.whatsapp} />
           <MobileCtaBar />

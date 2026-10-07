@@ -1,18 +1,19 @@
 import { Quote } from "lucide-react";
-import { testimonials } from "@/lib/data";
+import Image from "next/image";
+import type { TestimonialView } from "@/lib/content";
 import { SectionHead } from "@/components/site/SectionHead";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, sectionY } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
-/* Yorum metni gelene kadar uydurma alıntı yazılmaz; kart iskelet olarak görünür. */
-export function QuotesBlock({ title, lead }: { title: string; lead: string }) {
+/* Yorumlar panelden; yayın izni işaretlenmemiş yorumun metni yazılmaz, kart iskelet olarak görünür. */
+export function QuotesBlock({ title, lead, items }: { title: string; lead: string; items: TestimonialView[] }) {
   return (
     <section className={cn("bg-soft", sectionY)}>
       <div className="container-g">
         <SectionHead title={title} lead={lead} />
         <StaggerGroup className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
-          {testimonials.map((t, i) => (
+          {items.map((t, i) => (
             <StaggerItem key={i} className="h-full">
               <figure className={cn(cardCls, "flex h-full flex-col gap-3 p-6")}>
                 <Quote aria-hidden className="size-6 text-brand" strokeWidth={1.8} />
@@ -26,12 +27,20 @@ export function QuotesBlock({ title, lead }: { title: string; lead: string }) {
                   </div>
                 )}
                 <figcaption className="mt-auto flex items-center gap-3 pt-3">
-                  <span aria-hidden className="size-10 rounded-full bg-gradient-to-br from-[#cef0fe] to-[#3888e7]" />
+                  {t.photo ? (
+                    <Image
+                      src={t.photo.src}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="size-10 shrink-0 rounded-full bg-soft object-cover"
+                    />
+                  ) : (
+                    <span aria-hidden className="size-10 shrink-0 rounded-full bg-gradient-to-br from-[#cef0fe] to-[#3888e7]" />
+                  )}
                   <span>
                     <b className="block text-[14px] font-medium text-heading">{t.name}</b>
-                    <span className="text-[12.5px] text-muted">
-                      {t.title} · {t.company}
-                    </span>
+                    <span className="text-[12.5px] text-muted">{[t.title, t.company].filter(Boolean).join(" · ")}</span>
                   </span>
                 </figcaption>
               </figure>

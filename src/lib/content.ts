@@ -2,11 +2,14 @@ import "server-only";
 import { cache } from "react";
 import { cms } from "@/lib/cms";
 import {
+  caseStudies as staticCases,
   products as staticProducts,
   references as staticReferences,
   services as staticServices,
   team as staticTeam,
+  testimonials as staticTestimonials,
 } from "@/lib/data";
+import { ABOUT_DEFAULTS, type AboutContent } from "@/lib/about-defaults";
 import { HOME_DEFAULTS, type HomeContent } from "@/lib/home-defaults";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
@@ -288,4 +291,116 @@ export const getReferences = cache(async (): Promise<ReferenceView[]> => {
     /* panel yok: varsayılan içerik */
   }
   return staticReferences.map((name) => ({ name, logo: null }));
+});
+
+/* ------------------------------------------------------------------ */
+/*  Vaka çalışmaları, müşteri yorumları, hakkımızda                    */
+/* ------------------------------------------------------------------ */
+
+type StatView = { label: string; value: number; prefix: string; suffix: string };
+export type CaseView = {
+  id: string;
+  sector: string;
+  title: string;
+  summary: string;
+  note: string;
+  /** Kartta gösterilecek en çok üç sonuç */
+  featured: StatView[];
+  showOnHome: boolean;
+};
+export type TestimonialView = {
+  /** Yalnız yayın izni işaretliyse dolu */
+  quote: string | null;
+  name: string;
+  title: string;
+  company: string;
+  photo: WorkImage | null;
+};
+
+/* Kod içindeki vakalarda kartta gösterilen sonuçlar (önceki sayfa düzeni) */
+const STATIC_FEATURED: Record<string, number[]> = { klinik: [0, 1, 5], eticaret: [0, 1, 2] };
+
+function pickFeatured(stats: (StatView & { featured?: boolean | null })[]): StatView[] {
+  const chosen = stats.filter((s) => s.featured);
+  return (chosen.length > 0 ? chosen : stats).slice(0, 3).map(({ label, value, prefix, suffix }) => ({ label, value, prefix, suffix }));
+}
+
+export const getCases = cache(async (): Promise<CaseView[]> => {
+  try {
+    const payload = await cms();
+    const res = await payload.find({ collection: "case-studies", sort: "order", depth: 0, limit: 50, pagination: false });
+    if (res.docs.length > 0)
+      return res.docs.map((c) => ({
+        id: String(c.id),
+        sector: c.sector,
+        title: c.title,
+        summary: c.summary,
+        note: c.note ?? "",
+        featured: pickFeatured(
+          (c.stats ?? []).map((s) => ({ label: s.label, value: s.value, prefix: s.prefix ?? "", suffix: s.suffix ?? "", featured: s.featured }))
+        ),
+        showOnHome: c.showOnHome !== false,
+      }));
+  } catch {
+    /* panel yok: varsayılan içerik */
+  }
+  return staticCases.map((c) => ({
+    id: c.id,
+    sector: c.sector,
+    title: c.title,
+    summary: c.summary,
+    note: c.note,
+    featured: (STATIC_FEATURED[c.id] ?? [0, 1, 2])
+      .map((i) => c.stats[i])
+      .filter(Boolean)
+      .map((s) => ({ label: s.label, value: s.value, prefix: s.prefix ?? "", suffix: s.suffix })),
+    showOnHome: true,
+  }));
+});
+
+export const getTestimonials = cache(async (): Promise<TestimonialView[]> => {
+  try {
+    const payload = await cms();
+    const res = await payload.find({ collection: "testimonials", sort: "order", depth: 1, limit: 50, pagination: false });
+    if (res.docs.length > 0)
+      return res.docs.map((t) => ({
+        quote: t.consent && t.quote?.trim() ? t.quote.trim() : null,
+        name: t.name,
+        title: t.title ?? "",
+        company: t.company ?? "",
+        photo: toImage(t.photo, t.name),
+      }));
+  } catch {
+    /* panel yok: varsayılan içerik */
+  }
+  return staticTestimonials.map((t) => ({ quote: null, name: t.name, title: t.title, company: t.company, photo: null }));
+});
+
+export const getAbout = cache(async (): Promise<AboutContent> => {
+  try {
+    const payload = await cms();
+    const doc = await payload.findGlobal({ slug: "about-page", depth: 1 });
+    if (!doc?.updatedAt) return ABOUT_DEFAULTS;
+    const merged = overlay(ABOUT_DEFAULTS, doc);
+    /* Listeler panel biçiminden site biçimine */
+    merged.story.paragraphs = doc.story?.paragraphs
+      ? doc.story.paragraphs.map((p) => p.text).filter(Boolean)
+      : ABOUT_DEFAULTS.story.paragraphs;
+    merged.story.values = doc.story?.values
+      ? doc.story.values.map((v) => ({ icon: iconOf(v.icon), title: v.title, desc: v.desc }))
+      : ABOUT_DEFAULTS.story.values;
+    merged.awards.items = doc.awards?.items
+      ? doc.awards.items.map((a) => ({
+          title: a.title,
+          year: a.year,
+          desc: a.desc,
+          badge: a.badge ?? "",
+          icon: iconOf(a.icon),
+          image: toImage(a.image, a.title),
+        }))
+      : ABOUT_DEFAULTS.awards.items;
+    return merged;
+  } catch {
+    return ABOUT_DEFAULTS;
+  }
 });

@@ -75,6 +75,8 @@ export interface Config {
     categories: Category;
     team: Team;
     references: Reference;
+    'case-studies': CaseStudy;
+    testimonials: Testimonial;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -92,6 +94,8 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     references: ReferencesSelect<false> | ReferencesSelect<true>;
+    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -105,10 +109,12 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'home-page': HomePage;
+    'about-page': AboutPage;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -303,7 +309,10 @@ export interface Service {
     | 'trending'
     | 'code'
     | 'lightbulb'
-    | 'award';
+    | 'award'
+    | 'badge-check'
+    | 'gem'
+    | 'chart-line';
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -439,7 +448,10 @@ export interface Product {
           | 'trending'
           | 'code'
           | 'lightbulb'
-          | 'award';
+          | 'award'
+          | 'badge-check'
+          | 'gem'
+          | 'chart-line';
         desc: string;
         id?: string | null;
       }[]
@@ -552,7 +564,10 @@ export interface Product {
     | 'trending'
     | 'code'
     | 'lightbulb'
-    | 'award';
+    | 'award'
+    | 'badge-check'
+    | 'gem'
+    | 'chart-line';
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -694,6 +709,66 @@ export interface Reference {
   createdAt: string;
 }
 /**
+ * Yalnız ölçülmüş ve müşterinin paylaşmayı onayladığı sonuçları yazın.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies".
+ */
+export interface CaseStudy {
+  id: number;
+  sector: string;
+  title: string;
+  summary: string;
+  /**
+   * "Kartta göster" seçili ilk üç sonuç kartta görünür; hiçbiri seçili değilse ilk üçü.
+   */
+  stats?:
+    | {
+        label: string;
+        value: number;
+        prefix?: string | null;
+        suffix?: string | null;
+        featured?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Kartın altında küçük yazı: ölçüm süresi, koşul vb.
+   */
+  note?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  showOnHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Yorum metni, kişiden yazılı yayın izni alınıp işaretlenene kadar sitede görünmez.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote?: string | null;
+  name: string;
+  title?: string | null;
+  company?: string | null;
+  photo?: (number | null) | Media;
+  /**
+   * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
+   */
+  consent?: boolean | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -748,6 +823,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'references';
         value: number | Reference;
+      } | null)
+    | ({
+        relationTo: 'case-studies';
+        value: number | CaseStudy;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
       } | null)
     | ({
         relationTo: 'media';
@@ -1031,6 +1114,45 @@ export interface ReferencesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies_select".
+ */
+export interface CaseStudiesSelect<T extends boolean = true> {
+  sector?: T;
+  title?: T;
+  summary?: T;
+  stats?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        prefix?: T;
+        suffix?: T;
+        featured?: T;
+        id?: T;
+      };
+  note?: T;
+  order?: T;
+  showOnHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  name?: T;
+  title?: T;
+  company?: T;
+  photo?: T;
+  consent?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -1238,6 +1360,176 @@ export interface HomePage {
   createdAt?: string | null;
 }
 /**
+ * Kaydettiğinizde Hakkımızda sayfası ve ödüllerin geçtiği yerler güncellenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-page".
+ */
+export interface AboutPage {
+  id: number;
+  intro: {
+    eyebrow?: string | null;
+    title: string;
+    lead?: string | null;
+    primaryLabel: string;
+    primaryHref: string;
+    secondaryLabel?: string | null;
+    secondaryHref?: string | null;
+  };
+  story: {
+    title: string;
+    paragraphs?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    valuesLabel?: string | null;
+    values?:
+      | {
+          title: string;
+          icon:
+            | 'share'
+            | 'palette'
+            | 'pen'
+            | 'monitor'
+            | 'chart-bar'
+            | 'clapperboard'
+            | 'bot'
+            | 'users'
+            | 'workflow'
+            | 'briefcase'
+            | 'message'
+            | 'brain'
+            | 'languages'
+            | 'bell'
+            | 'calendar'
+            | 'clipboard'
+            | 'database'
+            | 'file'
+            | 'gauge'
+            | 'handshake'
+            | 'kanban'
+            | 'dashboard'
+            | 'layers'
+            | 'link'
+            | 'pie'
+            | 'shield'
+            | 'sparkles'
+            | 'target'
+            | 'rocket'
+            | 'megaphone'
+            | 'camera'
+            | 'globe'
+            | 'cart'
+            | 'search'
+            | 'mail'
+            | 'zap'
+            | 'trending'
+            | 'code'
+            | 'lightbulb'
+            | 'award'
+            | 'badge-check'
+            | 'gem'
+            | 'chart-line';
+          desc: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  awards: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+    /**
+     * İlk ödül alt bilgideki rozette de görünür (ör. 2025 Google Partner).
+     */
+    items?:
+      | {
+          title: string;
+          year: string;
+          badge?: string | null;
+          icon:
+            | 'share'
+            | 'palette'
+            | 'pen'
+            | 'monitor'
+            | 'chart-bar'
+            | 'clapperboard'
+            | 'bot'
+            | 'users'
+            | 'workflow'
+            | 'briefcase'
+            | 'message'
+            | 'brain'
+            | 'languages'
+            | 'bell'
+            | 'calendar'
+            | 'clipboard'
+            | 'database'
+            | 'file'
+            | 'gauge'
+            | 'handshake'
+            | 'kanban'
+            | 'dashboard'
+            | 'layers'
+            | 'link'
+            | 'pie'
+            | 'shield'
+            | 'sparkles'
+            | 'target'
+            | 'rocket'
+            | 'megaphone'
+            | 'camera'
+            | 'globe'
+            | 'cart'
+            | 'search'
+            | 'mail'
+            | 'zap'
+            | 'trending'
+            | 'code'
+            | 'lightbulb'
+            | 'award'
+            | 'badge-check'
+            | 'gem'
+            | 'chart-line';
+          desc: string;
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Kişiler "Kurumsal > Ekip"ten gelir.
+   */
+  team: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  /**
+   * Sayılar referans, hizmet ve ürün kayıtlarından otomatik hesaplanır.
+   */
+  stats: {
+    show?: boolean | null;
+    title: string;
+    referencesLabel?: string | null;
+    servicesLabel?: string | null;
+    productsLabel?: string | null;
+  };
+  closing: {
+    title: string;
+    lead?: string | null;
+    primaryLabel: string;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
@@ -1348,6 +1640,93 @@ export interface HomePageSelect<T extends boolean = true> {
         text?: T;
         buttonLabel?: T;
         buttonHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about-page_select".
+ */
+export interface AboutPageSelect<T extends boolean = true> {
+  intro?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        lead?: T;
+        primaryLabel?: T;
+        primaryHref?: T;
+        secondaryLabel?: T;
+        secondaryHref?: T;
+      };
+  story?:
+    | T
+    | {
+        title?: T;
+        paragraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        valuesLabel?: T;
+        values?:
+          | T
+          | {
+              title?: T;
+              icon?: T;
+              desc?: T;
+              id?: T;
+            };
+      };
+  awards?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              year?: T;
+              badge?: T;
+              icon?: T;
+              desc?: T;
+              image?: T;
+              id?: T;
+            };
+      };
+  team?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  stats?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        referencesLabel?: T;
+        servicesLabel?: T;
+        productsLabel?: T;
+      };
+  closing?:
+    | T
+    | {
+        title?: T;
+        lead?: T;
+        primaryLabel?: T;
       };
   seo?:
     | T

@@ -10,6 +10,8 @@
  *   (yalnız boşsa). Bundan sonra içeriğin asıl yeri paneldir.
  * - Ana Sayfa metinlerini (hiç kaydedilmemişse), ekip ve referansları
  *   (koleksiyon boşsa) panele aktarır.
+ * - Hakkımızda metinlerini ve ödül görsellerini (hiç kaydedilmemişse),
+ *   vaka çalışmalarını ve örnek müşteri yorumlarını (boşsa) aktarır.
  *
  * Tekrar çalıştırmak güvenlidir; var olan kayıtlara dokunmaz.
  */
@@ -17,7 +19,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement, products, references, services, site, team } from "@/lib/data";
+import { announcement, caseStudies, products, references, services, site, team, testimonials } from "@/lib/data";
+import { ABOUT_DEFAULTS } from "@/lib/about-defaults";
 import { HOME_DEFAULTS } from "@/lib/home-defaults";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
@@ -238,6 +241,70 @@ if ((await payload.count({ collection: "references" })).totalDocs === 0) {
     await payload.create({ collection: "references", data: { name, order: (i + 1) * 10 } });
   }
   log(`${references.length} referans eklendi`);
+}
+
+/* 8. Hakkımızda (hiç kaydedilmemişse; ödül görselleri medyaya yüklenir) */
+const about = await payload.findGlobal({ slug: "about-page" });
+if (!about?.updatedAt) {
+  const A = ABOUT_DEFAULTS;
+  const items = [];
+  for (const a of A.awards.items) {
+    items.push({
+      title: a.title,
+      year: a.year,
+      badge: a.badge,
+      icon: a.icon,
+      desc: a.desc,
+      image: a.image ? await mediaFor({ src: a.image.src, alt: a.image.alt }) : undefined,
+    });
+  }
+  await payload.updateGlobal({
+    slug: "about-page",
+    data: {
+      ...A,
+      story: { ...A.story, paragraphs: rows(A.story.paragraphs) },
+      awards: { ...A.awards, items },
+    },
+  });
+  log("hakkımızda metinleri yazıldı");
+}
+
+/* 9. Vaka çalışmaları (yalnız boşsa). Kartta gösterilen sonuçlar önceki sayfa düzeniyle aynı */
+const FEATURED: Record<string, number[]> = { klinik: [0, 1, 5], eticaret: [0, 1, 2] };
+if ((await payload.count({ collection: "case-studies" })).totalDocs === 0) {
+  for (const [i, c] of caseStudies.entries()) {
+    const featured = FEATURED[c.id] ?? [0, 1, 2];
+    await payload.create({
+      collection: "case-studies",
+      data: {
+        sector: c.sector,
+        title: c.title,
+        summary: c.summary,
+        note: c.note,
+        order: (i + 1) * 10,
+        showOnHome: true,
+        stats: c.stats.map((st, j) => ({
+          label: st.label,
+          value: st.value,
+          prefix: st.prefix,
+          suffix: st.suffix,
+          featured: featured.includes(j),
+        })),
+      },
+    });
+  }
+  log(`${caseStudies.length} vaka çalışması (örnek) eklendi`);
+}
+
+/* 10. Müşteri yorumları: yalnız boş yer tutucular (uydurma alıntı yok, yayın izni yok) */
+if ((await payload.count({ collection: "testimonials" })).totalDocs === 0) {
+  for (const [i, t] of testimonials.entries()) {
+    await payload.create({
+      collection: "testimonials",
+      data: { name: t.name, title: t.title, company: t.company, order: (i + 1) * 10, consent: false },
+    });
+  }
+  log(`${testimonials.length} yorum yer tutucusu eklendi`);
 }
 
 log("tamam");

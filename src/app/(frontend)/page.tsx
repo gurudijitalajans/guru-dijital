@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
-import { getHome, getReferences, getTeam } from "@/lib/content";
+import { getCases, getHome, getReferences, getTeam, getTestimonials } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { Hero } from "@/components/home/Hero";
 import { LogoWall } from "@/components/home/LogoWall";
@@ -24,10 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Ana sayfa: bölüm metinleri ve görünürlüğü panelin "Ana Sayfa" kaydından,
- * kartlar ilgili koleksiyonlardan (Hizmetler, Ürünler, Ekip, Referanslar).
+ * kartlar ilgili koleksiyonlardan (Hizmetler, Ürünler, Ekip, Referanslar,
+ * Vaka Çalışmaları, Müşteri Yorumları).
  */
 export default async function Home() {
-  const [home, references, team] = await Promise.all([getHome(), getReferences(), getTeam()]);
+  const [home, references, team, cases, testimonials] = await Promise.all([
+    getHome(),
+    getReferences(),
+    getTeam(),
+    getCases(),
+    getTestimonials(),
+  ]);
+  const homeCases = cases.filter((c) => c.showOnHome);
   /* Tanıtım videosu public/video altında varsa oynatıcı açılır (statik sayfada derleme anında bakılır). */
   const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim.mp4"));
   const faqItems = home.faq.show ? home.faq.items : [];
@@ -49,11 +57,15 @@ export default async function Home() {
       {home.services.show && <ServicesGrid title={home.services.title} lead={home.services.lead} />}
       {home.products.show && <ProductsGrid title={home.products.title} lead={home.products.lead} />}
       {home.video.show && <VideoBlock hasVideo={hasVideo} title={home.video.title} lead={home.video.lead} />}
-      {home.cases.show && <CasesBlock title={home.cases.title} lead={home.cases.lead} />}
+      {home.cases.show && homeCases.length > 0 && (
+        <CasesBlock title={home.cases.title} lead={home.cases.lead} cases={homeCases} />
+      )}
       {home.team.show && (
         <TeamBlock title={home.team.title} lead={home.team.lead} members={team} limit={home.team.limit} />
       )}
-      {home.quotes.show && <QuotesBlock title={home.quotes.title} lead={home.quotes.lead} />}
+      {home.quotes.show && testimonials.length > 0 && (
+        <QuotesBlock title={home.quotes.title} lead={home.quotes.lead} items={testimonials} />
+      )}
       {faqItems.length > 0 && (
         <section className={sectionY}>
           <div className="container-g">

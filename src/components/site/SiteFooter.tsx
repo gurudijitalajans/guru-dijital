@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
-import { awards, site } from "@/lib/data";
+import { site } from "@/lib/data";
 import { Logo } from "./Logo";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
@@ -16,12 +16,13 @@ type SiteFooterProps = {
   showBlog?: boolean;
   services: { title: string; slug: string }[];
   products: { name: string; slug: string }[];
+  /** Hakkımızda > Ödüller listesindeki ilk ödül, ör. "2025 Google Partner" */
+  badge?: string;
 };
 
 /** İletişim bilgileri, hizmet ve ürün listeleri panelden gelir; blog bağlantısı yayında yazı varken görünür. */
-export function SiteFooter({ email, instagram, showBlog = false, services, products }: SiteFooterProps) {
+export function SiteFooter({ email, instagram, showBlog = false, services, products, badge }: SiteFooterProps) {
   const year = new Date().getFullYear();
-  const partner = awards.find((a) => a.title === "Google Partner");
 
   return (
     <footer className="bg-soft pb-8 pt-14 md:pt-16">
@@ -32,10 +33,10 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
             <p className="mt-4 max-w-[260px] text-[14px] leading-relaxed text-muted">
               Markanızı dijitalde büyüten entegre ajans hizmetleri ve işletme yazılımları.
             </p>
-            {partner && (
+            {badge && (
               <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[12.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)]">
                 <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-                {partner.year} {partner.title}
+                {badge}
               </p>
             )}
           </div>

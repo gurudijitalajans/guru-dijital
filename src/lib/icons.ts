@@ -1,5 +1,8 @@
 import {
   Award,
+  BadgeCheck,
+  ChartLine,
+  Gem,
   BarChart3,
   Bell,
   Bot,
@@ -85,6 +88,9 @@ const ICONS: Record<IconName, LucideIcon> = {
   code: Code,
   lightbulb: Lightbulb,
   award: Award,
+  "badge-check": BadgeCheck,
+  gem: Gem,
+  "chart-line": ChartLine,
 };
 
 export function iconFor(name: string | null | undefined): LucideIcon {

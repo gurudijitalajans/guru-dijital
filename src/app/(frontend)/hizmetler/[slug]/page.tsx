@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Award, LayoutGrid } from "lucide-react";
-import { awards, caseStudies, site, webProjects } from "@/lib/data";
-import { getService, getServices } from "@/lib/content";
+import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
+import { site, webProjects } from "@/lib/data";
+import { getAbout, getCases, getService, getServices } from "@/lib/content";
 import { iconFor } from "@/lib/icons";
-import { cn, countWord } from "@/lib/utils";
+import { cn, countWord, formatStat } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -31,19 +31,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /** Etiketler büyük harfle başlar (Türkçe kurala göre: "içerik" → "İçerik") */
 const capitalize = (t: string) => t.charAt(0).toLocaleUpperCase("tr-TR") + t.slice(1);
 
-/** Türkçe yüzde yazımı: 300 → "%300", 54.5 → "%54,5" */
-function formatStat(stat: { value: number; suffix: string; prefix?: string }) {
-  const num = stat.value.toLocaleString("tr-TR");
-  if (stat.suffix === "%") return `${stat.prefix ?? ""}%${num}`;
-  return `${stat.prefix ?? ""}${num}${stat.suffix}`;
-}
-
-/* Vaka kartlarında gösterilen istatistikler (data.ts sırasıyla) */
-const CASE_STATS: Record<string, number[]> = {
-  klinik: [0, 1, 5],
-  eticaret: [0, 1, 2],
-};
-
 export async function generateStaticParams() {
   return (await getServices()).map((s) => ({ slug: s.slug }));
 }
@@ -66,6 +53,9 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
   if (!service) notFound();
 
   const { gallery, faq } = service;
+  /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */
+  const [caseStudies, about] = service.sections.cases ? await Promise.all([getCases(), getAbout()]) : [[], null];
+  const awards = about?.awards.items ?? [];
   const others = services.filter((s) => s.slug !== service.slug);
   const contactHref = `/iletisim?hizmet=${service.slug}`;
   /* Vaka bölümü olan sayfalarda SSS beyaz bölümün devamıdır: üst boşluk tekrarlanmaz */
@@ -171,7 +161,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
           <div className="container-g">
             <SectionHead
               title="Ölçülen Sonuçlar"
-              lead="Sağlık ve e-ticaret sektörlerinden, yönetimini devraldığımız iki hesabın sonuçları."
+              lead="Yönetimini devraldığımız hesaplarda ölçtüğümüz sonuçlar."
             />
             <StaggerGroup className="mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">
               {caseStudies.map((cs) => (
@@ -185,10 +175,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                     </h3>
                     <p className={cn(cardTextCls, "mt-3")}>{cs.summary}</p>
                     <dl className="mt-auto grid grid-cols-1 gap-2 pt-7 min-[420px]:grid-cols-3 min-[420px]:gap-3">
-                      {(CASE_STATS[cs.id] ?? [0, 1, 2])
-                        .map((idx) => cs.stats[idx])
-                        .filter(Boolean)
-                        .map((stat) => (
+                      {cs.featured.map((stat) => (
                           <div
                             key={stat.label}
                             className="flex items-center justify-between gap-4 rounded-xl bg-soft px-4 py-3 min-[420px]:block min-[420px]:p-4"
@@ -198,7 +185,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                               {formatStat(stat)}
                             </dd>
                           </div>
-                        ))}
+                      ))}
                     </dl>
                     <p className="mt-4 text-[13px] text-muted">{cs.note}</p>
                   </article>
@@ -206,11 +193,13 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
               ))}
             </StaggerGroup>
             <StaggerGroup className="mt-4 grid gap-4 md:mt-5 md:grid-cols-2 md:gap-5">
-              {awards.map((a) => (
+              {awards.map((a) => {
+                const AwardIcon = iconFor(a.icon);
+                return (
                 <StaggerItem key={a.title} className="h-full">
                   <article className={cn(cardCls, "flex h-full items-start gap-4 p-6")}>
                     <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                      <Award className="size-5" strokeWidth={1.8} />
+                      <AwardIcon className="size-5" strokeWidth={1.8} />
                     </span>
                     <div>
                       <h3 className={cardTitleCls}>
@@ -220,7 +209,8 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                     </div>
                   </article>
                 </StaggerItem>
-              ))}
+                );
+              })}
             </StaggerGroup>
           </div>
         </section>

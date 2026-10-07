@@ -20,3 +20,10 @@ export function parseAccent(text: string): { t: string; accent: boolean }[] {
 const TR_COUNT = ["sıfır", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz", "on"];
 /** 6 → "altı" (paneldeki kayıt sayısı değişince metinler de doğru kalsın); 10 üstü rakamla */
 export const countWord = (n: number) => TR_COUNT[n] ?? String(n);
+
+/** Türkçe yüzde ve sayı yazımı: 300 + "%" → "%300", 54.5 + "%" → "%54,5", 3 + " gün" → "3 gün" */
+export function formatStat({ value, prefix, suffix }: { value: number; prefix?: string | null; suffix?: string | null }) {
+  const num = value.toLocaleString("tr-TR", { maximumFractionDigits: 1 });
+  if (suffix === "%") return `${prefix ?? ""}%${num}`;
+  return `${prefix ?? ""}${num}${suffix ?? ""}`;
+}

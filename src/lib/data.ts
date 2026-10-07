@@ -238,6 +238,9 @@ export const services: Service[] = [
 /*  Vaka çalışmaları                                                   */
 /* ------------------------------------------------------------------ */
 
+/* NOT: Canlı içerik panelde (Kurumsal > Vaka Çalışmaları, Müşteri Yorumları,
+   Ekip, Referanslar; İçerik > Hakkımızda). Buradaki listeler yalnız
+   varsayılan/yedek içeriktir (npm run seed + panel yokken). */
 export type CaseStudy = {
   id: string;
   sector: string;

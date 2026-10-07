@@ -16,6 +16,9 @@ import { Services } from "./payload/collections/Services";
 import { Products } from "./payload/collections/Products";
 import { Team } from "./payload/collections/Team";
 import { References } from "./payload/collections/References";
+import { CaseStudies } from "./payload/collections/CaseStudies";
+import { Testimonials } from "./payload/collections/Testimonials";
+import { AboutPage } from "./payload/globals/AboutPage";
 import { HomePage } from "./payload/globals/HomePage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 
@@ -50,8 +53,8 @@ export default buildConfig({
     supportedLanguages: { tr },
     fallbackLanguage: "tr",
   },
-  collections: [Leads, Bookings, Services, Products, Posts, Categories, Team, References, Media, Users],
-  globals: [HomePage, SiteSettings],
+  collections: [Leads, Bookings, Services, Products, Posts, Categories, Team, References, CaseStudies, Testimonials, Media, Users],
+  globals: [HomePage, AboutPage, SiteSettings],
   editor: lexicalEditor(),
   db: sqliteAdapter({
     client: { url: process.env.DATABASE_URL || "file:./data/guru.db" },
