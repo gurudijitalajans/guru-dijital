@@ -1,58 +1,54 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { caseStudies, services } from "@/lib/data";
+import { ArrowRight, ArrowUpRight, Award, LayoutGrid } from "lucide-react";
+import { awards, caseStudies, services, site, webProjects } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
-import { PageHero } from "@/components/layout/PageHero";
-import { CTAV2 } from "@/components/v2/CTAV2";
-import { GButton } from "@/components/ui/Button";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { Scramble } from "@/components/fx/Scramble";
-import { LiquidImage } from "@/components/fx/LiquidImage";
-import { Sparkles } from "@/components/fx/Sparkles";
-import { GlowBorder } from "@/components/fx/GlowBorder";
-import { RollingCounter } from "@/components/fx/RollingCounter";
-import { VelocityMarquee } from "@/components/fx/VelocityMarquee";
-import { ServiceSignature } from "@/components/pages/hizmetler/ServiceSignature";
+import { Btn } from "@/components/site/Btn";
+import { FaqGrid } from "@/components/site/FaqGrid";
+import { PageIntro } from "@/components/site/PageIntro";
+import { SectionHead } from "@/components/site/SectionHead";
 import {
-  serviceShowcase,
-  showcaseSources,
-} from "@/components/pages/hizmetler/service-showcase";
+  cardCls,
+  cardHoverCls,
+  cardTextCls,
+  cardTitleCls,
+  iconBoxCls,
+  pillCls,
+  sectionY,
+} from "@/components/site/styles";
+import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { serviceVisuals } from "@/components/pages/hizmetler/service-showcase";
+import { serviceFaq } from "@/components/pages/hizmetler/service-faq";
+import { ServiceGallery } from "@/components/pages/hizmetler/ServiceGallery";
+import { ClosingCta } from "@/components/site/ClosingCta";
 
-/** "Sosyal Medya Yönetimi" → "Sosyal Medya *Yönetimi*" (son kelime yeşil); tek kelime vurgusuz kalır. */
-function accentLastWord(text: string) {
-  const words = text.trim().split(" ");
-  if (words.length < 2) return text;
-  return `${words.slice(0, -1).join(" ")} *${words[words.length - 1]}*`;
+type Params = Promise<{ slug: string }>;
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Etiketler büyük harfle başlar (Türkçe kurala göre: "içerik" → "İçerik") */
+const capitalize = (t: string) => t.charAt(0).toLocaleUpperCase("tr-TR") + t.slice(1);
+
+/** Türkçe yüzde yazımı: 300 → "%300", 54.5 → "%54,5" */
+function formatStat(stat: { value: number; suffix: string; prefix?: string }) {
+  const num = stat.value.toLocaleString("tr-TR");
+  if (stat.suffix === "%") return `${stat.prefix ?? ""}%${num}`;
+  return `${stat.prefix ?? ""}${num}${stat.suffix}`;
 }
 
-/**
- * Metni ilk `count` cümleye indirir (az metin kuralı). Nokta + boşluk
- * sınırından böler; alan adlarındaki noktalar boşluk içermediği için güvenli.
- */
-function firstSentences(text: string, count: number) {
-  return text
-    .split(/(?<=\.)\s+/)
-    .slice(0, count)
-    .join(" ");
-}
-
-/** Hero aside (lg+) ve mobil kapak aynı sizes'ı kullanır → tek istek, tek preload. */
-const COVER_SIZES = "(min-width: 1280px) 460px, (min-width: 1024px) 380px, 100vw";
+/* Vaka kartlarında gösterilen istatistikler (data.ts sırasıyla) */
+const CASE_STATS: Record<string, number[]> = {
+  klinik: [0, 1, 5],
+  eticaret: [0, 1, 2],
+};
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) return {};
@@ -63,139 +59,105 @@ export async function generateMetadata({
   });
 }
 
-export default async function HizmetDetayPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function HizmetDetayPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const index = services.findIndex((s) => s.slug === slug);
-  if (index === -1) notFound();
+  const service = services.find((s) => s.slug === slug);
+  if (!service) notFound();
 
-  const service = services[index];
-  const prev = services[(index - 1 + services.length) % services.length];
-  const next = services[(index + 1) % services.length];
+  const gallery = serviceVisuals[service.slug]?.gallery ?? [];
+  const faq = serviceFaq[service.slug] ?? [];
+  const others = services.filter((s) => s.slug !== service.slug);
+  const contactHref = `/iletisim?hizmet=${service.slug}`;
+  /* Vaka bölümü olan sayfalarda SSS beyaz bölümün devamıdır: üst boşluk tekrarlanmaz */
+  const hasCase = service.slug === "dijital-pazarlama" || service.slug === "web-tasarim";
 
-  const config = serviceShowcase[service.slug];
-  const showcase = config?.showcase;
-  const cover = config?.hero ?? service.images[0];
-
-  /* Galeri: marka deseni karoları ve vitrinde zaten görünen kareler elenir;
-     boş kalınca bölüm hiç basılmaz. */
-  const used = new Set([cover.src, ...showcaseSources(showcase)]);
-  const gallery = service.images.filter(
-    (img) => !img.src.startsWith("/tiles/") && !used.has(img.src)
-  );
-  const showGallery = showcase?.kind !== "reel" && gallery.length > 0;
-
-  const stats =
-    service.slug === "dijital-pazarlama"
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: service.title,
+      serviceType: service.title,
+      description: service.seoDescription ?? service.short,
+      url: `${site.url}/hizmetler/${service.slug}`,
+      areaServed: { "@type": "Country", name: "Türkiye" },
+      inLanguage: "tr",
+      provider: { "@type": "Organization", name: site.name, url: site.url },
+    },
+    ...(faq.length > 0
       ? [
-          { ...caseStudies[0].stats[0], sector: caseStudies[0].sector },
-          { ...caseStudies[0].stats[5], sector: caseStudies[0].sector },
-          { ...caseStudies[1].stats[0], sector: caseStudies[1].sector },
-          { ...caseStudies[1].stats[1], sector: caseStudies[1].sector },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faq.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          },
         ]
-      : null;
+      : []),
+  ];
 
   return (
     <>
-      <PageHero
-        // PageHeroV2 eyebrow'u JSX child olarak basar; Scramble elementi
-        // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
-        eyebrow={
-          (<Scramble text={`Hizmet ${service.no}`} duration={1.1} />) as unknown as string
-        }
-        title={accentLastWord(service.title)}
-        sub={service.headline}
-        aside={
-          <LiquidImage
-            src={cover.src}
-            alt={cover.alt}
-            priority
-            sizes={COVER_SIZES}
-            className="aspect-[4/3] w-[380px] rounded-3xl border border-fg/10 bg-card shadow-[0_0_50px_rgba(16,216,108,0.07)] xl:w-[460px]"
-          />
-        }
-      >
-        <div className="flex flex-wrap gap-3">
-          <GButton href={`/iletisim?hizmet=${service.slug}`} variant="green" size="lg">
-            Teklif Al
-          </GButton>
-          <GButton href="#kapsam" variant="outline" size="lg" arrow={false}>
-            Kapsamı İncele
-          </GButton>
-        </div>
-      </PageHero>
-
-      {/* Vitrin anı: manifesto + anahtar kelimeler + hizmete özgü gösterim.
-          Telefon akışı kapağı zaten içerdiğinden mobil kapak onda basılmaz. */}
-      <ServiceSignature
-        showcase={showcase}
-        manifesto={firstSentences(service.intro[0], 1)}
-        keywords={service.keywords}
-        cover={
-          showcase?.kind === "phone-feed"
-            ? null
-            : { src: cover.src, alt: cover.alt, sizes: COVER_SIZES }
-        }
+      <script
+        type="application/ld+json"
+        // "<" kaçışı: JSON içinde olası "</script>" dizisinin etiketi kapatmasını önler.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Dijital pazarlama: vaka istatistikleri (koyu bant) */}
-      {stats && (
-        <section className="relative overflow-hidden bg-page py-20 text-fg md:py-28">
-          <div className="grain-blob -right-32 -top-24 h-80 w-80 opacity-30" aria-hidden />
-          <div className="container-g relative">
-            <SectionHeading
-              dark
-              eyebrow="Vaka Çalışmaları"
-              title="Rakamlarla *kanıtlanmış* sonuçlar"
-              sub="Sağlık ve e-ticaret sektörlerinden iki kampanyanın ölçülmüş sonuçları."
-            />
-            <StaggerGroup className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4">
-              {stats.map((stat) => (
-                <StaggerItem key={stat.label}>
-                  <div>
-                    <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-fg/40">
-                      {stat.sector}
-                    </p>
-                    <p className="mt-2 text-4xl font-bold tracking-tight text-guru-text md:text-5xl">
-                      <RollingCounter
-                        value={stat.value}
-                        prefix={stat.prefix ?? ""}
-                        suffix={stat.suffix}
-                      />
-                    </p>
-                    <p className="mt-2 text-sm leading-snug text-fg/60">{stat.label}</p>
-                  </div>
-                </StaggerItem>
+      {/* 1. Giriş: ortalanmış başlık, kısa açıklama, iki buton, altında galeri */}
+      <PageIntro
+        eyebrow="Hizmetlerimiz"
+        title={service.title}
+        lead={service.short}
+        visual={gallery.length > 0 ? <ServiceGallery images={gallery} /> : undefined}
+      >
+        <Btn href={contactHref} size="lg" arrow>
+          Teklif Al
+        </Btn>
+        <Btn href="/iletisim#toplanti" variant="light" size="lg">
+          Toplantı Planla
+        </Btn>
+      </PageIntro>
+
+      {/* 2. Kapsam: solda tanıtım, sağda numaralı kartlar */}
+      <section id="kapsam" className={cn(sectionY, "scroll-mt-28 bg-soft")}>
+        <div className="container-g grid gap-10 lg:grid-cols-12 lg:gap-12">
+          <Reveal className="lg:col-span-5">
+            <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-medium text-brand">
+              <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+              Kapsam
+            </p>
+            <SectionHead title={service.offeringsTitle} lead={service.headline} />
+            <div className="mt-6 space-y-4 text-[15.5px] leading-relaxed text-body">
+              {service.intro.map((p) => (
+                <p key={p}>{p}</p>
               ))}
-            </StaggerGroup>
-          </div>
-        </section>
-      )}
-
-
-      {/* Kapsam: editorial satırlar (numara, başlık, dahil işareti) */}
-      <section id="kapsam" className="scroll-mt-28 bg-band py-20 md:py-28">
-        <div className="container-g">
-          <SectionHeading dark eyebrow="Kapsam" title={accentLastWord(service.offeringsTitle)} />
-          <StaggerGroup className="mt-12 md:mt-14">
+            </div>
+            {service.keywords.length > 0 && (
+              <ul className="mt-7 flex flex-wrap gap-2" aria-label="Öne çıkan başlıklar">
+                {service.keywords.map((k) => (
+                  <li key={k} className={pillCls}>
+                    {capitalize(k)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Reveal>
+          <StaggerGroup className="grid content-start gap-3 lg:col-span-7">
             {service.offerings.map((offering, i) => (
               <StaggerItem key={offering}>
-                <div className="group flex items-center gap-4 py-5 transition-[padding,background-color] duration-500 sm:gap-6 md:gap-8 md:py-7 lg:hover:bg-guru/5 lg:hover:pl-6">
-                  <span className="w-8 shrink-0 text-sm font-semibold tabular-nums tracking-[0.12em] text-guru-text">
-                    {String(i + 1).padStart(2, "0")}
+                <div className={cn(cardCls, "flex items-center gap-4 p-4 sm:gap-5 sm:p-5")}>
+                  <span
+                    className="grid size-11 shrink-0 place-items-center rounded-xl bg-chip text-[15px] font-medium tabular-nums text-brand"
+                    aria-hidden
+                  >
+                    {pad(i + 1)}
                   </span>
-                  <p className="min-w-0 flex-1 text-lg font-bold tracking-[-0.02em] text-fg sm:text-xl md:text-2xl lg:text-3xl">
+                  <p className="text-[16px] font-medium leading-snug tracking-[-0.01em] text-heading sm:text-[17px]">
                     {offering}
                   </p>
-                  <span
-                    aria-hidden
-                    className="grid size-10 shrink-0 place-items-center rounded-full border border-fg/15 text-fg/60 transition-all duration-500 group-hover:border-guru group-hover:bg-guru group-hover:text-ink"
-                  >
-                    <Check className="size-4" strokeWidth={2.2} />
-                  </span>
                 </div>
               </StaggerItem>
             ))}
@@ -203,138 +165,175 @@ export default async function HizmetDetayPage({
         </div>
       </section>
 
-      {/* Görseller: yalnız vitrinde gösterilmeyen ek kareler kaldıysa;
-          3+ karede tek sıra akan bant, aksi halde sıvı görsel ızgarası */}
-      {showGallery && gallery.length >= 3 ? (
-        <section className="overflow-hidden pb-20 pt-14 md:pb-28 md:pt-16">
+      {/* 3a. Dijital pazarlama: ölçülmüş vaka sonuçları ve ödüller */}
+      {service.slug === "dijital-pazarlama" && (
+        <section className={sectionY}>
           <div className="container-g">
-            <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
-          </div>
-          <Reveal className="mt-12 md:mt-14">
-            <VelocityMarquee baseVelocity={0.8}>
-              {gallery.map((img, i) => (
-                <div
-                  key={img.src}
-                  className="relative mx-2.5 aspect-[4/3] w-64 shrink-0 overflow-hidden rounded-2xl border border-fg/10 sm:w-80 md:mx-3 md:w-96"
-                >
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    sizes="(min-width: 768px) 384px, (min-width: 640px) 320px, 256px"
-                    loading={i < 3 ? "eager" : undefined}
-                    className="object-cover"
-                  />
-                </div>
+            <SectionHead
+              title="Ölçülen Sonuçlar"
+              lead="Sağlık ve e-ticaret sektörlerinden, yönetimini devraldığımız iki hesabın sonuçları."
+            />
+            <StaggerGroup className="mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">
+              {caseStudies.map((cs) => (
+                <StaggerItem key={cs.id} className="h-full">
+                  <article className={cn(cardCls, "flex h-full flex-col p-6 md:p-8")}>
+                    <span className="inline-flex w-fit items-center rounded-full bg-chip px-3 py-1 text-[13px] font-medium text-heading">
+                      {cs.sector}
+                    </span>
+                    <h3 className="mt-5 text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
+                      {cs.title}
+                    </h3>
+                    <p className={cn(cardTextCls, "mt-3")}>{cs.summary}</p>
+                    <dl className="mt-auto grid grid-cols-1 gap-2 pt-7 min-[420px]:grid-cols-3 min-[420px]:gap-3">
+                      {(CASE_STATS[cs.id] ?? [0, 1, 2])
+                        .map((idx) => cs.stats[idx])
+                        .filter(Boolean)
+                        .map((stat) => (
+                          <div
+                            key={stat.label}
+                            className="flex items-center justify-between gap-4 rounded-xl bg-soft px-4 py-3 min-[420px]:block min-[420px]:p-4"
+                          >
+                            <dt className="text-[13px] leading-snug text-muted">{stat.label}</dt>
+                            <dd className="shrink-0 text-[22px] font-medium tabular-nums leading-none tracking-[-0.02em] text-brand min-[420px]:mt-1.5 min-[420px]:text-[26px]">
+                              {formatStat(stat)}
+                            </dd>
+                          </div>
+                        ))}
+                    </dl>
+                    <p className="mt-4 text-[13px] text-muted">{cs.note}</p>
+                  </article>
+                </StaggerItem>
               ))}
-            </VelocityMarquee>
-          </Reveal>
-        </section>
-      ) : showGallery ? (
-        <section className="pb-20 pt-14 md:pb-28 md:pt-16">
-          <div className="container-g">
-            <SectionHeading dark eyebrow="İşlerimizden" title="Üretimden *kareler*" />
-            <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 md:gap-6">
-              {gallery.map((img, i) => {
-                const spans = gallery.length % 2 === 1 && i === gallery.length - 1;
-                return (
-                  <StaggerItem key={img.src} className={cn(spans && "sm:col-span-2")}>
-                    <LiquidImage
-                      src={img.src}
-                      alt={img.alt}
-                      sizes={spans ? "100vw" : "(min-width: 640px) 50vw, 100vw"}
-                      className={cn(
-                        "rounded-3xl border border-fg/10",
-                        spans ? "aspect-[16/9] sm:aspect-[21/9]" : "aspect-[4/3]"
-                      )}
-                    />
-                  </StaggerItem>
-                );
-              })}
+            </StaggerGroup>
+            <StaggerGroup className="mt-4 grid gap-4 md:mt-5 md:grid-cols-2 md:gap-5">
+              {awards.map((a) => (
+                <StaggerItem key={a.title} className="h-full">
+                  <article className={cn(cardCls, "flex h-full items-start gap-4 p-6")}>
+                    <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
+                      <Award className="size-5" strokeWidth={1.8} />
+                    </span>
+                    <div>
+                      <h3 className={cardTitleCls}>
+                        {a.title} <span className="font-normal text-muted">{a.year}</span>
+                      </h3>
+                      <p className={cn(cardTextCls, "mt-1.5")}>{a.desc}</p>
+                    </div>
+                  </article>
+                </StaggerItem>
+              ))}
             </StaggerGroup>
           </div>
         </section>
-      ) : null}
+      )}
 
-      {/* Kapanış vurgusu: düşük yoğunluklu ışıltı */}
-      {service.outro && (
-        <section className="relative overflow-hidden bg-page py-20 text-fg md:py-28">
-          <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
-          <Sparkles density={8} className="opacity-70" />
-          <span
-            className="headline-outline-light pointer-events-none absolute right-2 top-2 select-none text-[5rem] font-extrabold leading-none sm:-right-6 sm:-top-8 sm:text-[10rem] md:text-[16rem]"
-            aria-hidden
-          >
-            {service.no}
-          </span>
-          <div className="container-g relative">
-            <Reveal>
-              <div className="flex items-stretch gap-6 md:gap-10">
-                <span className="w-1 shrink-0 bg-guru" aria-hidden />
-                <p className="max-w-5xl text-xl font-semibold leading-snug tracking-tight sm:text-2xl md:text-4xl">
-                  {firstSentences(service.outro, 1)}
-                </p>
-              </div>
+      {/* 3b. Web tasarım: yayındaki siteler */}
+      {service.slug === "web-tasarim" && (
+        <section className={sectionY}>
+          <div className="container-g">
+            <SectionHead
+              title="Yayındaki İşlerimiz"
+              lead="Tasarlayıp yayına aldığımız sitelerden bazıları; her biri canlı olarak incelenebilir."
+            />
+            <StaggerGroup className="mt-10 grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+              {webProjects.map((p) => (
+                <StaggerItem key={p.url}>
+                  <a
+                    href={`https://${p.url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(cardCls, cardHoverCls, "group flex min-h-[72px] items-center justify-between gap-4 p-5")}
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-[16px] font-medium text-heading">{p.name}</span>
+                      <span className="mt-0.5 block truncate text-[13.5px] text-muted">{p.url}</span>
+                    </span>
+                    <span
+                      className="grid size-10 shrink-0 place-items-center rounded-full bg-chip text-heading transition-colors duration-300 group-hover:bg-brand group-hover:text-white"
+                      aria-hidden
+                    >
+                      <ArrowUpRight className="size-4" strokeWidth={2} />
+                    </span>
+                    <span className="sr-only">(yeni sekmede açılır)</span>
+                  </a>
+                </StaggerItem>
+              ))}
+            </StaggerGroup>
+          </div>
+        </section>
+      )}
+
+      {/* 4. Hizmete özel SSS */}
+      {faq.length > 0 && (
+        <section className={cn(sectionY, hasCase && "pt-0 md:pt-0")}>
+          <div className="container-g">
+            <SectionHead
+              center
+              title="Sık Sorulan Sorular"
+              lead={`${service.title} hakkında en çok merak edilenler. Aklınızdaki başka sorular için bize yazabilirsiniz.`}
+            />
+            <Reveal className="mt-10">
+              <FaqGrid items={faq} />
             </Reveal>
           </div>
         </section>
       )}
 
-      {/* Önceki / sonraki hizmet: hover'da dönen neon çerçeve, eşit yükseklik */}
-      <section className="py-16 md:py-20">
-        <div className="container-g grid gap-5 sm:grid-cols-2">
-          <Reveal className="h-full">
-            <GlowBorder
-              radius="1.5rem"
-              speed={5}
-              className="h-full transition-transform duration-300 hover:-translate-y-1"
-            >
+      {/* 5. Diğer hizmetler */}
+      <section className={cn(sectionY, "bg-soft")}>
+        <div className="container-g">
+          <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
+          <StaggerGroup className="mt-10 grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+            {others.map((s) => {
+              const Icon = s.icon;
+              return (
+                <StaggerItem key={s.slug} className="h-full">
+                  <Link
+                    href={`/hizmetler/${s.slug}`}
+                    className={cn(cardCls, cardHoverCls, "group flex h-full items-center gap-4 p-5")}
+                  >
+                    <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
+                      <Icon className="size-5" strokeWidth={1.8} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[16px] font-medium leading-snug text-heading">{s.title}</span>
+                      <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{s.headline}</span>
+                    </span>
+                    <ArrowRight
+                      aria-hidden
+                      className="size-4 shrink-0 text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
+                    />
+                  </Link>
+                </StaggerItem>
+              );
+            })}
+            <StaggerItem className="h-full">
               <Link
-                href={`/hizmetler/${prev.slug}`}
-                className="group flex h-full items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 md:p-8"
+                href="/hizmetler"
+                className={cn(cardCls, cardHoverCls, "group flex h-full items-center gap-4 p-5")}
               >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-fg/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
-                  <ArrowLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-0.5" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
-                    Önceki Hizmet
-                  </span>
-                  <span className="mt-1 block text-base font-semibold tracking-tight md:text-lg">
-                    {prev.title}
-                  </span>
-                </span>
-              </Link>
-            </GlowBorder>
-          </Reveal>
-          <Reveal delay={0.08} className="h-full">
-            <GlowBorder
-              radius="1.5rem"
-              speed={5}
-              className="h-full transition-transform duration-300 hover:-translate-y-1"
-            >
-              <Link
-                href={`/hizmetler/${next.slug}`}
-                className="group flex h-full flex-row-reverse items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 text-right md:p-8"
-              >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-fg/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
-                  <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                <span className={cn(iconBoxCls, "shrink-0 bg-navy text-white")} aria-hidden>
+                  <LayoutGrid className="size-5" strokeWidth={1.8} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
-                    Sonraki Hizmet
-                  </span>
-                  <span className="mt-1 block text-base font-semibold tracking-tight md:text-lg">
-                    {next.title}
-                  </span>
+                  <span className="block text-[16px] font-medium leading-snug text-heading">Tüm hizmetler</span>
+                  <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">Altı hizmeti bir arada inceleyin</span>
                 </span>
+                <ArrowRight
+                  aria-hidden
+                  className="size-4 shrink-0 text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
+                />
               </Link>
-            </GlowBorder>
-          </Reveal>
+            </StaggerItem>
+          </StaggerGroup>
         </div>
       </section>
 
-      <CTAV2 />
+      {/* 6. Kapanış çağrısı */}
+      <ClosingCta
+        title="Tanışalım"
+        lead={`${service.title} için hedeflerinizi dinleyelim; size uygun kapsamı ve planı birlikte belirleyelim.`}
+        primary={{ href: contactHref, label: "Teklif Al" }}
+      />
     </>
   );
 }

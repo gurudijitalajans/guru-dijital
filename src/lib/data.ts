@@ -65,7 +65,7 @@ export const services: Service[] = [
       "Sosyal medya, günümüzün en güçlü iletişim ve marka inşa araçlarından biri. Markanızın sesi, yüzü ve hikâyesi burada şekilleniyor. Biz, markanızı hedef kitlenizle doğru zamanda, doğru platformda ve etkileyici içeriklerle buluşturuyoruz.",
       "Strateji geliştirmeden yaratıcı içerik üretimine, topluluk yönetiminden performans odaklı reklam kampanyalarına kadar tüm süreci titizlikle planlıyor ve yönetiyoruz.",
     ],
-    offeringsTitle: "Sunduğumuz hizmetler",
+    offeringsTitle: "Sunduğumuz Hizmetler",
     offerings: [
       "Platforma özel sosyal medya stratejisi ve içerik planlaması",
       "Kreatif tasarım ve profesyonel metin yazarlığı",
@@ -95,7 +95,7 @@ export const services: Service[] = [
       "Görsel tasarım, markanızın dış dünyaya attığı ilk adımdır ve doğru atıldığında güçlü bir etki yaratır. Markanızın kimliğini yansıtan özgün ve yaratıcı tasarımlar üreterek mesajınızı hedef kitlenize estetik ve stratejik bir bütünlük içinde ulaştırıyoruz.",
       "Tasarım sürecinde sadece göze hitap eden değil; aynı zamanda markanızın değerlerini yansıtan ve kullanıcı deneyimini gözeten işler üretiyoruz.",
     ],
-    offeringsTitle: "Neler tasarlıyoruz?",
+    offeringsTitle: "Neler Tasarlıyoruz",
     offerings: [
       "Marka ve logo tasarımı",
       "Kurumsal kimlik tasarımı (kartvizit, antetli kağıt, zarf vb.)",
@@ -127,7 +127,7 @@ export const services: Service[] = [
       "Dijital dünyada dikkat çekmenin yolu, etkili içerikten geçer. Biz, markanızın sesini doğru şekilde duyuracak içerikler üretiyor, hikâyenizi ilgiyle okunacak hale getiriyoruz.",
       "Her içerikte samimiyet, özgünlük ve strateji bir arada. Amacımız sadece yazmak değil; hedef kitlenize gerçekten dokunan, değer katan içerikler sunmak.",
     ],
-    offeringsTitle: "İçerik başlıklarımız",
+    offeringsTitle: "İçerik Başlıklarımız",
     offerings: [
       "Marka diline özel metin yazarlığı ve slogan çalışmaları",
       "Sosyal medya içerik kurgusu ve metinleri",
@@ -154,7 +154,7 @@ export const services: Service[] = [
       "Profesyonel, modern ve kullanıcı odaklı web siteleri ile dijital varlığınızı güçlendiriyoruz.",
       "Mobil uyumlu, hızlı ve SEO dostu tasarımlarımızla hem göz dolduruyor hem de ziyaretçilerinizi müşteriye dönüştürüyoruz.",
     ],
-    offeringsTitle: "Sunduğumuz çözümler",
+    offeringsTitle: "Sunduğumuz Çözümler",
     offerings: [
       "Kurumsal web sitesi tasarımı ve geliştirme",
       "E-ticaret siteleri ve ürün kataloğu altyapıları",
@@ -185,7 +185,7 @@ export const services: Service[] = [
       "Dijital pazarlama sadece görünür olmak değil; doğru zamanda, doğru yerde, doğru kitleyle buluşmaktır. Guru Dijital olarak markanız için veriye dayalı, sonuç odaklı dijital stratejiler geliştiriyoruz.",
       "Tüm süreci uçtan uca yönetiyor; hedef kitle analizi, mecra seçimi, reklam kurgusu, bütçe optimizasyonu ve performans takibini tek merkezden sağlıyoruz.",
     ],
-    offeringsTitle: "Pazarlama çözümlerimiz",
+    offeringsTitle: "Pazarlama Çözümlerimiz",
     offerings: [
       "Google & Meta Ads kampanya yönetimi",
       "TikTok, LinkedIn ve diğer platform kampanyaları",
@@ -213,7 +213,7 @@ export const services: Service[] = [
       "Video, dijitalde en yüksek etkileşimi alan içerik formatı. Markanızın hikâyesini; kurgusu, müziği ve grafikleriyle bütünleşen videolarla anlatıyoruz.",
       "Sosyal medya için dikey videolardan reklam filmlerine kadar tüm süreçleri; senaryo, çekim planı, kurgu ve yayın optimizasyonuyla birlikte yönetiyoruz.",
     ],
-    offeringsTitle: "Video çözümlerimiz",
+    offeringsTitle: "Video Çözümlerimiz",
     offerings: [
       "Sosyal medya videoları (Reels, TikTok, Shorts)",
       "Ürün ve hizmet tanıtım videoları",
@@ -513,19 +513,19 @@ export const products: SoftwareProduct[] = [
 
 export const values = [
   {
-    title: "Değer üretme süreci",
+    title: "Değer Üretme Süreci",
     desc: "İşimizi bir hizmet değil, markaya değer üretme süreci olarak görüyoruz.",
   },
   {
-    title: "Özgün bakış açısı",
+    title: "Özgün Bakış Açısı",
     desc: "Her markayı kendi hikâyesiyle, şablonsuz ve özgün bir dille ifade ediyoruz.",
   },
   {
-    title: "Veriyle karar",
+    title: "Veriyle Karar",
     desc: "Kararlarımızı sezgiyle değil; analiz, test ve ölçümle veriyoruz.",
   },
   {
-    title: "Yol arkadaşlığı",
+    title: "Yol Arkadaşlığı",
     desc: "Müşteri değil yol arkadaşı; görev değil ortak bir hayalin gerçeğe dönüşmesi.",
   },
 ];
@@ -537,3 +537,71 @@ export const navLinks = [
   { href: "/hakkimizda", label: "Hakkımızda" },
   { href: "/iletisim", label: "İletişim" },
 ] as const;
+
+/* ------------------------------------------------------------------ */
+/*  Ana menü (açılır gruplar) ve duyuru bandı                          */
+/* ------------------------------------------------------------------ */
+
+export type NavItem = { label: string; href: string; desc?: string };
+export type NavGroup = { label: string; href: string; items?: NavItem[] };
+
+export const announcement = "Strateji, tasarım ve teknoloji tek çatıda.";
+
+export const navMenu: NavGroup[] = [
+  {
+    label: "Kurumsal",
+    href: "/hakkimizda",
+    items: [
+      { label: "Hakkımızda", href: "/hakkimizda", desc: "Hikayemiz ve ilkelerimiz" },
+      { label: "Ekibimiz", href: "/hakkimizda#ekip", desc: "Markanızla çalışacak ekip" },
+      { label: "İletişim", href: "/iletisim", desc: "Teklif ve toplantı" },
+    ],
+  },
+  {
+    label: "Hizmetlerimiz",
+    href: "/hizmetler",
+    items: services.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}` })),
+  },
+  {
+    label: "Ürünlerimiz",
+    href: "/urunler",
+    items: products.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline })),
+  },
+  { label: "Referanslarımız", href: "/#referanslar" },
+];
+
+/* ------------------------------------------------------------------ */
+/*  ÖRNEK İÇERİK (mockup): gerçek içerik gelene kadar yer tutucu       */
+/* ------------------------------------------------------------------ */
+
+/* TODO(client): ekip fotoğrafları, isimler, unvanlar ve LinkedIn adresleri */
+export type TeamMember = { name: string; role: string; linkedin?: string; photo?: string };
+export const team: TeamMember[] = [
+  { name: "Ad Soyad", role: "Kurucu" },
+  { name: "Ad Soyad", role: "Sosyal Medya Yöneticisi" },
+  { name: "Ad Soyad", role: "Grafik Tasarımcı" },
+  { name: "Ad Soyad", role: "Performans Uzmanı" },
+  { name: "Ad Soyad", role: "İçerik Editörü" },
+  { name: "Ad Soyad", role: "Yazılım Geliştirici" },
+];
+
+/* TODO(client): izinli, isimli müşteri yorumları. Uydurma alıntı yazılmaz;
+   yorum gelene kadar kartlar boş iskelet olarak görünür. */
+export type Testimonial = { quote?: string; name: string; title: string; company: string };
+export const testimonials: Testimonial[] = [
+  { name: "Müşteri adı", title: "Unvan", company: "Firma" },
+  { name: "Müşteri adı", title: "Unvan", company: "Firma" },
+  { name: "Müşteri adı", title: "Unvan", company: "Firma" },
+];
+
+/* Ana sayfa sık sorulan sorular */
+export const homeFaq: { q: string; a: string }[] = [
+  { q: "Hangi hizmetleri birlikte alabilirim?", a: "Altı hizmetimizin tamamını tek bir planla birlikte yürütebilir ya da yalnız ihtiyacınız olanı seçebilirsiniz. Birlikte çalıştığımızda strateji, tasarım ve reklam aynı hedefe bakar." },
+  { q: "Sosyal medya yönetimine neler dahil?", a: "Platforma özel strateji, aylık içerik planı, tasarım ve metin üretimi, topluluk yönetimi ve düzenli raporlama. Reklam kampanyaları isteğe göre pakete eklenir." },
+  { q: "Reklam bütçesini nasıl planlıyorsunuz?", a: "Hedefinizi, kâr marjınızı ve mevcut verinizi inceleyip bütçeyi kanallara göre dağıtıyoruz. Kampanyaları sonuçlara göre haftalık olarak optimize ediyoruz." },
+  { q: "Web sitesi ne kadar sürede hazır olur?", a: "Kapsama göre değişir. Kurumsal bir site genellikle birkaç hafta içinde yayına alınır; net süreyi tanışma görüşmesinden sonra planla birlikte paylaşırız." },
+  { q: "Raporlamayı ne sıklıkla yapıyorsunuz?", a: "Aylık ayrıntılı rapor paylaşıyor, kampanya dönemlerinde haftalık özet geçiyoruz. Raporlarda yalnız rakam değil, bir sonraki adım da yer alır." },
+  { q: "Guru ürünlerini ayrı ayrı alabilir miyim?", a: "Evet. Guru Chatbot, Guru CRM ve Guru Operation tek başına kullanılabilir; Guru Business üçünü tek panelde birleştirir." },
+  { q: "Google Partner olmanın bana faydası ne?", a: "Google Partner rozeti, reklam hesaplarını Google'ın performans ve yetkinlik standartlarına göre yönettiğimizi gösterir. Bu da bütçenizin daha verimli kullanılması demektir." },
+  { q: "Çalışmaya nasıl başlıyoruz?", a: "Önce kısa bir tanışma görüşmesi yapıyoruz. Ardından ihtiyaçlarınıza göre bir teklif ve yol haritası hazırlayıp onayınızla çalışmaya başlıyoruz." },
+];

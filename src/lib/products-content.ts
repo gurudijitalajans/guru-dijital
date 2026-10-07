@@ -26,8 +26,8 @@ import {
 /*  Ürün detay içerikleri (ürün sayfaları için)                         */
 /*  Sözleşme: ProductDetail. İçerik uzman PM + SEO yazarı gözüyle       */
 /*  doldurulur. Em dash yok, başlıklar büyük harfle başlar.             */
-/*  Headline içindeki *yıldızlı* kelime vurgu (yeşil) olarak render     */
-/*  edilir. Mockup görselleri public/products/<slug>.svg yolundadır.    */
+/*  Headline içindeki *yıldızlı* kelime bir kademe kalın (font-medium)  */
+/*  render edilir. Ekran görüntüleri public/products/<slug>.svg.        */
 /* ------------------------------------------------------------------ */
 
 export type ProductDetail = {
@@ -37,9 +37,6 @@ export type ProductDetail = {
   /** Ürün mockup görseli (public/products/*.svg). Alt metni tek kaynaktan,
       data.ts'teki liste kaydından (products[].imageAlt) gelir. */
   image: string;
-  /** Ekran turu noktaları: mockup'a oransal (0-1) konumlar, sırasıyla
-      features[0..2] ile eşleşir. Verilmezse ScreenTour varsayılanı kullanır. */
-  hotspots?: { x: number; y: number }[];
   features: { icon: LucideIcon; title: string; desc: string }[];
   steps: { title: string; desc: string }[];
   useCases: { title: string; desc: string }[];
@@ -47,7 +44,7 @@ export type ProductDetail = {
       süresi, kayıt kapsamı); kaynaksız performans yüzdesi KULLANILMAZ
       (Ticari Reklam Yönetmeliği: ispat yükü ajansta).
       TODO(client): Müşteri pilot verisi paylaşırsa yüzdeler geri eklenir ve
-      banda "Pilot müşterilerde 3 aylık ortalama" dipnotu (text-xs text-fg/50)
+      banda "Pilot müşterilerde 3 aylık ortalama" dipnotu (text-xs text-white/70)
       konur. */
   stats: { value: number; suffix: string; label: string }[];
   faq: { q: string; a: string }[];
@@ -84,12 +81,6 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-chatbot.svg",
-    /* Bot yanıt balonu, kanal ikonlu konuşma listesi, "Ekibe Aktar" düğmesi */
-    hotspots: [
-      { x: 0.62, y: 0.44 },
-      { x: 0.235, y: 0.4 },
-      { x: 0.67, y: 0.78 },
-    ],
     features: [
       {
         icon: Bot,
@@ -218,12 +209,6 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-crm.svg",
-    /* Aday sütunundaki müşteri kartı, satış hattı sütun başlıkları, Teklif sütunu */
-    hotspots: [
-      { x: 0.3, y: 0.42 },
-      { x: 0.56, y: 0.34 },
-      { x: 0.675, y: 0.52 },
-    ],
     features: [
       {
         icon: Users,
@@ -352,12 +337,6 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-operation.svg",
-    /* Görev panosu başlığı, Devam sütunundaki görev kartı, Ekip Kapasitesi paneli */
-    hotspots: [
-      { x: 0.27, y: 0.23 },
-      { x: 0.375, y: 0.44 },
-      { x: 0.83, y: 0.34 },
-    ],
     features: [
       {
         icon: Workflow,
@@ -486,12 +465,6 @@ export const productDetails: Record<string, ProductDetail> = {
       ctaLabel: "Demo Talep Et",
     },
     image: "/products/guru-business.svg",
-    /* Modül kutuları, Aktif Müşteri KPI kartı, gelir dağılımı halka grafiği */
-    hotspots: [
-      { x: 0.4, y: 0.51 },
-      { x: 0.28, y: 0.25 },
-      { x: 0.725, y: 0.54 },
-    ],
     features: [
       {
         icon: Layers,

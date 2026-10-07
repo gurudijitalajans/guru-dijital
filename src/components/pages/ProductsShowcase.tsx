@@ -1,129 +1,82 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { products } from "@/lib/data";
+import { Btn } from "@/components/site/Btn";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { GlowBorder } from "@/components/fx/GlowBorder";
-import { Spotlight } from "@/components/fx/Spotlight";
-import { GButton } from "@/components/ui/Button";
+import { cardCls, cardTextCls, iconBoxCls } from "@/components/site/styles";
+import { cn } from "@/lib/utils";
 
 /**
- * ProductsShowcase: işletmeye yönelik yazılım ürünlerinin 2x2 dev kart vitrini.
+ * Ürün vitrini: dört yazılım ürünü, md+ iki sütunlu sade kartlar.
  *
- * Server component: animasyon ve etkileşim tamamı client alt bileşenlerde
- * (StaggerGroup/Item, GlowBorder, Spotlight). Kart hover'ı `group/card`
- * adlı grupla izlenir; GButton'un kendi isimsiz `group`u ile çakışmaz.
- * Her kart ürünün mockup ekranını gösterir ve ürün sayfasına bağlanır.
- * Izgara md'den itibaren iki sütun (tablet'te 4 kart alt alta dizilmez);
- * ilk mockup sayfanın LCP öğesi olduğundan preload ile erken yüklenir.
+ * Server component; belirme animasyonu client StaggerGroup/Item'da. Her kart
+ * ürün ekranını açık bant zeminde gösterir, ad, kısa açıklama, üç madde ve
+ * "Ürünü İncele" / "Demo Talep Et" butonları taşır. İlk ekran görüntüsü sayfanın
+ * LCP adayı olduğu için preload edilir; ikinci kart md+ ilk ekranda: eager.
+ * Ürün adları İngilizce: lang="en" büyük harf dönüşümünde noktalı İ oluşmasını önler.
  */
 export function ProductsShowcase() {
   return (
-    <StaggerGroup
-      stagger={0.1}
-      className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 xl:gap-8"
-    >
+    <StaggerGroup stagger={0.08} className="grid gap-5 md:grid-cols-2 md:gap-6">
       {products.map((p, i) => {
         const Icon = p.icon;
         const href = `/urunler/${p.slug}`;
         return (
           <StaggerItem key={p.slug} className="h-full">
-            <GlowBorder radius="1.5rem" className="group/card h-full">
-              <Spotlight
-                className="h-full overflow-hidden rounded-[calc(1.5rem-1px)]"
-                opacity={0.08}
+            <article className={cn(cardCls, "group flex h-full flex-col overflow-hidden")}>
+              <Link
+                href={href}
+                aria-label={`${p.name} ürün sayfası`}
+                className="block bg-soft px-3 pt-4 sm:px-5 sm:pt-6"
               >
-                <article className="flex h-full flex-col p-5 md:p-6 lg:p-8">
-                  {/* Ürün mockup ekranı */}
-                  <Link
-                    href={href}
-                    aria-label={`${p.name} ürün sayfası`}
-                    data-cursor
-                    className="relative block overflow-hidden rounded-2xl border border-fg/10 bg-band"
-                  >
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-8 -top-10 h-24 rounded-full bg-guru/25 blur-3xl opacity-0 transition-opacity duration-500 group-hover/card:opacity-100"
-                    />
-                    {/* SVG kaynak: next/image olduğu gibi sunar (optimize etmez).
-                        İlk kart her genişlikte ilk ekranda (LCP): preload; ikinci
-                        kart md+ iki sütunda ilk ekranda: eager; kalanlar lazy. */}
-                    <Image
-                      src={p.image}
-                      alt={p.imageAlt}
-                      width={1600}
-                      height={1100}
-                      preload={i === 0}
-                      loading={i < 2 ? "eager" : "lazy"}
-                      sizes="(min-width: 1024px) 560px, (min-width: 768px) calc(50vw - 32px), calc(100vw - 40px)"
-                      className="relative block h-auto w-full transition-transform duration-700 ease-out group-hover/card:scale-[1.03]"
-                    />
-                  </Link>
+                <Image
+                  src={p.image}
+                  alt={p.imageAlt}
+                  width={1600}
+                  height={1100}
+                  /* Next 16: preload ile loading birlikte verilmez */
+                  preload={i === 0}
+                  loading={i === 0 ? undefined : i === 1 ? "eager" : "lazy"}
+                  sizes="(min-width: 1248px) 570px, (min-width: 768px) calc(50vw - 60px), calc(100vw - 64px)"
+                  className="block h-auto w-full transition-transform duration-500 ease-out group-hover:-translate-y-1"
+                />
+              </Link>
 
-                  {/* Ad + ikon */}
-                  <div className="mt-6 flex items-center gap-4">
-                    <span
-                      className="grid size-12 shrink-0 place-items-center rounded-xl bg-guru/12 text-guru transition-colors duration-300 group-hover/card:bg-guru group-hover/card:text-ink lg:size-14"
-                      aria-hidden
-                    >
-                      <Icon className="size-6 lg:size-7" strokeWidth={1.8} />
-                    </span>
-                    <div className="min-w-0">
-                      <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-fg lg:text-3xl">
-                        {/* Dikey iç boşluk dokunma hedefini 44px'e çıkarır; negatif
-                            marj satır ritmini korur */}
-                        <Link
-                          href={href}
-                          className="inline-block py-1.5 -my-1.5 transition-colors hover:text-guru"
-                        >
-                          {p.name}
-                        </Link>
-                      </h2>
-                      <p className="mt-0.5 text-sm font-medium text-fg/70 md:text-base">
-                        {p.tagline}
-                      </p>
-                    </div>
+              <div className="flex flex-1 flex-col p-6 md:p-7">
+                <div className="flex items-center gap-3.5">
+                  <span className={iconBoxCls} aria-hidden>
+                    <Icon className="size-5" strokeWidth={1.8} />
+                  </span>
+                  <div className="min-w-0">
+                    <h2 lang="en" className="text-[22px] font-medium leading-tight tracking-[-0.02em] text-heading">
+                      {p.name}
+                    </h2>
+                    <p className="mt-0.5 text-[14px] text-muted">{p.tagline}</p>
                   </div>
+                </div>
 
-                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-fg/55">
-                    {p.desc}
-                  </p>
+                <p className={cn(cardTextCls, "mt-4 text-[15px] text-body")}>{p.desc}</p>
 
-                  {/* Üç özellik maddesi */}
-                  <ul className="mt-5 space-y-2.5 pt-2">
-                    {p.features.map((f) => (
-                      <li
-                        key={f}
-                        className="flex items-center gap-3 text-sm text-fg/70"
-                      >
-                        <span
-                          className="size-1.5 shrink-0 rounded-full bg-guru shadow-[0_0_8px_rgb(16_216_108/0.6)]"
-                          aria-hidden
-                        />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
+                <ul className="mt-4 space-y-2">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-[14.5px] text-body">
+                      <Check aria-hidden className="mt-[3px] size-4 shrink-0 text-brand" strokeWidth={2.2} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
 
-                  {/* md'de iki sütunlu dar kartta butonlar alt alta, lg'de yan yana */}
-                  <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row md:flex-col lg:flex-row">
-                    <GButton
-                      href={href}
-                      variant="dark"
-                      className="w-full border border-fg/15 sm:w-auto md:w-full lg:w-auto"
-                    >
-                      Ürünü İncele
-                    </GButton>
-                    <GButton
-                      href={`${href}#demo`}
-                      variant="outline"
-                      className="w-full sm:w-auto md:w-full lg:w-auto"
-                    >
-                      Demo Talep Et
-                    </GButton>
-                  </div>
-                </article>
-              </Spotlight>
-            </GlowBorder>
+                <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row">
+                  <Btn href={href} variant="primary" arrow>
+                    Ürünü İncele
+                  </Btn>
+                  <Btn href={`${href}#demo`} variant="light">
+                    Demo Talep Et
+                  </Btn>
+                </div>
+              </div>
+            </article>
           </StaggerItem>
         );
       })}

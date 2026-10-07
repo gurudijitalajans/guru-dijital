@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { products, site } from "@/lib/data";
-import { productDetails, productSlugs } from "@/lib/products-content";
-import { PageHero } from "@/components/layout/PageHero";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { productDetails, productSlugs, type ProductDetail } from "@/lib/products-content";
+import { PageIntro } from "@/components/site/PageIntro";
+import { SectionHead } from "@/components/site/SectionHead";
+import { FaqGrid } from "@/components/site/FaqGrid";
+import { Btn } from "@/components/site/Btn";
+import {
+  cardCls,
+  cardHoverCls,
+  cardTextCls,
+  cardTitleCls,
+  iconBoxCls,
+  pillCls,
+  sectionY,
+} from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { GButton } from "@/components/ui/Button";
-import { Scramble } from "@/components/fx/Scramble";
-import { Spotlight } from "@/components/fx/Spotlight";
-import { GlowBorder } from "@/components/fx/GlowBorder";
-import { RollingCounter } from "@/components/fx/RollingCounter";
-import { RotatingBadge } from "@/components/fx/RotatingBadge";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
-import { ProductFaq } from "@/components/pages/urunler/ProductFaq";
-import { ScreenTour } from "@/components/pages/urunler/ScreenTour";
 import { DemoSwitch } from "@/components/pages/urunler/DemoSwitch";
+import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
 
@@ -26,24 +31,41 @@ function productName(slug: string) {
   return products.find((p) => p.slug === slug)?.name ?? productDetails[slug].hero.eyebrow;
 }
 
-/** Mockup alt metni tek kaynaktan (data.ts liste kaydı); yoksa ürün adı. */
+/** Ürünün kısa sloganı (önceki/sonraki kartları). */
+function productTagline(slug: string) {
+  return products.find((p) => p.slug === slug)?.tagline ?? "";
+}
+
+/** Ekran görüntüsü alt metni tek kaynaktan (data.ts liste kaydı); yoksa ürün adı. */
 function productImageAlt(slug: string) {
   return products.find((p) => p.slug === slug)?.imageAlt ?? `${productName(slug)} paneli`;
 }
 
-/* Liste kaydındaki ikonlar (önceki/sonraki kartlar). Modül seviyesinde
-   kurulur: render sırasında bileşen üretilmez (react-hooks/static-components). */
-const iconBySlug: Record<string, LucideIcon | undefined> = Object.fromEntries(
-  products.map((p) => [p.slug, p.icon])
-);
+/** Başlıktaki *yıldızlı* kelime ana sayfa girişindeki gibi bir kademe kalın yazılır (renk yok). */
+function renderHeadline(text: string) {
+  return text
+    .split(/(\*[^*]+\*)/g)
+    .filter(Boolean)
+    .map((part, i) =>
+      part.startsWith("*") && part.endsWith("*") ? (
+        <span key={i} className="font-medium">
+          {part.slice(1, -1)}
+        </span>
+      ) : (
+        part
+      )
+    );
+}
 
-/* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri. */
-const productNames = products.map((p) => p.name);
+/** Türkçe yüzde biçimi önde: "%100"; diğer ekler sayının arkasında ("24/7", "1 gün"). */
+function formatStat({ value, suffix }: ProductDetail["stats"][number]) {
+  return suffix === "%" ? `%${value}` : `${value}${suffix}`;
+}
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/* Ekran turunda anlatılan özellik sayısı; kalanlar kart ızgarasında listelenir. */
-const TOUR_COUNT = 3;
+/* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri. */
+const productNames = products.map((p) => p.name);
 
 export function generateStaticParams() {
   return productSlugs.map((slug) => ({ slug }));
@@ -68,7 +90,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       siteName: site.name,
       title: product.seo.title,
       description: product.seo.description,
-      /* Mockup SVG; sosyal ağ önizlemeleri SVG'yi desteklemediği için site OG görseli. */
+      /* Ekran görüntüsü SVG; sosyal ağ önizlemeleri SVG'yi desteklemediği için site OG görseli. */
       images: [{ url: "/og.jpg", width: 1200, height: 630, alt: productImageAlt(slug) }],
     },
   };
@@ -84,14 +106,6 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
   const imageAlt = productImageAlt(slug);
   const prevSlug = productSlugs[(index - 1 + productSlugs.length) % productSlugs.length];
   const nextSlug = productSlugs[(index + 1) % productSlugs.length];
-  const PrevIcon = iconBySlug[prevSlug];
-  const NextIcon = iconBySlug[nextSlug];
-
-  /* Ekran turu yalnız serileştirilebilir veri alır (ikon bileşeni client'a geçmez). */
-  const tourFeatures = product.features
-    .slice(0, TOUR_COUNT)
-    .map(({ title, desc }) => ({ title, desc }));
-  const gridFeatures = product.features.slice(TOUR_COUNT);
 
   const jsonLd = [
     {
@@ -121,6 +135,11 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
     },
   ];
 
+  const neighbours = [
+    { slug: prevSlug, label: "Önceki Ürün", dir: "prev" as const },
+    { slug: nextSlug, label: "Sonraki Ürün", dir: "next" as const },
+  ];
+
   return (
     <>
       <script
@@ -129,75 +148,61 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* 1. Hero */}
-      <PageHero
-        // PageHeroV2 eyebrow'u JSX child olarak basar; Scramble elementi
-        // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
-        // lang="en": İngilizce ürün adı CSS uppercase'te noktalı İ almasın (Operation, Business).
-        eyebrow={
-          (
-            <span lang="en">
-              <Scramble text={product.hero.eyebrow} duration={1.1} />
-            </span>
-          ) as unknown as string
+      {/* 1. Giriş + büyük ekran görüntüsü. lang="en": İngilizce ürün adı büyük harfe
+          dönüştürülürse noktalı İ almasın (Operation, Business). */}
+      <PageIntro
+        eyebrow={<span lang="en">{product.hero.eyebrow}</span>}
+        title={renderHeadline(product.hero.headline)}
+        lead={product.hero.sub}
+        visual={
+          /* LCP görseli: Reveal'e sarılmaz (opaklık 0 ile başlamasın), preload edilir */
+          <div className="mx-auto max-w-[1120px] rounded-[20px] bg-gradient-to-b from-ice/70 via-soft to-soft p-1.5 sm:rounded-[28px] sm:p-4 md:p-6">
+            <Image
+              src={product.image}
+              alt={imageAlt}
+              width={1600}
+              height={1100}
+              preload
+              sizes="(min-width: 1248px) 1072px, calc(100vw - 52px)"
+              className="block h-auto w-full"
+            />
+          </div>
         }
-        title={product.hero.headline}
-        sub={product.hero.sub}
-        aside={<RotatingBadge size={120} href="#demo" label={`Demo talep et: ${name}`} />}
       >
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-          <GButton href="#demo" variant="green" size="lg">
-            {product.hero.ctaLabel}
-          </GButton>
-          <GButton href="/urunler" variant="outline" size="lg">
-            Diğer Ürünler
-          </GButton>
-        </div>
-      </PageHero>
+        <Btn href="#demo" variant="primary" size="lg" arrow>
+          {product.hero.ctaLabel}
+        </Btn>
+        <Btn href="/urunler" variant="light" size="lg">
+          Diğer Ürünler
+        </Btn>
+      </PageIntro>
 
-      {/* 2. Ekran turu: masaüstünde pinned mockup + sıralı noktalar, mobilde yakın kadrajlar */}
-      <ScreenTour
-        name={name}
-        image={product.image}
-        imageAlt={imageAlt}
-        features={tourFeatures}
-        hotspots={product.hotspots}
-      />
-
-      {/* 3. Diğer özellikler: 3 sütun, spotlight'lı kartlar */}
-      <section className="pb-14 md:pb-28">
+      {/* 2. Özellikler: ikonlu kartlar */}
+      <section className={sectionY}>
         <div className="container-g">
-          <SectionHeading
-            dark
-            eyebrow="Özellikler"
-            title="Neler *yapar*?"
-            sub="Turdaki üç özelliğe ek olarak ekibinizin zamanını geri kazandıran yetenekler."
+          <SectionHead
+            title="Özellikler"
+            lead={
+              <>
+                <span lang="en">{name}</span> ekibinizin günlük işini kolaylaştıran bu yeteneklerle gelir.
+              </>
+            }
           />
-          <StaggerGroup className="mt-10 grid gap-5 sm:grid-cols-2 md:mt-14 lg:grid-cols-3">
-            {gridFeatures.map((feature) => {
+          <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            {product.features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <StaggerItem key={feature.title} className="h-full">
-                  <Spotlight
-                    size={380}
-                    opacity={0.09}
-                    className="h-full overflow-hidden rounded-3xl border border-fg/10 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-guru/40"
-                  >
-                    <article className="flex h-full flex-col p-7 md:p-8">
-                      <span
-                        className="grid size-12 shrink-0 place-items-center rounded-2xl bg-guru/12 text-guru-text"
-                        aria-hidden
-                      >
-                        <Icon className="size-6" strokeWidth={1.9} />
+                  {/* Mobilde ikon ve başlık yan yana: altı kart alt alta dizilirken sayfa kısalır */}
+                  <article className={cn(cardCls, "h-full p-5 sm:p-6 md:p-7")}>
+                    <div className="flex items-center gap-3.5 sm:flex-col sm:items-start sm:gap-5">
+                      <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
+                        <Icon className="size-5" strokeWidth={1.8} />
                       </span>
-                      <h3 className="mt-6 text-lg font-bold tracking-tight text-fg md:text-xl">
-                        {feature.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-fg/60 md:text-[15px]">
-                        {feature.desc}
-                      </p>
-                    </article>
-                  </Spotlight>
+                      <h3 className={cardTitleCls}>{feature.title}</h3>
+                    </div>
+                    <p className={cn(cardTextCls, "mt-3")}>{feature.desc}</p>
+                  </article>
                 </StaggerItem>
               );
             })}
@@ -205,67 +210,56 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-
-      {/* 4. Nasıl çalışır: yatay adımlar, bg-band */}
-      <section className="relative overflow-hidden bg-band py-14 md:py-28">
-        <div className="grain-blob -bottom-24 -left-32 h-80 w-80 opacity-20" aria-hidden />
-        <div className="container-g relative">
-          <SectionHeading
-            dark
-            eyebrow="Nasıl Çalışır"
-            title="Kurulumdan sonuca *adım adım*"
-            sub="Kurulumu birlikte yapıyor, ekibinizi eğitiyor ve ilk haftadan itibaren yanınızda kalıyoruz."
+      {/* 3. Nasıl çalışır: numaralı adımlar, açık bant */}
+      <section className={cn("bg-soft", sectionY)}>
+        <div className="container-g">
+          <SectionHead
+            title="Nasıl Çalışır"
+            lead="Kurulumu birlikte yapıyor, ekibinizi eğitiyor ve ilk haftadan itibaren yanınızda kalıyoruz."
           />
-          <StaggerGroup
-            className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-14 lg:grid-cols-4"
-            stagger={0.1}
-          >
+          <StaggerGroup className="mt-10">
+            <ol className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-4">
             {product.steps.map((step, i) => (
-              <StaggerItem key={step.title} className="h-full">
-                <div className="relative h-full pt-6">
-                  <span
-                    className="headline-outline-light block text-6xl font-extrabold leading-none tracking-[-0.04em] md:text-7xl"
-                    aria-hidden
-                  >
-                    {pad(i + 1)}
-                  </span>
-                  <h3 className="mt-5 text-xl font-bold tracking-tight text-fg">
-                    <span className="sr-only">{pad(i + 1)}. </span>
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-fg/60 md:text-[15px]">
-                    {step.desc}
-                  </p>
+              <li key={step.title}>
+              <StaggerItem className="h-full">
+                <div className={cn(cardCls, "h-full p-5 sm:p-6")}>
+                  <div className="flex items-center gap-3.5 sm:flex-col sm:items-start sm:gap-5">
+                    <span
+                      className="grid size-10 shrink-0 place-items-center rounded-full bg-navy text-[14px] font-medium text-white"
+                      aria-hidden
+                    >
+                      {pad(i + 1)}
+                    </span>
+                    <h3 className={cardTitleCls}>
+                      <span className="sr-only">{i + 1}. adım: </span>
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className={cn(cardTextCls, "mt-3")}>{step.desc}</p>
                 </div>
               </StaggerItem>
+              </li>
             ))}
+            </ol>
           </StaggerGroup>
         </div>
       </section>
 
-
-      {/* 5. Kullanım senaryoları: satır dokusu (kart üstüne kart ritmini kırar) */}
-      <section className="pb-14 pt-14 md:pb-28 md:pt-16">
-        <div className="container-g">
-          <SectionHeading
-            dark
-            eyebrow="Kullanım Senaryoları"
-            title="Kimler için *uygun*?"
-            sub="Farklı sektörlerde, farklı ekip büyüklüklerinde aynı netlikte çalışır."
+      {/* 4. Kullanım senaryoları: solda başlık, sağda senaryo kartları */}
+      <section className={sectionY}>
+        <div className="container-g grid items-start gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+          <SectionHead
+            className="lg:sticky lg:top-32"
+            title="Kullanım Senaryoları"
+            lead="Farklı sektörlerde, farklı ekip büyüklüklerinde aynı netlikte çalışır."
           />
-          <StaggerGroup className="mt-10 md:mt-14">
+          <StaggerGroup className="grid gap-4">
             {product.useCases.map((useCase, i) => (
               <StaggerItem key={useCase.title}>
-                <article className="grid gap-2 py-6 md:grid-cols-[7rem_1fr_1.35fr] md:gap-8 md:py-8">
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-guru-text">
-                    Senaryo {pad(i + 1)}
-                  </span>
-                  <h3 className="text-xl font-bold tracking-tight text-fg md:text-2xl">
-                    {useCase.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-fg/60 md:max-w-xl md:text-[15px]">
-                    {useCase.desc}
-                  </p>
+                <article className={cn(cardCls, "p-6 md:p-7")}>
+                  <p className="text-[13px] font-medium text-brand">Senaryo {pad(i + 1)}</p>
+                  <h3 className={cn(cardTitleCls, "mt-2 text-[20px]")}>{useCase.title}</h3>
+                  <p className={cn(cardTextCls, "mt-2")}>{useCase.desc}</p>
                 </article>
               </StaggerItem>
             ))}
@@ -273,51 +267,48 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      {/* 6. Sayısal faydalar: bg-band şeridi, odometre sayaçlar (yalnız ürün/özellik ifadeleri) */}
-      <section className="relative overflow-hidden bg-band py-14 md:py-20">
-        <div className="grain-blob -right-32 -top-24 h-80 w-80 opacity-25" aria-hidden />
-        <div className="container-g relative">
-          <Reveal y={16}>
-            <p className="mb-10 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-fg/60">
-              <span className="inline-block size-2 bg-guru" aria-hidden />
-              Sayılarla <span lang="en">{name}</span>
-            </p>
+      {/* 5. Sayılar: sayfanın tek marka ışık bandı. Yalnız ürün ve kurulum ifadeleri
+          (products-content.ts); kaynaksız performans yüzdesi yok. */}
+      <section className="pb-16 md:pb-[72px]">
+        <div className="container-g">
+          <Reveal>
+            <div className="relative isolate overflow-hidden rounded-[28px] bg-navy px-6 py-10 sm:px-10 md:px-12 md:py-14">
+              {/* Işık yelpazesi bandın 1600px'lik geniş katmanında: parlak şerit ve alt köşe
+                  parıltısı içerik kenarına itilir, rakam ve etiketler koyu zeminde kalır */}
+              <div
+                aria-hidden
+                className="guru-beam absolute left-1/2 top-0 -z-10 h-full w-[1600px] max-w-none -translate-x-1/2"
+              />
+              <h2 className="text-[24px] font-medium leading-tight tracking-[-0.02em] text-white sm:text-[28px]">
+                Sayılarla <span lang="en">{name}</span>
+              </h2>
+              <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:mt-10 lg:grid-cols-4">
+                {product.stats.map((stat) => (
+                  <div key={stat.label} className="flex flex-col-reverse">
+                    <dt className="mt-2 text-[14px] leading-snug text-white/80">{stat.label}</dt>
+                    <dd className="text-[34px] font-normal leading-none tracking-[-0.03em] text-white sm:text-[44px]">
+                      {formatStat(stat)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </Reveal>
-          <StaggerGroup className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
-            {product.stats.map((stat) => (
-              <StaggerItem key={stat.label}>
-                <div>
-                  <p className="text-3xl font-bold tracking-tight text-guru-text sm:text-4xl md:text-5xl">
-                    <RollingCounter value={stat.value} suffix={stat.suffix} />
-                  </p>
-                  <p className="mt-2 text-sm leading-snug text-fg/60">{stat.label}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerGroup>
         </div>
       </section>
 
-      {/* 7. Entegrasyonlar: pill listesi */}
-      <section className="py-14 md:py-28">
-        <div className="container-g grid items-start gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <SectionHeading
-            dark
-            eyebrow="Entegrasyonlar"
-            title="Kullandığınız araçlarla *uyumlu*"
-            sub="Mevcut kanallarınızı ve araçlarınızı değiştirmeden bağlanır; veri tek yerde toplanır."
+      {/* 6. Entegrasyonlar: hap rozetler, açık bant */}
+      <section className={cn("bg-soft", sectionY)}>
+        <div className="container-g grid items-start gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+          <SectionHead
+            title="Entegrasyonlar"
+            lead="Mevcut kanallarınızı ve araçlarınızı değiştirmeden bağlanır; veri tek yerde toplanır."
           />
-          <Reveal delay={0.1}>
+          <Reveal delay={0.06}>
             <ul className="flex flex-wrap gap-2.5 lg:pt-2">
               {product.integrations.map((integration) => (
-                <li
-                  key={integration}
-                  className="inline-flex min-h-11 items-center gap-2.5 rounded-full border border-fg/15 bg-card px-4 text-sm font-medium text-fg/75 transition-colors duration-300 hover:border-guru/50 hover:text-fg"
-                >
-                  <span
-                    className="size-1.5 rounded-full bg-guru shadow-[0_0_8px_rgb(16_216_108/0.6)]"
-                    aria-hidden
-                  />
+                <li key={integration} className={cn(pillCls, "px-4 py-2 text-[14px]")}>
+                  <span className="size-1.5 rounded-full bg-brand" aria-hidden />
                   {integration}
                 </li>
               ))}
@@ -326,98 +317,71 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      {/* 8. SSS */}
-      <section className="py-14 md:py-28">
+      {/* 7. SSS */}
+      <section className={sectionY}>
         <div className="container-g">
-          <SectionHeading
+          <SectionHead
             center
-            dark
-            eyebrow="Sık Sorulanlar"
-            title="Aklınıza takılan *sorular*"
-            sub="Kısa yanıtlar; detayları demo görüşmesinde birlikte netleştiririz."
+            title="Sık Sorulan Sorular"
+            lead="Kısa yanıtlar; ayrıntıları demo görüşmesinde birlikte netleştiririz."
           />
-          <div className="mt-10 md:mt-16">
-            <Reveal>
-              <ProductFaq items={product.faq} idPrefix={`${product.slug}-faq`} />
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. Önceki / sonraki ürün (dairesel): hover'da dönen neon çerçeve */}
-      <section className="py-14 md:py-20">
-        <div className="container-g grid gap-5 sm:grid-cols-2">
-          <Reveal className="h-full">
-            <GlowBorder
-              radius="1.5rem"
-              speed={5}
-              className="h-full transition-transform duration-300 hover:-translate-y-1"
-            >
-              <Link
-                href={`/urunler/${prevSlug}`}
-                className="group flex h-full items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 md:p-8"
-              >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-fg/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
-                  <ArrowLeft className="size-5 transition-transform duration-300 group-hover:-translate-x-0.5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
-                    Önceki Ürün
-                  </span>
-                  <span className="mt-1 flex items-center gap-2 text-lg font-semibold tracking-tight md:text-xl">
-                    {PrevIcon && (
-                      <PrevIcon className="size-5 shrink-0 text-guru-text" strokeWidth={2} aria-hidden />
-                    )}
-                    <span className="truncate">{productName(prevSlug)}</span>
-                  </span>
-                </span>
-              </Link>
-            </GlowBorder>
-          </Reveal>
-          <Reveal delay={0.08} className="h-full">
-            <GlowBorder
-              radius="1.5rem"
-              speed={5}
-              className="h-full transition-transform duration-300 hover:-translate-y-1"
-            >
-              <Link
-                href={`/urunler/${nextSlug}`}
-                className="group flex h-full flex-row-reverse items-center gap-5 rounded-[calc(1.5rem-1px)] p-6 text-right md:p-8"
-              >
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-fg/15 transition-all duration-300 group-hover:border-guru group-hover:bg-guru group-hover:text-ink">
-                  <ArrowRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-fg/50">
-                    Sonraki Ürün
-                  </span>
-                  <span className="mt-1 flex flex-row-reverse items-center gap-2 text-lg font-semibold tracking-tight md:text-xl">
-                    {NextIcon && (
-                      <NextIcon className="size-5 shrink-0 text-guru-text" strokeWidth={2} aria-hidden />
-                    )}
-                    <span className="truncate">{productName(nextSlug)}</span>
-                  </span>
-                </span>
-              </Link>
-            </GlowBorder>
+          <Reveal className="mt-10">
+            <FaqGrid items={product.faq} />
           </Reveal>
         </div>
       </section>
 
-      {/* 10. Demo talebi: sayfanın sonu (CTASection yok); mobilde tek form, lg+ iki sütun */}
-      <section
-        id="demo"
-        className="relative scroll-mt-28 overflow-hidden bg-page py-14 md:py-28"
-      >
-        <div className="grain-blob -left-40 -top-24 h-96 w-96 opacity-25" aria-hidden />
-        <div className="grain-blob -bottom-32 -right-32 h-80 w-80 opacity-15" aria-hidden />
-        <div className="container-g relative">
-          <SectionHeading
+      {/* 8. Önceki / sonraki ürün (dairesel) */}
+      <nav aria-label="Diğer ürünler" className="bg-soft py-12 md:py-14">
+        <div className="container-g grid gap-4 sm:grid-cols-2 md:gap-5">
+          {neighbours.map((n) => {
+            const next = n.dir === "next";
+            const Arrow = next ? ArrowRight : ArrowLeft;
+            return (
+              <Link
+                key={n.dir}
+                href={`/urunler/${n.slug}`}
+                className={cn(
+                  cardCls,
+                  cardHoverCls,
+                  "group flex items-center gap-4 p-5 md:p-6",
+                  next && "flex-row-reverse text-right"
+                )}
+              >
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-chip text-heading transition-colors duration-300 group-hover:bg-navy group-hover:text-white">
+                  <Arrow
+                    aria-hidden
+                    className={cn(
+                      "size-[18px] transition-transform duration-300",
+                      next ? "group-hover:translate-x-0.5" : "group-hover:-translate-x-0.5"
+                    )}
+                  />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] text-muted">{n.label}</span>
+                  <span lang="en" className="mt-0.5 block text-[18px] font-medium tracking-[-0.015em] text-heading">
+                    {productName(n.slug)}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[14px] text-muted">{productTagline(n.slug)}</span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* 9. Demo talebi: sayfanın sonu; lg+ iki sütun, altında sekmeli tek panel */}
+      <section id="demo" className={cn("scroll-mt-28", sectionY)}>
+        <div className="container-g">
+          <SectionHead
             center
-            dark
-            eyebrow="Demo"
-            title="Demo *talep edin*"
-            sub={`${name} için formu doldurun ya da doğrudan toplantı planlayın; aynı gün dönüş yapalım.`}
+            title="Demo Talep Edin"
+            lead={
+              <>
+                <span lang="en">{name}</span> için formu doldurun ya da doğrudan toplantı planlayın; aynı gün
+                dönüş yapalım.
+              </>
+            }
           />
           <DemoSwitch
             form={

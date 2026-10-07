@@ -2,16 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  ArrowRight,
-  CalendarClock,
-  Check,
-  CheckCircle2,
-  ChevronRight,
-  Copy,
-} from "lucide-react";
-import { Sparkles } from "@/components/fx/Sparkles";
-import { Spotlight } from "@/components/fx/Spotlight";
+import { CalendarClock, Check, ChevronRight, Copy } from "lucide-react";
+import { Btn } from "@/components/site/Btn";
+import { iconBoxCls, pillCls } from "@/components/site/styles";
+import { FieldError, Opt, Req, fieldCls, formCardCls, labelCls } from "@/components/pages/ContactForm";
 import { site } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -82,34 +76,27 @@ type SchedulerErrors = {
 /* Hata varsa ilk hatalı adıma kaydırılır; giriş alanıysa odaklanır. */
 const FIELD_ORDER = ["day", "time", "name", "email"] as const;
 
-const inputCls = (hasError: boolean) =>
-  cn(
-    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/50 md:text-sm",
-    hasError
-      ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-fg/30 hover:border-fg/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
-  );
-
-const labelCls = "block text-[13px] font-medium text-fg/80";
-
+/* Gün ve saat çipleri: beyaz zemin + ince halka; seçili olan marka mavisi */
 const chipCls = (selected: boolean) =>
   cn(
-    "flex min-h-11 items-center justify-center rounded-xl border transition-colors duration-200",
+    "flex min-h-11 items-center justify-center rounded-xl transition-[background-color,color,box-shadow] duration-200",
     selected
-      ? "border-guru bg-guru text-ink"
-      : "border-fg/30 bg-band/70 text-fg/70 hover:border-fg/45 hover:text-fg"
+      ? "bg-brand text-white shadow-[0_0_0_1px_#2a6aca]"
+      : "bg-white text-body shadow-[0_0_0_1px_rgb(1_20_65/0.14)] hover:text-heading hover:shadow-[0_0_0_1px_rgb(42_106_202/0.55)]"
   );
 
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null;
+/** Adım numarası + etiket */
+function StepLabel({ id, n, children }: { id?: string; n: number; children: React.ReactNode }) {
   return (
-    <p
-      id={id}
-      role="alert"
-      className="text-[13px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
-    >
-      {message}
-    </p>
+    <span id={id} className={cn(labelCls, "inline-flex items-center gap-2.5")}>
+      <span
+        aria-hidden
+        className="grid size-6 shrink-0 place-items-center rounded-full bg-chip text-[12px] font-medium text-heading"
+      >
+        {n}
+      </span>
+      <span>{children}</span>
+    </span>
   );
 }
 
@@ -216,178 +203,175 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
   }
 
   return (
-    <Spotlight className="mx-auto max-w-3xl overflow-hidden rounded-3xl" size={520} opacity={0.07}>
-      <div className="rounded-3xl border border-fg/10 bg-card p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8">
-        {days === null ? (
-          /* SSR + hydration iskeleti: tarih üretimi istemciye kalır. */
-          <div
-            className="flex min-h-72 flex-col items-center justify-center gap-4 text-center"
-            aria-busy="true"
-            aria-live="polite"
-          >
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-guru/12 text-guru">
-              <CalendarClock className="size-6" strokeWidth={2} />
-            </span>
-            <p className="text-sm font-medium text-fg/60">Günler yükleniyor</p>
-          </div>
-        ) : (
-          <AnimatePresence mode="wait" initial={false}>
-            {submitted ? (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, y: 16, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -12, scale: 0.98 }}
-                transition={{ duration: 0.5, ease: EASE }}
-                className="relative flex min-h-72 flex-col items-center justify-center overflow-hidden text-center"
-              >
-                {/* Kutlama ışıltıları: dekoratif, pointer-events yok; düşük yoğunluk metni örtmesin */}
-                <Sparkles density={6} className="opacity-80" />
-                <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_light-dark(rgb(16_216_108/0.14),rgb(16_216_108/0.25))]">
-                  <CheckCircle2 className="size-8" strokeWidth={2} />
-                </span>
-                <h3 className="mt-6 text-xl font-bold tracking-tight text-fg md:text-2xl">
-                  Talebiniz e-posta uygulamanızda açıldı
-                </h3>
-                {selectedDay && time && (
-                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-fg/15 bg-band/60 px-4 py-1.5 text-sm font-semibold text-fg">
-                    <CalendarClock className="size-4 shrink-0 text-guru" strokeWidth={2.2} />
-                    {selectedDay.full} {time}
-                  </p>
-                )}
-                <p className="mt-3 max-w-sm text-sm leading-relaxed text-fg/60">
-                  Gönder butonuna basmanız yeterli; aynı gün onay dönüşü
-                  yapıyoruz. E-posta uygulamanız açılmadıysa talebi doğrudan{" "}
-                  <a
-                    href={request ? mailtoHref(request) : `mailto:${site.email}`}
-                    className="font-semibold text-fg underline decoration-guru decoration-2 underline-offset-2"
-                  >
-                    {site.email}
-                  </a>{" "}
-                  adresine gönderin.
+    <div className={cn(formCardCls, "mx-auto max-w-3xl")}>
+      {days === null ? (
+        /* SSR + hydration iskeleti: tarih üretimi istemciye kalır. */
+        <div
+          className="flex min-h-72 flex-col items-center justify-center gap-4 text-center"
+          aria-busy="true"
+          aria-live="polite"
+        >
+          <span className={iconBoxCls}>
+            <CalendarClock className="size-5 text-brand" strokeWidth={2} aria-hidden />
+          </span>
+          <p className="text-[14px] font-medium text-muted">Günler yükleniyor</p>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait" initial={false}>
+          {submitted ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="flex min-h-72 flex-col items-center justify-center text-center"
+            >
+              <span className="grid size-16 place-items-center rounded-full bg-chip text-brand">
+                <Check className="size-7" strokeWidth={2.2} aria-hidden />
+              </span>
+              <h3 className="mt-6 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
+                Talebiniz E-posta Uygulamanızda Açıldı
+              </h3>
+              {selectedDay && time && (
+                <p className={cn(pillCls, "mt-4 bg-chip shadow-none")}>
+                  <CalendarClock className="size-4 shrink-0 text-brand" strokeWidth={2} aria-hidden />
+                  {selectedDay.full} {time}
                 </p>
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={copyRequest}
-                    aria-live="polite"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-guru/70 hover:text-guru active:scale-[0.98]"
-                  >
+              )}
+              <p className="mt-4 max-w-sm text-[14.5px] leading-relaxed text-muted">
+                Gönder butonuna basmanız yeterli; aynı gün onay dönüşü
+                yapıyoruz. E-posta uygulamanız açılmadıysa talebi doğrudan{" "}
+                <a
+                  href={request ? mailtoHref(request) : `mailto:${site.email}`}
+                  className="break-words font-medium text-heading underline decoration-brand decoration-2 underline-offset-4 hover:text-brand"
+                >
+                  {site.email}
+                </a>{" "}
+                adresine gönderin.
+              </p>
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                <Btn variant="light" onClick={copyRequest} aria-live="polite">
+                  <span className="flex items-center gap-2">
                     {copied ? (
-                      <Check className="size-4 text-guru" strokeWidth={2.4} />
+                      <Check className="size-4 text-brand" strokeWidth={2.4} aria-hidden />
                     ) : (
-                      <Copy className="size-4" strokeWidth={2.2} />
+                      <Copy className="size-4" strokeWidth={2} aria-hidden />
                     )}
-                    {copied ? "Talep kopyalandı" : "Talebi kopyala"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTime(null);
-                      setSubmitted(false);
-                      setCopied(false);
-                    }}
-                    className="min-h-11 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-fg hover:bg-fg hover:text-page active:scale-[0.98]"
+                    {copied ? "Talep Kopyalandı" : "Talebi Kopyala"}
+                  </span>
+                </Btn>
+                <Btn
+                  variant="primary"
+                  onClick={() => {
+                    setTime(null);
+                    setSubmitted(false);
+                    setCopied(false);
+                  }}
+                >
+                  Farklı Saat Seç
+                </Btn>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              noValidate
+              onSubmit={onSubmit}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.45, ease: EASE }}
+            >
+              {/* Adım 1: gün seçimi */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <StepLabel id="ms-day-label" n={1}>
+                    Gün seçin <Req />
+                  </StepLabel>
+                  {/* Mobilde şerit yatay kayar: görsel ipucu (md+ tüm günler ızgarada) */}
+                  <span
+                    aria-hidden
+                    className="inline-flex items-center gap-0.5 text-[12.5px] font-medium text-muted md:hidden"
                   >
-                    Farklı saat seç
-                  </button>
+                    Kaydırın
+                    <ChevronRight className="size-3.5" strokeWidth={2.2} />
+                  </span>
                 </div>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                noValidate
-                onSubmit={onSubmit}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.45, ease: EASE }}
-              >
-                {/* Adım 1: gün seçimi */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <p id="ms-day-label" className={labelCls}>
-                      1. Gün seçin <span className="text-guru">*</span>
-                    </p>
-                    {/* Mobilde şerit yatay kayar: görsel ipucu (md+ tüm günler ızgarada) */}
-                    <span
-                      aria-hidden
-                      className="inline-flex items-center gap-0.5 text-xs font-medium text-fg/55 md:hidden"
-                    >
-                      Kaydırın
-                      <ChevronRight className="size-3.5" strokeWidth={2.2} />
-                    </span>
-                  </div>
-                  <div
-                    role="group"
-                    aria-labelledby="ms-day-label"
-                    className="-mx-6 flex snap-x snap-proximity gap-2 overflow-x-auto scroll-px-6 px-6 pb-2 [scrollbar-width:none] max-md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%_-_24px),transparent)] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 md:pb-0"
-                  >
-                    {days.map((d) => {
-                      const selected = d.key === dayKey;
-                      return (
-                        <button
-                          key={d.key}
-                          type="button"
-                          onClick={(e) => {
-                            setDayKey(d.key);
-                            clearError("day");
-                            // Kesik görünen çipi şeride tam sokar (yalnız yatay, sayfa kaymaz)
-                            e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
-                          }}
-                          aria-pressed={selected}
+                <div
+                  role="group"
+                  aria-labelledby="ms-day-label"
+                  className="-mx-6 flex snap-x snap-proximity gap-2 overflow-x-auto scroll-px-6 px-6 py-1 [scrollbar-width:none] max-md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%_-_24px),transparent)] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 md:py-0"
+                >
+                  {days.map((d) => {
+                    const selected = d.key === dayKey;
+                    return (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={(e) => {
+                          setDayKey(d.key);
+                          clearError("day");
+                          // Kesik görünen çipi şeride tam sokar (yalnız yatay, sayfa kaymaz)
+                          e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
+                        }}
+                        aria-pressed={selected}
+                        className={cn(chipCls(selected), "min-w-[68px] shrink-0 snap-start flex-col px-3 py-2")}
+                      >
+                        <span
                           className={cn(
-                            chipCls(selected),
-                            "min-w-16 shrink-0 snap-start flex-col px-3 py-1.5"
+                            "text-[11.5px] font-medium uppercase leading-tight tracking-[0.08em]",
+                            selected ? "text-white/80" : "text-muted"
                           )}
                         >
-                          <span className="text-xs font-semibold uppercase tracking-[0.08em] opacity-85">
-                            {d.weekday}
-                          </span>
-                          <span className="text-[13px] font-bold">{d.short}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <FieldError id="ms-day-error" message={errors.day} />
+                          {d.weekday}
+                        </span>
+                        <span className="text-[14px] font-medium leading-tight">{d.short}</span>
+                      </button>
+                    );
+                  })}
                 </div>
+                <FieldError id="ms-day-error" message={errors.day} />
+              </div>
 
-                {/* Adım 2: saat seçimi */}
-                <div className="mt-6 space-y-2">
-                  <p id="ms-time-label" className={labelCls}>
-                    2. Saat seçin <span className="text-guru">*</span>
-                  </p>
-                  <div
-                    role="group"
-                    aria-labelledby="ms-time-label"
-                    className="grid grid-cols-3 gap-2 sm:grid-cols-6"
-                  >
-                    {TIME_SLOTS.map((t) => {
-                      const selected = t === time;
-                      return (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => {
-                            setTime(t);
-                            clearError("time");
-                          }}
-                          aria-pressed={selected}
-                          className={cn(chipCls(selected), "px-2 text-sm font-semibold")}
-                        >
-                          {t}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <FieldError id="ms-time-error" message={errors.time} />
+              {/* Adım 2: saat seçimi */}
+              <div className="mt-6 space-y-2.5">
+                <StepLabel id="ms-time-label" n={2}>
+                  Saat seçin <Req />
+                </StepLabel>
+                <div
+                  role="group"
+                  aria-labelledby="ms-time-label"
+                  className="grid grid-cols-3 gap-2 sm:grid-cols-6"
+                >
+                  {TIME_SLOTS.map((t) => {
+                    const selected = t === time;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          setTime(t);
+                          clearError("time");
+                        }}
+                        aria-pressed={selected}
+                        className={cn(chipCls(selected), "px-2 text-[14.5px] font-medium")}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
                 </div>
+                <FieldError id="ms-time-error" message={errors.time} />
+              </div>
 
-                {/* Adım 3: iletişim bilgileri */}
-                <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              {/* Adım 3: iletişim bilgileri */}
+              <div className="mt-6 space-y-3">
+                <StepLabel n={3}>Bilgileriniz</StepLabel>
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label htmlFor="ms-name" className={labelCls}>
-                      3. Ad soyad <span className="text-guru">*</span>
+                      Ad soyad <Req />
                     </label>
                     <input
                       id="ms-name"
@@ -400,21 +384,23 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                         setName(e.target.value);
                         clearError("name");
                       }}
+                      aria-required
                       aria-invalid={Boolean(errors.name)}
                       aria-describedby={errors.name ? "ms-name-error" : undefined}
-                      className={cn(inputCls(Boolean(errors.name)), "h-12")}
+                      className={cn(fieldCls(Boolean(errors.name)), "h-12")}
                     />
                     <FieldError id="ms-name-error" message={errors.name} />
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="ms-email" className={labelCls}>
-                      E-posta <span className="text-guru">*</span>
+                      E-posta <Req />
                     </label>
                     <input
                       id="ms-email"
                       name="email"
                       type="email"
+                      inputMode="email"
                       autoComplete="email"
                       placeholder="ornek@firma.com"
                       value={email}
@@ -422,49 +408,43 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                         setEmail(e.target.value);
                         clearError("email");
                       }}
+                      aria-required
                       aria-invalid={Boolean(errors.email)}
                       aria-describedby={errors.email ? "ms-email-error" : undefined}
-                      className={cn(inputCls(Boolean(errors.email)), "h-12")}
+                      className={cn(fieldCls(Boolean(errors.email)), "h-12")}
                     />
                     <FieldError id="ms-email-error" message={errors.email} />
                   </div>
 
                   <div className="space-y-2 sm:col-span-2">
                     <label htmlFor="ms-note" className={labelCls}>
-                      Kısa not <span className="text-fg/45">(opsiyonel)</span>
+                      Kısa not <Opt />
                     </label>
                     <textarea
                       id="ms-note"
                       name="note"
                       rows={3}
-                      placeholder="Görüşmede konuşmak istediğiniz konuyu kısaca yazabilirsiniz…"
+                      placeholder="Görüşmede konuşmak istediğiniz konuyu kısaca yazabilirsiniz."
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      className={cn(inputCls(false), "resize-y py-3 leading-relaxed")}
+                      className={cn(fieldCls(false), "block resize-y py-3 leading-relaxed")}
                     />
                   </div>
                 </div>
+              </div>
 
-                <div className="mt-8 space-y-3">
-                  <button
-                    type="submit"
-                    className="group inline-flex h-12 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-guru px-6 text-[15px] font-semibold text-ink transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(16,216,108,0.3)] active:scale-[0.985] sm:w-auto sm:px-8 md:h-14"
-                  >
-                    Toplantı Talebi Gönder
-                    <ArrowRight
-                      className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-1"
-                      strokeWidth={2.2}
-                    />
-                  </button>
-                  <p className="text-xs leading-relaxed text-fg/50">
-                    Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
-                  </p>
-                </div>
-              </motion.form>
-            )}
-          </AnimatePresence>
-        )}
-      </div>
-    </Spotlight>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                <Btn type="submit" variant="primary" size="lg" arrow className="w-full shrink-0 sm:w-auto">
+                  Toplantı Talebi Gönder
+                </Btn>
+                <p className="text-[13px] leading-relaxed text-muted">
+                  Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
+                </p>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      )}
+    </div>
   );
 }

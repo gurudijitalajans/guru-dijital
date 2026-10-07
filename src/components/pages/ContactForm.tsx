@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Check, CheckCircle2, Clock, Copy } from "lucide-react";
-import { Sparkles } from "@/components/fx/Sparkles";
+import { Check, ChevronDown, Clock, Copy } from "lucide-react";
+import { Btn } from "@/components/site/Btn";
+import { cardCls } from "@/components/site/styles";
 import { services, site } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -62,28 +63,47 @@ function useUrlService(): string {
   return services.find((s) => s.slug === raw || s.title === raw)?.title ?? "";
 }
 
-const inputCls = (hasError: boolean) =>
+/* ---- Ortak form görünümü (MeetingScheduler da kullanır) ----
+   Beyaz zemin, ince halka, odakta mavi halka, 12px köşe. Mobilde yazı 16px
+   (iOS odakta yakınlaştırmasın), md+ 15px. */
+export const fieldCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl border bg-band/70 px-4 text-base text-fg outline-none transition-colors duration-200 placeholder:text-fg/50 md:text-sm",
+    "w-full rounded-xl bg-white px-4 text-base text-heading outline-none transition-shadow duration-200 placeholder:text-muted/80 md:text-[15px]",
     hasError
-      ? "border-red-400/70 focus:border-red-400/70 focus:ring-2 focus:ring-red-400/15"
-      : "border-fg/30 hover:border-fg/45 focus:border-guru focus:ring-2 focus:ring-guru/20"
+      ? "shadow-[0_0_0_1px_rgb(200_30_30/0.6)] focus:shadow-[0_0_0_1px_rgb(200_30_30/0.8),0_0_0_4px_rgb(200_30_30/0.12)]"
+      : "shadow-[0_0_0_1px_rgb(1_20_65/0.14)] hover:shadow-[0_0_0_1px_rgb(1_20_65/0.26)] focus:shadow-[0_0_0_1px_#2a6aca,0_0_0_4px_rgb(42_106_202/0.16)]"
   );
 
-const labelCls = "block text-[13px] font-medium text-fg/80";
+export const labelCls = "block text-[13.5px] font-medium text-heading";
 
-function FieldError({ id, message }: { id: string; message?: string }) {
+/** Zorunlu alan işareti (ekran okuyucuya aria-required ile bildirilir) */
+export function Req() {
+  return (
+    <span aria-hidden className="text-brand">
+      *
+    </span>
+  );
+}
+
+/** İsteğe bağlı alan notu */
+export function Opt() {
+  return <span className="font-normal text-muted">(isteğe bağlı)</span>;
+}
+
+export function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p
-      id={id}
-      role="alert"
-      className="text-[13px] font-medium text-[color:light-dark(#dc2626,#f87171)]"
-    >
+    <p id={id} role="alert" className="text-[13px] font-medium text-[#c81e1e]">
       {message}
     </p>
   );
 }
+
+/** Form kartı: beyaz, ince halka, hafif derinlik */
+export const formCardCls = cn(
+  cardCls,
+  "p-6 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_30px_60px_-40px_rgb(1_20_65/0.4)] md:p-8"
+);
 
 export type ContactFormProps = {
   /** Ürün sayfalarında konu ön seçimi (örn. "Guru CRM"); listede yoksa seçenek olarak eklenir. */
@@ -186,62 +206,56 @@ export function ContactForm({
   }
 
   return (
-    <div className="rounded-3xl border border-fg/10 bg-card p-6 shadow-[0_0_50px_rgba(16,216,108,0.07)] md:p-8">
+    <div className={formCardCls}>
       <AnimatePresence mode="wait" initial={false}>
         {submitted ? (
           <motion.div
             key="success"
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="relative flex min-h-96 flex-col items-center justify-center overflow-hidden text-center"
+            className="flex min-h-96 flex-col items-center justify-center text-center"
           >
-            {/* Kutlama ışıltıları: dekoratif, pointer-events yok; düşük yoğunluk metni örtmesin */}
-            <Sparkles density={6} className="opacity-80" />
-            <span className="flex size-16 items-center justify-center rounded-full bg-guru/15 text-guru shadow-[0_0_40px_light-dark(rgb(16_216_108/0.14),rgb(16_216_108/0.25))]">
-              <CheckCircle2 className="size-8" strokeWidth={2} />
+            <span className="grid size-16 place-items-center rounded-full bg-chip text-brand">
+              <Check className="size-7" strokeWidth={2.2} aria-hidden />
             </span>
-            <h3 className="mt-6 text-xl font-bold tracking-tight text-fg md:text-2xl">
-              Talebiniz e-posta uygulamanızda açıldı
+            <h3 className="mt-6 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
+              Talebiniz E-posta Uygulamanızda Açıldı
             </h3>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-fg/60">
+            <p className="mt-3 max-w-sm text-[14.5px] leading-relaxed text-muted">
               Gönder butonuna basmanız yeterli. E-posta uygulamanız açılmadıysa
               mesajınızı doğrudan{" "}
               <a
                 href={`mailto:${site.email}`}
-                className="font-semibold text-fg underline decoration-guru decoration-2 underline-offset-2"
+                className="break-words font-medium text-heading underline decoration-brand decoration-2 underline-offset-4 hover:text-brand"
               >
                 {site.email}
               </a>{" "}
               adresine iletebilirsiniz.
             </p>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={copyEmail}
-                aria-live="polite"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-guru/70 hover:text-guru active:scale-[0.98]"
-              >
-                {copied ? (
-                  <Check className="size-4 text-guru" strokeWidth={2.4} />
-                ) : (
-                  <Copy className="size-4" strokeWidth={2.2} />
-                )}
-                {copied ? "Adres kopyalandı" : "Adresi kopyala"}
-              </button>
-              <button
-                type="button"
+              <Btn variant="light" onClick={copyEmail} aria-live="polite">
+                <span className="flex items-center gap-2">
+                  {copied ? (
+                    <Check className="size-4 text-brand" strokeWidth={2.4} aria-hidden />
+                  ) : (
+                    <Copy className="size-4" strokeWidth={2} aria-hidden />
+                  )}
+                  {copied ? "Adres Kopyalandı" : "Adresi Kopyala"}
+                </span>
+              </Btn>
+              <Btn
+                variant="primary"
                 onClick={() => {
                   setValues(initialValues);
                   setErrors({});
                   setSubmitted(false);
                   setCopied(false);
                 }}
-                className="min-h-11 rounded-full border border-fg/25 px-6 py-3 text-sm font-semibold text-fg transition-all duration-300 hover:border-fg hover:bg-fg hover:text-page active:scale-[0.98]"
               >
-                Yeni mesaj yaz
-              </button>
+                Yeni Mesaj Yaz
+              </Btn>
             </div>
           </motion.div>
         ) : (
@@ -254,15 +268,15 @@ export function ContactForm({
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-fg/15 bg-band/60 px-3.5 py-1.5 text-xs font-medium leading-none text-fg/70">
-              <Clock className="size-3.5 shrink-0 text-guru" strokeWidth={2.2} />
+            <p className="inline-flex items-center gap-2 rounded-full bg-chip px-3.5 py-1.5 text-[13px] font-medium leading-none text-heading">
+              <Clock className="size-3.5 shrink-0 text-brand" strokeWidth={2.2} aria-hidden />
               Ortalama yanıt: aynı gün
-            </div>
+            </p>
 
-            <div className="mt-7 grid gap-5 sm:grid-cols-2">
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <label htmlFor="cf-name" className={labelCls}>
-                  Ad soyad <span className="text-guru">*</span>
+                  Ad soyad <Req />
                 </label>
                 <input
                   id="cf-name"
@@ -272,109 +286,115 @@ export function ContactForm({
                   placeholder="Adınız Soyadınız"
                   value={values.name}
                   onChange={(e) => set("name", e.target.value)}
+                  aria-required
                   aria-invalid={Boolean(errors.name)}
                   aria-describedby={errors.name ? "cf-name-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.name)), "h-12")}
+                  className={cn(fieldCls(Boolean(errors.name)), "h-12")}
                 />
                 <FieldError id="cf-name-error" message={errors.name} />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="cf-email" className={labelCls}>
-                  E-posta <span className="text-guru">*</span>
+                  E-posta <Req />
                 </label>
                 <input
                   id="cf-email"
                   name="email"
                   type="email"
+                  inputMode="email"
                   autoComplete="email"
                   placeholder="ornek@firma.com"
                   value={values.email}
                   onChange={(e) => set("email", e.target.value)}
+                  aria-required
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? "cf-email-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.email)), "h-12")}
+                  className={cn(fieldCls(Boolean(errors.email)), "h-12")}
                 />
                 <FieldError id="cf-email-error" message={errors.email} />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="cf-phone" className={labelCls}>
-                  Telefon <span className="text-fg/45">(opsiyonel)</span>
+                  Telefon <Opt />
                 </label>
                 <input
                   id="cf-phone"
                   name="phone"
                   type="tel"
+                  inputMode="tel"
                   autoComplete="tel"
                   placeholder="05xx xxx xx xx"
                   value={values.phone}
                   onChange={(e) => set("phone", e.target.value)}
-                  className={cn(inputCls(false), "h-12")}
+                  className={cn(fieldCls(false), "h-12")}
                 />
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="cf-service" className={labelCls}>
-                  {serviceLabel} <span className="text-guru">*</span>
+                  {serviceLabel} <Req />
                 </label>
-                <select
-                  id="cf-service"
-                  name="service"
-                  value={service}
-                  onChange={(e) => set("service", e.target.value)}
-                  aria-invalid={Boolean(errors.service)}
-                  aria-describedby={errors.service ? "cf-service-error" : undefined}
-                  className={cn(
-                    inputCls(Boolean(errors.service)),
-                    "h-12",
-                    !service && "text-fg/50"
-                  )}
-                >
-                  <option value="" disabled>
-                    Hizmet seçin
-                  </option>
-                  {optionList.map((title) => (
-                    <option key={title} value={title}>
-                      {title}
+                <div className="relative">
+                  <select
+                    id="cf-service"
+                    name="service"
+                    value={service}
+                    onChange={(e) => set("service", e.target.value)}
+                    aria-required
+                    aria-invalid={Boolean(errors.service)}
+                    aria-describedby={errors.service ? "cf-service-error" : undefined}
+                    className={cn(
+                      fieldCls(Boolean(errors.service)),
+                      "h-12 cursor-pointer appearance-none pr-11",
+                      !service && "text-muted"
+                    )}
+                  >
+                    <option value="" disabled>
+                      Seçin
                     </option>
-                  ))}
-                  <option value={OTHER_OPTION}>Diğer / Emin değilim</option>
-                </select>
+                    {optionList.map((title) => (
+                      <option key={title} value={title}>
+                        {title}
+                      </option>
+                    ))}
+                    <option value={OTHER_OPTION}>Diğer / Emin değilim</option>
+                  </select>
+                  <ChevronDown
+                    aria-hidden
+                    className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted"
+                    strokeWidth={2}
+                  />
+                </div>
                 <FieldError id="cf-service-error" message={errors.service} />
               </div>
 
               <div className="space-y-2 sm:col-span-2">
                 <label htmlFor="cf-message" className={labelCls}>
-                  Mesajınız <span className="text-guru">*</span>
+                  Mesajınız <Req />
                 </label>
                 <textarea
                   id="cf-message"
                   name="message"
                   rows={5}
-                  placeholder="Projenizden, hedeflerinizden ya da aklınızdaki sorudan kısaca bahsedin…"
+                  placeholder="Projenizden, hedeflerinizden ya da aklınızdaki sorudan kısaca bahsedin."
                   value={values.message}
                   onChange={(e) => set("message", e.target.value)}
+                  aria-required
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? "cf-message-error" : undefined}
-                  className={cn(inputCls(Boolean(errors.message)), "resize-y py-3 leading-relaxed")}
+                  className={cn(fieldCls(Boolean(errors.message)), "block min-h-32 resize-y py-3 leading-relaxed")}
                 />
                 <FieldError id="cf-message-error" message={errors.message} />
               </div>
             </div>
 
-            <div className="mt-8 space-y-3">
-              <button
-                type="submit"
-                className="group inline-flex h-12 w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-guru px-6 text-[15px] font-semibold text-ink transition-all duration-300 hover:brightness-110 hover:shadow-[0_0_28px_rgba(16,216,108,0.3)] active:scale-[0.985] sm:w-auto sm:px-8 md:h-14"
-              >
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <Btn type="submit" variant="primary" size="lg" arrow className="w-full shrink-0 sm:w-auto">
                 Mesajı Gönder
-                <ArrowRight
-                  className="size-[18px] shrink-0 transition-transform duration-300 group-hover:translate-x-1"
-                  strokeWidth={2.2}
-                />
-              </button>
-              <p className="text-xs leading-relaxed text-fg/50">
+              </Btn>
+              <p className="text-[13px] leading-relaxed text-muted">
                 Gönderdiğinizde mesajınız e-posta uygulamanızda hazırlanır.
               </p>
             </div>

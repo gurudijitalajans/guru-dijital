@@ -1,33 +1,31 @@
 @import "tailwindcss";
 
+/* ==================================================================
+   Guru Dijital tasarım sistemi (2026-10): minimalist, beyaz zemin,
+   mavi marka. Tek tema; gece modu yok.
+   ================================================================== */
 @theme {
-  --color-guru: #10d86c;
-  --color-guru-deep: #0ba955;
-  --color-ink: #0a0b0a;
-  --color-coal: #0e100f;
-  --color-carbon: #181b19;
-  --color-paper: #f5f6f5;
-  --color-mist: #e8ebe8;
-  --color-smoke: #6f6a68;
-  --color-taupe: #5a5454;
+  /* Marka (logo anahtar görselinden ölçüldü) */
+  --color-navy: #011441;        /* en koyu lacivert: başlık, birincil buton */
+  --color-navy-2: #011b53;
+  --color-royal: #12419b;
+  --color-brand: #2a6aca;       /* ana vurgu: nokta, ikincil buton, bağlantı (beyazla 5.2:1) */
+  --color-brand-bright: #3888e7;
+  --color-sky: #6dc1f8;
+  --color-ice: #cef0fe;
 
-  /* Tema-duyarlı anlamsal tokenlar (varsayılan: gece modu değerleri).
-     ink SABİT koyu kalır: yeşil zeminlerdeki metin her temada koyudur. */
-  --color-page: #0e100f;  /* sayfa zemini */
-  --color-band: #0a0b0a;  /* alternatif bant zemini */
-  --color-card: #181b19;  /* kart zemini */
-  --color-fg: #f5f6f5;    /* ana metin + çizgiler */
-  /* Yeşil METİN için token: gece parlak yeşil, gündüz koyu yeşil (WCAG AA).
-     bg-guru dolguları, noktalar ve glow'lar text-guru/bg-guru ile parlak kalır. */
-  --color-guru-text: #10d86c;
+  /* Nötrler */
+  --color-heading: #011441;
+  --color-body: #44506b;        /* gövde metni (beyaz üzerinde 8.1:1) */
+  --color-muted: #6b7487;       /* ikincil metin (beyaz üzerinde 4.7:1) */
+  --color-line: #e3e8f0;        /* kart çerçevesi */
+  --color-soft: #f4f7fb;        /* açık bant zemini */
+  --color-chip: #eef3fa;        /* ikon zemini, hap rozet */
 
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --shadow-soft: 0 24px 60px -24px rgb(10 11 10 / 0.18);
-  --shadow-card: 0 2px 8px rgb(10 11 10 / 0.04), 0 16px 40px -16px rgb(10 11 10 / 0.12);
-
-  --animate-marquee: marquee 95s linear infinite;
-  --animate-marquee-slow: marquee 150s linear infinite;
+  --animate-marquee: marquee 120s linear infinite;
+  --animate-marquee-slow: marquee 160s linear infinite;
 }
 
 @keyframes marquee {
@@ -37,136 +35,81 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
-}
-
-/* ---- Gündüz modu (beyaz zemin): anlamsal tokenlar yeniden eşlenir ---- */
-html.light {
   color-scheme: light;
-  --color-page: #f6f7f6;
-  --color-band: #ecefec;
-  --color-card: #ffffff;
-  --color-fg: #0c0e0d;
-  --color-smoke: #4a504c;
-  --color-guru-text: #047a3a; /* page 5.08:1, card 5.45:1, band 4.71:1 */
-}
-
-/* Gündüz modunda FX katmanları: aurora kapatılmaz, açık nane paletiyle
-   (shader u_light=1) multiply karışımında beyaz zemine hafif yıkama verir.
-   Koyu alan üretmez (taban beyaz), metin kontrastı korunur. */
-html.light .fx-aurora {
-  mix-blend-mode: multiply;
-  opacity: 0.6;
-}
-html.light .fx-dots {
-  opacity: 0.45;
-}
-html.light .fx-goo {
-  mix-blend-mode: multiply;
-  opacity: 0.35;
-}
-/* Blob yoğunluğu: eleman bazlı opacity utility'lerini ezmemek için
-   opaklık yerine gradyan alfası düşürülür */
-html.light .grain-blob {
-  background: radial-gradient(closest-side, rgb(16 216 108 / 0.45), transparent 72%);
-}
-
-/* Dokunmatikte imleç izi (goo) anlamsız: filtreli tam ekran katman hiç boyanmasın */
-@media (pointer: coarse) {
-  .fx-goo {
-    display: none;
-  }
-}
-
-/* Tema anahtarı ikonları: gece modunda güneş (aydınlığa geç), gündüzde ay */
-.theme-icon-sun { display: block; }
-.theme-icon-moon { display: none; }
-html.light .theme-icon-sun { display: none; }
-html.light .theme-icon-moon { display: block; }
-
-/* Tema-bağımlı logo görünürlüğü */
-.logo-dark-theme { display: inline-block; }
-.logo-light-theme { display: none; }
-html.light .logo-dark-theme { display: none; }
-html.light .logo-light-theme { display: inline-block; }
-
-/* Lenis smooth-scroll aktifken native smooth kapanır */
-html[data-lenis] {
-  scroll-behavior: auto;
-}
-
-/* Özel imleç aktifken (CustomCursor html'e gd-cursor ekler) native imleç gizlenir */
-html.gd-cursor,
-html.gd-cursor * {
-  cursor: none !important;
-}
-
-/* Tekrar ziyaret: layout'taki beforeInteractive script sessionStorage'a bakıp
-   html[data-preloaded] yazar; açılış perdesi hydration'ı beklemeden gizlenir */
-html[data-preloaded] #guru-preloader {
-  display: none;
-}
-
-/* Rota geçişi içerik girişi (PageCurtain): JS'siz de oynar, dokunmatikte kısa,
-   reduced-motion'da kapalı. backwards: bitince animasyon stili kalmaz. */
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(26px); }
-  to { opacity: 1; transform: none; }
-}
-.page-enter {
-  animation: page-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
-}
-@media (pointer: coarse) {
-  .page-enter {
-    animation-duration: 0.5s;
-    animation-delay: 0s;
-  }
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--color-page);
-  color: var(--color-fg);
+  background: #ffffff;
+  color: var(--color-body);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
   overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: var(--color-guru);
-  color: var(--color-ink);
+  background: var(--color-ice);
+  color: var(--color-navy);
 }
 
-/* ---- layout helpers ---- */
+/* Sabit header altında çapa hedefleri görünür kalsın */
+:target { scroll-margin-top: 120px; }
+
+/* ---- düzen ---- */
 .container-g {
   margin-inline: auto;
   width: 100%;
-  max-width: 76rem;
+  max-width: 1248px;            /* 1200 içerik + 2 x 24 iç boşluk */
   padding-inline: 1.25rem;
 }
 @media (min-width: 768px) {
-  .container-g { padding-inline: 2rem; }
+  .container-g { padding-inline: 1.5rem; }
 }
 
-/* ---- brand flourishes ---- */
-.grain-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.45;
-  pointer-events: none;
-  background: radial-gradient(closest-side, rgb(16 216 108 / 0.85), transparent 72%);
+/* ---- marka ışık yelpazesi (logo anahtar görseli) ---- */
+.guru-beam {
+  background-color: #011441;
+  background-image:
+    radial-gradient(48% 60% at 0% 100%, rgb(196 238 255 / .9) 0%, rgb(132 206 252 / .55) 38%, rgb(80 165 245 / 0) 78%),
+    conic-gradient(from 180deg at 103% -3%,
+      #1a4fae 0deg, #0b2e7c 9deg, #011648 17deg, #011648 36deg, #072560 39deg,
+      #2a72d9 41deg, #bfeaff 42.8deg, #b0e5ff 45deg, #6cc0f8 49.5deg, #3383e2 54.5deg,
+      #1a52b4 60deg, #0d3787 67deg, #04205e 76deg, #011649 84deg, #001341 90deg);
 }
 
-.headline-outline-light {
-  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--color-fg) 34%, transparent);
-  color: transparent;
+/* ---- giriş başlığı: EDME'deki yavaş ışık süpürmesi ---- */
+.hero-sweep {
+  color: var(--color-heading);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-sweep {
+    background-image: linear-gradient(100deg, #011441 0%, #011441 38%, #6dc1f8 50%, #011441 62%, #011441 100%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: hero-sweep 6s linear 0.8s infinite;
+  }
+}
+@keyframes hero-sweep {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-sweep { animation: none; background-position: 0 0; }
 }
 
-/* ---- marquee ---- */
+/* ---- yavaş kayan şerit (logo duvarı) ---- */
 .marquee {
   overflow: hidden;
   display: flex;
-  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 .marquee-track {
   display: flex;
@@ -174,18 +117,13 @@ body {
   width: max-content;
   animation: var(--animate-marquee);
 }
-.marquee-slow .marquee-track {
-  animation: var(--animate-marquee-slow);
-}
-/* Dokunmatikte :hover yapışıp animasyonu kalıcı durdurmasın */
+.marquee-reverse .marquee-track { animation-direction: reverse; }
+.marquee-slow .marquee-track { animation: var(--animate-marquee-slow); }
 @media (hover: hover) {
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
-  }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
-  .page-enter { animation: none; }
   html { scroll-behavior: auto; }
 }

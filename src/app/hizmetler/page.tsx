@@ -1,11 +1,23 @@
-import { PageHero } from "@/components/layout/PageHero";
-import { Scramble } from "@/components/fx/Scramble";
-import { ShimmerText } from "@/components/fx/ShimmerText";
-import { RotatingBadge } from "@/components/fx/RotatingBadge";
-import { Reveal } from "@/components/ui/Reveal";
-import { GButton } from "@/components/ui/Button";
-import { ServicePanels } from "@/components/pages/hizmetler/ServicePanels";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+import { process, services } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
+import { Btn } from "@/components/site/Btn";
+import { PageIntro } from "@/components/site/PageIntro";
+import { SectionHead } from "@/components/site/SectionHead";
+import {
+  cardCls,
+  cardHoverCls,
+  cardTextCls,
+  cardTitleCls,
+  iconBoxCls,
+  sectionY,
+} from "@/components/site/styles";
+import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { serviceVisuals } from "@/components/pages/hizmetler/service-showcase";
+import { ClosingCta } from "@/components/site/ClosingCta";
 
 export const metadata = pageMetadata({
   title: "Hizmetler",
@@ -17,54 +29,105 @@ export const metadata = pageMetadata({
 export default function HizmetlerPage() {
   return (
     <>
-      <PageHero
-        // PageHeroV2 eyebrow'u JSX child olarak basar; Scramble elementi
-        // ReactNode olarak sorunsuz render edilir (tip string beklediği için cast).
-        eyebrow={(<Scramble text="Hizmetlerimiz" duration={1.1} />) as unknown as string}
-        title="Markanızı bir üst seviyeye taşıyan *hizmetler*"
-        sub="Altı başlıkta uçtan uca dijital çözümler."
-        aside={<RotatingBadge size={120} />}
+      <PageIntro
+        eyebrow="Hizmetlerimiz"
+        title="Markanızı büyüten altı hizmet, tek ekip"
+        lead="Sosyal medyadan web tasarıma, dijital pazarlamadan videoya kadar markanızın ihtiyaç duyduğu işleri aynı masada planlıyor, tek ekiple yönetiyoruz."
+      >
+        <Btn href="/iletisim" size="lg" arrow>
+          Teklif Al
+        </Btn>
+        <Btn href="/iletisim#toplanti" variant="light" size="lg">
+          Toplantı Planla
+        </Btn>
+      </PageIntro>
+
+      {/* Hizmet kartları: görsel, ikon, başlık, kısa açıklama, İncele */}
+      <section className="pb-16 md:pb-[72px]" aria-label="Hizmet listesi">
+        <div className="container-g">
+          <StaggerGroup className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            {services.map((s, i) => {
+              const Icon = s.icon;
+              const img = serviceVisuals[s.slug]?.card ?? null;
+              return (
+                <StaggerItem key={s.slug} className="h-full">
+                  <Link
+                    href={`/hizmetler/${s.slug}`}
+                    className={cn(cardCls, cardHoverCls, "group flex h-full flex-col p-2.5")}
+                  >
+                    {img && (
+                      <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-soft">
+                        <Image
+                          src={img.src}
+                          alt={img.alt}
+                          fill
+                          sizes="(min-width: 1280px) 390px, (min-width: 1024px) 31vw, (min-width: 640px) 48vw, 100vw"
+                          preload={i === 0}
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                          style={img.position ? { objectPosition: img.position } : undefined}
+                        />
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col gap-3 px-3.5 pb-4 pt-5 md:px-4">
+                      <div className="flex items-center justify-between">
+                        <span className={iconBoxCls} aria-hidden>
+                          <Icon className="size-5" strokeWidth={1.8} />
+                        </span>
+                        <span className="text-[13px] font-medium tabular-nums text-muted" aria-hidden>
+                          {s.no}
+                        </span>
+                      </div>
+                      <h2 className={cn(cardTitleCls, "mt-1 text-[19px]")}>{s.title}</h2>
+                      <p className={cardTextCls}>{s.short}</p>
+                      <span className="mt-auto inline-flex min-h-11 items-center gap-1.5 pt-1 text-[14px] font-medium text-heading transition-colors group-hover:text-brand">
+                        İncele
+                        <ArrowRight
+                          aria-hidden
+                          className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
+                        />
+                      </span>
+                    </div>
+                  </Link>
+                </StaggerItem>
+              );
+            })}
+          </StaggerGroup>
+        </div>
+      </section>
+
+      {/* Çalışma biçimi: process verisi, sade numaralı kartlar */}
+      <section className={cn(sectionY, "bg-soft")}>
+        <div className="container-g">
+          <SectionHead
+            title="Nasıl Çalışıyoruz"
+            lead="Hangi hizmetle başlarsanız başlayın, süreç aynı netlikte ilerler: önce dinliyor, sonra planlıyor, üretiyor ve ölçüyoruz."
+          />
+          <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-4">
+            {process.map((step) => (
+              <StaggerItem key={step.no} className="h-full">
+                <article className={cn(cardCls, "flex h-full flex-col gap-3 p-6 md:p-7")}>
+                  <span
+                    className="grid size-11 place-items-center rounded-xl bg-chip text-[15px] font-medium tabular-nums text-brand"
+                    aria-hidden
+                  >
+                    {step.no}
+                  </span>
+                  <h3 className={cn(cardTitleCls, "mt-2")}>
+                    <span className="sr-only">{step.no}. </span>
+                    {step.title}
+                  </h3>
+                  <p className={cardTextCls}>{step.desc}</p>
+                </article>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
+      </section>
+
+      <ClosingCta
+        title="Tanışalım"
+        lead="Markanızı ve hedeflerinizi dinleyelim; hangi hizmetlerle başlamanın doğru olduğunu birlikte belirleyelim."
       />
-
-      {/* Hizmet panelleri: md+ ve yeterli yükseklikte sticky yığın, mobilde dikey kartlar.
-          DİKKAT: sticky çalışsın diye bu section'a overflow-hidden VERİLMEZ; dekoratif
-          blob kendi kırpılan (absolute + overflow-hidden) katmanında durur. */}
-      <section className="relative bg-page pb-24 pt-10 md:pb-32 md:pt-14">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-          <div className="grain-blob left-[-12%] top-[14%] h-[24rem] w-[24rem] opacity-20" />
-        </div>
-        <ServicePanels />
-      </section>
-
-
-      {/* Kısa CTA şeridi; rozet hero'ya taşındı, sağda label-roll buton */}
-      <section className="relative overflow-hidden bg-band py-16 md:py-24">
-        <div
-          className="grain-blob -bottom-28 -right-24 h-80 w-80 opacity-20"
-          aria-hidden
-        />
-        <div className="container-g relative flex flex-col items-center gap-10 text-center md:flex-row md:justify-between md:gap-12 md:text-left">
-          <Reveal>
-            <div>
-              <p className="inline-flex items-center gap-2.5 text-[13px] font-semibold uppercase tracking-[0.22em] text-fg/50">
-                <span className="inline-block size-2 bg-guru" aria-hidden />
-                Sıradaki Proje
-              </p>
-              <h2 className="mt-4 max-w-xl text-balance text-3xl font-extrabold tracking-[-0.03em] text-fg sm:text-4xl md:text-5xl">
-                <ShimmerText interval={5}>
-                  Aklınızdaki işi <span className="text-guru">birlikte</span>{" "}
-                  büyütelim
-                </ShimmerText>
-              </h2>
-            </div>
-          </Reveal>
-          <Reveal delay={0.1} className="shrink-0">
-            <GButton href="/iletisim" variant="light" size="lg">
-              Projenizi Konuşalım
-            </GButton>
-          </Reveal>
-        </div>
-      </section>
     </>
   );
 }

@@ -1,31 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
-import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import { MotionConfig } from "motion/react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { AnnounceBar } from "@/components/site/AnnounceBar";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { ContactTab } from "@/components/site/ContactTab";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
-import { SmoothScroll } from "@/components/fx/SmoothScroll";
-import { CustomCursor } from "@/components/fx/CustomCursor";
-import { GooDefs } from "@/components/fx/GooDefs";
-import { GooTrail } from "@/components/fx/GooTrail";
-import { Preloader } from "@/components/fx/Preloader";
-import { GrainOverlay } from "@/components/fx/GrainOverlay";
-import { ScrollProgress } from "@/components/fx/ScrollProgress";
 import { site } from "@/lib/data";
 import "./globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
+/* Outfit: ücretsiz, Türkçe karakter destekli; sabit ağırlık dosyaları yerelden.
+   (EDME'nin Nexa'sına en yakın açık lisanslı yazı tipi.) */
+const outfit = localFont({
+  variable: "--font-outfit",
   display: "swap",
+  src: [
+    { path: "../fonts/Outfit-Light.ttf", weight: "300", style: "normal" },
+    { path: "../fonts/Outfit-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../fonts/Outfit-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../fonts/Outfit-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../fonts/Outfit-Bold.ttf", weight: "700", style: "normal" },
+  ],
 });
 
 /* Site geneli varsayılanlar. og:title / og:url / twitter:title BİLEREK
-   verilmez: Next bunları her sayfanın çözümlenmiş başlığından türetir; sabit
-   string verilseydi iç sayfalarda ana sayfa başlığı görünürdü. Sayfalar
-   canonical + OG için src/lib/seo.ts pageMetadata() kullanır. */
+   verilmez: Next bunları her sayfanın çözümlenmiş başlığından türetir.
+   Sayfalar canonical + OG için src/lib/seo.ts pageMetadata() kullanır. */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -47,12 +47,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [{ url: "/icon.png", type: "image/png" }],
-    apple: [{ url: "/icon.png" }],
+    apple: [{ url: "/apple-icon.png" }],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6f7f6",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -69,27 +69,10 @@ const jsonLd = {
   description: site.description,
 };
 
-/* Hydration öncesi çalışan tema/preloader hazırlığı:
-   - Varsayılan gündüz; yalnız kayıtlı "dark" tercihi geceyi açar.
-   - Tarayıcı çubuğu rengi (meta theme-color) temayla eşlenir.
-   - Bu oturumda preloader zaten oynatıldıysa html[data-preloaded] ile perde
-     hydration beklenmeden gizlenir (tekrar ziyaretlerde perde flaşı yok). */
-const themeInit = `try{var d=document.documentElement,t=localStorage.getItem("guru-theme");if(t!=="dark")d.classList.add("light");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",t==="dark"?"#0e100f":"#f6f7f6")}catch(e){document.documentElement.classList.add("light")}try{if(sessionStorage.getItem("guru-preloaded")==="1")document.documentElement.setAttribute("data-preloaded","")}catch(e){}`;
-
-/* Preloader perdesi: JS yokken ve tekrar ziyaretlerde (data-preloaded) gizli. */
-const preloaderCss = "html[data-preloaded] #guru-preloader{display:none}";
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="tr" suppressHydrationWarning className={`${poppins.variable} h-full antialiased`}>
+    <html lang="tr" className={`${outfit.variable} h-full`}>
       <body className="flex min-h-full flex-col">
-        <Script id="guru-theme-init" strategy="beforeInteractive">
-          {themeInit}
-        </Script>
-        <noscript>
-          <style>{"#guru-preloader{display:none}"}</style>
-        </noscript>
-        <style>{preloaderCss}</style>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -97,28 +80,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Klavye kullanıcıları için ilk odaklanabilir öğe */}
         <a
           href="#icerik"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-guru focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink focus:shadow-soft"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:bg-navy focus:px-5 focus:py-3 focus:text-sm focus:font-medium focus:text-white"
         >
           İçeriğe geç
         </a>
-        {/* reducedMotion="user": transform/layout animasyonları tercihe göre
-            motion tarafından atlanır (opacity kalır); SSR çıktısı değişmez,
-            bileşenlerde initial dallanması gerekmez (hydration güvenli). */}
+        {/* reducedMotion="user": hareket azaltma tercihinde transform animasyonları
+            atlanır; SSR çıktısı değişmez (hydration güvenli). */}
         <MotionConfig reducedMotion="user">
-          <Preloader />
-          <GooDefs />
-          <GooTrail />
-          <CustomCursor />
-          <ScrollProgress />
-          <GrainOverlay />
-          <SmoothScroll>
-            <Navbar />
-            <main id="icerik" tabIndex={-1} className="flex-1 outline-none">
-              {children}
-            </main>
-            <Footer />
-            <MobileCtaBar />
-          </SmoothScroll>
+          <AnnounceBar />
+          <SiteHeader />
+          <main id="icerik" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
+          <SiteFooter />
+          <ContactTab />
+          <MobileCtaBar />
         </MotionConfig>
       </body>
     </html>

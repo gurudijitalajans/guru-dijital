@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { GButton } from "@/components/ui/Button";
+import { Btn } from "@/components/site/Btn";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -81,15 +81,15 @@ export function MobileCtaBar() {
           animate={{ y: 0 }}
           exit={{ y: "110%" }}
           transition={{ duration: 0.35, ease: EASE }}
-          className="fixed inset-x-0 bottom-0 z-40 bg-page/85 backdrop-blur-xl lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 bg-white/95 shadow-[0_-1px_0_rgb(1_20_65/0.06),0_-12px_30px_-20px_rgb(1_20_65/0.35)] backdrop-blur-md lg:hidden"
         >
           <div className="container-g flex items-center justify-between gap-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-            <span className="min-w-0 text-xs font-semibold uppercase tracking-[0.18em] text-fg/60">
+            <span className="min-w-0 text-[13px] font-medium text-muted">
               Aynı gün dönüş
             </span>
-            <GButton href={href} variant="green" size="md" className="min-h-11 shrink-0">
+            <Btn href={href} variant="primary" size="md" className="shrink-0">
               {label}
-            </GButton>
+            </Btn>
           </div>
         </motion.div>
       )}

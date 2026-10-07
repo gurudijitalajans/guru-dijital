@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { GButton } from "@/components/ui/Button";
-import { Scramble } from "@/components/fx/Scramble";
-import { Magnetic } from "@/components/ui/Magnetic";
+import { Btn } from "@/components/site/Btn";
 
 export const metadata: Metadata = {
   title: "Sayfa Bulunamadı",
@@ -11,39 +9,29 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-page px-5 text-center">
-      <div className="grain-blob left-1/2 top-1/3 h-80 w-80 -translate-x-1/2 opacity-30 md:h-[28rem] md:w-[28rem]" aria-hidden />
-
-      <p
-        className="headline-outline-light select-none font-extrabold leading-none tracking-[-0.04em] text-[clamp(8rem,30vw,22rem)]"
-        aria-hidden
-      >
-        404
-      </p>
-
-      <h1 className="mt-2 text-2xl font-bold tracking-tight text-fg md:text-3xl">
-        <Scramble text="Bu sayfa bir üst seviyeye taşınmış olabilir." />
-      </h1>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-fg/60 md:text-base">
-        Aradığınız sayfa bulunamadı ya da adresi değişti.
-      </p>
-
-      <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-        <Magnetic>
-          <GButton href="/" variant="green" size="lg">
+    <section className="flex min-h-[64svh] items-center py-20 text-center md:py-28">
+      <div className="container-g">
+        <p
+          aria-hidden
+          className="select-none text-[96px] font-light leading-none tracking-[-0.06em] text-brand sm:text-[136px] lg:text-[160px]"
+        >
+          404
+        </p>
+        <h1 className="mx-auto mt-6 max-w-3xl text-balance text-[32px] font-normal leading-[1.12] tracking-[-0.035em] text-heading sm:text-[44px]">
+          Sayfa Bulunamadı
+        </h1>
+        <p className="mx-auto mt-4 max-w-md text-[16px] leading-relaxed text-muted">
+          Aradığınız sayfa kaldırılmış ya da adresi değişmiş olabilir. Ana sayfadan devam edebilir veya
+          bize yazabilirsiniz.
+        </p>
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Btn href="/" variant="primary" size="lg" arrow>
             Ana Sayfa
-          </GButton>
-        </Magnetic>
-        <Magnetic>
-          <GButton
-            href="/iletisim"
-            variant="outline"
-            size="lg"
-            className="border-fg/25 text-fg hover:border-fg hover:bg-fg hover:text-page"
-          >
-            Projenizi Konuşalım
-          </GButton>
-        </Magnetic>
+          </Btn>
+          <Btn href="/iletisim" variant="light" size="lg">
+            İletişim
+          </Btn>
+        </div>
       </div>
     </section>
   );

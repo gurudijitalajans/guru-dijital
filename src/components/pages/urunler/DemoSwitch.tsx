@@ -4,10 +4,10 @@ import { useId, useState, useSyncExternalStore, type KeyboardEvent, type ReactNo
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 
-/* lg breakpoint izleyici, hydration güvenli (ProcessRail deseni): SSR anlık
-   görüntüsü true → sunucu iki sütunlu grid'i (her iki form) basar; JS yoksa
-   mobilde de iki form alt alta çalışır. Hydration sonrası gerçek matchMedia
-   değeriyle lg altında sekmeli tek form render edilir. Effect'te setState yok. */
+/* lg breakpoint izleyici, hydration güvenli: SSR anlık görüntüsü true → sunucu
+   iki sütunlu düzeni (her iki yöntem) basar; JS yoksa mobilde de ikisi alt alta
+   çalışır. Hydration sonrası gerçek matchMedia değeriyle lg altında sekmeli tek
+   panel render edilir. Effect içinde setState yok. */
 const LG_QUERY = "(min-width: 1024px)";
 
 function subscribeLg(onChange: () => void) {
@@ -25,8 +25,8 @@ function useIsLg(): boolean {
 }
 
 const TABS = [
-  { key: "form", label: "Formu doldurun" },
-  { key: "meeting", label: "Toplantı planlayın" },
+  { key: "form", label: "Formu Doldurun" },
+  { key: "meeting", label: "Toplantı Planlayın" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -38,14 +38,24 @@ export type DemoSwitchProps = {
   scheduler: ReactNode;
 };
 
+function StepTitle({ n, children }: { n: number; children: ReactNode }) {
+  return (
+    <h3 className="mb-4 inline-flex items-center gap-3 text-[16px] font-medium tracking-[-0.01em] text-heading">
+      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-chip text-[13px] font-medium text-brand">
+        {n}
+      </span>
+      {children}
+    </h3>
+  );
+}
+
 /**
  * DemoSwitch: demo bölümünde iki yöntemi sunar.
  *
- * - lg+: mevcut iki sütun (form + toplantı planlayıcı yan yana).
- * - lg altı: role=tablist ile "Formu doldurun" / "Toplantı planlayın" seçimi;
+ * - lg+: iki sütun (form ve toplantı planlayıcı yan yana).
+ * - lg altı: role=tablist ile "Formu Doldurun" / "Toplantı Planlayın" seçimi;
  *   yalnız seçili panel render edilir (form id'leri çift basılmaz, sayfa
- *   uzunluğu tek form kadar). Sekmeler min 44px dokunma hedefi, ok tuşlarıyla
- *   gezilebilir.
+ *   uzunluğu tek panel kadar). Sekmeler en az 44px, ok tuşlarıyla gezilebilir.
  */
 export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
   const isLg = useIsLg();
@@ -62,24 +72,14 @@ export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
 
   if (isLg) {
     return (
-      <div className="mt-12 grid items-start gap-8 md:mt-16 lg:grid-cols-2 lg:gap-10">
-        {/* min-w-0: takvim çipleri gibi geniş içerikler grid hücresini viewport dışına taşırmasın */}
+      <div className="mt-10 grid items-start gap-8 md:mt-12 lg:grid-cols-2 lg:gap-6">
+        {/* min-w-0: takvim çipleri gibi geniş içerikler grid hücresini taşırmasın */}
         <Reveal className="min-w-0">
-          <h3 className="mb-4 inline-flex items-center gap-3 text-base font-semibold tracking-tight text-fg">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-guru/12 text-xs font-bold text-guru-text">
-              1
-            </span>
-            Formu doldurun
-          </h3>
+          <StepTitle n={1}>Formu doldurun</StepTitle>
           {form}
         </Reveal>
-        <Reveal delay={0.1} className="min-w-0">
-          <h3 className="mb-4 inline-flex items-center gap-3 text-base font-semibold tracking-tight text-fg">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-guru/12 text-xs font-bold text-guru-text">
-              2
-            </span>
-            Ya da toplantı planlayın
-          </h3>
+        <Reveal delay={0.08} className="min-w-0">
+          <StepTitle n={2}>Ya da toplantı planlayın</StepTitle>
           {scheduler}
         </Reveal>
       </div>
@@ -87,11 +87,11 @@ export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
   }
 
   return (
-    <div className="mt-10 min-w-0 md:mt-14">
+    <div className="mt-8 min-w-0 md:mt-10">
       <div
         role="tablist"
         aria-label="Demo yöntemi"
-        className="mb-6 grid grid-cols-2 gap-1 rounded-full border border-fg/15 bg-card p-1"
+        className="mx-auto mb-6 grid max-w-md grid-cols-2 gap-1 rounded-full bg-white p-1 shadow-[0_0_0_1px_rgb(1_20_65/0.09)]"
       >
         {TABS.map((t) => {
           const active = t.key === tab;
@@ -107,8 +107,8 @@ export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
               onClick={() => setTab(t.key)}
               onKeyDown={onKeyDown}
               className={cn(
-                "min-h-11 rounded-full px-3 text-sm font-semibold transition-colors duration-300",
-                active ? "bg-guru text-ink" : "text-fg/70 hover:text-fg"
+                "min-h-11 rounded-full px-3 text-[14px] font-medium transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+                active ? "bg-navy text-white" : "text-body hover:text-heading"
               )}
             >
               {t.label}
