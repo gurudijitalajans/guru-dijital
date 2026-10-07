@@ -80,6 +80,32 @@ body {
       #1a52b4 60deg, #0d3787 67deg, #04205e 76deg, #011649 84deg, #001341 90deg);
 }
 
+/* ---- Tıklanabilir öğelerde el işaretçisi ----
+   Tailwind v4 düğmelerde imleci varsayılana çekti; tıklanan her şey el
+   işaretçisi gösterir, devre dışı olanlar "izin yok" gösterir. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  summary,
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  label:has(> input[type="checkbox"], > input[type="radio"]) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"],
+  select:disabled,
+  input:disabled,
+  textarea:disabled {
+    cursor: not-allowed;
+  }
+}
+
 /* ---- giriş başlığı: EDME'deki yavaş ışık süpürmesi ---- */
 .hero-sweep {
   color: var(--color-heading);
@@ -93,6 +119,11 @@ body {
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
+    /* background-clip:text yalnız kutunun içini boyar; sıkı satır aralığında
+       ş/ç kuyruğu ve y/g inişi kutunun altına taşar ve görünmez olur.
+       İç boşluk boyama alanını genişletir, eksi kenar boşluğu düzeni korur. */
+    padding-block: 0.14em;
+    margin-block: -0.14em;
     animation: hero-sweep 6s linear 0.8s infinite;
   }
 }

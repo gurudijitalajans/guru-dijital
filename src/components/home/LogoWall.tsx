@@ -11,13 +11,20 @@ const STYLES = [
   "font-bold tracking-[-0.04em] text-[19px]",
 ];
 
+const TR_CHARS = /[çğıöşüÇĞİÖŞÜ]/;
+
 function Row({ items, reverse }: { items: string[]; reverse?: boolean }) {
   const loop = [...items, ...items];
   return (
     <div className={reverse ? "marquee marquee-reverse marquee-slow" : "marquee marquee-slow"}>
       <ul className="marquee-track items-center gap-14 py-4 pr-14" aria-hidden={reverse || undefined}>
         {loop.map((name, i) => (
-          <li key={`${name}-${i}`} className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}>
+          <li
+            key={`${name}-${i}`}
+            /* Türkçeye özgü harf yoksa İngilizce büyük harf kuralı: "Clinic P" → CLINIC P (CLİNİC P değil) */
+            lang={TR_CHARS.test(name) ? undefined : "en"}
+            className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}
+          >
             {name}
           </li>
         ))}
