@@ -44,10 +44,10 @@ export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]
           </ul>
           )}
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Btn href={hero.primaryHref} variant="primary" size="lg" arrow>
+            <Btn href={hero.primaryHref} variant="primary" size="lg" arrow data-umami-event="giris-ana-buton" data-umami-event-metin={hero.primaryLabel}>
               {hero.primaryLabel}
             </Btn>
-            <Btn href={hero.secondaryHref} variant="light" size="lg">
+            <Btn href={hero.secondaryHref} variant="light" size="lg" data-umami-event="giris-ikinci-buton" data-umami-event-metin={hero.secondaryLabel}>
               {hero.secondaryLabel}
             </Btn>
           </div>

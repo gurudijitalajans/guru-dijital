@@ -20,11 +20,11 @@ export function ContactTab({ whatsapp }: { whatsapp?: string }) {
     </>
   );
   return wa ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls} data-umami-event="whatsapp" data-umami-event-konum="yan-sekme">
       {inner}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <Link href={href} className={cls} data-umami-event="bize-yazin" data-umami-event-konum="yan-sekme">
       {inner}
     </Link>
   );

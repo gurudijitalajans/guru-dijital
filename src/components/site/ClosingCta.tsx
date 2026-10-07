@@ -41,10 +41,25 @@ export function ClosingCta({
               {lead}
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Btn href={primary.href} variant="white" size="lg" arrow className="w-full max-w-xs sm:w-auto">
+              <Btn
+                href={primary.href}
+                variant="white"
+                size="lg"
+                arrow
+                className="w-full max-w-xs sm:w-auto"
+                data-umami-event="kapanis-ana-buton"
+                data-umami-event-metin={primary.label}
+              >
                 {primary.label}
               </Btn>
-              <Btn href={secondary.href} variant="brand" size="lg" className="w-full max-w-xs sm:w-auto">
+              <Btn
+                href={secondary.href}
+                variant="brand"
+                size="lg"
+                className="w-full max-w-xs sm:w-auto"
+                data-umami-event="kapanis-ikinci-buton"
+                data-umami-event-metin={secondary.label}
+              >
                 {secondary.label}
               </Btn>
             </div>

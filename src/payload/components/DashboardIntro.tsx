@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ServerProps, Where } from "payload";
-import { dayKey } from "../utils";
+import { dayKey, daysAgoIso } from "../utils";
+import { getOverview } from "@/lib/umami";
 
 type BookingRow = { id: number | string; name: string; date: string; time: string; status: string; topic?: string | null };
 
@@ -9,21 +10,27 @@ const dateFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", 
 
 /**
  * Panel ana sayfasının üstündeki özet: yeni talepler, yaklaşan randevular,
- * yayındaki yazılar ve sıradaki beş randevu. Ziyaretçi analizi (Umami)
- * bağlandığında aynı alana eklenecek.
+ * yayındaki yazılar, son 7 günün ziyaretçi özeti (Umami) ve sıradaki beş randevu.
  */
 export async function DashboardIntro({ payload, user }: ServerProps) {
   const today = dayKey(new Date());
   const upcomingWhere: Where = {
     and: [{ slot: { greater_than_equal: today } }, { status: { in: ["bekliyor", "onaylandi"] } }],
   };
-  const [newLeads, upcoming, published, drafts, next] = await Promise.all([
+  const settings = await payload.findGlobal({ slug: "site-settings", depth: 0 });
+  const weekAgo = daysAgoIso(7);
+  const [newLeads, upcoming, published, drafts, next, week, weekLeads, weekBookings] = await Promise.all([
     payload.count({ collection: "leads", where: { status: { equals: "yeni" } } }),
     payload.count({ collection: "bookings", where: upcomingWhere }),
     payload.count({ collection: "posts", where: { _status: { equals: "published" } } }),
     payload.count({ collection: "posts", where: { _status: { equals: "draft" } } }),
     payload.find({ collection: "bookings", where: upcomingWhere, sort: "slot", limit: 5, depth: 0 }),
+    getOverview(settings.analytics?.websiteId ?? "", 7),
+    payload.count({ collection: "leads", where: { createdAt: { greater_than_equal: weekAgo } } }),
+    payload.count({ collection: "bookings", where: { createdAt: { greater_than_equal: weekAgo } } }),
   ]);
+  const nf = new Intl.NumberFormat("tr-TR");
+  const conv = weekLeads.totalDocs + weekBookings.totalDocs;
 
   const name = (user as { name?: string } | null)?.name?.split(" ")[0];
   const cards = [
@@ -47,6 +54,27 @@ export async function DashboardIntro({ payload, user }: ServerProps) {
           </Link>
         ))}
       </div>
+      <Link href="/admin/analiz?gun=7" className="guru-dash__panel guru-dash__week">
+        <h3>Son 7 gün</h3>
+        {week.ok ? (
+          <p>
+            <b>{nf.format(week.data.totals.visitors)}</b> ziyaretçi · <b>{nf.format(week.data.totals.pageviews)}</b>{" "}
+            görüntüleme · <b>{nf.format(conv)}</b> talep ve randevu
+            {week.data.totals.visitors > 0 && (
+              <>
+                {" "}
+                · dönüşüm{" "}
+                <b>%{((conv / week.data.totals.visitors) * 100).toLocaleString("tr-TR", { maximumFractionDigits: 1 })}</b>
+              </>
+            )}
+          </p>
+        ) : (
+          <p className="guru-dash__empty">
+            <b>{nf.format(conv)}</b> talep ve randevu. Ziyaretçi sayıları için Umami bağlantısı{" "}
+            {week.reason === "not-configured" ? "kurulmadı" : "şu an yanıt vermiyor"}; ayrıntı için tıklayın.
+          </p>
+        )}
+      </Link>
       <div className="guru-dash__panel">
         <h3>Sıradaki randevular</h3>
         {next.docs.length === 0 ? (

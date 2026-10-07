@@ -47,6 +47,14 @@ export default buildConfig({
         Icon: "/payload/components/Brand#Icon",
       },
       beforeDashboard: ["/payload/components/DashboardIntro#DashboardIntro"],
+      beforeNavLinks: ["/payload/components/AnalyticsNavLink#AnalyticsNavLink"],
+      views: {
+        analiz: {
+          Component: "/payload/components/AnalyticsView#AnalyticsView",
+          path: "/analiz",
+          meta: { title: "Ziyaretçi Analizi" },
+        },
+      },
     },
   },
   i18n: {

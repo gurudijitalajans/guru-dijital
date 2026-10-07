@@ -87,7 +87,7 @@ export function MobileCtaBar() {
             <span className="min-w-0 text-[13px] font-medium text-muted">
               Aynı gün dönüş
             </span>
-            <Btn href={href} variant="primary" size="md" className="shrink-0">
+            <Btn href={href} variant="primary" size="md" className="shrink-0" data-umami-event="teklif-al" data-umami-event-konum="mobil-bar">
               {label}
             </Btn>
           </div>

@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { MotionConfig } from "motion/react";
 import { AnnounceBar } from "@/components/site/AnnounceBar";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -76,6 +77,17 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
           <ContactTab whatsapp={info.whatsapp} />
           <MobileCtaBar />
         </MotionConfig>
+        {/* Umami: çerezsiz ziyaretçi sayımı (Site Ayarları > Ziyaretçi analizi). Tarayıcıda
+            "takip etme" tercihi açıksa sayılmaz; alan adı listesi doluysa yalnız o adresler sayılır. */}
+        {info.analytics && (
+          <Script
+            src={info.analytics.scriptUrl}
+            data-website-id={info.analytics.websiteId}
+            data-do-not-track="true"
+            {...(info.analytics.domains ? { "data-domains": info.analytics.domains } : {})}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );

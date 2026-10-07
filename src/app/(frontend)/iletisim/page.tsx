@@ -23,6 +23,8 @@ export const metadata: Metadata = pageMetadata({
 
 type ContactItem = {
   label: string;
+  /** Umami olay adı (src/lib/analytics.ts EVENTS) */
+  event: string;
   value: string;
   href: string;
   external?: boolean;
@@ -33,12 +35,14 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
   const items: ContactItem[] = [
     {
       label: "E-posta",
+      event: "e-posta",
       value: site.email,
       href: `mailto:${site.email}`,
       icon: <Mail className="size-4" strokeWidth={2} />,
     },
     {
       label: "Instagram",
+      event: "instagram",
       value: `@${site.instagram.replace(/\/+$/, "").split("/").pop() || "gurudijital"}`,
       href: site.instagram,
       external: true,
@@ -50,6 +54,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
   if (site.phone) {
     items.push({
       label: "Telefon",
+      event: "telefon",
       value: site.phone,
       href: `tel:${site.phone.replace(/\s/g, "")}`,
       icon: <Phone className="size-4" strokeWidth={2} />,
@@ -58,6 +63,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
   if (site.whatsapp) {
     items.push({
       label: "WhatsApp",
+      event: "whatsapp",
       value: site.whatsapp,
       href: `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`,
       external: true,
@@ -67,6 +73,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
   if (site.address) {
     items.push({
       label: "Adres",
+      event: "adres",
       value: site.address,
       href: `https://maps.google.com/?q=${encodeURIComponent(site.address)}`,
       external: true,
@@ -100,6 +107,8 @@ export default async function IletisimPage() {
               <a
                 href={item.href}
                 {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                data-umami-event={item.event}
+                data-umami-event-konum="iletisim"
                 className={chipCls}
               >
                 <span className="shrink-0 text-brand" aria-hidden>

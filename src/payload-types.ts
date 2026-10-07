@@ -1549,6 +1549,18 @@ export interface SiteSetting {
     instagram?: string | null;
     address?: string | null;
   };
+  /**
+   * Çerezsiz, kişisel veri toplamayan ziyaretçi sayımı. Bu alanlar sitenin her sayfasına bir betik eklediği için yalnız yöneticiler düzenleyebilir. API bağlantısı (panel istatistikleri) sunucu ortam değişkenlerindedir.
+   */
+  analytics?: {
+    enabled?: boolean | null;
+    websiteId?: string | null;
+    scriptUrl?: string | null;
+    /**
+     * Virgülle ayırın. Doluysa önizleme ve yerel adresler sayılmaz.
+     */
+    domains?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1757,6 +1769,14 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         whatsapp?: T;
         instagram?: T;
         address?: T;
+      };
+  analytics?:
+    | T
+    | {
+        enabled?: T;
+        websiteId?: T;
+        scriptUrl?: T;
+        domains?: T;
       };
   updatedAt?: T;
   createdAt?: T;

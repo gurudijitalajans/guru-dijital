@@ -13,6 +13,8 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
     <Link
       href="/iletisim"
       onClick={onClick}
+      data-umami-event="tanisalim"
+      data-umami-event-konum="menu"
       className={cn(
         "inline-flex min-h-11 items-center gap-2.5 text-[15px] font-medium text-heading transition-colors hover:text-brand",
         className

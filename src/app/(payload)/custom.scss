@@ -157,3 +157,240 @@
   margin: 0;
   color: var(--guru-muted);
 }
+
+.guru-dash__week {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+.guru-dash__week:hover {
+  background: var(--guru-chip);
+}
+.guru-dash__week p {
+  margin: 0;
+}
+.guru-dash__week b {
+  color: var(--guru-navy);
+  font-weight: 600;
+}
+
+/* ---- Menü: Ziyaretçi Analizi bağlantısı ---- */
+.guru-nav-analiz {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--guru-soft);
+  color: var(--guru-navy);
+  font-weight: 500;
+  text-decoration: none;
+}
+.guru-nav-analiz:hover {
+  background: var(--guru-chip);
+}
+
+/* ---- Ziyaretçi Analizi ekranı ---- */
+.guru-ana {
+  padding: calc(var(--base) * 1.5) 0 calc(var(--base) * 3);
+}
+.guru-ana__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.guru-ana__head h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.guru-ana__muted {
+  margin: 6px 0 0;
+  color: var(--guru-muted);
+}
+.guru-ana__periods {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--guru-soft);
+}
+.guru-ana__periods a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: var(--guru-navy);
+  text-decoration: none;
+  font-size: 14px;
+}
+.guru-ana__periods a.is-active {
+  background: var(--guru-navy);
+  color: #fff;
+}
+.guru-ana__panel-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.guru-ana__panel-row .guru-ana__muted {
+  margin: 0;
+}
+.guru-ana__mini {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--guru-chip);
+  color: var(--guru-navy);
+  text-decoration: none;
+}
+.guru-ana__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+@media (max-width: 900px) {
+  .guru-ana__kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.guru-ana__kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+}
+.guru-ana__kpi-label {
+  font-size: 14px;
+  color: var(--guru-muted);
+}
+.guru-ana__kpi-value {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--guru-navy);
+}
+.guru-ana__chg {
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-ana__chg.is-up {
+  color: #1d7a46;
+}
+.guru-ana__chg.is-down {
+  color: #b42318;
+}
+.guru-ana__chart {
+  margin: 16px 0 0;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+}
+.guru-ana__chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.guru-ana__legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-ana__legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+.guru-ana__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (max-width: 900px) {
+  .guru-ana__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guru-ana__list {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+}
+.guru-ana__list h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.guru-ana__list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.guru-ana__list li {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+.guru-ana__bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--guru-chip);
+}
+.guru-ana__row-label,
+.guru-ana__row-value {
+  position: relative;
+}
+.guru-ana__row-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.guru-ana__row-value {
+  font-weight: 500;
+  color: var(--guru-navy);
+  font-variant-numeric: tabular-nums;
+}
+.guru-ana__setup {
+  margin-top: 20px;
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+}
+.guru-ana__setup h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+.guru-ana__setup ol {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+.guru-ana__setup code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+}

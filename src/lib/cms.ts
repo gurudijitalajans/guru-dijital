@@ -18,6 +18,8 @@ export type SiteInfo = {
   whatsapp: string;
   address: string;
   instagram: string;
+  /** Umami betiği: yalnız açık ve site kimliği doluysa */
+  analytics: { websiteId: string; scriptUrl: string; domains: string } | null;
 };
 
 export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
@@ -28,6 +30,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     whatsapp: site.whatsapp,
     address: site.address,
     instagram: site.instagram,
+    analytics: null,
   };
   try {
     const payload = await cms();
@@ -43,6 +46,10 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       whatsapp: c.whatsapp?.trim() || fallback.whatsapp,
       address: c.address?.trim() || fallback.address,
       instagram: c.instagram?.trim() || fallback.instagram,
+      analytics:
+        s.analytics?.enabled && s.analytics.websiteId && s.analytics.scriptUrl
+          ? { websiteId: s.analytics.websiteId, scriptUrl: s.analytics.scriptUrl, domains: s.analytics.domains?.trim() ?? "" }
+          : null,
     };
   } catch {
     return fallback;

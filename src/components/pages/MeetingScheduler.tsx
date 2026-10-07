@@ -8,6 +8,7 @@ import { iconBoxCls, pillCls } from "@/components/site/styles";
 import { FieldError, FormNotice, Honeypot, Opt, Req, fieldCls, formCardCls, labelCls } from "@/components/pages/ContactForm";
 import { site } from "@/lib/data";
 import { postForm } from "@/lib/submit";
+import { EVENTS, track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -237,6 +238,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
     });
     setSending(false);
     if (result.kind === "saved") {
+      track(EVENTS.bookingSent, { kaynak: window.location.pathname, ...(topic ? { konu: topic } : {}) });
       setBusy((b) => new Set(b).add(`${selectedDay.key} ${time}`));
       setSubmitted("saved");
       return;

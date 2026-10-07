@@ -41,6 +41,11 @@ export function dayKey(value: string | Date): string {
   }).format(d);
 }
 
+/** Şu andan `days` gün önce (ISO); panel ekranları dönem filtresi için kullanır */
+export function daysAgoIso(days: number): string {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
 /** Basit bellek içi hız sınırı: aynı IP'den pencere başına en çok `max` istek. */
 const hits = new Map<string, number[]>();
 export function rateLimited(key: string, max = 5, windowMs = 10 * 60 * 1000): boolean {

@@ -7,6 +7,7 @@ import { Btn } from "@/components/site/Btn";
 import { cardCls } from "@/components/site/styles";
 import { services as defaultServices, site } from "@/lib/data";
 import { postForm } from "@/lib/submit";
+import { EVENTS, track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -249,6 +250,7 @@ export function ContactForm({
     });
     setSending(false);
     if (result.kind === "saved") {
+      track(EVENTS.leadSent, { kaynak: window.location.pathname, konu: subjectPrefix, hizmet: service });
       setSubmitted("saved");
       return;
     }
