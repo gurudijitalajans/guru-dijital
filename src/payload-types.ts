@@ -73,6 +73,8 @@ export interface Config {
     products: Product;
     posts: Post;
     categories: Category;
+    team: Team;
+    references: Reference;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -88,6 +90,8 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
+    references: ReferencesSelect<false> | ReferencesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -100,9 +104,11 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    'home-page': HomePage;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
+    'home-page': HomePageSelect<false> | HomePageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -648,6 +654,46 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Fotoğraf yüklenmeyen kişi için marka renklerinde yer tutucu görünür.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  role: string;
+  /**
+   * Dikey portre önerilir (4:5). Yüz odağını görselin kendisinden ayarlayabilirsiniz.
+   */
+  photo?: (number | null) | Media;
+  linkedin?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  showOnHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references".
+ */
+export interface Reference {
+  id: number;
+  name: string;
+  logo?: (number | null) | Media;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -694,6 +740,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'references';
+        value: number | Reference;
       } | null)
     | ({
         relationTo: 'media';
@@ -952,6 +1006,31 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  photo?: T;
+  linkedin?: T;
+  order?: T;
+  showOnHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references_select".
+ */
+export interface ReferencesSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -1068,6 +1147,97 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Kaydettiğinizde ana sayfa hemen güncellenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page".
+ */
+export interface HomePage {
+  id: number;
+  hero: {
+    /**
+     * Yıldız içindeki kelime bir kademe kalın yazılır: Markanızı bir üst seviyeye *taşıyoruz*
+     */
+    title: string;
+    sub: string;
+    showServiceLinks?: boolean | null;
+    primaryLabel: string;
+    primaryHref: string;
+    secondaryLabel: string;
+    secondaryHref: string;
+    badgeStrong?: string | null;
+    /**
+     * {sayı} yazdığınız yere referans sayısı gelir.
+     */
+    badgeText?: string | null;
+  };
+  references: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  services: {
+    show?: boolean | null;
+    title: string;
+    /**
+     * {sayı} yazdığınız yere hizmet sayısı yazıyla gelir (altı, yedi…).
+     */
+    lead?: string | null;
+  };
+  products: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  video: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  cases: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  team: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+    /**
+     * Ekip kayıtlarında "Ana sayfada göster" seçili olanlar sırayla gösterilir.
+     */
+    limit?: number | null;
+  };
+  quotes: {
+    show?: boolean | null;
+    title: string;
+    lead?: string | null;
+  };
+  faq: {
+    show?: boolean | null;
+    title: string;
+    items?:
+      | {
+          q: string;
+          a: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  meet: {
+    title: string;
+    text: string;
+    buttonLabel: string;
+    buttonHref: string;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
@@ -1089,6 +1259,105 @@ export interface SiteSetting {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page_select".
+ */
+export interface HomePageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        title?: T;
+        sub?: T;
+        showServiceLinks?: T;
+        primaryLabel?: T;
+        primaryHref?: T;
+        secondaryLabel?: T;
+        secondaryHref?: T;
+        badgeStrong?: T;
+        badgeText?: T;
+      };
+  references?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  services?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  products?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  video?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  cases?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  team?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+        limit?: T;
+      };
+  quotes?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        lead?: T;
+      };
+  faq?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        items?:
+          | T
+          | {
+              q?: T;
+              a?: T;
+              id?: T;
+            };
+      };
+  meet?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

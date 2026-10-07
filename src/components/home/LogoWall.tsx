@@ -1,8 +1,9 @@
-import { references } from "@/lib/data";
+import Image from "next/image";
 import { SectionHead } from "@/components/site/SectionHead";
+import type { ReferenceView } from "@/lib/content";
 
-/* ÖRNEK logo duvarı: gerçek logo dosyaları gelene kadar marka adları farklı
-   yazı biçimleriyle logo gibi dizilir. TODO(client): vektör müşteri logoları. */
+/* Logo duvarı: panelde logosu yüklenen marka gri tonda logo olarak, logosu
+   olmayan marka farklı yazı biçimleriyle adı yazılarak dizilir. */
 const STYLES = [
   "font-semibold tracking-[-0.02em]",
   "font-normal uppercase tracking-[0.28em] text-[13px]",
@@ -11,33 +12,50 @@ const STYLES = [
   "font-bold tracking-[-0.04em] text-[19px]",
 ];
 
-function Row({ items, reverse }: { items: string[]; reverse?: boolean }) {
+function Row({ items, reverse }: { items: ReferenceView[]; reverse?: boolean }) {
   const loop = [...items, ...items];
   return (
     <div className={reverse ? "marquee marquee-reverse marquee-slow" : "marquee marquee-slow"}>
       <ul className="marquee-track items-center gap-14 py-4 pr-14" aria-hidden={reverse || undefined}>
-        {loop.map((name, i) => (
-          <li key={`${name}-${i}`} className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}>
-            {name}
-          </li>
-        ))}
+        {loop.map((r, i) =>
+          r.logo ? (
+            <li key={`${r.name}-${i}`} className="flex h-9 shrink-0 items-center">
+              <Image
+                src={r.logo.src}
+                alt=""
+                width={r.logo.w}
+                height={r.logo.h}
+                sizes="160px"
+                className="h-8 w-auto max-w-[150px] object-contain opacity-60 grayscale"
+              />
+            </li>
+          ) : (
+            <li key={`${r.name}-${i}`} className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}>
+              {r.name}
+            </li>
+          )
+        )}
       </ul>
     </div>
   );
 }
 
-export function LogoWall() {
+type LogoWallProps = { title: string; lead: string; references: ReferenceView[] };
+
+export function LogoWall({ title, lead, references }: LogoWallProps) {
   const half = Math.ceil(references.length / 2);
   return (
     <section id="referanslar" className="pb-12 pt-16 md:pb-16 md:pt-20">
       <div className="container-g">
         <SectionHead
           center
-          title="Referanslarımız"
-          lead="Sağlıktan e-ticarete, turizmden inşaata farklı sektörlerden markalarla aynı masada üretiyoruz."
+          title={title}
+          lead={lead}
         />
       </div>
-      <p className="sr-only">Referanslarımız: {references.join(", ")}</p>
+      <p className="sr-only">
+        {title}: {references.map((r) => r.name).join(", ")}
+      </p>
       <div className="mt-8 space-y-1" aria-hidden>
         <Row items={references.slice(0, half)} />
         <Row items={references.slice(half)} reverse />

@@ -34,7 +34,7 @@ export default async function BlogPage() {
             <StaggerGroup className="grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
               {posts.map((p, i) => (
                 <StaggerItem key={p.slug} className="h-full">
-                  <PostCard post={p} priority={i === 0} />
+                  <PostCard post={p} priority={i === 0} eager={i < 3} />
                 </StaggerItem>
               ))}
             </StaggerGroup>

@@ -5,8 +5,11 @@ import { cardCls, cardHoverCls } from "@/components/site/styles";
 import { formatDate, type PostCardData } from "@/lib/blog";
 import { cn } from "@/lib/utils";
 
-/** Blog kartı: kapak, kategori, tarih ve okuma süresi, başlık, özet. Çizgisiz, ince halkalı kart. */
-export function PostCard({ post, priority = false }: { post: PostCardData; priority?: boolean }) {
+/**
+ * Blog kartı: kapak, kategori, tarih ve okuma süresi, başlık, özet. Çizgisiz, ince halkalı kart.
+ * priority: sayfanın LCP görseli (preload); eager: ilk satırdaki diğer kartlar (geç yüklenmesin).
+ */
+export function PostCard({ post, priority = false, eager = false }: { post: PostCardData; priority?: boolean; eager?: boolean }) {
   const href = `/blog/${post.slug}`;
   return (
     <article className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
@@ -17,6 +20,8 @@ export function PostCard({ post, priority = false }: { post: PostCardData; prior
             alt=""
             fill
             preload={priority}
+            /* Next 16: preload ile loading birlikte verilmez */
+            loading={priority ? undefined : eager ? "eager" : "lazy"}
             sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />

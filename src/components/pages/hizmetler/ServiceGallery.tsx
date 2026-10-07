@@ -46,10 +46,12 @@ export function ServiceGallery({ images, className }: { images: WorkImage[]; cla
               sides.length === 1 && "col-span-2 md:row-span-2"
             )}
           >
+            {/* Yan görseller ilk ekranda: geç yüklenirse LCP adayı olurken boş kalır */}
             <Image
               src={img.src}
               alt={img.alt}
               fill
+              loading="eager"
               sizes="(min-width: 1280px) 500px, (min-width: 768px) 42vw, 50vw"
               className="object-cover"
               style={img.position ? { objectPosition: img.position } : undefined}

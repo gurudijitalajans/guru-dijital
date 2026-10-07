@@ -14,7 +14,7 @@ export const VIDEO_POSTER = "/video/guru-tanitim-poster.jpg";
  * düğmesine basınca yüklenir (preload="none"); kapak karesi poster olarak görünür.
  * Poster/video henüz yoksa marka ışık yelpazesi ve logo kapak olarak kalır.
  */
-export function VideoBlock({ hasVideo }: { hasVideo: boolean }) {
+export function VideoBlock({ hasVideo, title, lead }: { hasVideo: boolean; title: string; lead: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -30,8 +30,8 @@ export function VideoBlock({ hasVideo }: { hasVideo: boolean }) {
       <div className="container-g">
         <SectionHead
           center
-          title="Bizi Tanıyın"
-          lead="Guru Dijital'in nasıl çalıştığını ve markalara neler kattığını kısa bir videoda izleyin."
+          title={title}
+          lead={lead}
         />
         <Reveal className="mt-10">
           <div className="guru-beam relative mx-auto aspect-video w-full overflow-hidden rounded-[20px] shadow-[0_30px_60px_-34px_rgb(1_20_65/0.6)]">

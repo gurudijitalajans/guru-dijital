@@ -1,7 +1,13 @@
 import "server-only";
 import { cache } from "react";
 import { cms } from "@/lib/cms";
-import { products as staticProducts, services as staticServices } from "@/lib/data";
+import {
+  products as staticProducts,
+  references as staticReferences,
+  services as staticServices,
+  team as staticTeam,
+} from "@/lib/data";
+import { HOME_DEFAULTS, type HomeContent } from "@/lib/home-defaults";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
 import { DEFAULT_ICON, isIconName, type IconName } from "@/lib/icon-names";
@@ -218,3 +224,68 @@ export async function getService(slug: string) {
 export async function getProduct(slug: string) {
   return (await getProducts()).find((p) => p.slug === slug) ?? null;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Ana sayfa, ekip, referanslar                                       */
+/* ------------------------------------------------------------------ */
+
+export type TeamView = { name: string; role: string; linkedin: string | null; photo: WorkImage | null; showOnHome: boolean };
+export type ReferenceView = { name: string; logo: WorkImage | null };
+
+/**
+ * Kaydedilmiş değeri varsayılanın üstüne yazar. Yalnız null/undefined
+ * varsayılana düşer; bilerek boşaltılan metin boş kalır.
+ */
+function overlay<T>(base: T, saved: unknown): T {
+  if (saved === null || saved === undefined) return base;
+  if (Array.isArray(base)) return (Array.isArray(saved) ? saved : base) as T;
+  if (typeof base === "object" && base !== null) {
+    const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+    for (const key of Object.keys(out)) out[key] = overlay(out[key], (saved as Record<string, unknown>)[key]);
+    return out as T;
+  }
+  return saved as T;
+}
+
+export const getHome = cache(async (): Promise<HomeContent> => {
+  try {
+    const payload = await cms();
+    const doc = await payload.findGlobal({ slug: "home-page", depth: 0 });
+    /* Hiç kaydedilmemişse varsayılanlar; kaydedildiyse panel değerleri */
+    if (!doc?.updatedAt) return HOME_DEFAULTS;
+    const merged = overlay(HOME_DEFAULTS, doc);
+    merged.faq.items = (merged.faq.items ?? []).map((f) => ({ q: f.q, a: f.a }));
+    return merged;
+  } catch {
+    return HOME_DEFAULTS;
+  }
+});
+
+export const getTeam = cache(async (): Promise<TeamView[]> => {
+  try {
+    const payload = await cms();
+    const res = await payload.find({ collection: "team", sort: "order", depth: 1, limit: 100, pagination: false });
+    if (res.docs.length > 0)
+      return res.docs.map((m) => ({
+        name: m.name,
+        role: m.role,
+        linkedin: m.linkedin || null,
+        photo: toImage(m.photo, m.name),
+        showOnHome: m.showOnHome !== false,
+      }));
+  } catch {
+    /* panel yok: varsayılan içerik */
+  }
+  return staticTeam.map((m) => ({ name: m.name, role: m.role, linkedin: m.linkedin ?? null, photo: null, showOnHome: true }));
+});
+
+export const getReferences = cache(async (): Promise<ReferenceView[]> => {
+  try {
+    const payload = await cms();
+    const res = await payload.find({ collection: "references", sort: "order", depth: 1, limit: 200, pagination: false });
+    if (res.docs.length > 0) return res.docs.map((r) => ({ name: r.name, logo: toImage(r.logo, r.name) }));
+  } catch {
+    /* panel yok: varsayılan içerik */
+  }
+  return staticReferences.map((name) => ({ name, logo: null }));
+});

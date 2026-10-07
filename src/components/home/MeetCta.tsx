@@ -3,7 +3,9 @@ import { Btn } from "@/components/site/Btn";
 import { Reveal } from "@/components/ui/Reveal";
 
 /** EDME'deki "Tanışalım" kapanışı: halkalı marka simgesi, kısa davet, tek buton. */
-export function MeetCta() {
+type MeetCtaProps = { title: string; text: string; buttonLabel: string; buttonHref: string };
+
+export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) {
   return (
     <section className="py-20 text-center md:py-24">
       <div className="container-g">
@@ -13,13 +15,13 @@ export function MeetCta() {
               <Image src="/brand/mark-white.svg" alt="" width={52} height={52} className="h-[52px] w-[52px]" />
             </div>
           </div>
-          <h2 className="mt-5 text-[32px] font-medium tracking-[-0.025em] text-heading md:text-[36px]">Tanışalım</h2>
+          <h2 className="mt-5 text-[32px] font-medium tracking-[-0.025em] text-heading md:text-[36px]">{title}</h2>
           <p className="mx-auto mt-3 max-w-[560px] text-[15.5px] leading-relaxed text-muted">
-            Markanızı ve hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz.
+            {text}
           </p>
           <div className="mt-7 flex justify-center">
-            <Btn href="/iletisim" variant="light" size="lg" arrow>
-              İletişime Geç
+            <Btn href={buttonHref} variant="light" size="lg" arrow>
+              {buttonLabel}
             </Btn>
           </div>
         </Reveal>

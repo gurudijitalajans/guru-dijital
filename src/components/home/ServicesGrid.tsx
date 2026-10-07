@@ -7,15 +7,15 @@ import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { cn, countWord } from "@/lib/utils";
 
-/** Hizmet kartları: içerik panelden (Hizmetler) */
-export async function ServicesGrid() {
+/** Hizmet kartları: içerik panelden (Hizmetler), başlıklar Ana Sayfa > Bölümler */
+export async function ServicesGrid({ title, lead }: { title: string; lead: string }) {
   const services = await getServices();
   return (
     <section className={sectionY}>
       <div className="container-g">
         <SectionHead
-          title="Hizmetlerimiz"
-          lead={`Markanızı büyüten ${countWord(services.length)} disiplin; her biri ölçülebilir hedeflerle yönetilir.`}
+          title={title}
+          lead={lead.replace("{sayı}", countWord(services.length))}
           action={{ href: "/hizmetler", label: "Tüm Hizmetler" }}
         />
         <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">

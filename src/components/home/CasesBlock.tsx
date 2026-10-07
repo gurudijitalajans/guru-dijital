@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils";
 const fmt = (n: number) => n.toLocaleString("tr-TR", { maximumFractionDigits: 1 });
 
 /* ÖRNEK vaka çalışmaları (mockup). TODO(client): doğrulanmış vaka verileri. */
-export function CasesBlock() {
+export function CasesBlock({ title, lead }: { title: string; lead: string }) {
   return (
     <section className={cn("bg-soft", sectionY)}>
       <div className="container-g">
         <SectionHead
-          title="Başarı Hikayeleri"
-          lead="Strateji, reklam ve içeriği aynı hedefe bağladığımızda ortaya çıkan sonuçlar."
+          title={title}
+          lead={lead}
           action={{ href: "/iletisim", label: "Benzer Bir Hedefiniz mi Var?" }}
         />
         <StaggerGroup className="mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">

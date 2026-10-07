@@ -14,6 +14,9 @@ import { Leads } from "./payload/collections/Leads";
 import { Bookings } from "./payload/collections/Bookings";
 import { Services } from "./payload/collections/Services";
 import { Products } from "./payload/collections/Products";
+import { Team } from "./payload/collections/Team";
+import { References } from "./payload/collections/References";
+import { HomePage } from "./payload/globals/HomePage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -47,8 +50,8 @@ export default buildConfig({
     supportedLanguages: { tr },
     fallbackLanguage: "tr",
   },
-  collections: [Leads, Bookings, Services, Products, Posts, Categories, Media, Users],
-  globals: [SiteSettings],
+  collections: [Leads, Bookings, Services, Products, Posts, Categories, Team, References, Media, Users],
+  globals: [HomePage, SiteSettings],
   editor: lexicalEditor(),
   db: sqliteAdapter({
     client: { url: process.env.DATABASE_URL || "file:./data/guru.db" },

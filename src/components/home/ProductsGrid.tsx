@@ -7,15 +7,15 @@ import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, cardHoverCls, sectionY } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
-/** Ürün kartları: içerik panelden (Ürünler) */
-export async function ProductsGrid() {
+/** Ürün kartları: içerik panelden (Ürünler), başlıklar Ana Sayfa > Bölümler */
+export async function ProductsGrid({ title, lead }: { title: string; lead: string }) {
   const products = await getProducts();
   return (
     <section className={cn("bg-soft", sectionY)}>
       <div className="container-g">
         <SectionHead
-          title="Ürünlerimiz"
-          lead="Ajans deneyimimizi işletmeniz için çalışan yazılımlara dönüştürdük."
+          title={title}
+          lead={lead}
           action={{ href: "/urunler", label: "Tüm Ürünler" }}
         />
         <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-4">

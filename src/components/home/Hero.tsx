@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { awards, references } from "@/lib/data";
 import { getServices } from "@/lib/content";
+import type { HomeContent } from "@/lib/home-defaults";
+import { parseAccent } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
 import { Reveal } from "@/components/ui/Reveal";
 import { Globe } from "./Globe";
@@ -8,23 +9,29 @@ import { Globe } from "./Globe";
 /**
  * Ana sayfa girişi (EDME düzeni): ortalanmış ince başlık, kısa açıklama,
  * hizmet bağlantı şeridi, iki buton, altında yarısı görünen nokta küresi
- * ve kürenin üstüne binen kanıt rozeti.
+ * ve kürenin üstüne binen kanıt rozeti. Metinler panelden (Ana Sayfa > Giriş).
  */
-export async function Hero() {
-  const services = await getServices();
-  const partner = awards.find((a) => a.title === "Google Partner");
+export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]; referenceCount: number }) {
+  const services = hero.showServiceLinks ? await getServices() : [];
+  const badgeText = hero.badgeText.replace("{sayı}", String(referenceCount));
   return (
     <section className="relative overflow-hidden pt-12 text-center md:pt-16">
       <div className="container-g">
         <Reveal y={16}>
           <h1 className="hero-sweep mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
-            Markanızı bir üst seviyeye <span className="font-medium">taşıyoruz</span>
+            {parseAccent(hero.title).map((part, i) =>
+              part.accent ? (
+                <span key={i} className="font-medium">
+                  {part.t}
+                </span>
+              ) : (
+                part.t
+              )
+            )}
           </h1>
-          <p className="mx-auto mt-5 max-w-[680px] text-[16px] leading-relaxed text-muted md:text-[16.5px]">
-            Sosyal medyadan web tasarıma, dijital pazarlamadan yazılım ürünlerine: markanızı tek bir büyüme
-            planıyla yönetiyoruz.
-          </p>
+          <p className="mx-auto mt-5 max-w-[680px] text-[16px] leading-relaxed text-muted md:text-[16.5px]">{hero.sub}</p>
           {/* Dar ekranda satır başına nokta düşmesin: ayraç yalnız lg+ (tek satır) */}
+          {services.length > 0 && (
           <ul className="mx-auto mt-5 flex max-w-[860px] flex-wrap justify-center gap-x-4 gap-y-1 text-[13.5px] text-muted lg:gap-x-1">
             {services.map((s, i) => (
               <li key={s.slug} className="flex items-center">
@@ -35,12 +42,13 @@ export async function Hero() {
               </li>
             ))}
           </ul>
+          )}
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Btn href="/iletisim" variant="primary" size="lg" arrow>
-              Teklif Al
+            <Btn href={hero.primaryHref} variant="primary" size="lg" arrow>
+              {hero.primaryLabel}
             </Btn>
-            <Btn href="/iletisim#toplanti" variant="light" size="lg">
-              Toplantı Planla
+            <Btn href={hero.secondaryHref} variant="light" size="lg">
+              {hero.secondaryLabel}
             </Btn>
           </div>
         </Reveal>
@@ -57,8 +65,8 @@ export async function Hero() {
               <span className="absolute inset-0 animate-ping rounded-full bg-brand/40 motion-reduce:animate-none" />
               <span className="relative inline-block size-2.5 rounded-full bg-brand" />
             </span>
-            {partner && <b className="font-semibold text-heading">{partner.year} Google Partner</b>}
-            <span className="text-muted">{references.length} markanın dijital yol arkadaşı</span>
+            {hero.badgeStrong && <b className="font-semibold text-heading">{hero.badgeStrong}</b>}
+            {badgeText && <span className="text-muted">{badgeText}</span>}
           </p>
         </div>
       </div>

@@ -6,11 +6,11 @@ import { cardCls, sectionY } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
 /* Yorum metni gelene kadar uydurma alıntı yazılmaz; kart iskelet olarak görünür. */
-export function QuotesBlock() {
+export function QuotesBlock({ title, lead }: { title: string; lead: string }) {
   return (
     <section className={cn("bg-soft", sectionY)}>
       <div className="container-g">
-        <SectionHead title="Markalar Ne Diyor" lead="Birlikte büyüdüğümüz markaların deneyimleri, kendi sözleriyle." />
+        <SectionHead title={title} lead={lead} />
         <StaggerGroup className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
           {testimonials.map((t, i) => (
             <StaggerItem key={i} className="h-full">

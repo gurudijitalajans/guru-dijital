@@ -7,8 +7,8 @@ import { SectionHead } from "@/components/site/SectionHead";
 import { cardCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { LinkedinIcon } from "@/components/ui/icons";
-import { awards, references, team, values } from "@/lib/data";
-import { getProducts, getServices } from "@/lib/content";
+import { awards, values } from "@/lib/data";
+import { getProducts, getReferences, getServices, getTeam } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -58,8 +58,13 @@ const avatarTones = [
 ];
 
 export default async function HakkimizdaPage() {
-  /* Sayılar: yalnız gerçek adetler (referanslar data.ts, hizmet ve ürünler panel) */
-  const [services, products] = await Promise.all([getServices(), getProducts()]);
+  /* Sayılar yalnız gerçek adetlerden; ekip, referans, hizmet ve ürünler panelden */
+  const [services, products, references, team] = await Promise.all([
+    getServices(),
+    getProducts(),
+    getReferences(),
+    getTeam(),
+  ]);
   const stats = [
     { value: references.length, label: "Referans Marka" },
     { value: services.length, label: "Uzmanlık Alanı" },
@@ -189,15 +194,26 @@ export default async function HakkimizdaPage() {
                   <div
                     className={cn(
                       "relative grid aspect-[4/3] place-items-center bg-gradient-to-br md:aspect-[16/10]",
-                      avatarTones[i % avatarTones.length]
+                      !m.photo && avatarTones[i % avatarTones.length]
                     )}
                   >
-                    <span
-                      aria-hidden
-                      className="grid size-16 place-items-center rounded-full bg-white/75 text-[22px] font-light tracking-[-0.02em] text-navy shadow-[0_10px_30px_-14px_rgb(1_20_65/0.5)] sm:size-20 sm:text-[26px]"
-                    >
-                      {initials(m.name)}
-                    </span>
+                    {m.photo ? (
+                      <Image
+                        src={m.photo.src}
+                        alt={m.photo.alt}
+                        fill
+                        sizes="(min-width: 768px) 380px, 45vw"
+                        className="object-cover"
+                        style={{ objectPosition: m.photo.position ?? "50% 25%" }}
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="grid size-16 place-items-center rounded-full bg-white/75 text-[22px] font-light tracking-[-0.02em] text-navy shadow-[0_10px_30px_-14px_rgb(1_20_65/0.5)] sm:size-20 sm:text-[26px]"
+                      >
+                        {initials(m.name)}
+                      </span>
+                    )}
                     {m.linkedin ? (
                       <a
                         href={m.linkedin}

@@ -8,6 +8,8 @@
  * - Koddaki hizmet ve ürün içeriğini (data.ts, products-content.ts,
  *   service-showcase.ts, service-faq.ts) görselleriyle panele aktarır
  *   (yalnız boşsa). Bundan sonra içeriğin asıl yeri paneldir.
+ * - Ana Sayfa metinlerini (hiç kaydedilmemişse), ekip ve referansları
+ *   (koleksiyon boşsa) panele aktarır.
  *
  * Tekrar çalıştırmak güvenlidir; var olan kayıtlara dokunmaz.
  */
@@ -15,7 +17,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement, products, services, site } from "@/lib/data";
+import { announcement, products, references, services, site, team } from "@/lib/data";
+import { HOME_DEFAULTS } from "@/lib/home-defaults";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
 import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
@@ -211,6 +214,30 @@ if ((await payload.count({ collection: "products" })).totalDocs === 0) {
     });
   }
   log(`${products.length} ürün panele aktarıldı`);
+}
+
+/* 6. Ana sayfa metinleri (hiç kaydedilmemişse) */
+const home = await payload.findGlobal({ slug: "home-page" });
+if (!home?.updatedAt) {
+  await payload.updateGlobal({ slug: "home-page", data: HOME_DEFAULTS });
+  log("ana sayfa metinleri yazıldı");
+}
+
+/* 7. Ekip ve referanslar (yalnız boşsa) */
+if ((await payload.count({ collection: "team" })).totalDocs === 0) {
+  for (const [i, m] of team.entries()) {
+    await payload.create({
+      collection: "team",
+      data: { name: m.name, role: m.role, linkedin: m.linkedin, order: (i + 1) * 10, showOnHome: i < 4 },
+    });
+  }
+  log(`${team.length} ekip kaydı (örnek) eklendi`);
+}
+if ((await payload.count({ collection: "references" })).totalDocs === 0) {
+  for (const [i, name] of references.entries()) {
+    await payload.create({ collection: "references", data: { name, order: (i + 1) * 10 } });
+  }
+  log(`${references.length} referans eklendi`);
 }
 
 log("tamam");
