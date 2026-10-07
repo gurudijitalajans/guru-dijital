@@ -1,7 +1,7 @@
 import type { GlobalConfig } from "payload";
 import { isAdminField, isLoggedIn } from "../access";
 import { revalidate } from "../utils";
-import { announcement, site } from "@/lib/data";
+import { announcement, site, umami } from "@/lib/data";
 
 /**
  * Sitenin her sayfasında görünen ayarlar. Boş bırakılan alanda data.ts'teki
@@ -63,7 +63,7 @@ export const SiteSettings: GlobalConfig = {
       },
       access: { update: isAdminField },
       fields: [
-        { name: "enabled", type: "checkbox", label: "Sitede ziyaretçi sayımını aç", defaultValue: false },
+        { name: "enabled", type: "checkbox", label: "Sitede ziyaretçi sayımını aç", defaultValue: true },
         {
           type: "row",
           fields: [
@@ -71,6 +71,7 @@ export const SiteSettings: GlobalConfig = {
               name: "websiteId",
               type: "text",
               label: "Site kimliği (Website ID)",
+              defaultValue: umami.websiteId,
               admin: { placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
               validate: (v: string | null | undefined) =>
                 !v || /^[0-9a-f-]{36}$/i.test(v) || "Umami'deki 36 karakterlik site kimliğini yapıştırın.",
@@ -79,7 +80,7 @@ export const SiteSettings: GlobalConfig = {
               name: "scriptUrl",
               type: "text",
               label: "Betik adresi",
-              defaultValue: "https://cloud.umami.is/script.js",
+              defaultValue: umami.scriptUrl,
               /* Canlıda yalnız https; geliştirmede yerel test sunucusuna (localhost) izin verilir */
               validate: (v: string | null | undefined) =>
                 !v ||
@@ -93,6 +94,7 @@ export const SiteSettings: GlobalConfig = {
           name: "domains",
           type: "text",
           label: "Sayılacak alan adları",
+          defaultValue: umami.domains,
           admin: {
             placeholder: "gurudijital.com.tr,www.gurudijital.com.tr",
             description: "Virgülle ayırın. Doluysa önizleme ve yerel adresler sayılmaz.",

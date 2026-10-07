@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement as defaultAnnouncement, site } from "@/lib/data";
+import { announcement as defaultAnnouncement, site, umami } from "@/lib/data";
 
 /**
  * Site tarafının panelle tek temas noktası. Veritabanına ulaşılamazsa
@@ -30,7 +30,8 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     whatsapp: site.whatsapp,
     address: site.address,
     instagram: site.instagram,
-    analytics: null,
+    /* Panele ulaşılamazsa sayım canlı sitedeki gibi sürer */
+    analytics: { ...umami },
   };
   try {
     const payload = await cms();
