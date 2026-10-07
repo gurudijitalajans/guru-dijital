@@ -33,7 +33,11 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
     /* Sabitlendiğinde gölge: çubuğun üstünde 1px'lik gözcü */
     const bar = barRef.current;
     const sentinel = bar?.previousElementSibling;
-    const so = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: "-80px 0px 0px 0px" });
+    /* Yalnız gözcü üst kenarın üstüne çıktığında (aşağıdayken değil) sabitlenmiş sayılır */
+    const so = new IntersectionObserver(
+      ([e]) => setStuck(!e.isIntersecting && e.boundingClientRect.top < (e.rootBounds?.top ?? 80)),
+      { rootMargin: "-80px 0px 0px 0px" }
+    );
     if (sentinel) so.observe(sentinel);
     return () => {
       io.disconnect();
