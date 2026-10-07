@@ -72,7 +72,7 @@ export const Services: CollectionConfig = {
               description: "Numaralı kartlar olarak sırayla listelenir.",
             }),
             textList("keywords", "Öne çıkan etiketler", "Etiket", {
-              description: "Kapsam metninin altında küçük haplar olarak görünür.",
+              description: "Kapsam metninin altında küçük haplar olarak görünür. Büyük harfle başlayın (ör. İçerik planı, Meta Ads).",
             }),
           ],
         },

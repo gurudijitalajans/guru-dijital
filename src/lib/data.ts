@@ -94,7 +94,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Platforma özel strateji, içerik, topluluk yönetimi ve Meta, TikTok, LinkedIn reklam kampanyalarıyla markanızı doğru kitleyle buluşturan sosyal medya yönetimi.",
-    keywords: ["strateji", "içerik planı", "topluluk yönetimi", "Meta Ads", "raporlama"],
+    keywords: ["Strateji", "İçerik planı", "Topluluk yönetimi", "Meta Ads", "Raporlama"],
   },
   {
     slug: "grafik-tasarim",
@@ -126,7 +126,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Logo ve kurumsal kimlikten ambalaj, katalog ve broşüre: markanızın görsel dilini estetik ve stratejik bir bütünlükle kuran grafik tasarım hizmeti.",
-    keywords: ["logo", "kurumsal kimlik", "katalog", "ambalaj", "afiş"],
+    keywords: ["Logo", "Kurumsal kimlik", "Katalog", "Ambalaj", "Afiş"],
   },
   {
     slug: "icerik-uretimi",
@@ -153,7 +153,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Marka diline özel metin yazarlığı, sosyal medya metinleri, SEO uyumlu web ve blog içerikleri ve kreatif konseptlerle hedef kitlenize dokunan içerikler.",
-    keywords: ["metin yazarlığı", "SEO içerik", "kreatif konsept", "hikâyeleştirme"],
+    keywords: ["Metin yazarlığı", "SEO içerik", "Kreatif konsept", "Hikâyeleştirme"],
   },
   {
     slug: "web-tasarim",
@@ -184,7 +184,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Mobil uyumlu, hızlı ve SEO dostu kurumsal web sitesi ve e-ticaret tasarımı; bakım ve teknik destekle ziyaretçilerinizi müşteriye dönüştüren web tasarım hizmeti.",
-    keywords: ["kurumsal site", "e-ticaret", "responsive", "SEO", "bakım & destek"],
+    keywords: ["Kurumsal site", "E-ticaret", "Responsive", "SEO", "Bakım & destek"],
   },
   {
     slug: "dijital-pazarlama",
@@ -212,7 +212,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Google Partner ajans olarak Google ve Meta Ads, TikTok ve LinkedIn kampanyalarını ROAS odaklı yönetiyor; reklam bütçenizi ölçülebilir büyümeye dönüştürüyoruz.",
-    keywords: ["Google Ads", "Meta Ads", "dönüşüm", "ROAS", "remarketing"],
+    keywords: ["Google Ads", "Meta Ads", "Dönüşüm", "ROAS", "Remarketing"],
   },
   {
     slug: "video-tasarimi",
@@ -239,7 +239,7 @@ export const services: Service[] = [
     ],
     seoDescription:
       "Reels, TikTok ve Shorts videolarından motion graphics, reklam filmi ve kurumsal tanıtım filmlerine: markanızı hareketli içerikle anlatan video tasarımı hizmeti.",
-    keywords: ["reels", "motion graphics", "reklam filmi", "kurgu"],
+    keywords: ["Reels", "Motion graphics", "Reklam filmi", "Kurgu"],
   },
 ];
 

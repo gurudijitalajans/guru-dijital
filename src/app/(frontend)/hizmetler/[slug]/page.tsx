@@ -28,9 +28,6 @@ type Params = Promise<{ slug: string }>;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Etiketler büyük harfle başlar (Türkçe kurala göre: "içerik" → "İçerik") */
-const capitalize = (t: string) => t.charAt(0).toLocaleUpperCase("tr-TR") + t.slice(1);
-
 export async function generateStaticParams() {
   return (await getServices()).map((s) => ({ slug: s.slug }));
 }
@@ -129,7 +126,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
               <ul className="mt-7 flex flex-wrap gap-2" aria-label="Öne çıkan başlıklar">
                 {service.keywords.map((k) => (
                   <li key={k} className={pillCls}>
-                    {capitalize(k)}
+                    {k}
                   </li>
                 ))}
               </ul>

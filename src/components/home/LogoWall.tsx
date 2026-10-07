@@ -12,6 +12,8 @@ const STYLES = [
   "font-bold tracking-[-0.04em] text-[19px]",
 ];
 
+const TR_CHARS = /[çğıöşüÇĞİÖŞÜ]/;
+
 function Row({ items, reverse }: { items: ReferenceView[]; reverse?: boolean }) {
   const loop = [...items, ...items];
   return (
@@ -30,7 +32,12 @@ function Row({ items, reverse }: { items: ReferenceView[]; reverse?: boolean }) 
               />
             </li>
           ) : (
-            <li key={`${r.name}-${i}`} className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}>
+            <li
+              key={`${r.name}-${i}`}
+              /* Türkçeye özgü harf yoksa İngilizce büyük harf kuralı: "Clinic P" → CLINIC P (CLİNİC P değil) */
+              lang={TR_CHARS.test(r.name) ? undefined : "en"}
+              className={`whitespace-nowrap text-[18px] text-[#8a93a6] ${STYLES[i % STYLES.length]}`}
+            >
               {r.name}
             </li>
           )

@@ -231,7 +231,7 @@ export interface Service {
       }[]
     | null;
   /**
-   * Kapsam metninin altında küçük haplar olarak görünür.
+   * Kapsam metninin altında küçük haplar olarak görünür. Büyük harfle başlayın (ör. İçerik planı, Meta Ads).
    */
   keywords?:
     | {
