@@ -16,3 +16,7 @@ export function parseAccent(text: string): { t: string; accent: boolean }[] {
         : { t: part, accent: false }
     );
 }
+
+const TR_COUNT = ["sıfır", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz", "on"];
+/** 6 → "altı" (paneldeki kayıt sayısı değişince metinler de doğru kalsın); 10 üstü rakamla */
+export const countWord = (n: number) => TR_COUNT[n] ?? String(n);

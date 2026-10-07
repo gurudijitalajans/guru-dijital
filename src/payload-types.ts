@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     leads: Lead;
     bookings: Booking;
+    services: Service;
+    products: Product;
     posts: Post;
     categories: Category;
     media: Media;
@@ -82,6 +84,8 @@ export interface Config {
   collectionsSelect: {
     leads: LeadsSelect<false> | LeadsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -175,51 +179,125 @@ export interface Booking {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "services".
  */
-export interface Post {
+export interface Service {
   id: number;
   title: string;
   /**
-   * Liste kartında ve paylaşımlarda görünen 1-2 cümle.
+   * Kartlarda ve sayfa girişinde görünen tek cümle.
    */
-  excerpt: string;
+  short: string;
   /**
-   * Yatay görsel önerilir (en az 1600 px genişlik).
+   * /hizmetler sayfasındaki kartta görünür.
    */
-  cover?: (number | null) | Media;
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
+  cardImage?: (number | null) | Media;
   /**
-   * Boş bırakırsanız başlıktan üretilir: /blog/adres
+   * İlk görsel solda büyük, sonraki iki görsel sağda üst üste, kalanlar altta tam genişlikte görünür. Kırpma odağını görselin kendisinden ayarlayabilirsiniz.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  headline: string;
+  offeringsTitle: string;
+  intro?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Numaralı kartlar olarak sırayla listelenir.
+   */
+  offerings?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Kapsam metninin altında küçük haplar olarak görünür.
+   */
+  keywords?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sayfada iki sütunlu akordeon olarak görünür ve arama motorlarına SSS olarak bildirilir.
+   */
+  faq?:
+    | {
+        q: string;
+        a: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Ölçülmüş kampanya sonuçları ve Google ödülleri bölümü.
+   */
+  showCases?: boolean | null;
+  /**
+   * Tasarlayıp yayına aldığımız sitelerin bağlantı listesi.
+   */
+  showWebProjects?: boolean | null;
+  /**
+   * 140-160 karakter önerilir. Boşsa kısa açıklama kullanılır.
+   */
+  seoDescription?: string | null;
+  /**
+   * Sayfa adresi: /hizmetler/adres. Yayındaki bir adresi değiştirmek eski bağlantıları kırar.
    */
   slug?: string | null;
-  category?: (number | null) | Category;
   /**
-   * Boş bırakılırsa yayınlandığı an yazılır.
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
    */
-  publishedAt?: string | null;
-  author?: (number | null) | User;
-  /**
-   * Boş bırakılırsa başlık ve özet kullanılır.
-   */
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-  };
+  order?: number | null;
+  icon:
+    | 'share'
+    | 'palette'
+    | 'pen'
+    | 'monitor'
+    | 'chart-bar'
+    | 'clapperboard'
+    | 'bot'
+    | 'users'
+    | 'workflow'
+    | 'briefcase'
+    | 'message'
+    | 'brain'
+    | 'languages'
+    | 'bell'
+    | 'calendar'
+    | 'clipboard'
+    | 'database'
+    | 'file'
+    | 'gauge'
+    | 'handshake'
+    | 'kanban'
+    | 'dashboard'
+    | 'layers'
+    | 'link'
+    | 'pie'
+    | 'shield'
+    | 'sparkles'
+    | 'target'
+    | 'rocket'
+    | 'megaphone'
+    | 'camera'
+    | 'globe'
+    | 'cart'
+    | 'search'
+    | 'mail'
+    | 'zap'
+    | 'trending'
+    | 'code'
+    | 'lightbulb'
+    | 'award';
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -271,6 +349,258 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  name: string;
+  tagline: string;
+  /**
+   * Ana sayfa ve /urunler kartlarında görünür.
+   */
+  desc: string;
+  /**
+   * Kartta tik işaretiyle listelenir; üç madde önerilir.
+   */
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Yatay ürün ekranı (1600x1100 önerilir). Alternatif metni medya kaydından gelir.
+   */
+  screenshot: number | Media;
+  hero: {
+    /**
+     * Boşsa ürün adı kullanılır.
+     */
+    eyebrow?: string | null;
+    /**
+     * Yıldız içindeki kelime bir kademe kalın yazılır: Müşterinize *7/24* yanıt veren asistan
+     */
+    headline: string;
+    sub: string;
+    ctaLabel?: string | null;
+  };
+  /**
+   * İkonlu kartlar; altı özellik önerilir.
+   */
+  features?:
+    | {
+        title: string;
+        icon:
+          | 'share'
+          | 'palette'
+          | 'pen'
+          | 'monitor'
+          | 'chart-bar'
+          | 'clapperboard'
+          | 'bot'
+          | 'users'
+          | 'workflow'
+          | 'briefcase'
+          | 'message'
+          | 'brain'
+          | 'languages'
+          | 'bell'
+          | 'calendar'
+          | 'clipboard'
+          | 'database'
+          | 'file'
+          | 'gauge'
+          | 'handshake'
+          | 'kanban'
+          | 'dashboard'
+          | 'layers'
+          | 'link'
+          | 'pie'
+          | 'shield'
+          | 'sparkles'
+          | 'target'
+          | 'rocket'
+          | 'megaphone'
+          | 'camera'
+          | 'globe'
+          | 'cart'
+          | 'search'
+          | 'mail'
+          | 'zap'
+          | 'trending'
+          | 'code'
+          | 'lightbulb'
+          | 'award';
+        desc: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Numaralı kartlar; dört adım önerilir.
+   */
+  steps?:
+    | {
+        title: string;
+        desc: string;
+        id?: string | null;
+      }[]
+    | null;
+  useCases?:
+    | {
+        title: string;
+        desc: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Yalnız ürün ve kurulum ifadeleri (kanal sayısı, kurulum süresi). Kaynağı olmayan performans yüzdesi yazmayın.
+   */
+  stats?:
+    | {
+        value: number;
+        /**
+         * %, /7, gün…
+         */
+        suffix?: string | null;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  integrations?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sayfada iki sütunlu akordeon olarak görünür ve arama motorlarına SSS olarak bildirilir.
+   */
+  faq?:
+    | {
+        q: string;
+        a: string;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    /**
+     * Boşsa ürün adı ve slogan.
+     */
+    title?: string | null;
+    description?: string | null;
+    keywords?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Sayfa adresi: /urunler/adres. Yayındaki bir adresi değiştirmek eski bağlantıları kırar.
+   */
+  slug?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  icon:
+    | 'share'
+    | 'palette'
+    | 'pen'
+    | 'monitor'
+    | 'chart-bar'
+    | 'clapperboard'
+    | 'bot'
+    | 'users'
+    | 'workflow'
+    | 'briefcase'
+    | 'message'
+    | 'brain'
+    | 'languages'
+    | 'bell'
+    | 'calendar'
+    | 'clipboard'
+    | 'database'
+    | 'file'
+    | 'gauge'
+    | 'handshake'
+    | 'kanban'
+    | 'dashboard'
+    | 'layers'
+    | 'link'
+    | 'pie'
+    | 'shield'
+    | 'sparkles'
+    | 'target'
+    | 'rocket'
+    | 'megaphone'
+    | 'camera'
+    | 'globe'
+    | 'cart'
+    | 'search'
+    | 'mail'
+    | 'zap'
+    | 'trending'
+    | 'code'
+    | 'lightbulb'
+    | 'award';
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * Liste kartında ve paylaşımlarda görünen 1-2 cümle.
+   */
+  excerpt: string;
+  /**
+   * Yatay görsel önerilir (en az 1600 px genişlik).
+   */
+  cover?: (number | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Boş bırakırsanız başlıktan üretilir: /blog/adres
+   */
+  slug?: string | null;
+  category?: (number | null) | Category;
+  /**
+   * Boş bırakılırsa yayınlandığı an yazılır.
+   */
+  publishedAt?: string | null;
+  author?: (number | null) | User;
+  /**
+   * Boş bırakılırsa başlık ve özet kullanılır.
+   */
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -348,6 +678,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'bookings';
         value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
       } | null)
     | ({
         relationTo: 'posts';
@@ -442,6 +780,142 @@ export interface BookingsSelect<T extends boolean = true> {
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  short?: T;
+  cardImage?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  headline?: T;
+  offeringsTitle?: T;
+  intro?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  offerings?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  keywords?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  faq?:
+    | T
+    | {
+        q?: T;
+        a?: T;
+        id?: T;
+      };
+  showCases?: T;
+  showWebProjects?: T;
+  seoDescription?: T;
+  slug?: T;
+  order?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  tagline?: T;
+  desc?: T;
+  highlights?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  screenshot?: T;
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        sub?: T;
+        ctaLabel?: T;
+      };
+  features?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        desc?: T;
+        id?: T;
+      };
+  steps?:
+    | T
+    | {
+        title?: T;
+        desc?: T;
+        id?: T;
+      };
+  useCases?:
+    | T
+    | {
+        title?: T;
+        desc?: T;
+        id?: T;
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        suffix?: T;
+        label?: T;
+        id?: T;
+      };
+  integrations?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  faq?:
+    | T
+    | {
+        q?: T;
+        a?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  slug?: T;
+  order?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

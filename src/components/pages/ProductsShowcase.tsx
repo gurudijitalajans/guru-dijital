@@ -1,14 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { products } from "@/lib/data";
+import { getProducts } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
 import { Btn } from "@/components/site/Btn";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, cardTextCls, iconBoxCls } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
 /**
- * Ürün vitrini: dört yazılım ürünü, md+ iki sütunlu sade kartlar.
+ * Ürün vitrini: paneldeki yazılım ürünleri, md+ iki sütunlu sade kartlar.
  *
  * Server component; belirme animasyonu client StaggerGroup/Item'da. Her kart
  * ürün ekranını açık bant zeminde gösterir, ad, kısa açıklama, üç madde ve
@@ -16,11 +17,12 @@ import { cn } from "@/lib/utils";
  * LCP adayı olduğu için preload edilir; ikinci kart md+ ilk ekranda: eager.
  * Ürün adları İngilizce: lang="en" büyük harf dönüşümünde noktalı İ oluşmasını önler.
  */
-export function ProductsShowcase() {
+export async function ProductsShowcase() {
+  const products = await getProducts();
   return (
     <StaggerGroup stagger={0.08} className="grid gap-5 md:grid-cols-2 md:gap-6">
       {products.map((p, i) => {
-        const Icon = p.icon;
+        const Icon = iconFor(p.icon);
         const href = `/urunler/${p.slug}`;
         return (
           <StaggerItem key={p.slug} className="h-full">
@@ -31,10 +33,10 @@ export function ProductsShowcase() {
                 className="block bg-soft px-3 pt-4 sm:px-5 sm:pt-6"
               >
                 <Image
-                  src={p.image}
-                  alt={p.imageAlt}
-                  width={1600}
-                  height={1100}
+                  src={p.image.src}
+                  alt={p.image.alt}
+                  width={p.image.w}
+                  height={p.image.h}
                   /* Next 16: preload ile loading birlikte verilmez */
                   preload={i === 0}
                   loading={i === 0 ? undefined : i === 1 ? "eager" : "lazy"}
@@ -59,7 +61,7 @@ export function ProductsShowcase() {
                 <p className={cn(cardTextCls, "mt-4 text-[15px] text-body")}>{p.desc}</p>
 
                 <ul className="mt-4 space-y-2">
-                  {p.features.map((f) => (
+                  {p.highlights.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-[14.5px] text-body">
                       <Check aria-hidden className="mt-[3px] size-4 shrink-0 text-brand" strokeWidth={2.2} />
                       {f}

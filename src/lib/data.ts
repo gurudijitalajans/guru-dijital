@@ -35,6 +35,10 @@ export const site = {
 /*  Hizmetler                                                          */
 /* ------------------------------------------------------------------ */
 
+/* NOT: Canlı içerik panelde (Guru Panel > İçerik > Hizmetler). Buradaki
+   liste yalnız varsayılan/yedek içeriktir: npm run seed ile panele aktarılır
+   ve panele ulaşılamadığında site bunu gösterir. Düzenlemeyi panelden yapın. */
+
 export type Service = {
   slug: string;
   no: string;
@@ -436,6 +440,9 @@ export const works: Work[] = [
 /*  Ürünler (işletmeye yönelik yazılım ürünleri)                       */
 /* ------------------------------------------------------------------ */
 
+/* NOT: Canlı içerik panelde (Guru Panel > İçerik > Ürünler); bu liste ve
+   products-content.ts yalnız varsayılan/yedek içeriktir (seed + panel yokken). */
+
 export type SoftwareProduct = {
   slug: string;
   name: string;
@@ -547,28 +554,34 @@ export type NavGroup = { label: string; href: string; items?: NavItem[] };
 
 export const announcement = "Strateji, tasarım ve teknoloji tek çatıda.";
 
-export const navMenu: NavGroup[] = [
-  {
-    label: "Kurumsal",
-    href: "/hakkimizda",
-    items: [
-      { label: "Hakkımızda", href: "/hakkimizda", desc: "Hikayemiz ve ilkelerimiz" },
-      { label: "Ekibimiz", href: "/hakkimizda#ekip", desc: "Markanızla çalışacak ekip" },
-      { label: "İletişim", href: "/iletisim", desc: "Teklif ve toplantı" },
-    ],
-  },
-  {
-    label: "Hizmetlerimiz",
-    href: "/hizmetler",
-    items: services.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}` })),
-  },
-  {
-    label: "Ürünlerimiz",
-    href: "/urunler",
-    items: products.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline })),
-  },
-  { label: "Referanslarımız", href: "/#referanslar" },
-];
+/** Üst menü: hizmet ve ürün grupları panelden gelen listeyle kurulur */
+export function buildNavMenu(
+  svc: { title: string; slug: string }[],
+  prd: { name: string; slug: string; tagline: string }[]
+): NavGroup[] {
+  return [
+    {
+      label: "Kurumsal",
+      href: "/hakkimizda",
+      items: [
+        { label: "Hakkımızda", href: "/hakkimizda", desc: "Hikayemiz ve ilkelerimiz" },
+        { label: "Ekibimiz", href: "/hakkimizda#ekip", desc: "Markanızla çalışacak ekip" },
+        { label: "İletişim", href: "/iletisim", desc: "Teklif ve toplantı" },
+      ],
+    },
+    {
+      label: "Hizmetlerimiz",
+      href: "/hizmetler",
+      items: svc.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}` })),
+    },
+    {
+      label: "Ürünlerimiz",
+      href: "/urunler",
+      items: prd.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline })),
+    },
+    { label: "Referanslarımız", href: "/#referanslar" },
+  ];
+}
 
 /* ------------------------------------------------------------------ */
 /*  ÖRNEK İÇERİK (mockup): gerçek içerik gelene kadar yer tutucu       */

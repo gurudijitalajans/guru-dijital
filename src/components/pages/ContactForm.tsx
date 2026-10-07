@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Check, ChevronDown, Clock, Copy } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
 import { cardCls } from "@/components/site/styles";
-import { services, site } from "@/lib/data";
+import { services as defaultServices, site } from "@/lib/data";
 import { postForm } from "@/lib/submit";
 import { cn } from "@/lib/utils";
 
@@ -58,10 +58,12 @@ const getUrlService = () =>
   new URLSearchParams(window.location.search).get("hizmet") ?? "";
 const getServerUrlService = () => "";
 
-function useUrlService(): string {
+type ServiceRef = { slug: string; title: string };
+
+function useUrlService(catalog: ServiceRef[]): string {
   const raw = useSyncExternalStore(subscribeUrl, getUrlService, getServerUrlService);
   if (!raw) return "";
-  return services.find((s) => s.slug === raw || s.title === raw)?.title ?? "";
+  return catalog.find((s) => s.slug === raw || s.title === raw)?.title ?? "";
 }
 
 /* ---- Ortak form görünümü (MeetingScheduler da kullanır) ----
@@ -153,6 +155,8 @@ export type ContactFormProps = {
    * /iletisim?hizmet=<slug> URL parametresi aynı işi otomatik yapar.
    */
   initialService?: string;
+  /** Paneldeki hizmet listesi (seçenekler ve ?hizmet= eşlemesi); yoksa koddaki varsayılan liste. */
+  services?: ServiceRef[];
 };
 
 export function ContactForm({
@@ -161,13 +165,14 @@ export function ContactForm({
   serviceLabel = "İlgilendiğiniz hizmet",
   serviceOptions,
   initialService,
+  services = defaultServices,
 }: ContactFormProps = {}) {
   const options = serviceOptions ?? services.map((s) => s.title);
   const optionList =
     defaultService && !options.includes(defaultService)
       ? [defaultService, ...options]
       : options;
-  const urlService = useUrlService();
+  const urlService = useUrlService(services);
   const isOption = (v?: string): v is string =>
     Boolean(v) && (optionList.includes(v as string) || v === OTHER_OPTION);
   /* Ön seçim önceliği: açık prop > ürün bağlamı > URL parametresi.

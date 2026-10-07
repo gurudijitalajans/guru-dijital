@@ -7,7 +7,8 @@ import { SectionHead } from "@/components/site/SectionHead";
 import { cardCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { LinkedinIcon } from "@/components/ui/icons";
-import { awards, products, references, services, team, values } from "@/lib/data";
+import { awards, references, team, values } from "@/lib/data";
+import { getProducts, getServices } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -56,14 +57,14 @@ const avatarTones = [
   "from-[#e6f1ff] to-[#5d9cec]",
 ];
 
-/* Sayılar: yalnız data.ts'ten türeyen gerçek adetler */
-const stats = [
-  { value: references.length, label: "Referans Marka" },
-  { value: services.length, label: "Uzmanlık Alanı" },
-  { value: products.length, label: "Yazılım Ürünü" },
-];
-
-export default function HakkimizdaPage() {
+export default async function HakkimizdaPage() {
+  /* Sayılar: yalnız gerçek adetler (referanslar data.ts, hizmet ve ürünler panel) */
+  const [services, products] = await Promise.all([getServices(), getProducts()]);
+  const stats = [
+    { value: references.length, label: "Referans Marka" },
+    { value: services.length, label: "Uzmanlık Alanı" },
+    { value: products.length, label: "Yazılım Ürünü" },
+  ];
   return (
     <>
       <PageIntro

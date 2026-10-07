@@ -10,6 +10,7 @@ import { ContactForm } from "@/components/pages/ContactForm";
 import { ContactFaq } from "@/components/pages/ContactFaq";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
 import { getSiteInfo, type SiteInfo } from "@/lib/cms";
+import { getServices } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -81,7 +82,9 @@ const chipCls =
   "inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white px-4 text-[14.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.1)] transition-[color,box-shadow] duration-300 hover:text-brand hover:shadow-[0_0_0_1px_rgb(42_106_202/0.45)]";
 
 export default async function IletisimPage() {
-  const contactItems = buildContactItems(await getSiteInfo());
+  const [info, services] = await Promise.all([getSiteInfo(), getServices()]);
+  const contactItems = buildContactItems(info);
+  const serviceRefs = services.map((s) => ({ slug: s.slug, title: s.title }));
 
   return (
     <>
@@ -120,7 +123,7 @@ export default async function IletisimPage() {
       <section id="iletisim-form" className="pb-16 md:pb-[72px]">
         <div className="container-g">
           <Reveal className="mx-auto max-w-3xl" delay={0.05}>
-            <ContactForm />
+            <ContactForm services={serviceRefs} />
           </Reveal>
         </div>
       </section>

@@ -1,23 +1,26 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { services } from "@/lib/data";
+import { getServices } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
 import { SectionHead } from "@/components/site/SectionHead";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
-import { cn } from "@/lib/utils";
+import { cn, countWord } from "@/lib/utils";
 
-export function ServicesGrid() {
+/** Hizmet kartları: içerik panelden (Hizmetler) */
+export async function ServicesGrid() {
+  const services = await getServices();
   return (
     <section className={sectionY}>
       <div className="container-g">
         <SectionHead
           title="Hizmetlerimiz"
-          lead="Markanızı büyüten altı disiplin; her biri ölçülebilir hedeflerle yönetilir."
+          lead={`Markanızı büyüten ${countWord(services.length)} disiplin; her biri ölçülebilir hedeflerle yönetilir.`}
           action={{ href: "/hizmetler", label: "Tüm Hizmetler" }}
         />
         <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
           {services.map((s) => {
-            const Icon = s.icon;
+            const Icon = iconFor(s.icon);
             return (
               <StaggerItem key={s.slug} className="h-full">
                 <Link

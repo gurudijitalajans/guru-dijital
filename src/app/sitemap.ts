@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
-import { products, services, site } from "@/lib/data";
+import { site } from "@/lib/data";
+import { getProducts, getServices } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/blog";
 
-/* İçerik (data.ts / products-content.ts) değiştikçe elle güncellenir; her
-   istekte "bugün" yazmak lastmod sinyalini anlamsızlaştırırdı. */
+/* Sabit sayfaların lastmod tarihi elle güncellenir; her istekte "bugün"
+   yazmak lastmod sinyalini anlamsızlaştırırdı. Hizmet, ürün ve blog
+   adresleri panelden gelir. */
 const CONTENT_UPDATED = "2026-09-07";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -17,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site.url}/iletisim`, lastModified, changeFrequency: "yearly", priority: 0.8 },
   ];
 
+  const [services, products] = await Promise.all([getServices(), getProducts()]);
   const serviceRoutes: MetadataRoute.Sitemap = services.map((s) => ({
     url: `${site.url}/hizmetler/${s.slug}`,
     lastModified,

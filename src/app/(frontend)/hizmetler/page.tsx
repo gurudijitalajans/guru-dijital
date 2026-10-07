@@ -1,9 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { process, services } from "@/lib/data";
+import type { Metadata } from "next";
+import { process } from "@/lib/data";
+import { getServices } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
 import { pageMetadata } from "@/lib/seo";
-import { cn } from "@/lib/utils";
+import { cn, countWord } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
@@ -16,22 +19,27 @@ import {
   sectionY,
 } from "@/components/site/styles";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { serviceVisuals } from "@/components/pages/hizmetler/service-showcase";
 import { ClosingCta } from "@/components/site/ClosingCta";
 
-export const metadata = pageMetadata({
-  title: "Hizmetler",
-  description:
-    "Sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımı: markanızı büyüten altı başlıkta entegre çözümler.",
-  path: "/hizmetler",
-});
+/* Açıklama hizmet adlarından üretilir: panelde hizmet eklenip çıkarılınca güncel kalır */
+export async function generateMetadata(): Promise<Metadata> {
+  const services = await getServices();
+  const names = services.map((s) => s.title.toLocaleLowerCase("tr-TR"));
+  const list = names.length > 1 ? `${names.slice(0, -1).join(", ")} ve ${names.at(-1)}` : names.join("");
+  return pageMetadata({
+    title: "Hizmetler",
+    description: `${list.charAt(0).toLocaleUpperCase("tr-TR")}${list.slice(1)}: markanızı büyüten ${countWord(services.length)} başlıkta entegre çözümler.`,
+    path: "/hizmetler",
+  });
+}
 
-export default function HizmetlerPage() {
+export default async function HizmetlerPage() {
+  const services = await getServices();
   return (
     <>
       <PageIntro
         eyebrow="Hizmetlerimiz"
-        title="Markanızı büyüten altı hizmet, tek ekip"
+        title={`Markanızı büyüten ${countWord(services.length)} hizmet, tek ekip`}
         lead="Sosyal medyadan web tasarıma, dijital pazarlamadan videoya kadar markanızın ihtiyaç duyduğu işleri aynı masada planlıyor, tek ekiple yönetiyoruz."
       >
         <Btn href="/iletisim" size="lg" arrow>
@@ -47,8 +55,8 @@ export default function HizmetlerPage() {
         <div className="container-g">
           <StaggerGroup className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
             {services.map((s, i) => {
-              const Icon = s.icon;
-              const img = serviceVisuals[s.slug]?.card ?? null;
+              const Icon = iconFor(s.icon);
+              const img = s.card;
               return (
                 <StaggerItem key={s.slug} className="h-full">
                   <Link

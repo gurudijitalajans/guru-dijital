@@ -1,7 +1,7 @@
 import type { FaqItem } from "@/components/site/FaqGrid";
 
 /**
- * Hizmet detay sayfalarındaki SSS (her hizmet için 6 soru).
+ * Hizmet detay sayfalarındaki SSS: VARSAYILAN/YEDEK (canlıda panelden).
  * Kural: uydurma rakam, süre ya da sonuç vaadi yok; kapsam teklif aşamasında netleşir.
  */
 export const serviceFaq: Record<string, FaqItem[]> = {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { navMenu, type NavGroup } from "@/lib/data";
+import type { NavGroup } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
@@ -133,10 +133,9 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
 /*  Header                                                             */
 /* ------------------------------------------------------------------ */
 
-/** showBlog: yayında en az bir blog yazısı varsa menüye "Blog" eklenir. */
-export function SiteHeader({ showBlog = false }: { showBlog?: boolean }) {
+/** Menü sunucuda panel içeriğinden kurulur (SiteShell); blog bağlantısı yayında yazı varken eklenir. */
+export function SiteHeader({ menu }: { menu: NavGroup[] }) {
   const pathname = usePathname();
-  const menu: NavGroup[] = showBlog ? [...navMenu, { label: "Blog", href: "/blog" }] : navMenu;
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);

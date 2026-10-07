@@ -53,7 +53,7 @@ export default function UrunlerPage() {
         lead="Ajans deneyimimizi işletmeniz için çalışan yazılımlara dönüştürdük. Müşteri iletişimi, satış ve operasyonu tek çatıda yönetin."
       />
 
-      {/* Ürün vitrini: dört ürün, md+ iki sütun */}
+      {/* Ürün vitrini: paneldeki ürünler, md+ iki sütun */}
       <section className="pb-16 md:pb-[72px]">
         <div className="container-g">
           <ProductsShowcase />

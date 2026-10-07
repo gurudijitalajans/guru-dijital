@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { awards, references, services } from "@/lib/data";
+import { awards, references } from "@/lib/data";
+import { getServices } from "@/lib/content";
 import { Btn } from "@/components/site/Btn";
 import { Reveal } from "@/components/ui/Reveal";
 import { Globe } from "./Globe";
@@ -9,7 +10,8 @@ import { Globe } from "./Globe";
  * hizmet bağlantı şeridi, iki buton, altında yarısı görünen nokta küresi
  * ve kürenin üstüne binen kanıt rozeti.
  */
-export function Hero() {
+export async function Hero() {
+  const services = await getServices();
   const partner = awards.find((a) => a.title === "Google Partner");
   return (
     <section className="relative overflow-hidden pt-12 text-center md:pt-16">

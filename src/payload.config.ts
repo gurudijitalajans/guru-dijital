@@ -12,6 +12,8 @@ import { Categories } from "./payload/collections/Categories";
 import { Posts } from "./payload/collections/Posts";
 import { Leads } from "./payload/collections/Leads";
 import { Bookings } from "./payload/collections/Bookings";
+import { Services } from "./payload/collections/Services";
+import { Products } from "./payload/collections/Products";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,7 +47,7 @@ export default buildConfig({
     supportedLanguages: { tr },
     fallbackLanguage: "tr",
   },
-  collections: [Leads, Bookings, Posts, Categories, Media, Users],
+  collections: [Leads, Bookings, Services, Products, Posts, Categories, Media, Users],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   db: sqliteAdapter({

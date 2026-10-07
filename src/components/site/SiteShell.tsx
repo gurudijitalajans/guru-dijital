@@ -5,17 +5,28 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactTab } from "@/components/site/ContactTab";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
 import { getPublishedPostCount, getSiteInfo } from "@/lib/cms";
+import { getProducts, getServices } from "@/lib/content";
 import { outfit } from "@/lib/fonts";
-import { site } from "@/lib/data";
+import { buildNavMenu, site } from "@/lib/data";
 
 /**
  * Sitenin html/body iskeleti: duyuru bandı, üst menü, içerik, alt bilgi ve
  * sabit iletişim öğeleri. Site layout'u ve global 404 aynı kabuğu kullanır.
- * Duyuru metni, iletişim bilgileri ve blog bağlantısı panelden gelir.
+ * Duyuru metni, iletişim bilgileri, menüdeki hizmet ve ürünler ile blog
+ * bağlantısı panelden gelir.
  */
 export async function SiteShell({ children }: { children: React.ReactNode }) {
-  const [info, postCount] = await Promise.all([getSiteInfo(), getPublishedPostCount()]);
+  const [info, postCount, services, products] = await Promise.all([
+    getSiteInfo(),
+    getPublishedPostCount(),
+    getServices(),
+    getProducts(),
+  ]);
   const showBlog = postCount > 0;
+  const menu = buildNavMenu(services, products);
+  if (showBlog) menu.push({ label: "Blog", href: "/blog" });
+  const footerServices = services.map((s) => ({ title: s.title, slug: s.slug }));
+  const footerProducts = products.map((p) => ({ name: p.name, slug: p.slug }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -47,11 +58,17 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
             atlanır; SSR çıktısı değişmez (hydration güvenli). */}
         <MotionConfig reducedMotion="user">
           {info.announcement.enabled && <AnnounceBar text={info.announcement.text} />}
-          <SiteHeader showBlog={showBlog} />
+          <SiteHeader menu={menu} />
           <main id="icerik" tabIndex={-1} className="flex-1 outline-none">
             {children}
           </main>
-          <SiteFooter email={info.email} instagram={info.instagram} showBlog={showBlog} />
+          <SiteFooter
+            email={info.email}
+            instagram={info.instagram}
+            showBlog={showBlog}
+            services={footerServices}
+            products={footerProducts}
+          />
           <ContactTab whatsapp={info.whatsapp} />
           <MobileCtaBar />
         </MotionConfig>

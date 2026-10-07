@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
-import { awards, products, services, site } from "@/lib/data";
+import { awards, site } from "@/lib/data";
 import { Logo } from "./Logo";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
@@ -10,10 +10,16 @@ const linkCls = "block py-1.5 text-[14px] text-body transition-colors hover:text
 /** "https://www.instagram.com/gurudijital/" → "gurudijital" */
 const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "gurudijital";
 
-type SiteFooterProps = { email: string; instagram: string; showBlog?: boolean };
+type SiteFooterProps = {
+  email: string;
+  instagram: string;
+  showBlog?: boolean;
+  services: { title: string; slug: string }[];
+  products: { name: string; slug: string }[];
+};
 
-/** İletişim bilgileri panelin Site Ayarları'ndan gelir; blog bağlantısı yayında yazı varken görünür. */
-export function SiteFooter({ email, instagram, showBlog = false }: SiteFooterProps) {
+/** İletişim bilgileri, hizmet ve ürün listeleri panelden gelir; blog bağlantısı yayında yazı varken görünür. */
+export function SiteFooter({ email, instagram, showBlog = false, services, products }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const partner = awards.find((a) => a.title === "Google Partner");
 

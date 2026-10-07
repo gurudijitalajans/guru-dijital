@@ -5,6 +5,9 @@
  *   ile bir yönetici hesabı açar (yalnız yerel test içindir).
  * - Site Ayarları'nı data.ts varsayılanlarıyla doldurur.
  * - Üç blog kategorisi ve iki ÖRNEK yazı ekler (yalnız boşsa).
+ * - Koddaki hizmet ve ürün içeriğini (data.ts, products-content.ts,
+ *   service-showcase.ts, service-faq.ts) görselleriyle panele aktarır
+ *   (yalnız boşsa). Bundan sonra içeriğin asıl yeri paneldir.
  *
  * Tekrar çalıştırmak güvenlidir; var olan kayıtlara dokunmaz.
  */
@@ -12,7 +15,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement, site } from "@/lib/data";
+import { announcement, products, services, site } from "@/lib/data";
+import { productDetails } from "@/lib/products-content";
+import { iconNameOf } from "@/lib/icons";
+import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
+import { serviceFaq } from "@/components/pages/hizmetler/service-faq";
 import type { Post } from "@/payload-types";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -46,15 +53,18 @@ if (users.totalDocs === 0) {
   log(`yönetici hesabı açıldı (${email})`);
 }
 
-/* 2. Site ayarları */
-await payload.updateGlobal({
-  slug: "site-settings",
-  data: {
-    announcement: { enabled: true, text: announcement },
-    contact: { email: site.email, instagram: site.instagram },
-  },
-});
-log("site ayarları yazıldı");
+/* 2. Site ayarları (yalnız hiç kaydedilmemişse; paneldeki düzenlemeler korunur) */
+const settings = await payload.findGlobal({ slug: "site-settings" });
+if (!settings.contact?.email) {
+  await payload.updateGlobal({
+    slug: "site-settings",
+    data: {
+      announcement: { enabled: true, text: announcement },
+      contact: { email: site.email, instagram: site.instagram },
+    },
+  });
+  log("site ayarları yazıldı");
+}
 
 /* 3. Kategoriler */
 const categoryNames = ["Dijital Pazarlama", "Sosyal Medya", "Web ve Teknoloji"];
@@ -124,6 +134,83 @@ if (posts.totalDocs === 0) {
     },
   });
   log("iki örnek blog yazısı eklendi");
+}
+
+/* 5. Hizmetler ve ürünler: koddaki içerik panele aktarılır (yalnız boşsa) */
+const uploaded = new Map<string, number>();
+/** Aynı dosya bu çalıştırmada bir kez yüklenir; kırpma odağı korunur */
+const mediaFor = async (img: { src: string; alt: string; position?: string }) => {
+  const hit = uploaded.get(img.src);
+  if (hit) return hit;
+  const [fx, fy] = (img.position ?? "50% 50%").split(" ").map((v) => parseFloat(v));
+  const doc = await payload.create({
+    collection: "media",
+    data: { alt: img.alt, focalX: fx, focalY: fy },
+    filePath: path.join(publicDir, img.src),
+  });
+  uploaded.set(img.src, doc.id);
+  return doc.id;
+};
+const rows = (list: string[]) => list.map((text) => ({ text }));
+
+if ((await payload.count({ collection: "services" })).totalDocs === 0) {
+  for (const [i, s] of services.entries()) {
+    const visual = serviceVisuals[s.slug];
+    const gallery: { image: number }[] = [];
+    for (const g of visual?.gallery ?? ([] as WorkImage[])) gallery.push({ image: await mediaFor(g) });
+    await payload.create({
+      collection: "services",
+      data: {
+        title: s.title,
+        slug: s.slug,
+        order: (i + 1) * 10,
+        icon: iconNameOf(s.icon),
+        short: s.short,
+        headline: s.headline,
+        offeringsTitle: s.offeringsTitle,
+        intro: rows(s.intro),
+        offerings: rows(s.offerings),
+        keywords: rows(s.keywords),
+        cardImage: visual ? await mediaFor(visual.card) : undefined,
+        gallery,
+        faq: serviceFaq[s.slug] ?? [],
+        showCases: s.slug === "dijital-pazarlama",
+        showWebProjects: s.slug === "web-tasarim",
+        seoDescription: s.seoDescription,
+        _status: "published",
+      },
+    });
+  }
+  log(`${services.length} hizmet panele aktarıldı`);
+}
+
+if ((await payload.count({ collection: "products" })).totalDocs === 0) {
+  for (const [i, pr] of products.entries()) {
+    const d = productDetails[pr.slug];
+    await payload.create({
+      collection: "products",
+      data: {
+        name: pr.name,
+        slug: pr.slug,
+        order: (i + 1) * 10,
+        icon: iconNameOf(pr.icon),
+        tagline: pr.tagline,
+        desc: pr.desc,
+        highlights: rows(pr.features),
+        screenshot: await mediaFor({ src: pr.image, alt: pr.imageAlt }),
+        hero: d.hero,
+        features: d.features.map((f) => ({ icon: iconNameOf(f.icon), title: f.title, desc: f.desc })),
+        steps: d.steps,
+        useCases: d.useCases,
+        stats: d.stats,
+        integrations: rows(d.integrations),
+        faq: d.faq,
+        seo: { title: d.seo.title, description: d.seo.description, keywords: rows(d.seo.keywords) },
+        _status: "published",
+      },
+    });
+  }
+  log(`${products.length} ürün panele aktarıldı`);
 }
 
 log("tamam");

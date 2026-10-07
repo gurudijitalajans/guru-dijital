@@ -1,5 +1,7 @@
 /**
- * Hizmet sayfalarının görsel yapılandırması.
+ * Hizmet sayfalarının görsel yapılandırması: VARSAYILAN/YEDEK. Canlıda
+ * görseller paneldeki Hizmetler > Görseller sekmesinden gelir; npm run seed
+ * bu yapılandırmayı panele aktarır.
  *
  * Görseller yalnız public/work altındaki gerçek iş görselleridir (public/tiles
  * eski yeşil soyut karolardır, kullanılmaz). w/h gerçek piksel boyutlarıdır;

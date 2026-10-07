@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { products, site } from "@/lib/data";
-import { productDetails, productSlugs, type ProductDetail } from "@/lib/products-content";
+import { site } from "@/lib/data";
+import { getProduct, getProducts, type ProductView } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -26,21 +27,6 @@ import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
 
-/** Ürünün görünen adı: liste kaydından, yoksa detay eyebrow'undan. */
-function productName(slug: string) {
-  return products.find((p) => p.slug === slug)?.name ?? productDetails[slug].hero.eyebrow;
-}
-
-/** Ürünün kısa sloganı (önceki/sonraki kartları). */
-function productTagline(slug: string) {
-  return products.find((p) => p.slug === slug)?.tagline ?? "";
-}
-
-/** Ekran görüntüsü alt metni tek kaynaktan (data.ts liste kaydı); yoksa ürün adı. */
-function productImageAlt(slug: string) {
-  return products.find((p) => p.slug === slug)?.imageAlt ?? `${productName(slug)} paneli`;
-}
-
 /** Başlıktaki *yıldızlı* kelime ana sayfa girişindeki gibi bir kademe kalın yazılır (renk yok). */
 function renderHeadline(text: string) {
   return text
@@ -58,22 +44,19 @@ function renderHeadline(text: string) {
 }
 
 /** Türkçe yüzde biçimi önde: "%100"; diğer ekler sayının arkasında ("24/7", "1 gün"). */
-function formatStat({ value, suffix }: ProductDetail["stats"][number]) {
+function formatStat({ value, suffix }: ProductView["stats"][number]) {
   return suffix === "%" ? `%${value}` : `${value}${suffix}`;
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri. */
-const productNames = products.map((p) => p.name);
-
-export function generateStaticParams() {
-  return productSlugs.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  return (await getProducts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const product = productDetails[slug];
+  const product = await getProduct(slug);
   if (!product) return {};
   const path = `/urunler/${product.slug}`;
   return {
@@ -91,21 +74,24 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       title: product.seo.title,
       description: product.seo.description,
       /* Ekran görüntüsü SVG; sosyal ağ önizlemeleri SVG'yi desteklemediği için site OG görseli. */
-      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: productImageAlt(slug) }],
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: product.image.alt }],
     },
   };
 }
 
 export default async function UrunDetayPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const index = productSlugs.indexOf(slug);
+  const products = await getProducts();
+  const index = products.findIndex((p) => p.slug === slug);
   if (index === -1) notFound();
 
-  const product = productDetails[slug];
-  const name = productName(slug);
-  const imageAlt = productImageAlt(slug);
-  const prevSlug = productSlugs[(index - 1 + productSlugs.length) % productSlugs.length];
-  const nextSlug = productSlugs[(index + 1) % productSlugs.length];
+  const product = products[index];
+  const name = product.name;
+  const imageAlt = product.image.alt;
+  /* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri */
+  const productNames = products.map((p) => p.name);
+  const prev = products[(index - 1 + products.length) % products.length];
+  const next = products[(index + 1) % products.length];
 
   const jsonLd = [
     {
@@ -116,7 +102,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       url: `${site.url}/urunler/${product.slug}`,
-      image: `${site.url}${product.image}`,
+      image: product.image.src.startsWith("http") ? product.image.src : `${site.url}${product.image.src}`,
       inLanguage: "tr",
       provider: {
         "@type": "Organization",
@@ -136,8 +122,8 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
   ];
 
   const neighbours = [
-    { slug: prevSlug, label: "Önceki Ürün", dir: "prev" as const },
-    { slug: nextSlug, label: "Sonraki Ürün", dir: "next" as const },
+    { product: prev, label: "Önceki Ürün", dir: "prev" as const },
+    { product: next, label: "Sonraki Ürün", dir: "next" as const },
   ];
 
   return (
@@ -158,10 +144,10 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           /* LCP görseli: Reveal'e sarılmaz (opaklık 0 ile başlamasın), preload edilir */
           <div className="mx-auto max-w-[1120px] rounded-[20px] bg-gradient-to-b from-ice/70 via-soft to-soft p-1.5 sm:rounded-[28px] sm:p-4 md:p-6">
             <Image
-              src={product.image}
+              src={product.image.src}
               alt={imageAlt}
-              width={1600}
-              height={1100}
+              width={product.image.w}
+              height={product.image.h}
               preload
               sizes="(min-width: 1248px) 1072px, calc(100vw - 52px)"
               className="block h-auto w-full"
@@ -190,7 +176,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           />
           <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
             {product.features.map((feature) => {
-              const Icon = feature.icon;
+              const Icon = iconFor(feature.icon);
               return (
                 <StaggerItem key={feature.title} className="h-full">
                   {/* Mobilde ikon ve başlık yan yana: altı kart alt alta dizilirken sayfa kısalır */}
@@ -340,7 +326,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
             return (
               <Link
                 key={n.dir}
-                href={`/urunler/${n.slug}`}
+                href={`/urunler/${n.product.slug}`}
                 className={cn(
                   cardCls,
                   cardHoverCls,
@@ -360,9 +346,9 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                 <span className="min-w-0 flex-1">
                   <span className="block text-[13px] text-muted">{n.label}</span>
                   <span lang="en" className="mt-0.5 block text-[18px] font-medium tracking-[-0.015em] text-heading">
-                    {productName(n.slug)}
+                    {n.product.name}
                   </span>
-                  <span className="mt-0.5 block truncate text-[14px] text-muted">{productTagline(n.slug)}</span>
+                  <span className="mt-0.5 block truncate text-[14px] text-muted">{n.product.tagline}</span>
                 </span>
               </Link>
             );

@@ -23,7 +23,8 @@ import {
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/*  Ürün detay içerikleri (ürün sayfaları için)                         */
+/*  Ürün detay içerikleri: VARSAYILAN/YEDEK. Canlı içerik panelde        */
+/*  (Ürünler); npm run seed bu dosyayı panele aktarır.                  */
 /*  Sözleşme: ProductDetail. İçerik uzman PM + SEO yazarı gözüyle       */
 /*  doldurulur. Em dash yok, başlıklar büyük harfle başlar.             */
 /*  Headline içindeki *yıldızlı* kelime bir kademe kalın (font-medium)  */

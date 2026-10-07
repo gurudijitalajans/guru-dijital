@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, Award, LayoutGrid } from "lucide-react";
-import { awards, caseStudies, services, site, webProjects } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { awards, caseStudies, site, webProjects } from "@/lib/data";
+import { getService, getServices } from "@/lib/content";
+import { iconFor } from "@/lib/icons";
+import { cn, countWord } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -19,8 +21,6 @@ import {
   sectionY,
 } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { serviceVisuals } from "@/components/pages/hizmetler/service-showcase";
-import { serviceFaq } from "@/components/pages/hizmetler/service-faq";
 import { ServiceGallery } from "@/components/pages/hizmetler/ServiceGallery";
 import { ClosingCta } from "@/components/site/ClosingCta";
 
@@ -44,13 +44,13 @@ const CASE_STATS: Record<string, number[]> = {
   eticaret: [0, 1, 2],
 };
 
-export function generateStaticParams() {
-  return services.map((s) => ({ slug: s.slug }));
+export async function generateStaticParams() {
+  return (await getServices()).map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const service = services.find((s) => s.slug === slug);
+  const service = await getService(slug);
   if (!service) return {};
   return pageMetadata({
     title: service.title,
@@ -61,15 +61,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function HizmetDetayPage({ params }: { params: Params }) {
   const { slug } = await params;
+  const services = await getServices();
   const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
 
-  const gallery = serviceVisuals[service.slug]?.gallery ?? [];
-  const faq = serviceFaq[service.slug] ?? [];
+  const { gallery, faq } = service;
   const others = services.filter((s) => s.slug !== service.slug);
   const contactHref = `/iletisim?hizmet=${service.slug}`;
   /* Vaka bölümü olan sayfalarda SSS beyaz bölümün devamıdır: üst boşluk tekrarlanmaz */
-  const hasCase = service.slug === "dijital-pazarlama" || service.slug === "web-tasarim";
+  const hasCase = service.sections.cases || service.sections.webProjects;
 
   const jsonLd = [
     {
@@ -166,7 +166,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       </section>
 
       {/* 3a. Dijital pazarlama: ölçülmüş vaka sonuçları ve ödüller */}
-      {service.slug === "dijital-pazarlama" && (
+      {service.sections.cases && (
         <section className={sectionY}>
           <div className="container-g">
             <SectionHead
@@ -227,7 +227,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       )}
 
       {/* 3b. Web tasarım: yayındaki siteler */}
-      {service.slug === "web-tasarim" && (
+      {service.sections.webProjects && (
         <section className={sectionY}>
           <div className="container-g">
             <SectionHead
@@ -284,7 +284,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
           <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
           <StaggerGroup className="mt-10 grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {others.map((s) => {
-              const Icon = s.icon;
+              const Icon = iconFor(s.icon);
               return (
                 <StaggerItem key={s.slug} className="h-full">
                   <Link
@@ -316,7 +316,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[16px] font-medium leading-snug text-heading">Tüm hizmetler</span>
-                  <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">Altı hizmeti bir arada inceleyin</span>
+                  <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{`${countWord(services.length).replace(/^./, (c) => c.toLocaleUpperCase("tr-TR"))} hizmeti bir arada inceleyin`}</span>
                 </span>
                 <ArrowRight
                   aria-hidden
