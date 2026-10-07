@@ -7,7 +7,13 @@ import { Logo } from "./Logo";
 const headCls = "mb-3 text-[15px] font-medium text-heading";
 const linkCls = "block py-1.5 text-[14px] text-body transition-colors hover:text-brand";
 
-export function SiteFooter() {
+/** "https://www.instagram.com/gurudijital/" → "gurudijital" */
+const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "gurudijital";
+
+type SiteFooterProps = { email: string; instagram: string; showBlog?: boolean };
+
+/** İletişim bilgileri panelin Site Ayarları'ndan gelir; blog bağlantısı yayında yazı varken görünür. */
+export function SiteFooter({ email, instagram, showBlog = false }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const partner = awards.find((a) => a.title === "Google Partner");
 
@@ -33,6 +39,7 @@ export function SiteFooter() {
             <Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link>
             <Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link>
             <Link href="/#referanslar" className={linkCls}>Referanslarımız</Link>
+            {showBlog && <Link href="/blog" className={linkCls}>Blog</Link>}
             <Link href="/iletisim" className={linkCls}>İletişim</Link>
           </nav>
 
@@ -56,15 +63,15 @@ export function SiteFooter() {
 
           <div>
             <h2 className={headCls}>İletişim</h2>
-            <a href={`mailto:${site.email}`} className={`${linkCls} break-all`}>
-              {site.email}
+            <a href={`mailto:${email}`} className={`${linkCls} break-all`}>
+              {email}
             </a>
-            <a href={site.instagram} target="_blank" rel="noopener noreferrer" className={linkCls}>
-              @gurudijital
+            <a href={instagram} target="_blank" rel="noopener noreferrer" className={linkCls}>
+              @{handleOf(instagram)}
             </a>
             <div className="mt-3 flex gap-2">
               <a
-                href={site.instagram}
+                href={instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -73,7 +80,7 @@ export function SiteFooter() {
                 <InstagramIcon className="size-4" />
               </a>
               <a
-                href={`mailto:${site.email}`}
+                href={`mailto:${email}`}
                 aria-label="E-posta"
                 className="grid size-11 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-colors hover:bg-brand hover:text-white"
               >

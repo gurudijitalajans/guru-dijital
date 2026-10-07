@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { CalendarClock, Check, ChevronRight, Copy } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
 import { iconBoxCls, pillCls } from "@/components/site/styles";
-import { FieldError, Opt, Req, fieldCls, formCardCls, labelCls } from "@/components/pages/ContactForm";
+import { FieldError, FormNotice, Honeypot, Opt, Req, fieldCls, formCardCls, labelCls } from "@/components/pages/ContactForm";
 import { site } from "@/lib/data";
+import { postForm } from "@/lib/submit";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -40,8 +41,10 @@ function buildBusinessDays(): Day[] {
     cursor.setDate(cursor.getDate() + 1);
     const dow = cursor.getDay();
     if (dow === 0 || dow === 6) continue;
+    const pad = (n: number) => String(n).padStart(2, "0");
     days.push({
-      key: `${cursor.getFullYear()}-${cursor.getMonth() + 1}-${cursor.getDate()}`,
+      /* "YYYY-MM-DD": panelin dolu saat anahtarıyla aynı biçim */
+      key: `${cursor.getFullYear()}-${pad(cursor.getMonth() + 1)}-${pad(cursor.getDate())}`,
       weekday: wd.format(cursor),
       short: dm.format(cursor),
       full: dmy.format(cursor),
@@ -139,7 +142,13 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const [errors, setErrors] = useState<SchedulerErrors>({});
-  const [submitted, setSubmitted] = useState(false);
+  /* "saved": panele kaydedildi; "mail": panel yoksa e-posta uygulamasıyla */
+  const [submitted, setSubmitted] = useState<false | "saved" | "mail">(false);
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState<string>();
+  const [trap, setTrap] = useState("");
+  /* Panelde iptal edilmemiş randevuların "YYYY-MM-DD HH:mm" anahtarları */
+  const [busy, setBusy] = useState<Set<string>>(() => new Set());
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
 
@@ -148,6 +157,22 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
     selectedDay && time
       ? buildRequest(selectedDay, time, name, email, note, topic)
       : null;
+
+  /* Dolu saatleri panelden oku; panel yoksa tüm saatler açık kalır */
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/bookings/dolu")
+      .then((r) => (r.ok ? r.json() : { slots: [] }))
+      .then((j: { slots?: string[] }) => {
+        if (alive) setBusy(new Set(j.slots ?? []));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const isBusy = (day: string | null, t: string) => Boolean(day && busy.has(`${day} ${t}`));
 
   useEffect(() => {
     // Yalnız unmount temizliği: bekleyen "kopyalandı" zamanlayıcısını iptal et.
@@ -175,8 +200,10 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
       .catch(() => {});
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sending) return;
+    setNotice(undefined);
     const nextErrors: SchedulerErrors = {};
     if (!selectedDay) nextErrors.day = "Lütfen bir gün seçin.";
     if (!time) nextErrors.time = "Lütfen bir saat seçin.";
@@ -196,10 +223,41 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
       if (target instanceof HTMLInputElement) target.focus({ preventScroll: true });
       return;
     }
+
+    setSending(true);
+    const result = await postForm("/api/bookings/gonder", {
+      day: selectedDay.key,
+      time,
+      name,
+      email,
+      note,
+      topic: topic ?? "",
+      source: window.location.pathname,
+      website: trap,
+    });
+    setSending(false);
+    if (result.kind === "saved") {
+      setBusy((b) => new Set(b).add(`${selectedDay.key} ${time}`));
+      setSubmitted("saved");
+      return;
+    }
+    if (result.kind === "error") {
+      if (result.code === "dolu") {
+        /* Bu arada başkası almış: saati kapat, yeniden seçtir */
+        setBusy((b) => new Set(b).add(`${selectedDay.key} ${time}`));
+        setTime(null);
+        setErrors({ time: result.message });
+        document.getElementById("ms-time-label")?.scrollIntoView({ block: "center" });
+      } else {
+        setNotice(result.message);
+      }
+      return;
+    }
+
     window.location.assign(
       mailtoHref(buildRequest(selectedDay, time, name, email, note, topic))
     );
-    setSubmitted(true);
+    setSubmitted("mail");
   }
 
   return (
@@ -231,7 +289,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                 <Check className="size-7" strokeWidth={2.2} aria-hidden />
               </span>
               <h3 className="mt-6 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
-                Talebiniz E-posta Uygulamanızda Açıldı
+                {submitted === "saved" ? "Toplantı Talebiniz Alındı" : "Talebiniz E-posta Uygulamanızda Açıldı"}
               </h3>
               {selectedDay && time && (
                 <p className={cn(pillCls, "mt-4 bg-chip shadow-none")}>
@@ -239,6 +297,13 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                   {selectedDay.full} {time}
                 </p>
               )}
+              {submitted === "saved" ? (
+                <p className="mt-4 max-w-sm text-[14.5px] leading-relaxed text-muted">
+                  Saat sizin için ayrıldı. Aynı gün içinde{" "}
+                  <span className="break-words font-medium text-heading">{email.trim()}</span> adresine onay ve
+                  görüşme bağlantısını göndereceğiz.
+                </p>
+              ) : (
               <p className="mt-4 max-w-sm text-[14.5px] leading-relaxed text-muted">
                 Gönder butonuna basmanız yeterli; aynı gün onay dönüşü
                 yapıyoruz. E-posta uygulamanız açılmadıysa talebi doğrudan{" "}
@@ -250,7 +315,9 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                 </a>{" "}
                 adresine gönderin.
               </p>
+              )}
               <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                {submitted === "mail" && (
                 <Btn variant="light" onClick={copyRequest} aria-live="polite">
                   <span className="flex items-center gap-2">
                     {copied ? (
@@ -261,15 +328,17 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                     {copied ? "Talep Kopyalandı" : "Talebi Kopyala"}
                   </span>
                 </Btn>
+                )}
                 <Btn
                   variant="primary"
                   onClick={() => {
                     setTime(null);
                     setSubmitted(false);
                     setCopied(false);
+                    setNotice(undefined);
                   }}
                 >
-                  Farklı Saat Seç
+                  {submitted === "saved" ? "Yeni Talep Oluştur" : "Farklı Saat Seç"}
                 </Btn>
               </div>
             </motion.div>
@@ -278,6 +347,8 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
               key="form"
               noValidate
               onSubmit={onSubmit}
+              aria-busy={sending}
+              className="relative"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -311,6 +382,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                         type="button"
                         onClick={(e) => {
                           setDayKey(d.key);
+                          if (time && isBusy(d.key, time)) setTime(null);
                           clearError("day");
                           // Kesik görünen çipi şeride tam sokar (yalnız yatay, sayfa kaymaz)
                           e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
@@ -346,18 +418,26 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                 >
                   {TIME_SLOTS.map((t) => {
                     const selected = t === time;
+                    const taken = isBusy(dayKey, t);
                     return (
                       <button
                         key={t}
                         type="button"
+                        disabled={taken}
                         onClick={() => {
                           setTime(t);
                           clearError("time");
                         }}
                         aria-pressed={selected}
-                        className={cn(chipCls(selected), "px-2 text-[14.5px] font-medium")}
+                        aria-label={taken ? `${t}, dolu` : undefined}
+                        className={cn(
+                          chipCls(selected),
+                          "flex-col px-2 text-[14.5px] font-medium",
+                          taken && "cursor-not-allowed bg-soft text-muted/70 shadow-none hover:text-muted/70 hover:shadow-none"
+                        )}
                       >
-                        {t}
+                        <span>{t}</span>
+                        {taken && <span className="text-[11px] font-medium leading-none">Dolu</span>}
                       </button>
                     );
                   })}
@@ -433,9 +513,19 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                 </div>
               </div>
 
+              <Honeypot value={trap} onChange={setTrap} />
+              <FormNotice message={notice} />
+
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-                <Btn type="submit" variant="primary" size="lg" arrow className="w-full shrink-0 sm:w-auto">
-                  Toplantı Talebi Gönder
+                <Btn
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  arrow={!sending}
+                  disabled={sending}
+                  className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+                >
+                  {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
                 </Btn>
                 <p className="text-[13px] leading-relaxed text-muted">
                   Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.

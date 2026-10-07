@@ -1,0 +1,159 @@
+/* Guru Panel: Payload yönetim arayüzünü marka renklerine yaklaştırır.
+   Yalnız birkaç değişken ve özel pano bileşeni; Payload'un kendi
+   düzenine dokunulmaz ki güncellemelerde kırılmasın. */
+
+:root {
+  --guru-navy: #011441;
+  --guru-brand: #2a6aca;
+  --guru-soft: #f4f7fb;
+  --guru-chip: #eef3fa;
+  --guru-muted: #6b7487;
+}
+
+/* Birincil butonlar lacivert, üzerine gelince marka mavisi */
+.btn--style-primary {
+  --bg-color: var(--guru-navy);
+  --hover-bg: var(--guru-brand);
+  --color: #fff;
+  --hover-color: #fff;
+}
+
+.guru-panel-logo {
+  display: block;
+  width: 190px;
+  max-width: 100%;
+  height: auto;
+}
+
+.guru-panel-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+
+/* ---- Pano özeti ---- */
+.guru-dash {
+  margin-bottom: calc(var(--base) * 2);
+}
+
+.guru-dash__head h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--theme-text);
+}
+
+.guru-dash__head p {
+  margin: 6px 0 0;
+  color: var(--theme-elevation-500);
+}
+
+.guru-dash__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .guru-dash__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.guru-dash__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.guru-dash__card:hover {
+  background: var(--guru-chip);
+}
+
+.guru-dash__value {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--guru-navy);
+}
+
+.guru-dash__label {
+  font-size: 14px;
+  color: var(--guru-muted);
+}
+
+.guru-dash__panel {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+}
+
+.guru-dash__panel h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.guru-dash__panel ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.guru-dash__panel li a {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (max-width: 700px) {
+  .guru-dash__panel li a {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+.guru-dash__when {
+  font-weight: 500;
+  color: var(--guru-navy);
+}
+
+.guru-dash__who {
+  color: var(--theme-elevation-650);
+}
+
+.guru-dash__pill {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  background: var(--guru-chip);
+  color: var(--guru-navy);
+}
+
+.guru-dash__pill--onaylandi {
+  background: #e3f0ff;
+  color: var(--guru-brand);
+}
+
+.guru-dash__empty {
+  margin: 0;
+  color: var(--guru-muted);
+}

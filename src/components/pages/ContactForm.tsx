@@ -6,6 +6,7 @@ import { Check, ChevronDown, Clock, Copy } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
 import { cardCls } from "@/components/site/styles";
 import { services, site } from "@/lib/data";
+import { postForm } from "@/lib/submit";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -99,6 +100,39 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
+/**
+ * Bal küpü alanı: ekranda ve ekran okuyucuda görünmez; yalnız formu körlemesine
+ * dolduran botlar doldurur, sunucu bu gönderimleri sessizce atar.
+ */
+export function Honeypot({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div aria-hidden className="pointer-events-none absolute -left-[10000px] top-0 size-px overflow-hidden">
+      <label>
+        Web siteniz
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="text-[16px]"
+        />
+      </label>
+    </div>
+  );
+}
+
+/** Gönderim sırasında ya da sunucu hatasında formun altındaki uyarı */
+export function FormNotice({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p role="alert" className="mt-5 rounded-xl bg-[#fdecec] px-4 py-3 text-[14px] font-medium text-[#a51b1b]">
+      {message}
+    </p>
+  );
+}
+
 /** Form kartı: beyaz, ince halka, hafif derinlik */
 export const formCardCls = cn(
   cardCls,
@@ -144,7 +178,11 @@ export function ContactForm({
 
   const [values, setValues] = useState<Values>(initialValues);
   const [errors, setErrors] = useState<Errors>({});
-  const [submitted, setSubmitted] = useState(false);
+  /* "saved": panele kaydedildi; "mail": panel yoksa e-posta uygulamasıyla gönderim */
+  const [submitted, setSubmitted] = useState<false | "saved" | "mail">(false);
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState<string>();
+  const [trap, setTrap] = useState("");
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<number | null>(null);
 
@@ -176,8 +214,10 @@ export function ContactForm({
     setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e));
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (sending) return;
+    setNotice(undefined);
     const effective: Values = { ...values, service };
     const nextErrors = validate(effective);
     const firstKey = FIELD_ORDER.find((k) => nextErrors[k]);
@@ -189,6 +229,29 @@ export function ContactForm({
       return;
     }
     const subject = `${subjectPrefix} | ${service}`;
+
+    /* Önce panele kaydet; panel ulaşılamazsa e-posta uygulamasına düş */
+    setSending(true);
+    const result = await postForm("/api/leads/gonder", {
+      name: effective.name,
+      email: effective.email,
+      phone: effective.phone,
+      service,
+      subject,
+      message: effective.message,
+      source: window.location.pathname,
+      website: trap,
+    });
+    setSending(false);
+    if (result.kind === "saved") {
+      setSubmitted("saved");
+      return;
+    }
+    if (result.kind === "error") {
+      setNotice(result.message);
+      return;
+    }
+
     const body = [
       `Ad Soyad: ${effective.name.trim()}`,
       `E-posta: ${effective.email.trim()}`,
@@ -202,7 +265,7 @@ export function ContactForm({
     window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
-    setSubmitted(true);
+    setSubmitted("mail");
   }
 
   return (
@@ -221,8 +284,15 @@ export function ContactForm({
               <Check className="size-7" strokeWidth={2.2} aria-hidden />
             </span>
             <h3 className="mt-6 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
-              Talebiniz E-posta Uygulamanızda Açıldı
+              {submitted === "saved" ? "Mesajınız Bize Ulaştı" : "Talebiniz E-posta Uygulamanızda Açıldı"}
             </h3>
+            {submitted === "saved" ? (
+              <p className="mt-3 max-w-sm text-[14.5px] leading-relaxed text-muted">
+                Teşekkürler {values.name.trim().split(" ")[0]}. Ekibimiz aynı gün içinde{" "}
+                <span className="break-words font-medium text-heading">{values.email.trim()}</span> adresinden size
+                dönüş yapacak.
+              </p>
+            ) : (
             <p className="mt-3 max-w-sm text-[14.5px] leading-relaxed text-muted">
               Gönder butonuna basmanız yeterli. E-posta uygulamanız açılmadıysa
               mesajınızı doğrudan{" "}
@@ -234,7 +304,9 @@ export function ContactForm({
               </a>{" "}
               adresine iletebilirsiniz.
             </p>
+            )}
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              {submitted === "mail" && (
               <Btn variant="light" onClick={copyEmail} aria-live="polite">
                 <span className="flex items-center gap-2">
                   {copied ? (
@@ -245,6 +317,7 @@ export function ContactForm({
                   {copied ? "Adres Kopyalandı" : "Adresi Kopyala"}
                 </span>
               </Btn>
+              )}
               <Btn
                 variant="primary"
                 onClick={() => {
@@ -252,6 +325,7 @@ export function ContactForm({
                   setErrors({});
                   setSubmitted(false);
                   setCopied(false);
+                  setNotice(undefined);
                 }}
               >
                 Yeni Mesaj Yaz
@@ -263,6 +337,8 @@ export function ContactForm({
             key="form"
             noValidate
             onSubmit={onSubmit}
+            aria-busy={sending}
+            className="relative"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -390,12 +466,22 @@ export function ContactForm({
               </div>
             </div>
 
+            <Honeypot value={trap} onChange={setTrap} />
+            <FormNotice message={notice} />
+
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <Btn type="submit" variant="primary" size="lg" arrow className="w-full shrink-0 sm:w-auto">
-                Mesajı Gönder
+              <Btn
+                type="submit"
+                variant="primary"
+                size="lg"
+                arrow={!sending}
+                disabled={sending}
+                className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+              >
+                {sending ? "Gönderiliyor" : "Mesajı Gönder"}
               </Btn>
               <p className="text-[13px] leading-relaxed text-muted">
-                Gönderdiğinizde mesajınız e-posta uygulamanızda hazırlanır.
+                Mesajınız doğrudan ekibimize iletilir; aynı gün dönüş yaparız.
               </p>
             </div>
           </motion.form>

@@ -133,8 +133,10 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
 /*  Header                                                             */
 /* ------------------------------------------------------------------ */
 
-export function SiteHeader() {
+/** showBlog: yayında en az bir blog yazısı varsa menüye "Blog" eklenir. */
+export function SiteHeader({ showBlog = false }: { showBlog?: boolean }) {
   const pathname = usePathname();
+  const menu: NavGroup[] = showBlog ? [...navMenu, { label: "Blog", href: "/blog" }] : navMenu;
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -218,7 +220,7 @@ export function SiteHeader() {
         </Link>
 
         <nav aria-label="Ana menü" className="mx-auto hidden items-center gap-8 lg:flex">
-          {navMenu.map((g) => (
+          {menu.map((g) => (
             <DesktopGroup key={g.label} group={g} active={isActive(g)} />
           ))}
         </nav>
@@ -256,7 +258,7 @@ export function SiteHeader() {
           <TalkLink className="ml-auto" onClick={close} />
         </div>
         <ul>
-          {navMenu.map((g) => {
+          {menu.map((g) => {
             const isOpen = expanded === g.label;
             return (
               <li key={g.label} className="py-1">

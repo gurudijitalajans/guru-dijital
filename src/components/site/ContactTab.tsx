@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
-import { site } from "@/lib/data";
 
 /**
  * Sağ kenarda dikey iletişim sekmesi (EDME'deki WhatsApp sekmesinin karşılığı).
  * WhatsApp numarası tanımlıysa doğrudan WhatsApp'a, değilse iletişim sayfasına gider.
  * Yalnız masaüstünde görünür; mobilde alt eylem çubuğu bu işi üstlenir.
+ * Numara panelin Site Ayarları'ndan gelir.
  */
-export function ContactTab() {
-  const wa = site.whatsapp?.replace(/\D/g, "");
+export function ContactTab({ whatsapp }: { whatsapp?: string }) {
+  const wa = whatsapp?.replace(/\D/g, "");
   const href = wa ? `https://wa.me/${wa}` : "/iletisim";
   const label = wa ? "WhatsApp Destek" : "Bize Yazın";
   const cls =

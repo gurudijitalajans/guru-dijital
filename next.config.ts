@@ -1,7 +1,23 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import type { NextConfig } from "next";
+import { withPayload } from "@payloadcms/next/withPayload";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* Site ve panel iki ayrı kök layout kullanır; eşleşmeyen adresler için
+     tek 404 sayfası app/global-not-found.tsx'te. */
+  experimental: { globalNotFound: true },
+  turbopack: { root: path.resolve(dirname) },
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      ".cjs": [".cts", ".cjs"],
+      ".js": [".ts", ".tsx", ".js", ".jsx"],
+      ".mjs": [".mts", ".mjs"],
+    };
+    return config;
+  },
 };
 
-export default nextConfig;
+export default withPayload(nextConfig, { devBundleServerPackages: false });

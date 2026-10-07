@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
 import { Btn } from "@/components/site/Btn";
 
-export const metadata: Metadata = {
-  title: "Sayfa Bulunamadı",
-  description:
-    "Aradığınız sayfa bulunamadı ya da adresi değişti. Ana sayfaya dönün veya projenizi konuşmak için bize ulaşın.",
-};
-
-export default function NotFound() {
+/** 404 içeriği: hem site içindeki notFound() hem de eşleşmeyen adresler (global 404) kullanır. */
+export function NotFoundContent() {
   return (
     <section className="flex min-h-[64svh] items-center py-20 text-center md:py-28">
       <div className="container-g">

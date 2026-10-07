@@ -9,7 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ContactForm } from "@/components/pages/ContactForm";
 import { ContactFaq } from "@/components/pages/ContactFaq";
 import { MeetingScheduler } from "@/components/pages/MeetingScheduler";
-import { site } from "@/lib/data";
+import { getSiteInfo, type SiteInfo } from "@/lib/cms";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ type ContactItem = {
   icon: ReactNode;
 };
 
-function buildContactItems(): ContactItem[] {
+function buildContactItems(site: SiteInfo): ContactItem[] {
   const items: ContactItem[] = [
     {
       label: "E-posta",
@@ -38,14 +38,14 @@ function buildContactItems(): ContactItem[] {
     },
     {
       label: "Instagram",
-      value: "@gurudijital",
+      value: `@${site.instagram.replace(/\/+$/, "").split("/").pop() || "gurudijital"}`,
       href: site.instagram,
       external: true,
       icon: <InstagramIcon className="size-4" />,
     },
   ];
 
-  // Aşağıdaki bilgiler data.ts'te doldurulduğunda otomatik görünür.
+  // Aşağıdaki bilgiler panelin Site Ayarları'nda doldurulduğunda otomatik görünür.
   if (site.phone) {
     items.push({
       label: "Telefon",
@@ -80,8 +80,8 @@ function buildContactItems(): ContactItem[] {
 const chipCls =
   "inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white px-4 text-[14.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.1)] transition-[color,box-shadow] duration-300 hover:text-brand hover:shadow-[0_0_0_1px_rgb(42_106_202/0.45)]";
 
-export default function IletisimPage() {
-  const contactItems = buildContactItems();
+export default async function IletisimPage() {
+  const contactItems = buildContactItems(await getSiteInfo());
 
   return (
     <>

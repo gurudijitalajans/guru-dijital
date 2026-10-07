@@ -127,3 +127,56 @@ body {
   .marquee-track { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ---- Blog yazısı gövdesi (panelden gelen zengin metin) ----
+   Kural: ayraç çizgisi yok. Alıntı çizgi yerine açık bant kutuda,
+   yatay çizgi öğesi yalnız boşluk olarak işlenir. */
+.prose-guru {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--color-body);
+}
+.prose-guru > * + * { margin-top: 1.1em; }
+.prose-guru h2 {
+  margin-top: 1.9em;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--color-heading);
+}
+.prose-guru h3 {
+  margin-top: 1.6em;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-heading);
+}
+.prose-guru h4 { margin-top: 1.4em; font-size: 18px; font-weight: 600; color: var(--color-heading); }
+.prose-guru strong { font-weight: 600; color: var(--color-heading); }
+.prose-guru a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
+.prose-guru a:hover { color: var(--color-navy); }
+.prose-guru ul, .prose-guru ol { padding-left: 1.3em; }
+.prose-guru ul { list-style: disc; }
+.prose-guru ol { list-style: decimal; }
+.prose-guru li + li { margin-top: 0.4em; }
+.prose-guru li::marker { color: var(--color-brand); }
+.prose-guru blockquote {
+  padding: 1.1em 1.4em;
+  border-radius: 16px;
+  background: var(--color-soft);
+  color: var(--color-heading);
+  font-size: 18px;
+}
+.prose-guru hr { border: 0; height: 0; margin: 2.2em 0; }
+.prose-guru img { border-radius: 16px; height: auto; max-width: 100%; }
+.prose-guru code {
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  background: var(--color-chip);
+  font-size: 0.9em;
+}
+@media (max-width: 640px) {
+  .prose-guru { font-size: 16px; }
+  .prose-guru h2 { font-size: 23px; }
+}
