@@ -390,6 +390,14 @@ export interface Product {
    * Yatay ürün ekranı (1600x1100 önerilir). Alternatif metni medya kaydından gelir.
    */
   screenshot: number | Media;
+  /**
+   * Ürün sayfasının girişinde, marka ışık yelpazesiyle (4:3, 1600x1200).
+   */
+  heroVisual?: (number | null) | Media;
+  /**
+   * Sosyal medyada paylaşılınca görünen görsel (1200x630). Boşsa ürünün hazır paylaşım görseli kullanılır.
+   */
+  ogImage?: (number | null) | Media;
   hero: {
     /**
      * Boşsa ürün adı kullanılır.
@@ -401,7 +409,111 @@ export interface Product {
     headline: string;
     sub: string;
     ctaLabel?: string | null;
+    /**
+     * Butonların altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).
+     */
+    trust?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
   };
+  tour?: {
+    show?: boolean | null;
+    title?: string | null;
+    /**
+     * Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi.
+     */
+    videoUrl?: string | null;
+    poster?: (number | null) | Media;
+  };
+  /**
+   * Görsel ve metin dönüşümlü satırlar; üç satır önerilir. Görsel 4:3 (1200x900).
+   */
+  showcase?:
+    | {
+        eyebrow?: string | null;
+        title: string;
+        desc: string;
+        bullets?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * "Bugün" ve "Guru ile" sütunları; dört madde önerilir.
+   */
+  comparison?: {
+    before?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    after?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  included?:
+    | {
+        title: string;
+        icon:
+          | 'share'
+          | 'palette'
+          | 'pen'
+          | 'monitor'
+          | 'chart-bar'
+          | 'clapperboard'
+          | 'bot'
+          | 'users'
+          | 'workflow'
+          | 'briefcase'
+          | 'message'
+          | 'brain'
+          | 'languages'
+          | 'bell'
+          | 'calendar'
+          | 'clipboard'
+          | 'database'
+          | 'file'
+          | 'gauge'
+          | 'handshake'
+          | 'kanban'
+          | 'dashboard'
+          | 'layers'
+          | 'link'
+          | 'pie'
+          | 'shield'
+          | 'sparkles'
+          | 'target'
+          | 'rocket'
+          | 'megaphone'
+          | 'camera'
+          | 'globe'
+          | 'cart'
+          | 'search'
+          | 'mail'
+          | 'zap'
+          | 'trending'
+          | 'code'
+          | 'lightbulb'
+          | 'award'
+          | 'badge-check'
+          | 'gem'
+          | 'chart-line';
+        desc: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * İkonlu kartlar; altı özellik önerilir.
    */
@@ -568,6 +680,10 @@ export interface Product {
     | 'badge-check'
     | 'gem'
     | 'chart-line';
+  /**
+   * Paket ürünlerde (ör. Guru Business) sayfada "Pakete dahil" bölümü olarak görünür.
+   */
+  bundle?: (number | Product)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -984,6 +1100,8 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   screenshot?: T;
+  heroVisual?: T;
+  ogImage?: T;
   hero?:
     | T
     | {
@@ -991,6 +1109,59 @@ export interface ProductsSelect<T extends boolean = true> {
         headline?: T;
         sub?: T;
         ctaLabel?: T;
+        trust?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  tour?:
+    | T
+    | {
+        show?: T;
+        title?: T;
+        videoUrl?: T;
+        poster?: T;
+      };
+  showcase?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        desc?: T;
+        bullets?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        image?: T;
+        id?: T;
+      };
+  comparison?:
+    | T
+    | {
+        before?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        after?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  included?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        desc?: T;
+        id?: T;
       };
   features?:
     | T
@@ -1050,6 +1221,7 @@ export interface ProductsSelect<T extends boolean = true> {
   slug?: T;
   order?: T;
   icon?: T;
+  bundle?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

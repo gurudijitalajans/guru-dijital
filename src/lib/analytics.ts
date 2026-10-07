@@ -41,6 +41,8 @@ export const EVENT_LABELS: Record<string, string> = {
   "giris-ikinci-buton": "Giriş: ikinci buton",
   "kapanis-ana-buton": "Kapanış: ana buton",
   "kapanis-ikinci-buton": "Kapanış: ikinci buton",
+  "video-izlendi": "Video oynatıldı",
+  "urun-menu": "Ürün sayfası menüsü",
 };
 
 export const eventLabel = (name: string) =>

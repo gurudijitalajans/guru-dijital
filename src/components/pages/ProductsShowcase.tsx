@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  * Ürün vitrini: paneldeki yazılım ürünleri, md+ iki sütunlu sade kartlar.
  *
  * Server component; belirme animasyonu client StaggerGroup/Item'da. Her kart
- * ürün ekranını açık bant zeminde gösterir, ad, kısa açıklama, üç madde ve
+ * ürünün marka görselini gösterir, ad, kısa açıklama, üç madde ve
  * "Ürünü İncele" / "Demo Talep Et" butonları taşır. İlk ekran görüntüsü sayfanın
  * LCP adayı olduğu için preload edilir; ikinci kart md+ ilk ekranda: eager.
  * Ürün adları İngilizce: lang="en" büyük harf dönüşümünde noktalı İ oluşmasını önler.
@@ -27,21 +27,18 @@ export async function ProductsShowcase() {
         return (
           <StaggerItem key={p.slug} className="h-full">
             <article className={cn(cardCls, "group flex h-full flex-col overflow-hidden")}>
-              <Link
-                href={href}
-                aria-label={`${p.name} ürün sayfası`}
-                className="block bg-soft px-3 pt-4 sm:px-5 sm:pt-6"
-              >
+              <Link href={href} aria-label={`${p.name} ürün sayfası`} className="block overflow-hidden bg-navy">
+                {/* Marka ışık yelpazesiyle ürün görseli (panel: Ürünler > Giriş görseli) */}
                 <Image
-                  src={p.image.src}
-                  alt={p.image.alt}
-                  width={p.image.w}
-                  height={p.image.h}
+                  src={p.heroVisual.src}
+                  alt={p.heroVisual.alt}
+                  width={p.heroVisual.w}
+                  height={p.heroVisual.h}
                   /* Next 16: preload ile loading birlikte verilmez */
                   preload={i === 0}
                   loading={i === 0 ? undefined : i === 1 ? "eager" : "lazy"}
                   sizes="(min-width: 1248px) 570px, (min-width: 768px) calc(50vw - 60px), calc(100vw - 64px)"
-                  className="block h-auto w-full transition-transform duration-500 ease-out group-hover:-translate-y-1"
+                  className="block h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                 />
               </Link>
 

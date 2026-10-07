@@ -43,7 +43,9 @@ import {
   Workflow,
   Zap,
   type LucideIcon,
+  type LucideProps,
 } from "lucide-react";
+import { createElement } from "react";
 import { DEFAULT_ICON, isIconName, type IconName } from "@/lib/icon-names";
 
 /* Panelde seçilen ikon adının bileşeni (liste: src/lib/icon-names.ts) */
@@ -101,4 +103,9 @@ export function iconFor(name: string | null | undefined): LucideIcon {
 export function iconNameOf(icon: LucideIcon): IconName {
   const hit = (Object.entries(ICONS) as [IconName, LucideIcon][]).find(([, c]) => c === icon);
   return hit?.[0] ?? DEFAULT_ICON;
+}
+
+/** İkonu adıyla çizer (bileşeni render sırasında değişkene atamadan) */
+export function IconByName({ name, ...props }: { name: string | null | undefined } & LucideProps) {
+  return createElement(iconFor(name), props);
 }

@@ -12,6 +12,7 @@ import {
 import { ABOUT_DEFAULTS, type AboutContent } from "@/lib/about-defaults";
 import { HOME_DEFAULTS, type HomeContent } from "@/lib/home-defaults";
 import { productDetails } from "@/lib/products-content";
+import { productExtras } from "@/lib/product-extras";
 import { iconNameOf } from "@/lib/icons";
 import { DEFAULT_ICON, isIconName, type IconName } from "@/lib/icon-names";
 import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
@@ -61,6 +62,18 @@ export type ProductView = {
   stats: { value: number; suffix: string; label: string }[];
   faq: FaqItem[];
   integrations: string[];
+  /* Ürün sayfası ek bölümleri (panel > Ürünler; yedek: product-extras.ts) */
+  trust: string[];
+  /** Giriş görseli; yoksa ekran görüntüsü */
+  heroVisual: WorkImage;
+  /** Paylaşım görseli adresi; yoksa sitenin genel görseli */
+  ogImage: string;
+  tour: { title: string; src: string; poster: string } | null;
+  showcase: { eyebrow: string; title: string; desc: string; bullets: string[]; image: WorkImage }[];
+  comparison: { before: string[]; after: string[] };
+  included: { icon: IconName; title: string; desc: string }[];
+  /** Paket ürünlerde içerdiği ürünlerin adresleri */
+  bundle: string[];
 };
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -126,8 +139,36 @@ export function fallbackProducts(): ProductView[] {
       stats: d.stats,
       faq: d.faq,
       integrations: d.integrations,
+      ...extrasView(p.slug, p.name, { src: p.image, alt: p.imageAlt, ...PRODUCT_IMAGE }),
     };
   });
+}
+
+/** product-extras.ts yedeğini görünüme çevirir */
+function extrasView(slug: string, name: string, screenshot: WorkImage) {
+  const x = productExtras[slug];
+  if (!x) {
+    return {
+      trust: [],
+      heroVisual: screenshot,
+      ogImage: "/og.jpg",
+      tour: null,
+      showcase: [],
+      comparison: { before: [], after: [] },
+      included: [],
+      bundle: [],
+    };
+  }
+  return {
+    trust: x.trust,
+    heroVisual: x.heroVisual,
+    ogImage: x.ogImage,
+    tour: { title: x.video.title || `${name} ürün turu`, src: x.video.src, poster: x.video.poster },
+    showcase: x.showcase,
+    comparison: x.comparison,
+    included: x.included,
+    bundle: x.bundle ?? [],
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -181,6 +222,30 @@ function fromProduct(p: Product): ProductView {
     stats: (p.stats ?? []).map((s) => ({ value: s.value, suffix: s.suffix ?? "", label: s.label })),
     faq: (p.faq ?? []).map((f) => ({ q: f.q, a: f.a })),
     integrations: texts(p.integrations),
+    trust: texts(p.hero?.trust),
+    heroVisual: toImage(p.heroVisual, `${p.name} paneli`) ?? image,
+    ogImage: (typeof p.ogImage === "object" && p.ogImage?.url) || productExtras[p.slug ?? ""]?.ogImage || "/og.jpg",
+    tour:
+      p.tour?.show !== false && p.tour?.videoUrl
+        ? {
+            title: p.tour.title || `${p.name} ürün turu`,
+            src: p.tour.videoUrl,
+            poster: (typeof p.tour.poster === "object" && p.tour.poster?.url) || "",
+          }
+        : null,
+    showcase: (p.showcase ?? [])
+      .map((x) => {
+        const img = toImage(x.image, x.title);
+        return img
+          ? { eyebrow: x.eyebrow ?? "", title: x.title, desc: x.desc, bullets: texts(x.bullets), image: img }
+          : null;
+      })
+      .filter((x): x is NonNullable<typeof x> => Boolean(x)),
+    comparison: { before: texts(p.comparison?.before), after: texts(p.comparison?.after) },
+    included: (p.included ?? []).map((i) => ({ icon: iconOf(i.icon), title: i.title, desc: i.desc })),
+    bundle: (p.bundle ?? [])
+      .map((b) => (typeof b === "object" && b ? b.slug : null))
+      .filter((b): b is string => Boolean(b)),
   };
 }
 

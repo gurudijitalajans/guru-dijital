@@ -54,6 +54,25 @@ export const Products: CollectionConfig = {
               required: true,
               admin: { description: "Yatay ürün ekranı (1600x1100 önerilir). Alternatif metni medya kaydından gelir." },
             },
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "heroVisual",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "Giriş görseli",
+                  admin: { description: "Ürün sayfasının girişinde, marka ışık yelpazesiyle (4:3, 1600x1200)." },
+                },
+                {
+                  name: "ogImage",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "Paylaşım görseli",
+                  admin: { description: "Sosyal medyada paylaşılınca görünen görsel (1200x630). Boşsa ürünün hazır paylaşım görseli kullanılır." },
+                },
+              ],
+            },
           ],
         },
         {
@@ -70,6 +89,78 @@ export const Products: CollectionConfig = {
             },
             { name: "sub", type: "textarea", label: "Açıklama", required: true },
             { name: "ctaLabel", type: "text", label: "Buton metni", defaultValue: "Demo Talep Et" },
+            textList("trust", "Güven ifadeleri", "İfade", {
+              maxRows: 3,
+              description: "Butonların altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).",
+            }),
+          ],
+        },
+        {
+          name: "tour",
+          label: "Ürün turu",
+          fields: [
+            { name: "show", type: "checkbox", label: "Bölümü göster", defaultValue: true },
+            { name: "title", type: "text", label: "Başlık", admin: { placeholder: "Guru Chatbot ürün turu" } },
+            {
+              name: "videoUrl",
+              type: "text",
+              label: "Video adresi",
+              admin: { description: "Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi." },
+            },
+            { name: "poster", type: "upload", relationTo: "media", label: "Kapak görseli" },
+          ],
+        },
+        {
+          label: "Öne çıkan ekranlar",
+          fields: [
+            {
+              name: "showcase",
+              type: "array",
+              label: "Öne çıkan ekranlar",
+              labels: { singular: "Ekran", plural: "Ekranlar" },
+              maxRows: 4,
+              admin: { description: "Görsel ve metin dönüşümlü satırlar; üç satır önerilir. Görsel 4:3 (1200x900)." },
+              fields: [
+                {
+                  type: "row",
+                  fields: [
+                    { name: "eyebrow", type: "text", label: "Üst etiket", admin: { width: "35%" } },
+                    { name: "title", type: "text", label: "Başlık", required: true },
+                  ],
+                },
+                { name: "desc", type: "textarea", label: "Açıklama", required: true },
+                textList("bullets", "Maddeler", "Madde", { maxRows: 4 }),
+                { name: "image", type: "upload", relationTo: "media", label: "Görsel", required: true },
+              ],
+            },
+          ],
+        },
+        {
+          name: "comparison",
+          label: "Karşılaştırma",
+          admin: { description: "\"Bugün\" ve \"Guru ile\" sütunları; dört madde önerilir." },
+          fields: [
+            textList("before", "Bugün", "Madde", { maxRows: 6 }),
+            textList("after", "Guru ile", "Madde", { maxRows: 6 }),
+          ],
+        },
+        {
+          label: "Neler dahil",
+          fields: [
+            {
+              name: "included",
+              type: "array",
+              label: "Neler dahil",
+              labels: { singular: "Kalem", plural: "Kalemler" },
+              maxRows: 6,
+              fields: [
+                {
+                  type: "row",
+                  fields: [{ name: "title", type: "text", label: "Başlık", required: true }, iconField({ width: "40%" })],
+                },
+                { name: "desc", type: "textarea", label: "Açıklama", required: true },
+              ],
+            },
           ],
         },
         {
@@ -138,5 +229,13 @@ export const Products: CollectionConfig = {
     slugField("name", "/urunler"),
     orderField,
     iconField(),
+    {
+      name: "bundle",
+      type: "relationship",
+      relationTo: "products",
+      hasMany: true,
+      label: "Pakete dahil ürünler",
+      admin: { position: "sidebar", description: "Paket ürünlerde (ör. Guru Business) sayfada \"Pakete dahil\" bölümü olarak görünür." },
+    },
   ],
 };

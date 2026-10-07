@@ -22,6 +22,7 @@ import config from "@payload-config";
 import { announcement, caseStudies, products, references, services, site, team, testimonials, umami } from "@/lib/data";
 import { ABOUT_DEFAULTS } from "@/lib/about-defaults";
 import { HOME_DEFAULTS } from "@/lib/home-defaults";
+import { productExtrasData } from "./product-extras-data";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
 import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
@@ -192,9 +193,13 @@ if ((await payload.count({ collection: "services" })).totalDocs === 0) {
 }
 
 if ((await payload.count({ collection: "products" })).totalDocs === 0) {
+  const idBySlug: Record<string, number> = {};
   for (const [i, pr] of products.entries()) {
     const d = productDetails[pr.slug];
-    await payload.create({
+    /* Ürün sayfası ek bölümleri; paket ürün en sonda olduğu için modüllerin kimliği hazır */
+    const extras = await productExtrasData(pr.slug, mediaFor, idBySlug);
+    const { trust = [], ...rest } = extras ?? {};
+    const created = await payload.create({
       collection: "products",
       data: {
         name: pr.name,
@@ -205,7 +210,8 @@ if ((await payload.count({ collection: "products" })).totalDocs === 0) {
         desc: pr.desc,
         highlights: rows(pr.features),
         screenshot: await mediaFor({ src: pr.image, alt: pr.imageAlt }),
-        hero: d.hero,
+        hero: { ...d.hero, trust },
+        ...rest,
         features: d.features.map((f) => ({ icon: iconNameOf(f.icon), title: f.title, desc: f.desc })),
         steps: d.steps,
         useCases: d.useCases,
@@ -216,6 +222,7 @@ if ((await payload.count({ collection: "products" })).totalDocs === 0) {
         _status: "published",
       },
     });
+    idBySlug[pr.slug] = created.id;
   }
   log(`${products.length} ürün panele aktarıldı`);
 }
