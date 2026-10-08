@@ -19,8 +19,8 @@ Supabase hesabında olmaz. Aşağıdaki her şey Vercel'deki Guru takımında
 
 ### b) Görsel deposu: Vercel Blob
 
-1. Aynı projede **Storage** > **Create** > **Blob**. Ad: `guru-medya`, bölge: Frankfurt.
-2. Projeye bağlarken yine **yalnız Production**. `BLOB_READ_WRITE_TOKEN` kendiliğinden eklenir.
+1. Aynı projede **Storage** > **Create** > **Blob**. Ad: `guru-gorseller`, bölge: Frankfurt, erişim: **Public** (panel eklentisi yalnız herkese açık depoyla çalışır).
+2. Projeye bağlarken yine **yalnız Production** ve **"Add a read-write token env var" işaretli**; böylece `BLOB_READ_WRITE_TOKEN` eklenir.
 
 ### c) E-posta bildirimi: Resend
 
