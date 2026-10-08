@@ -181,7 +181,7 @@ export const productExtras: Record<string, ProductExtras> = {
         title: "Her iş, sorumlusu ve tarihiyle panoda",
         desc: "Görevler Yapılacak, Devam, Kontrol ve Tamam aşamalarında öncelik etiketiyle görünür. Kimin hangi işi hangi tarihe kadar teslim edeceği tartışma konusu olmaktan çıkar.",
         bullets: [
-          "Yüksek, Orta ve Düşük öncelik etiketleri",
+          "Öncelik etiketi ve teslim tarihi",
           "Görev numarası ve sorumlu her kartta",
           "Kontrol aşamasıyla onaysız iş kapanmaz",
         ],
@@ -201,10 +201,10 @@ export const productExtras: Record<string, ProductExtras> = {
       {
         eyebrow: "Zaman çizelgesi",
         title: "Haftanın planı tek çizelgede",
-        desc: "Süren işlerin başlangıç ve bitişleri haftalık zaman çizelgesinde yan yana durur. Bugün çizgisiyle hangi işin gecikme riski taşıdığını toplantı yapmadan görürsünüz.",
+        desc: "Süren işlerin başlangıç ve bitişleri haftalık zaman çizelgesinde yan yana durur. Bugünün sütunu vurgulu olduğundan hangi işin gecikme riski taşıdığını toplantı yapmadan görürsünüz.",
         bullets: [
           "Haftalık çizelgede tüm süreçler",
-          "Bugün çizgisiyle gecikme riski",
+          "Bugün vurgusuyla gecikme riski",
           "Zamanında tamamlanan iş oranıyla süreç sağlığı",
         ],
         image: V("guru-operation", 3, "Haftalık zaman çizelgesi: işlerin günlere dağılımı ve Fatura testi teslim durumu"),
