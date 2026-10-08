@@ -163,7 +163,7 @@ function extrasView(slug: string, name: string, screenshot: WorkImage) {
     trust: x.trust,
     heroVisual: x.heroVisual,
     ogImage: x.ogImage,
-    tour: { title: x.video.title || `${name} ürün turu`, src: x.video.src, poster: x.video.poster },
+    tour: { title: x.video.title || `${name} Ürün Turu`, src: x.video.src, poster: x.video.poster },
     showcase: x.showcase,
     comparison: x.comparison,
     included: x.included,
@@ -228,9 +228,9 @@ function fromProduct(p: Product): ProductView {
     tour:
       p.tour?.show !== false && p.tour?.videoUrl
         ? {
-            title: p.tour.title || `${p.name} ürün turu`,
+            title: p.tour.title || `${p.name} Ürün Turu`,
             src: p.tour.videoUrl,
-            poster: (typeof p.tour.poster === "object" && p.tour.poster?.url) || "",
+            poster: (typeof p.tour.poster === "object" && p.tour.poster?.url) || productExtras[p.slug ?? ""]?.video.poster || "",
           }
         : null,
     showcase: (p.showcase ?? [])

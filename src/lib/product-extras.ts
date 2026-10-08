@@ -42,7 +42,7 @@ const hero = (slug: string, alt: string) => ({ src: `/products/visuals/${slug}-h
 const video = (slug: string, name: string) => ({
   src: `/video/products/${slug}.mp4`,
   poster: `/video/products/${slug}.jpg`,
-  title: `${name} ürün turu`,
+  title: `${name} Ürün Turu`,
 });
 
 export const productExtras: Record<string, ProductExtras> = {

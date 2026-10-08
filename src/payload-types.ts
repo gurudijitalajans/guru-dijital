@@ -426,6 +426,9 @@ export interface Product {
      * Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi.
      */
     videoUrl?: string | null;
+    /**
+     * Boşsa videonun hazır kapak karesi kullanılır.
+     */
     poster?: (number | null) | Media;
   };
   /**

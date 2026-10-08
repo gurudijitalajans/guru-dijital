@@ -107,7 +107,7 @@ export const Products: CollectionConfig = {
               label: "Video adresi",
               admin: { description: "Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi." },
             },
-            { name: "poster", type: "upload", relationTo: "media", label: "Kapak görseli" },
+            { name: "poster", type: "upload", relationTo: "media", label: "Kapak görseli", admin: { description: "Boşsa videonun hazır kapak karesi kullanılır." } },
           ],
         },
         {
