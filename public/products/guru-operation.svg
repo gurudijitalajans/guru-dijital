@@ -31,7 +31,6 @@
     <rect x="150" y="45" width="640" height="34" rx="17" fill="#121f42" stroke="#1f2d57"/>
     <rect x="172" y="59" width="11" height="9" rx="2" fill="#647193"/>
     <path d="M174.5 59v-3a3 3 0 0 1 6 0v3" fill="none" stroke="#647193" stroke-width="1.6"/>
-    <text x="194" y="68" font-size="18" fill="#97a1bb">app.gurudijital.com.tr/operation</text>
     <path d="M1481 71h18c-2-2.5-2.5-4.5-2.5-7.5v-2.5a6.5 6.5 0 0 0-13 0v2.5c0 3-.5 5-2.5 7.5z" fill="none" stroke="#97a1bb" stroke-width="1.8" stroke-linejoin="round"/>
     <path d="M1487 74a3 3 0 0 0 6 0" fill="none" stroke="#97a1bb" stroke-width="1.8"/>
     <circle cx="1497" cy="55" r="4.5" fill="#ff6b6b"/>
