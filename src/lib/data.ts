@@ -479,8 +479,8 @@ export const products: SoftwareProduct[] = [
       "Talepleri ekibe yönlendirme",
     ],
     icon: Bot,
-    image: "/products/guru-chatbot.svg",
-    imageAlt: "Guru Chatbot yönetim paneli: konuşma listesi, aktif sohbet ve yanıt istatistikleri",
+    image: "/products/screens/guru-chatbot.webp",
+    imageAlt: "Guru Chatbot gelen kutusu: konuşma listesi, aktif sohbet ve yanıt istatistikleri",
   },
   {
     slug: "guru-crm",
@@ -493,8 +493,8 @@ export const products: SoftwareProduct[] = [
       "Raporlama ve hatırlatmalar",
     ],
     icon: Users,
-    image: "/products/guru-crm.svg",
-    imageAlt: "Guru CRM satış hattı: fırsat kartları, KPI şeridi ve gelir grafiği",
+    image: "/products/screens/guru-crm.webp",
+    imageAlt: "Guru CRM satış hattı: göstergeler ve aşamalara göre fırsat kartları",
   },
   {
     slug: "guru-operation",
@@ -507,8 +507,8 @@ export const products: SoftwareProduct[] = [
       "Süreç performans takibi",
     ],
     icon: Workflow,
-    image: "/products/guru-operation.svg",
-    imageAlt: "Guru Operation görev panosu, ekip kapasitesi ve haftalık zaman çizelgesi",
+    image: "/products/screens/guru-operation.webp",
+    imageAlt: "Guru Operation panosu: görevler, ekip kapasitesi ve haftalık zaman çizelgesi",
   },
   {
     slug: "guru-business",
@@ -521,8 +521,8 @@ export const products: SoftwareProduct[] = [
       "Öncelikli destek",
     ],
     icon: Briefcase,
-    image: "/products/guru-business.svg",
-    imageAlt: "Guru Business genel bakış panosu: KPI'lar, modüller ve gelir dağılımı",
+    image: "/products/screens/guru-business.webp",
+    imageAlt: "Guru Business genel bakış: göstergeler, modüller, gelir dağılımı ve son aktiviteler",
   },
 ];
 

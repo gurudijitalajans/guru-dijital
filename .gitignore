@@ -44,3 +44,6 @@ next-env.d.ts
 /data/
 /media/
 !.env.example
+
+# ürün görselleri stüdyosu çıktısı
+/tools/gorsel-studyo/out

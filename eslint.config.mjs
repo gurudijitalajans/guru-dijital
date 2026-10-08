@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     "src/payload-types.ts",
     "src/app/(payload)/**",
     "src/migrations/**",
+    // Görsel üretim araçları (siteye girmez)
+    "tools/**",
   ]),
 ]);
 

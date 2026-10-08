@@ -98,7 +98,7 @@ function toImage(m: number | Media | null | undefined, fallbackAlt = ""): WorkIm
 /*  Kod içindeki varsayılan içerik                                     */
 /* ------------------------------------------------------------------ */
 
-const PRODUCT_IMAGE = { w: 1600, h: 1100 };
+const PRODUCT_IMAGE = { w: 1600, h: 1000 };
 
 export function fallbackServices(): ServiceView[] {
   return staticServices.map((s, i) => ({
