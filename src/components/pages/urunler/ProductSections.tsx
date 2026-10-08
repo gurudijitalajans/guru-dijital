@@ -9,7 +9,7 @@ import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY 
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cn } from "@/lib/utils";
 
-/* Ürün sayfası bölümleri. Hepsi sunucu bileşeni; içerik panelden (Ürünler). */
+/* Ürün sayfası bölümleri. Hepsi sunucu bileşeni; içerik getProducts() ile gelir. */
 
 /** Bölümler yapışkan menünün altında kalmasın */
 export const anchorCls = "scroll-mt-[124px] lg:scroll-mt-[140px]";

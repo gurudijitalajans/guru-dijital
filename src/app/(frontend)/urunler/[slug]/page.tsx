@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  * Ürün sayfası: giriş (metin + marka görseli), yapışkan bölüm menüsü, ürün
  * turu videosu, öne çıkan ekranlar, özellikler, paket içeriği, karşılaştırma,
  * nasıl çalışır, senaryolar, sayılar, neler dahil, entegrasyonlar, SSS, diğer
- * ürünler ve demo. Tüm içerik panelden (Ürünler); boş bırakılan bölüm görünmez.
+ * ürünler ve demo. İçerik getProducts() ile gelir; boş bölüm görünmez.
  */
 export default async function UrunDetayPage({ params }: { params: Params }) {
   const { slug } = await params;

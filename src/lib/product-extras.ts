@@ -1,10 +1,10 @@
 import type { IconName } from "@/lib/icon-names";
 
 /**
- * Ürün sayfalarının ek bölümleri: VARSAYILAN/YEDEK içerik (canlıda panel >
- * Ürünler). Kural: uydurma rakam yok; süre ve kapsam ifadeleri ürün SSS'lerinde
+ * Ürün sayfalarının ek bölümleri (panel bağlıysa içerik Ürünler kaydından,
+ * değilse buradan). Kural: uydurma rakam yok; süre ve kapsam ifadeleri ürün SSS'lerinde
  * zaten taahhüt edilen bilgilerle aynıdır. Görseller public/products altında
- * (scratchpad'deki HTML şablonlarından üretildi, marka ışık yelpazesiyle).
+ * (HTML şablonlarından üretildi, marka ışık yelpazesiyle).
  */
 
 export type ShowcaseItem = {

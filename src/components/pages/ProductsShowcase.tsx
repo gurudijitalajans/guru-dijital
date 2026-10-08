@@ -9,7 +9,7 @@ import { cardCls, cardTextCls, iconBoxCls } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
 /**
- * Ürün vitrini: paneldeki yazılım ürünleri, md+ iki sütunlu sade kartlar.
+ * Ürün vitrini: yazılım ürünleri, md+ iki sütunlu sade kartlar.
  *
  * Server component; belirme animasyonu client StaggerGroup/Item'da. Her kart
  * ürünün marka görselini gösterir, ad, kısa açıklama, üç madde ve
@@ -28,7 +28,7 @@ export async function ProductsShowcase() {
           <StaggerItem key={p.slug} className="h-full">
             <article className={cn(cardCls, "group flex h-full flex-col overflow-hidden")}>
               <Link href={href} aria-label={`${p.name} ürün sayfası`} className="block overflow-hidden bg-navy">
-                {/* Marka ışık yelpazesiyle ürün görseli (panel: Ürünler > Giriş görseli) */}
+                {/* Marka ışık yelpazesiyle ürün giriş görseli */}
                 <Image
                   src={p.heroVisual.src}
                   alt={p.heroVisual.alt}
