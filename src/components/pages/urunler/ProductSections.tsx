@@ -247,10 +247,10 @@ export function IncludedGrid({ product }: { product: ProductView }) {
 export function ProductCardLink({ product, cta = "İncele" }: { product: ProductView; cta?: string }) {
   return (
     <Link href={`/urunler/${product.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
-      <div className="relative aspect-[4/3] overflow-hidden bg-soft">
+      <div className="relative aspect-[4/5] overflow-hidden bg-navy">
         <Image
-          src={product.heroVisual.src}
-          alt=""
+          src={product.cover.src}
+          alt={product.cover.alt}
           fill
           sizes="(min-width: 1024px) 390px, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"

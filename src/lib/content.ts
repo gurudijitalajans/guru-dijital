@@ -32,6 +32,8 @@ export type ProductView = {
   trust: string[];
   /** Giriş görseli; yoksa ekran görüntüsü */
   heroVisual: WorkImage;
+  /** App Store tarzı dikey kapak (4:5); yoksa giriş görseli */
+  cover: WorkImage;
   /** Paylaşım görseli adresi; yoksa sitenin genel görseli */
   ogImage: string;
   tour: { title: string; src: string; poster: string } | null;
@@ -51,6 +53,7 @@ function extrasView(slug: string, name: string, screenshot: WorkImage) {
     return {
       trust: [],
       heroVisual: screenshot,
+      cover: screenshot,
       ogImage: "/og.jpg",
       tour: null,
       showcase: [],
@@ -62,6 +65,7 @@ function extrasView(slug: string, name: string, screenshot: WorkImage) {
   return {
     trust: x.trust,
     heroVisual: x.heroVisual,
+    cover: x.cover,
     ogImage: x.ogImage,
     tour: { title: x.video.title || `${name} Ürün Turu`, src: x.video.src, poster: x.video.poster },
     showcase: x.showcase,
