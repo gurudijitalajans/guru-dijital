@@ -48,7 +48,7 @@ const video = (slug: string, name: string) => ({
 export const productExtras: Record<string, ProductExtras> = {
   "guru-chatbot": {
     trust: ["Standart kurulum aynı gün", "Web, WhatsApp ve Instagram", "Türkçe destek dahil"],
-    heroVisual: hero("guru-chatbot", "Guru Chatbot paneli: gelen kutusu, Guru Bot'un yanıtladığı sohbet ve konuşma istatistikleri"),
+    heroVisual: hero("guru-chatbot", "Guru Chatbot dizüstü ve telefonda: gelen kutusu, web sitesi asistanı ve Guru Bot'un yanıtladığı WhatsApp mesajı"),
     ogImage: "/products/og/guru-chatbot.jpg",
     video: video("guru-chatbot", "Guru Chatbot"),
     showcase: [
@@ -61,7 +61,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Tümü, Bot ve Ekip filtreleriyle öncelik sırası",
           "Her müşterinin konuşma geçmişi tek yerde",
         ],
-        image: V("guru-chatbot", 1, "Guru Chatbot gelen kutusu: WhatsApp, Instagram ve web sitesinden gelen konuşmalar tek listede"),
+        image: V("guru-chatbot", 1, "WhatsApp, Instagram ve web sitesinden gelen mesajlar Guru Chatbot gelen kutusunda tek listede"),
       },
       {
         eyebrow: "Akıllı devir",
@@ -72,7 +72,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "\"Ekibe Aktar\" önerisiyle kesintisiz devir",
           "Hazır yanıt kısayollarıyla hızlı müdahale",
         ],
-        image: V("guru-chatbot", 2, "Guru Bot'un yanıtladığı sohbet ve konuşmayı ekibe aktarma önerisi"),
+        image: V("guru-chatbot", 2, "Telefonda ziyaretçinin sohbeti, panelde Guru Bot'un yanıtları ve ekibe aktarma önerisi"),
       },
       {
         eyebrow: "Konuşma analitiği",
@@ -83,7 +83,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Günlük ve haftalık konuşma grafiği",
           "Kanal ve konu bazında karşılaştırma",
         ],
-        image: V("guru-chatbot", 3, "Guru Chatbot raporları: ortalama yanıt süresi, çözüm oranı ve haftalık konuşma grafiği"),
+        image: V("guru-chatbot", 3, "Guru Chatbot raporları: haftalık konuşma grafiği, ortalama yanıt süresi, çözüm oranı ve kanal dağılımı"),
       },
     ],
     comparison: {
@@ -110,7 +110,7 @@ export const productExtras: Record<string, ProductExtras> = {
 
   "guru-crm": {
     trust: ["Temel kurulum bir hafta", "Excel ve CRM verisi aktarımı", "Kayıt sayısında sınır yok"],
-    heroVisual: hero("guru-crm", "Guru CRM paneli: satış hattı aşamaları, fırsat kartları ve gelir trendi"),
+    heroVisual: hero("guru-crm", "Guru CRM dizüstü ve telefonda: satış hattı, fırsat ayrıntısı ve kazanılan fırsat bildirimi"),
     ogImage: "/products/og/guru-crm.jpg",
     video: video("guru-crm", "Guru CRM"),
     showcase: [
@@ -123,7 +123,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Aşama başına toplam tutar ve fırsat sayısı",
           "Kapanma olasılığına göre önceliklendirme",
         ],
-        image: V("guru-crm", 1, "Guru CRM satış hattı: Aday, Görüşme, Teklif ve Kazanıldı aşamalarında fırsat kartları"),
+        image: V("guru-crm", 1, "Guru CRM satış hattı: Atlas Yapı fırsatı Görüşme aşamasından Teklif aşamasına taşınıyor"),
       },
       {
         eyebrow: "Teklif ve takip",
@@ -134,7 +134,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Son tarihi bugün olan işler vurgulu",
           "Görüşme notları ve mesajlar müşteri kartında",
         ],
-        image: V("guru-crm", 2, "Teklif aşamasındaki fırsatlar ve bugün son tarihli teklif hatırlatması"),
+        image: V("guru-crm", 2, "Telefonda fırsat ayrıntısı, son gün hatırlatması ve Efe Otomotiv teklif özeti"),
       },
       {
         eyebrow: "Raporlar",
@@ -145,7 +145,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Aylık gelir trendi, geçen yılla karşılaştırma",
           "Temsilci ve kaynak bazında dönüşüm",
         ],
-        image: V("guru-crm", 3, "Guru CRM gelir trendi grafiği ve satış göstergeleri"),
+        image: V("guru-crm", 3, "Guru CRM raporları: gelir trendi, satış hattı değeri, kazanma oranı ve temsilci performansı"),
       },
     ],
     comparison: {
@@ -172,7 +172,7 @@ export const productExtras: Record<string, ProductExtras> = {
 
   "guru-operation": {
     trust: ["İlk gün görev takibiyle başlayın", "Ekip büyüklüğü sınırı yok", "Guru CRM ile bütünleşik"],
-    heroVisual: hero("guru-operation", "Guru Operation paneli: görev panosu, ekip kapasitesi ve haftalık zaman çizelgesi"),
+    heroVisual: hero("guru-operation", "Guru Operation dizüstü ve telefonda: görev panosu, zaman çizelgesi ve kontrolden geçen görev bildirimi"),
     ogImage: "/products/og/guru-operation.jpg",
     video: video("guru-operation", "Guru Operation"),
     showcase: [
@@ -185,7 +185,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Görev numarası ve sorumlu her kartta",
           "Kontrol aşamasıyla onaysız iş kapanmaz",
         ],
-        image: V("guru-operation", 1, "Guru Operation görev panosu: Yapılacak, Devam, Kontrol ve Tamam sütunları"),
+        image: V("guru-operation", 1, "Guru Operation görev panosu: Stok uyarı eşikleri görevi Kontrol sütunundan taşınıyor"),
       },
       {
         eyebrow: "Ekip kapasitesi",
@@ -196,7 +196,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Aşırı yükte renkli uyarı",
           "İş dağılımını tek ekrandan dengeleme",
         ],
-        image: V("guru-operation", 2, "Ekip kapasitesi: kişi bazında haftalık doluluk oranları"),
+        image: V("guru-operation", 2, "Ekip kapasitesi: kişi bazında haftalık doluluk ve yük dengeleme önerisi"),
       },
       {
         eyebrow: "Zaman çizelgesi",
@@ -207,7 +207,7 @@ export const productExtras: Record<string, ProductExtras> = {
           "Bugün çizgisiyle gecikme riski",
           "Zamanında tamamlanan iş oranıyla süreç sağlığı",
         ],
-        image: V("guru-operation", 3, "Haftalık zaman çizelgesi ve bugün çizgisi"),
+        image: V("guru-operation", 3, "Haftalık zaman çizelgesi: işlerin günlere dağılımı ve Fatura testi teslim durumu"),
       },
     ],
     comparison: {
@@ -234,7 +234,7 @@ export const productExtras: Record<string, ProductExtras> = {
 
   "guru-business": {
     trust: ["Üç modül, tek giriş", "İlk modül iki haftada canlıda", "Size atanan müşteri başarı yöneticisi"],
-    heroVisual: hero("guru-business", "Guru Business genel bakış panosu: göstergeler, modül özetleri ve aktivite akışı"),
+    heroVisual: hero("guru-business", "Guru Business dizüstü ve telefonda: yönetici panosu ve günlük özet bildirimi"),
     ogImage: "/products/og/guru-business.jpg",
     video: video("guru-business", "Guru Business"),
     bundle: ["guru-chatbot", "guru-crm", "guru-operation"],
@@ -244,21 +244,21 @@ export const productExtras: Record<string, ProductExtras> = {
         title: "İşletmenin nabzı her sabah tek ekranda",
         desc: "Aktif müşteri, aylık gelir, açık görev ve bot çözüm oranı yönetici panosunda geçen dönemle karşılaştırmalı görünür. Rapor istemeden durumu bilirsiniz.",
         bullets: ["Dört ana gösterge tek satırda", "Geçen döneme göre değişim", "Tek tıkla rapor indirme"],
-        image: V("guru-business", 1, "Guru Business yönetici panosu: aktif müşteri, aylık gelir, açık görev ve bot çözüm oranı"),
+        image: V("guru-business", 1, "Guru Business genel bakış panosu ve aylık gelir göstergesi"),
       },
       {
         eyebrow: "Modüller",
         title: "Chatbot, CRM ve Operation birlikte çalışır",
         desc: "Her modülün özeti aynı panoda durur: kaç sohbet yanıtlandı, kaç fırsat açık, ekip kapasitesi ne durumda. Bir modüle giren kayıt diğerinde hazır bekler.",
         bullets: ["Modül başına canlı özet", "Tek veri tabanı, tekrar eden giriş yok", "Tek girişle tüm modüllere erişim"],
-        image: V("guru-business", 2, "Guru Chatbot, Guru CRM ve Guru Operation modül özetleri tek panoda"),
+        image: V("guru-business", 2, "Guru Chatbot, Guru CRM ve Guru Operation modül kartları ve telefonda yönetici özeti"),
       },
       {
         eyebrow: "Aktivite akışı",
         title: "Müşterinin yolculuğu ilk mesajdan teslimata",
         desc: "Chatbot'ta yanıtlanan soru, CRM'de gönderilen teklif ve Operation'da tamamlanan iş tek zaman akışında görünür. Kim, ne zaman, ne yaptı sorusunun cevabı hep hazırdır.",
         bullets: ["Modüller arası ortak aktivite akışı", "Kişi ve saat bilgisiyle kayıt", "Gelir kaynağı dağılımı ve hedef takibi"],
-        image: V("guru-business", 3, "Modüller arası son aktiviteler akışı"),
+        image: V("guru-business", 3, "Modüller arası son aktiviteler, gelir kaynağı dağılımı ve aylık hedef"),
       },
     ],
     comparison: {

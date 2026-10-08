@@ -42,7 +42,7 @@ export type ProductView = {
   bundle: string[];
 };
 
-const PRODUCT_IMAGE = { w: 1600, h: 1100 };
+const PRODUCT_IMAGE = { w: 1600, h: 1000 };
 
 /** product-extras.ts içeriğini görünüme çevirir */
 function extrasView(slug: string, name: string, screenshot: WorkImage) {
