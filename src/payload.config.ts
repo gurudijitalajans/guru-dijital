@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
@@ -38,6 +39,12 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATABASE_URL = process.env.DATABASE_URL || "file:./data/guru.db";
 const isPostgres = /^postgres(ql)?:\/\//.test(DATABASE_URL);
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || "";
+/* PAYLOAD_SECRET girilmemişse canlıda gizli veritabanı adresinden türetilir;
+   böylece elle ayrı bir anahtar girmek gerekmez. Adres (parola) değişirse
+   yalnız açık oturumlar kapanır, veri etkilenmez. */
+const secret =
+  process.env.PAYLOAD_SECRET ||
+  (isPostgres ? createHash("sha256").update(`guru-panel:${DATABASE_URL}`).digest("hex") : "");
 
 /* Panel bu adreslerden açılabilir (oturum çerezi yalnız bunlarda geçerli) */
 const SITE_ORIGINS = ["https://guru-dijital-pied.vercel.app", "https://gurudijital.com.tr", "https://www.gurudijital.com.tr"];
@@ -46,7 +53,7 @@ export default buildConfig({
   serverURL,
   /* serverURL tanımlıysa (canlı) çerezli istekler yalnız sitenin kendi adreslerinden kabul edilir */
   csrf: serverURL ? [...new Set([serverURL, ...SITE_ORIGINS])] : [],
-  secret: process.env.PAYLOAD_SECRET || "",
+  secret,
   admin: {
     user: Users.slug,
     theme: "light",

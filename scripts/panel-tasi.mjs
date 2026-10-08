@@ -7,15 +7,18 @@
  *   npm run panel:tasi -- --uzerine-yaz hedefteki tüm içeriği siler, yeniden taşır
  *   npm run panel:tasi -- --medya-atla  yalnız veritabanı
  *
- * .env.local içinde:
- *   CANLI_DATABASE_URL           canlı Postgres adresi (zorunlu)
- *   CANLI_BLOB_READ_WRITE_TOKEN  canlı Blob anahtarı (görseller için)
+ * Hedef bilgileri .env.canli dosyasından okunur: Vercel > Storage'da Neon ve
+ * Blob depolarının ".env.local" sekmesindeki metin olduğu gibi yapıştırılır
+ * (DATABASE_URL, BLOB_READ_WRITE_TOKEN). Bu dosyayı Next ve Payload okumaz;
+ * yerel panel SQLite'ta kalır. Yedek olarak .env.local'da CANLI_DATABASE_URL
+ * ve CANLI_BLOB_READ_WRITE_TOKEN da kabul edilir.
  *
  * Gizli değerler hiçbir zaman ekrana yazılmaz.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { parseEnv } from "node:util";
 import { createClient } from "@libsql/client";
 import { put } from "@vercel/blob";
 import pg from "pg";
@@ -31,8 +34,13 @@ const args = new Set(process.argv.slice(2));
 const OVERWRITE = args.has("--uzerine-yaz");
 const SKIP_MEDIA = args.has("--medya-atla");
 
-const TARGET = process.env.CANLI_DATABASE_URL || "";
-const BLOB_TOKEN = process.env.CANLI_BLOB_READ_WRITE_TOKEN || "";
+/* .env.canli process.env'e yüklenmez: yereldeki DATABASE_URL (SQLite) bozulmasın */
+const canliFile = path.join(ROOT, ".env.canli");
+const canli = existsSync(canliFile) ? parseEnv(readFileSync(canliFile, "utf8")) : {};
+/* Uzun tek işlem için havuzsuz (doğrudan) bağlantı tercih edilir */
+const TARGET =
+  canli.DATABASE_URL_UNPOOLED || canli.DATABASE_URL || canli.POSTGRES_URL || process.env.CANLI_DATABASE_URL || "";
+const BLOB_TOKEN = canli.BLOB_READ_WRITE_TOKEN || process.env.CANLI_BLOB_READ_WRITE_TOKEN || "";
 const SOURCE = /^file:/.test(process.env.DATABASE_URL || "") ? process.env.DATABASE_URL : "file:./data/guru.db";
 
 /* Taşınmayan tablolar: şema geçmişi hedefin kendisinde, oturum ve kilitler geçici */
@@ -43,7 +51,7 @@ const fail = (msg) => {
   process.exit(1);
 };
 
-if (!/^postgres(ql)?:\/\//.test(TARGET)) fail("CANLI_DATABASE_URL .env.local içinde yok ya da postgres:// ile başlamıyor.");
+if (!/^postgres(ql)?:\/\//.test(TARGET)) fail(".env.canli dosyasında postgres:// ile başlayan DATABASE_URL bulunamadı.");
 const sourceFile = path.resolve(ROOT, SOURCE.replace(/^file:/, ""));
 if (!existsSync(sourceFile)) fail(`Yerel veritabanı bulunamadı: ${path.relative(ROOT, sourceFile)}`);
 
@@ -188,7 +196,7 @@ try {
 if (SKIP_MEDIA) {
   console.log("\n3) Görseller atlandı (--medya-atla)");
 } else if (!BLOB_TOKEN) {
-  console.log("\n3) CANLI_BLOB_READ_WRITE_TOKEN yok: görseller yüklenmedi. Ekledikten sonra komutu --uzerine-yaz ile tekrar çalıştırın.");
+  console.log("\n3) .env.canli dosyasında BLOB_READ_WRITE_TOKEN yok: görseller yüklenmedi. Ekledikten sonra komutu --uzerine-yaz ile tekrar çalıştırın.");
 } else {
   const mediaDir = path.join(ROOT, "media");
   const files = existsSync(mediaDir) ? readdirSync(mediaDir).filter((f) => !f.startsWith(".")) : [];

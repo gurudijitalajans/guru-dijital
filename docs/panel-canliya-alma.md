@@ -36,7 +36,6 @@ Vercel > guru-dijital > **Settings** > **Environment Variables**, ortam: **Produ
 
 | Ad | Değer |
 |---|---|
-| `PAYLOAD_SECRET` | Rastgele uzun bir değer. Terminalde `openssl rand -hex 32` çalıştırıp çıkan satırı yapıştırın. |
 | `NEXT_PUBLIC_SERVER_URL` | `https://guru-dijital-pied.vercel.app` (alan adı bağlanınca `https://www.gurudijital.com.tr`) |
 | `RESEND_API_KEY` | Resend'de oluşturduğunuz anahtar |
 | `BILDIRIM_EPOSTA` | `gurudijitalajans@gmail.com` |
@@ -44,19 +43,16 @@ Vercel > guru-dijital > **Settings** > **Environment Variables**, ortam: **Produ
 | `UMAMI_API_KEY` | Umami > Settings > API keys'te oluşturduğunuz anahtar |
 
 `DATABASE_URL` ve `BLOB_READ_WRITE_TOKEN` a ve b adımlarında kendiliğinden eklenir.
+`PAYLOAD_SECRET` isteğe bağlı: girilmezse panel anahtarını gizli veritabanı
+adresinden türetir.
 
 ### e) Taşıma için yerel dosya
 
-`guru-dijital/.env.local` dosyasının sonuna iki satır ekleyin (değerleri Vercel >
-Storage > ilgili depo > **.env.local** sekmesinden kopyalayabilirsiniz):
-
-```
-CANLI_DATABASE_URL=...Neon'daki DATABASE_URL değeri...
-CANLI_BLOB_READ_WRITE_TOKEN=...Blob'daki BLOB_READ_WRITE_TOKEN değeri...
-```
-
-Bu iki değer yalnız taşıma betiği içindir; yerel panel SQLite'ta kalmaya devam eder.
-Bitince Claude'a "hazır" deyin.
+`guru-dijital/.env.canli` dosyasını açın (içinde yönerge var). Vercel > Storage >
+Neon veritabanı > **.env.local** sekmesi > **Copy Snippet** ile kopyalayıp
+dosyaya yapıştırın; aynısını Blob deposu için yapın ve kaydedin. Bu dosyayı
+site ve panel okumaz, git'e girmez; yerel panel SQLite'ta kalır. Bitince
+Claude'a "hazır" deyin.
 
 ## 2. Claude'un yapacakları
 
@@ -69,8 +65,8 @@ Bitince Claude'a "hazır" deyin.
    (`scripts/vercel-build.mjs`) önce `payload migrate`, sonra `next build` çalıştırır.
 3. Canlıda denetler: tüm sayfalar, `/admin` girişi, talep ve randevu formu
    (bildirim e-postası geliyor mu), görsel yükleme.
-4. Sonra siz: canlı panele ilk girişte parolanızı değiştirin ve `.env.local`'daki
-   `CANLI_` satırlarını silin.
+4. Sonra siz: canlı panele ilk girişte parolanızı değiştirin ve `.env.canli`
+   dosyasını silin.
 
 ## 3. Yayından önce netleşmesi gerekenler
 
