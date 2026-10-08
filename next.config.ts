@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   /* Site ve panel iki ayrı kök layout kullanır; eşleşmeyen adresler için
      tek 404 sayfası app/global-not-found.tsx'te. */
   experimental: { globalNotFound: true },
+  /* Canlıda panel görselleri Vercel Blob adresinden gelir */
+  images: { remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }] },
   turbopack: { root: path.resolve(dirname) },
   webpack: (config) => {
     config.resolve.extensionAlias = {

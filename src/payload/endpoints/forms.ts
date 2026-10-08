@@ -1,5 +1,6 @@
 import { APIError, addDataAndFileToRequest, type PayloadHandler } from "payload";
 import type { Booking } from "@/payload-types";
+import { notifyTeam } from "../notify";
 import { clientIp, dayKey, rateLimited } from "../utils";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
@@ -41,7 +42,22 @@ export const submitLead: PayloadHandler = async (req) => {
     return fail(400, "Lütfen ad, geçerli bir e-posta ve mesaj yazın.");
   }
 
-  await req.payload.create({ collection: "leads", data: { ...data, status: "yeni" }, overrideAccess: true });
+  const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni" }, overrideAccess: true });
+  await notifyTeam(req, {
+    subject: `Yeni talep: ${data.subject || data.service || data.name}`,
+    intro: "Siteden yeni bir talep geldi.",
+    rows: [
+      ["Ad Soyad", data.name],
+      ["E-posta", data.email],
+      ["Telefon", data.phone],
+      ["Hizmet / ürün", data.service],
+      ["Konu", data.subject],
+      ["Mesaj", data.message],
+      ["Geldiği sayfa", data.source],
+    ],
+    replyTo: data.email,
+    adminPath: `/collections/leads/${lead.id}`,
+  });
   return Response.json({ ok: true });
 };
 
@@ -71,17 +87,39 @@ export const submitBooking: PayloadHandler = async (req) => {
   if (Number.isNaN(date.getTime()) || dayKey(date) <= dayKey(new Date())) {
     return fail(400, "Lütfen yarın ya da daha ileri bir gün seçin.");
   }
+  /* Takvim yalnız hafta içini gösterir; doğrudan istekle hafta sonu alınamaz */
+  if (date.getUTCDay() === 0 || date.getUTCDay() === 6) {
+    return fail(400, "Toplantılar hafta içi günlerde planlanabiliyor.");
+  }
 
+  let bookingId: number | string;
   try {
-    await req.payload.create({
+    const booking = await req.payload.create({
       collection: "bookings",
       data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor" },
       overrideAccess: true,
     });
+    bookingId = booking.id;
   } catch (err) {
     if (err instanceof APIError && err.status === 409) return fail(409, err.message, { code: "dolu" });
     throw err;
   }
+  const dayLabel = date.toLocaleDateString("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", year: "numeric", weekday: "long" });
+  await notifyTeam(req, {
+    subject: `Yeni randevu: ${dayLabel} ${time}`,
+    intro: "Siteden yeni bir toplantı talebi geldi. Panelden onaylayabilirsiniz.",
+    rows: [
+      ["Gün ve saat", `${dayLabel}, ${time}`],
+      ["Ad Soyad", data.name],
+      ["E-posta", data.email],
+      ["Telefon", data.phone],
+      ["Konu", data.topic],
+      ["Not", data.note],
+      ["Geldiği sayfa", data.source],
+    ],
+    replyTo: data.email,
+    adminPath: `/collections/bookings/${bookingId}`,
+  });
   return Response.json({ ok: true });
 };
 

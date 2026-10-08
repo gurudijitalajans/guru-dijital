@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     // Payload'un ürettiği dosyalar
     "src/payload-types.ts",
     "src/app/(payload)/**",
+    "src/migrations/**",
   ]),
 ]);
 

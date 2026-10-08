@@ -16,8 +16,8 @@ export const Media: CollectionConfig = {
     delete: isAdmin,
   },
   upload: {
-    /* Yerelde proje kökündeki /media klasörü (git dışı). Canlıda Vercel Blob
-       gibi bir depolama eklentisine geçilecek. */
+    /* Yerelde proje kökündeki /media klasörü (git dışı). Canlıda
+       BLOB_READ_WRITE_TOKEN varsa dosyalar Vercel Blob'a yazılır. */
     staticDir: path.resolve(dirname, "../../../media"),
     mimeTypes: ["image/*"],
     adminThumbnail: "thumbnail",

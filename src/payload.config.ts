@@ -1,7 +1,10 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
+import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { resendAdapter } from "@payloadcms/email-resend";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { tr } from "@payloadcms/translations/languages/tr";
 import sharp from "sharp";
@@ -25,12 +28,24 @@ import { SiteSettings } from "./payload/globals/SiteSettings";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * Guru Panel (Payload CMS). Yerelde SQLite dosyası (data/guru.db) kullanılır.
- * Canlıya geçerken Guru'ya ait bir Postgres bağlanıp adaptör
- * @payloadcms/db-postgres ile değiştirilecek; koleksiyonlar aynı kalır.
+ * Guru Panel (Payload CMS). Veritabanı adresine göre adaptör seçilir:
+ * yerelde SQLite dosyası (data/guru.db, şema kendiliğinden güncellenir),
+ * canlıda Postgres (şema yalnız src/migrations ile değişir). Medya canlıda
+ * Vercel Blob'a, yerelde /media klasörüne yazılır. E-posta Resend anahtarı
+ * varsa gönderilir, yoksa yalnız sunucu günlüğüne düşer.
+ * Ayrıntı: docs/panel-canliya-alma.md
  */
+const DATABASE_URL = process.env.DATABASE_URL || "file:./data/guru.db";
+const isPostgres = /^postgres(ql)?:\/\//.test(DATABASE_URL);
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || "";
+
+/* Panel bu adreslerden açılabilir (oturum çerezi yalnız bunlarda geçerli) */
+const SITE_ORIGINS = ["https://guru-dijital-pied.vercel.app", "https://gurudijital.com.tr", "https://www.gurudijital.com.tr"];
+
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || "",
+  serverURL,
+  /* serverURL tanımlıysa (canlı) çerezli istekler yalnız sitenin kendi adreslerinden kabul edilir */
+  csrf: serverURL ? [...new Set([serverURL, ...SITE_ORIGINS])] : [],
   secret: process.env.PAYLOAD_SECRET || "",
   admin: {
     user: Users.slug,
@@ -64,9 +79,36 @@ export default buildConfig({
   collections: [Leads, Bookings, Services, Products, Posts, Categories, Team, References, CaseStudies, Testimonials, Media, Users],
   globals: [HomePage, AboutPage, SiteSettings],
   editor: lexicalEditor(),
-  db: sqliteAdapter({
-    client: { url: process.env.DATABASE_URL || "file:./data/guru.db" },
-  }),
+  db: isPostgres
+    ? postgresAdapter({
+        pool: { connectionString: DATABASE_URL },
+        migrationDir: path.resolve(dirname, "migrations"),
+        push: false,
+      })
+    : sqliteAdapter({
+        client: { url: DATABASE_URL },
+        migrationDir: path.resolve(dirname, "migrations-sqlite"),
+      }),
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        /* Alan adı Resend'de doğrulanana kadar yalnız onboarding@resend.dev gönderebilir */
+        defaultFromAddress: process.env.EMAIL_FROM || "onboarding@resend.dev",
+        defaultFromName: "Guru Panel",
+      })
+    : undefined,
+  plugins: [
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      /* Şema her ortamda aynı kalsın (yerelde eklenti kapalıyken de) */
+      alwaysInsertFields: true,
+      /* Görseller herkese açık: doğrudan Blob CDN adresinden sunulur */
+      collections: { media: { disablePayloadAccessControl: true } },
+      /* Vercel'in 4,5 MB istek sınırına takılmadan tarayıcıdan doğrudan yükleme */
+      clientUploads: true,
+    }),
+  ],
   sharp,
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   graphQL: { disable: true },

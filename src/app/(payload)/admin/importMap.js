@@ -27,6 +27,7 @@ import { DashboardIntro as DashboardIntro_28cda0dfde860cc6c1e0f10c40fba715 } fro
 import { AnalyticsNavLink as AnalyticsNavLink_24885e3761c7ddbb4174ba8c2761762e } from '../../../payload/components/AnalyticsNavLink'
 import { AnalyticsView as AnalyticsView_e82a66e171163cfda89984b1174b76e8 } from '../../../payload/components/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -58,5 +59,6 @@ export const importMap = {
   "/payload/components/DashboardIntro#DashboardIntro": DashboardIntro_28cda0dfde860cc6c1e0f10c40fba715,
   "/payload/components/AnalyticsNavLink#AnalyticsNavLink": AnalyticsNavLink_24885e3761c7ddbb4174ba8c2761762e,
   "/payload/components/AnalyticsView#AnalyticsView": AnalyticsView_e82a66e171163cfda89984b1174b76e8,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
 }
