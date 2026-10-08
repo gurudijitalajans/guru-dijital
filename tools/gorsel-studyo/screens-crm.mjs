@@ -1,4 +1,4 @@
-import { av, dot, icon, line, sidebar, tag } from "./lib.mjs";
+import { av, dot, icon, line, ring, sidebar, tag } from "./lib.mjs";
 import { kpi, tabBar } from "./screens-common.mjs";
 import { statusBar } from "./screens-chatbot.mjs";
 
@@ -61,6 +61,50 @@ export const MONTHS = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu",
 export function trendChart({ w = 620, h = 260, fs = 13 } = {}) {
   return `<div style="position:relative">${line([TREND26, TREND25], { w, h, min: 300, max: 800 })}
     <div class="row" style="justify-content:space-between;margin-top:12px;font-size:${fs}px;color:#8a95ad">${MONTHS.map((m, i) => `<span style="${i === 8 ? "color:#0c1a3a;font-weight:600" : ""}">${m}</span>`).join("")}</div></div>`;
+}
+
+/* Rapor ekranı (ürün turu videosundaki "Raporlar" durağı). Veriler mevcut
+   görsellerle aynı: gelir trendi, kazanma oranı, temsilci performansı. */
+export const REPS = [["BK", "Burak Kılıç", "₺410K", 82, 0], ["SA", "Seda Aksoy", "₺345K", 69, 2], ["MÖ", "Mert Özkan", "₺245K", 49, 3], ["EY", "Ece Yalçın", "₺180K", 36, 4]];
+
+export function crmReportsDesktop() {
+  const side = sidebar({
+    product: "CRM",
+    items: [["layout-dashboard", "Panel"], ["funnel", "Fırsatlar", false, 42], ["users", "Müşteriler"], ["file-text", "Teklifler"], ["list-checks", "Görevler"], ["chart-column", "Raporlar", true], ["settings", "Ayarlar"]],
+    user: ["BK", "Burak Kılıç", "Satış Müdürü", 0],
+  });
+  return `<div class="app">${side}<main class="main">
+    <div class="top"><div><h1>Raporlar</h1><div class="sub">Eylül 2026 · tüm ekip</div></div>
+      <span class="btn sec" style="margin-left:auto">${icon("users", { size: 16 })}Tüm ekip${icon("chevron-down", { size: 15, color: "#8a95ad" })}</span>
+      <span class="btn sec">${icon("calendar", { size: 16 })}Bu yıl${icon("chevron-down", { size: 15, color: "#8a95ad" })}</span></div>
+    <div class="row" style="gap:14px">
+      ${kpi("Açık fırsat", "42", "+6", "briefcase-business", { note: "bu hafta" })}
+      ${kpi("Satış hattı değeri", "₺4,86M", "+%12", "wallet", { note: "geçen aya göre" })}
+      ${kpi("Kazanma oranı", "%34", "+3 puan", "target", { note: "geçen aya göre" })}
+      ${kpi("Bu ay teklif", "19", "10", "file-text", { tone: "flat", note: "yanıt bekliyor" })}
+    </div>
+    <div style="flex:1;min-height:0;display:flex;gap:14px">
+      <div class="card" style="flex:1;min-width:0;padding:22px 28px 20px;display:flex;flex-direction:column">
+        <div class="row"><div><div class="h3" style="font-size:19px">Gelir trendi</div><div class="lbl" style="font-size:14px;margin-top:3px">Yıl toplamı ₺5,05M</div></div>
+          <div class="row" style="margin-left:auto;gap:16px;font-size:13.5px;color:#55617b"><span class="row" style="gap:7px"><span style="width:18px;height:4px;border-radius:9px;background:#2a6aca"></span>2026</span><span class="row" style="gap:7px"><span style="width:18px;height:4px;border-radius:9px;background:#b9c7e0"></span>2025</span></div></div>
+        <div style="position:relative;margin-top:auto">${trendChart({ w: 680, h: 250, fs: 13.5 })}
+          <div style="position:absolute;right:-6px;top:-44px;padding:6px 11px;border-radius:10px;background:#011441;color:#fff;font-size:14px;font-weight:600;white-space:nowrap">Eyl · ₺740K</div></div>
+      </div>
+      <div style="width:384px;flex-shrink:0;display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="flex:1;padding:22px 24px;display:flex;align-items:center"><div class="row" style="gap:20px"><div style="position:relative;width:112px;height:112px">${ring(34, { d: 112, thick: 13 })}<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:26px;font-weight:600;letter-spacing:-.03em">%34</div></div>
+          <div><div style="font-size:17px;font-weight:600">Kazanma oranı</div><div class="lbl" style="font-size:13.5px;margin-top:4px;line-height:1.4">Teklif verilen fırsatların<br>satışa dönüşenleri</div><div class="row up" style="gap:5px;font-size:13.5px;font-weight:500;margin-top:9px">${icon("trending-up", { size: 15, stroke: 2.4 })}3 puan arttı</div></div></div></div>
+        <div class="card" style="padding:20px 24px">
+          <div class="row" style="font-size:15.5px;font-weight:600;color:#12419b">Eylül hedefi<span style="margin-left:auto">%68</span></div>
+          <div style="height:8px;border-radius:9px;background:#d6e5fb;margin-top:12px"><div style="width:68%;height:100%;border-radius:9px;background:linear-gradient(90deg,#12419b,#44a1f1)"></div></div>
+          <div style="font-size:13.5px;color:#55617b;margin-top:9px">₺920.000 / ₺1.350.000</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px 24px 22px">
+      <div class="row"><div class="h3" style="font-size:17px">Temsilci performansı</div><span class="lbl" style="margin-left:auto">Eylül · kazanılan</span></div>
+      <div class="row" style="gap:14px;margin-top:16px">${REPS.map(([i, n, v, p, k]) => `<div style="flex:1;padding:14px 16px;border-radius:14px;background:#f5f8fd"><div class="row" style="gap:11px">${av(i, 34, k)}<div><div style="font-size:14.5px;font-weight:500">${n}</div><div style="font-size:18px;font-weight:600;letter-spacing:-.02em">${v}</div></div></div><div style="height:6px;border-radius:9px;background:#e3eaf5;margin-top:12px"><div style="width:${p}%;height:100%;border-radius:9px;background:#2a6aca"></div></div></div>`).join("")}</div>
+    </div>
+  </main></div>`;
 }
 
 /* Mobil: fırsat ayrıntısı */

@@ -1,7 +1,7 @@
 import { BG, bars, chan, donut, icon, page, ring, tag } from "./lib.mjs";
 import { feature, hero, og } from "./compose.mjs";
 import { CHANNELS, WEEK, WEEK_L, chatbotDesktop, chatbotMobile, handoffCard } from "./screens-chatbot.mjs";
-import { STAGES, crmDesktop, crmMobile, dealCard, trendChart } from "./screens-crm.mjs";
+import { STAGES, crmDesktop, crmMobile, crmReportsDesktop, dealCard, trendChart } from "./screens-crm.mjs";
 import { cursor } from "./screens-common.mjs";
 import { CAP, COLS, capacityRows, gantt, operationDesktop, operationMobile, taskCard } from "./screens-operation.mjs";
 import { MODULES, activityRows, businessDesktop, businessMobile, moduleCard, revenueBlock } from "./screens-business.mjs";
@@ -309,6 +309,7 @@ export const SCENES = [
   ...chatbot,
   { name: "raw-crm-desktop", w: 1440, h: 900, html: page({ w: 1440, h: 900, bg: "", body: crD }) },
   { name: "raw-crm-mobile", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: crM }) },
+  { name: "raw-crm-reports-desktop", w: 1440, h: 900, html: page({ w: 1440, h: 900, bg: "", body: crmReportsDesktop() }) },
   ...crm,
   { name: "raw-operation-desktop", w: 1440, h: 900, html: page({ w: 1440, h: 900, bg: "", body: opD }) },
   { name: "raw-operation-mobile", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: opM }) },
