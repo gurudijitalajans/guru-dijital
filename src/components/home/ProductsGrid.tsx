@@ -24,14 +24,14 @@ export async function ProductsGrid({ title, lead }: { title: string; lead: strin
             return (
               <StaggerItem key={p.slug} className="h-full">
                 <Link href={`/urunler/${p.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
-                  <div className="bg-[#e9eff8] px-4 pt-4">
+                  {/* App Store tarzı dikey kapak (panel: Ürünler > Kapak görseli) */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-navy">
                     <Image
-                      src={p.image.src}
-                      alt={p.image.alt}
-                      width={p.image.w}
-                      height={p.image.h}
-                      sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 90vw"
-                      className="block h-auto w-full rounded-t-lg shadow-[0_10px_24px_-14px_rgb(1_20_65/0.6)] transition-transform duration-500 group-hover:-translate-y-1"
+                      src={p.cover.src}
+                      alt={p.cover.alt}
+                      fill
+                      sizes="(min-width: 1280px) 290px, (min-width: 1024px) 23vw, (min-width: 640px) 45vw, 90vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="p-5">

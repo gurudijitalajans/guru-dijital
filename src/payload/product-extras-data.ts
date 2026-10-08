@@ -23,6 +23,7 @@ export async function productExtrasData(slug: string, mediaFor: Upload, idBySlug
   }
   return {
     heroVisual: await mediaFor({ src: x.heroVisual.src, alt: x.heroVisual.alt }),
+    cover: await mediaFor({ src: x.cover.src, alt: x.cover.alt }),
     /* Paylaşım görseli yüklenmez: medya webp'ye çevirir; varsayılan hazır jpg kullanılır */
     trust: rows(x.trust),
     tour: { show: true, title: x.video.title, videoUrl: x.video.src },

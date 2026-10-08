@@ -15,7 +15,7 @@ export const CONVS = [
 export function convRow([ini, name, time, prev, unread, ch, active, by], i, { big = false } = {}) {
   const d = big ? 46 : 42;
   return `<div style="display:flex;gap:12px;align-items:center;padding:${big ? "14px 16px" : "11px 12px"};border-radius:14px;${active ? "background:#eaf2ff;" : ""}">
-    <div style="position:relative">${av(ini, d, i)}<span style="position:absolute;right:-3px;bottom:-3px;border:2.5px solid ${active ? "#eaf2ff" : "#fff"};border-radius:50%">${chan(ch, big ? 19 : 17)}</span></div>
+    <div style="position:relative">${av(ini, d, i)}<span style="position:absolute;right:-5px;bottom:-4px;border:2.5px solid ${active ? "#eaf2ff" : "#fff"};border-radius:50%">${chan(ch, big ? 17 : 15)}</span></div>
     <div style="min-width:0;flex:1">
       <div class="row" style="gap:8px"><span style="font-size:${big ? 16 : 15}px;font-weight:600">${name}</span>${by === "bot" ? tag(`${icon("sparkles", { size: 11, stroke: 2.4 })}Bot`, "blue", "font-size:11px;padding:2px 7px") : ""}<span style="margin-left:auto;font-size:12.5px;color:#8a95ad">${time}</span></div>
       <div class="row" style="gap:8px;margin-top:3px"><span style="font-size:${big ? 14.5 : 13.5}px;color:${unread ? "#3b4763" : "#8a95ad"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${unread ? "font-weight:500" : ""}">${prev}</span>${unread ? `<span style="margin-left:auto;min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#12419b;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center">${unread}</span>` : ""}</div>

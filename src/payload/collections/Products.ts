@@ -65,6 +65,13 @@ export const Products: CollectionConfig = {
                   admin: { description: "Ürün sayfasının girişinde, marka ışık yelpazesiyle (4:3, 1600x1200)." },
                 },
                 {
+                  name: "cover",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "Kapak görseli",
+                  admin: { description: "Ana sayfa ve ürün kartlarındaki App Store tarzı dikey kapak (4:5, 1200x1500)." },
+                },
+                {
                   name: "ogImage",
                   type: "upload",
                   relationTo: "media",

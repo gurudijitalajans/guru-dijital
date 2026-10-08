@@ -21,6 +21,8 @@ export type ProductExtras = {
   trust: string[];
   /** Marka kimliğinde ürün görseli (giriş, 4:3) */
   heroVisual: { src: string; alt: string; w: number; h: number };
+  /** App Store tarzı dikey kapak (4:5, ürün kartlarında) */
+  cover: { src: string; alt: string; w: number; h: number };
   /** Sosyal paylaşım görseli (1200x630) */
   ogImage: string;
   /** Ürün turu videosu */
@@ -39,6 +41,7 @@ const V = (slug: string, n: number, alt: string): ShowcaseItem["image"] => ({
   h: 900,
 });
 const hero = (slug: string, alt: string) => ({ src: `/products/visuals/${slug}-hero.webp`, alt, w: 1600, h: 1200 });
+const cover = (slug: string, alt: string) => ({ src: `/products/covers/${slug}.webp`, alt, w: 1200, h: 1500 });
 const video = (slug: string, name: string) => ({
   src: `/video/products/${slug}.mp4`,
   poster: `/video/products/${slug}.jpg`,
@@ -49,6 +52,7 @@ export const productExtras: Record<string, ProductExtras> = {
   "guru-chatbot": {
     trust: ["Standart kurulum aynı gün", "Web, WhatsApp ve Instagram", "Türkçe destek dahil"],
     heroVisual: hero("guru-chatbot", "Guru Chatbot dizüstü ve telefonda: gelen kutusu, web sitesi asistanı ve Guru Bot'un yanıtladığı WhatsApp mesajı"),
+    cover: cover("guru-chatbot", "Guru Chatbot kapağı: “Müşterinize 7/24 anında yanıt” başlığı ve telefonda web sitesi asistanı"),
     ogImage: "/products/og/guru-chatbot.jpg",
     video: video("guru-chatbot", "Guru Chatbot"),
     showcase: [
@@ -111,6 +115,7 @@ export const productExtras: Record<string, ProductExtras> = {
   "guru-crm": {
     trust: ["Temel kurulum bir hafta", "Excel ve CRM verisi aktarımı", "Kayıt sayısında sınır yok"],
     heroVisual: hero("guru-crm", "Guru CRM dizüstü ve telefonda: satış hattı, fırsat ayrıntısı ve kazanılan fırsat bildirimi"),
+    cover: cover("guru-crm", "Guru CRM kapağı: “Her fırsat tek ekranda” başlığı ve telefonda fırsat ayrıntısı"),
     ogImage: "/products/og/guru-crm.jpg",
     video: video("guru-crm", "Guru CRM"),
     showcase: [
@@ -173,6 +178,7 @@ export const productExtras: Record<string, ProductExtras> = {
   "guru-operation": {
     trust: ["İlk gün görev takibiyle başlayın", "Ekip büyüklüğü sınırı yok", "Guru CRM ile bütünleşik"],
     heroVisual: hero("guru-operation", "Guru Operation dizüstü ve telefonda: görev panosu, zaman çizelgesi ve kontrolden geçen görev bildirimi"),
+    cover: cover("guru-operation", "Guru Operation kapağı: “Her iş görünür ve takipte” başlığı ve telefonda günün görevleri"),
     ogImage: "/products/og/guru-operation.jpg",
     video: video("guru-operation", "Guru Operation"),
     showcase: [
@@ -235,6 +241,7 @@ export const productExtras: Record<string, ProductExtras> = {
   "guru-business": {
     trust: ["Üç modül, tek giriş", "İlk modül iki haftada canlıda", "Size atanan müşteri başarı yöneticisi"],
     heroVisual: hero("guru-business", "Guru Business dizüstü ve telefonda: yönetici panosu ve günlük özet bildirimi"),
+    cover: cover("guru-business", "Guru Business kapağı: “İşletmeniz tek panelde” başlığı ve telefonda yönetici özeti"),
     ogImage: "/products/og/guru-business.jpg",
     video: video("guru-business", "Guru Business"),
     bundle: ["guru-chatbot", "guru-crm", "guru-operation"],

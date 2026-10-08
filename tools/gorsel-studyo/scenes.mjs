@@ -1,8 +1,8 @@
-import { BG, bars, chan, donut, icon, page, ring, tag } from "./lib.mjs";
-import { feature, hero, og } from "./compose.mjs";
-import { CHANNELS, WEEK, WEEK_L, chatbotDesktop, chatbotMobile, handoffCard } from "./screens-chatbot.mjs";
+import { BG, THEME, bars, chan, donut, icon, page, ring, tag } from "./lib.mjs";
+import { cover, feature, hero, og, poster } from "./compose.mjs";
+import { CHANNELS, CONVS, WEEK, WEEK_L, chatbotDesktop, chatbotMobile, convRow, handoffCard } from "./screens-chatbot.mjs";
 import { STAGES, crmDesktop, crmMobile, crmReportsDesktop, dealCard, trendChart } from "./screens-crm.mjs";
-import { cursor } from "./screens-common.mjs";
+import { cursor, kpi } from "./screens-common.mjs";
 import { CAP, COLS, capacityRows, gantt, operationDesktop, operationMobile, taskCard } from "./screens-operation.mjs";
 import { MODULES, activityRows, businessDesktop, businessMobile, moduleCard, revenueBlock } from "./screens-business.mjs";
 import { av } from "./lib.mjs";
@@ -12,6 +12,21 @@ const notif = (app, appIcon, title, text, time = "şimdi") => `
   <div style="font-size:19px;font-weight:600;margin-top:10px">${title}</div>
   <div style="font-size:17px;color:#3b4763;margin-top:3px;line-height:1.4">${text}</div>`;
 
+/* Giriş ve kapak görsellerindeki yüzen kartlar */
+const CARD = {
+  chatbot: notif("WHATSAPP", chan("whatsapp", 26), "Merve Kaya", "Siparişim ne zaman kargoya verilir?") +
+        `<div class="row" style="gap:10px;margin-top:16px;padding:12px 14px;border-radius:14px;background:#eaf2ff;color:#12419b;font-size:15.5px;font-weight:500">${icon("sparkles", { size: 17, stroke: 2.2 })}Guru Bot 4 saniyede yanıtladı${icon("check-check", { size: 17, stroke: 2.2, style: "margin-left:auto" })}</div>`,
+  crm: `<div class="row" style="gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:#e6f6ec;display:grid;place-items:center">${icon("badge-check", { size: 27, color: "#12873f", stroke: 2 })}</span>
+          <div><div style="font-size:14px;font-weight:600;letter-spacing:.06em;color:#12873f">FIRSAT KAZANILDI</div><div style="font-size:21px;font-weight:600;margin-top:2px">Lidya Tekstil</div></div><div style="margin-left:auto;font-size:26px;font-weight:600;letter-spacing:-.02em;color:#12419b">₺190.000</div></div>
+        <div style="margin-top:18px;padding:14px 16px;border-radius:14px;background:#f3f6fb"><div class="row" style="font-size:15px;font-weight:500">Eylül hedefi<span style="margin-left:auto;font-weight:600;color:#12419b">%68</span></div>
+        <div style="height:8px;border-radius:9px;background:#dbe6f5;margin-top:10px"><div style="width:68%;height:100%;border-radius:9px;background:linear-gradient(90deg,#12419b,#44a1f1)"></div></div></div>`,
+  operation: `<div class="row" style="gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:#e6f6ec;display:grid;place-items:center">${icon("circle-check-big", { size: 26, color: "#12873f", stroke: 2 })}</span>
+          <div><div style="font-size:14px;font-weight:600;letter-spacing:.06em;color:#12873f">KONTROLDEN GEÇTİ</div><div style="font-size:21px;font-weight:600;margin-top:2px">Stok uyarı eşikleri</div></div><span style="margin-left:auto;font-size:15px;color:#8a95ad">OP-131</span></div>
+        <div class="row" style="gap:12px;margin-top:18px;padding:14px 16px;border-radius:14px;background:#f3f6fb;font-size:15px"><span class="row" style="gap:-6px">${av("BT", 30, 3)}${av("EK", 30, 4)}</span><span style="color:#3b4763">Burak Taş tamamladı, Elif Koç onayladı</span></div>`,
+  business: notif("GURU BUSINESS", `<span style="width:26px;height:26px;border-radius:8px;background:#12419b;display:grid;place-items:center">${icon("sun", { size: 15, color: "#fff", stroke: 2.2 })}</span>`, "Günaydın, Cem Bey", "İşletmenizin bugünkü özeti hazır", "08:30") +
+        `<div class="row" style="gap:10px;margin-top:16px">${MODULES.map((m) => `<div style="flex:1;padding:12px 12px;border-radius:14px;background:#f3f6fb"><span style="width:28px;height:28px;border-radius:9px;background:${m.c};display:grid;place-items:center">${icon(m.ic, { size: 15, color: "#fff", stroke: 2.2 })}</span><div style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:8px">${m.m[0][0]}</div><div style="font-size:13px;color:#7f8aa3">${m.m[0][1]}</div></div>`).join("")}</div>`,
+};
+
 /* ---------------- Guru Chatbot ---------------- */
 const cbD = chatbotDesktop();
 const cbM = chatbotMobile();
@@ -19,32 +34,38 @@ const chatbot = [
   {
     name: "guru-chatbot-hero", w: 1600, h: 1200,
     html: hero({
-      name: "Chatbot", desktop: cbD, mobile: cbM,
-      card: notif("WHATSAPP", chan("whatsapp", 26), "Merve Kaya", "Siparişim ne zaman kargoya verilir?") +
-        `<div class="row" style="gap:10px;margin-top:16px;padding:12px 14px;border-radius:14px;background:#eaf2ff;color:#12419b;font-size:15.5px;font-weight:500">${icon("sparkles", { size: 17, stroke: 2.2 })}Guru Bot 4 saniyede yanıtladı${icon("check-check", { size: 17, stroke: 2.2, style: "margin-left:auto" })}</div>`,
+      name: "Chatbot", theme: THEME.chatbot, desktop: cbD, mobile: cbM,
+      card: CARD.chatbot,
       cardPos: "left:960px;top:118px;width:520px;padding:22px 24px",
     }),
   },
   {
     name: "guru-chatbot-1", w: 1200, h: 900,
     html: feature({
-      name: "Chatbot", desktop: cbD,
-      win: { crop: [0, 0, 1130, 900], scale: 0.92, style: "left:64px;top:96px" },
+      name: "Chatbot", theme: THEME.chatbot, desktop: cbD,
       floats: [
-        ["whatsapp", "WHATSAPP", "Merve Kaya", "Teslimat adresini değiştirmek istiyorum", "şimdi"],
-        ["instagram", "INSTAGRAM", "Selin Aydın", "Bu ürün stokta var mı?", "2 dk"],
-        ["web", "WEB SİTESİ", "Emre Demir", "Fiyat listesi var mı?", "5 dk"],
-      ].map(([k, app, who, msg, t], i) => ({
-        html: notif(app, chan(k, 26), who, msg, t),
-        style: `left:${700 + i * 26}px;top:${236 + i * 158}px;width:430px`,
-        pad: "18px 22px",
-      })),
+        ...[
+          ["whatsapp", "WHATSAPP", "Merve Kaya", "Teslimat adresini değiştirmek istiyorum", "şimdi"],
+          ["instagram", "INSTAGRAM", "Selin Aydın", "Bu ürün stokta var mı?", "2 dk"],
+          ["web", "WEB SİTESİ", "Emre Demir", "Fiyat listesi var mı?", "5 dk"],
+        ].map(([k, app, who, msg, t], i) => ({
+          html: notif(app, chan(k, 28), who, msg, t),
+          style: `left:${72 + i * 22}px;top:${232 + i * 162}px;width:440px`,
+          pad: "20px 24px",
+        })),
+        {
+          html: `<div class="row" style="padding:4px 6px 14px"><span class="h3" style="font-size:20px">Konuşmalar</span>${tag("12 açık", "blue", "margin-left:auto;font-size:13px;padding:4px 10px")}</div>
+            <div class="row" style="gap:8px;padding:0 6px 12px">${[["Tümü", 12, true], ["Bot", 7], ["Ekip", 5]].map(([t, n, on]) => `<span style="height:36px;padding:0 15px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;${on ? "background:#12419b;color:#fff" : "background:#f1f4f9;color:#4a5672"}">${t}<span style="opacity:.7">${n}</span></span>`).join("")}</div>
+            <div style="display:grid;gap:2px">${CONVS.slice(0, 8).map((c, i) => convRow(c, i, { big: true })).join("")}</div>`,
+          style: "left:610px;top:60px;width:520px", pad: "22px 16px 14px",
+        },
+      ],
     }),
   },
   {
     name: "guru-chatbot-2", w: 1200, h: 900,
     html: feature({
-      name: "Chatbot", desktop: cbD, bg: "navy",
+      name: "Chatbot", theme: THEME.chatbot, desktop: cbD, bg: "navy",
       win: { crop: [626, 74, 486, 610], scale: 1.08, style: "left:572px;top:84px" },
       phone: { html: cbM, style: "left:92px;top:104px", width: 330 },
       floats: [{ html: handoffCard({ big: true }), style: "left:470px;top:716px;width:630px", pad: "10px" }],
@@ -53,7 +74,7 @@ const chatbot = [
   {
     name: "guru-chatbot-3", w: 1200, h: 900,
     html: feature({
-      name: "Chatbot", desktop: cbD,
+      name: "Chatbot", theme: THEME.chatbot, desktop: cbD,
       floats: [
         {
           html: `<div class="h3" style="font-size:21px">Haftalık konuşmalar</div><div class="lbl" style="font-size:15px;margin-top:3px">Son 7 gün · 703 toplam</div>
@@ -82,7 +103,7 @@ const chatbot = [
   },
   {
     name: "guru-chatbot-og", w: 1200, h: 630,
-    html: og({ name: "Chatbot", headline: "Müşterinize *7/24* yanıt veren yapay zeka asistanı", desktop: cbD, mobile: cbM }),
+    html: og({ name: "Chatbot", theme: THEME.chatbot, headline: "Müşterinize *7/24* yanıt veren yapay zeka asistanı", desktop: cbD, mobile: cbM }),
   },
 ];
 
@@ -93,19 +114,16 @@ const crm = [
   {
     name: "guru-crm-hero", w: 1600, h: 1200,
     html: hero({
-      name: "CRM", desktop: crD, mobile: crM,
-      card: `<div class="row" style="gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:#e6f6ec;display:grid;place-items:center">${icon("badge-check", { size: 27, color: "#12873f", stroke: 2 })}</span>
-          <div><div style="font-size:14px;font-weight:600;letter-spacing:.06em;color:#12873f">FIRSAT KAZANILDI</div><div style="font-size:21px;font-weight:600;margin-top:2px">Lidya Tekstil</div></div><div style="margin-left:auto;font-size:26px;font-weight:600;letter-spacing:-.02em;color:#12419b">₺190.000</div></div>
-        <div style="margin-top:18px;padding:14px 16px;border-radius:14px;background:#f3f6fb"><div class="row" style="font-size:15px;font-weight:500">Eylül hedefi<span style="margin-left:auto;font-weight:600;color:#12419b">%68</span></div>
-        <div style="height:8px;border-radius:9px;background:#dbe6f5;margin-top:10px"><div style="width:68%;height:100%;border-radius:9px;background:linear-gradient(90deg,#12419b,#44a1f1)"></div></div></div>`,
+      name: "CRM", theme: THEME.crm, desktop: crD, mobile: crM,
+      card: CARD.crm,
       cardPos: "left:960px;top:118px;width:520px;padding:22px 24px",
     }),
   },
   {
     name: "guru-crm-1", w: 1200, h: 900,
     html: feature({
-      name: "CRM", desktop: crmDesktop({ dragging: true }),
-      win: { crop: [244, 0, 1196, 900], scale: 0.9, style: "left:70px;top:96px" },
+      name: "CRM", theme: THEME.crm, desktop: crmDesktop({ dragging: true }),
+      win: { crop: [262, 10, 1150, 890], scale: 0.96, style: "left:52px;top:84px" },
       floats: [{ html: dealCard(STAGES[1].deals[0], { big: true, color: STAGES[1].c }).replace('class="card"', 'class=""'), style: "left:560px;top:430px;width:300px;transform:rotate(-4deg);box-shadow:0 0 0 2px #2a6aca,0 50px 80px -30px rgb(1 12 40/.6)", pad: "2px" }],
       chips: cursor("left:820px;top:560px"),
     }),
@@ -113,7 +131,7 @@ const crm = [
   {
     name: "guru-crm-2", w: 1200, h: 900,
     html: feature({
-      name: "CRM", desktop: crD, bg: "navy",
+      name: "CRM", theme: THEME.crm, desktop: crD, bg: "navy",
       phone: { html: crM, style: "left:96px;top:104px", width: 330 },
       floats: [
         {
@@ -134,7 +152,7 @@ const crm = [
   {
     name: "guru-crm-3", w: 1200, h: 900,
     html: feature({
-      name: "CRM", desktop: crD,
+      name: "CRM", theme: THEME.crm, desktop: crD,
       floats: [
         {
           html: `<div class="row"><div><div class="h3" style="font-size:21px">Gelir trendi</div><div class="lbl" style="font-size:15px;margin-top:3px">Yıl toplamı ₺5,05M</div></div>
@@ -164,7 +182,7 @@ const crm = [
   },
   {
     name: "guru-crm-og", w: 1200, h: 630,
-    html: og({ name: "CRM", headline: "Her müşteri ve her fırsat *tek* ekranda", desktop: crD, mobile: crM }),
+    html: og({ name: "CRM", theme: THEME.crm, headline: "Her müşteri ve her fırsat *tek* ekranda", desktop: crD, mobile: crM }),
   },
 ];
 
@@ -175,18 +193,16 @@ const operation = [
   {
     name: "guru-operation-hero", w: 1600, h: 1200,
     html: hero({
-      name: "Operation", desktop: opD, mobile: opM,
-      card: `<div class="row" style="gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:#e6f6ec;display:grid;place-items:center">${icon("circle-check-big", { size: 26, color: "#12873f", stroke: 2 })}</span>
-          <div><div style="font-size:14px;font-weight:600;letter-spacing:.06em;color:#12873f">KONTROLDEN GEÇTİ</div><div style="font-size:21px;font-weight:600;margin-top:2px">Stok uyarı eşikleri</div></div><span style="margin-left:auto;font-size:15px;color:#8a95ad">OP-131</span></div>
-        <div class="row" style="gap:12px;margin-top:18px;padding:14px 16px;border-radius:14px;background:#f3f6fb;font-size:15px"><span class="row" style="gap:-6px">${av("BT", 30, 3)}${av("EK", 30, 4)}</span><span style="color:#3b4763">Burak Taş tamamladı, Elif Koç onayladı</span></div>`,
+      name: "Operation", theme: THEME.operation, desktop: opD, mobile: opM,
+      card: CARD.operation,
       cardPos: "left:960px;top:118px;width:520px;padding:22px 24px",
     }),
   },
   {
     name: "guru-operation-1", w: 1200, h: 900,
     html: feature({
-      name: "Operation", desktop: operationDesktop({ dragging: true }),
-      win: { crop: [244, 0, 1196, 900], scale: 0.9, style: "left:70px;top:96px" },
+      name: "Operation", theme: THEME.operation, desktop: operationDesktop({ dragging: true }),
+      win: { crop: [262, 10, 1150, 890], scale: 0.96, style: "left:52px;top:84px" },
       floats: [{ html: taskCard(COLS[2].tasks[0], { big: true }).replace('class="card"', 'class=""'), style: "left:575px;top:330px;width:290px;transform:rotate(4deg);box-shadow:0 0 0 2px #2a6aca,0 50px 80px -30px rgb(1 12 40/.6)", pad: "2px" }],
       chips: cursor("left:812px;top:500px"),
     }),
@@ -194,7 +210,7 @@ const operation = [
   {
     name: "guru-operation-2", w: 1200, h: 900,
     html: feature({
-      name: "Operation", desktop: opD, bg: "navy",
+      name: "Operation", theme: THEME.operation, desktop: opD, bg: "navy",
       floats: [
         {
           html: `<div class="row"><div><div class="h3" style="font-size:22px">Ekip Kapasitesi</div><div class="lbl" style="font-size:15px;margin-top:3px">Bu hafta · 31 Ağu - 6 Eyl</div></div>${tag("Ort. %73", "blue", "margin-left:auto;font-size:14px;padding:6px 12px")}</div>
@@ -218,7 +234,7 @@ const operation = [
   {
     name: "guru-operation-3", w: 1200, h: 900,
     html: feature({
-      name: "Operation", desktop: opD,
+      name: "Operation", theme: THEME.operation, desktop: opD,
       floats: [
         {
           html: `<div class="row"><div><div class="h3" style="font-size:22px">Haftalık Zaman Çizelgesi</div><div class="lbl" style="font-size:15px;margin-top:3px">36. Hafta · 6 iş · 5 kişi</div></div>${tag(`${icon("calendar", { size: 14, stroke: 2.3 })}Bugün: 4 Eylül`, "blue", "margin-left:auto;font-size:14px;padding:6px 12px")}</div>
@@ -235,7 +251,7 @@ const operation = [
   },
   {
     name: "guru-operation-og", w: 1200, h: 630,
-    html: og({ name: "Operation", headline: "Operasyonun her adımı *görünür* ve takipte", desktop: opD, mobile: opM }),
+    html: og({ name: "Operation", theme: THEME.operation, headline: "Operasyonun her adımı *görünür* ve takipte", desktop: opD, mobile: opM }),
   },
 ];
 
@@ -246,29 +262,27 @@ const business = [
   {
     name: "guru-business-hero", w: 1600, h: 1200,
     html: hero({
-      name: "Business", desktop: bzD, mobile: bzM,
-      card: notif("GURU BUSINESS", `<span style="width:26px;height:26px;border-radius:8px;background:#12419b;display:grid;place-items:center">${icon("sun", { size: 15, color: "#fff", stroke: 2.2 })}</span>`, "Günaydın, Cem Bey", "İşletmenizin bugünkü özeti hazır", "08:30") +
-        `<div class="row" style="gap:10px;margin-top:16px">${MODULES.map((m) => `<div style="flex:1;padding:12px 12px;border-radius:14px;background:#f3f6fb"><span style="width:28px;height:28px;border-radius:9px;background:${m.c};display:grid;place-items:center">${icon(m.ic, { size: 15, color: "#fff", stroke: 2.2 })}</span><div style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:8px">${m.m[0][0]}</div><div style="font-size:13px;color:#7f8aa3">${m.m[0][1]}</div></div>`).join("")}</div>`,
+      name: "Business", theme: THEME.business, desktop: bzD, mobile: bzM,
+      card: CARD.business,
       cardPos: "left:960px;top:96px;width:520px;padding:22px 24px",
     }),
   },
   {
     name: "guru-business-1", w: 1200, h: 900,
     html: feature({
-      name: "Business", desktop: bzD,
-      win: { crop: [244, 0, 1196, 900], scale: 0.9, style: "left:70px;top:96px" },
+      name: "Business", theme: THEME.business, desktop: businessDesktop({ lift: true }),
+      win: { crop: [250, 10, 1180, 880], scale: 0.92, style: "left:46px;top:70px" },
       floats: [{
-        html: `<div class="row" style="gap:10px;font-size:16px;color:#bfe0ff">${icon("wallet", { size: 19, color: "#bfe0ff", stroke: 2.1 })}Aylık gelir</div>
-          <div style="font-size:58px;font-weight:600;letter-spacing:-.04em;line-height:1;margin-top:16px">₺684.500</div>
-          <div class="row" style="gap:6px;margin-top:18px;display:inline-flex;padding:7px 12px;border-radius:999px;background:rgb(255 255 255/.14);font-size:14.5px;font-weight:500">${icon("trending-up", { size: 15, stroke: 2.4 })}%12,1 geçen aya göre</div>`,
-        style: "left:620px;top:330px;width:440px;background:linear-gradient(150deg,#011441,#12419b 60%,#2a6aca);color:#fff", pad: "28px 30px",
+        html: kpi("Aylık gelir", "₺684.500", "%12,1", "wallet", { note: "geçen aya göre", big: true }).replace('class="card"', 'class=""'),
+        style: "left:286px;top:168px;width:340px;transform:rotate(-2.5deg);box-shadow:0 0 0 2px #2a6aca,0 50px 80px -30px rgb(1 12 40/.6)", pad: "2px",
       }],
+      chips: cursor("left:590px;top:290px"),
     }),
   },
   {
     name: "guru-business-2", w: 1200, h: 900,
     html: feature({
-      name: "Business", desktop: bzD, bg: "navy",
+      name: "Business", theme: THEME.business, desktop: bzD, bg: "navy",
       phone: { html: bzM, style: "left:862px;top:120px", width: 290 },
       floats: MODULES.map((m, i) => ({ html: moduleCard(m, { big: true }).replace('class="card"', 'class=""'), style: `left:${64 + i * 96}px;top:${120 + i * 232}px;width:620px`, pad: "4px" })),
     }),
@@ -276,7 +290,7 @@ const business = [
   {
     name: "guru-business-3", w: 1200, h: 900,
     html: feature({
-      name: "Business", desktop: bzD,
+      name: "Business", theme: THEME.business, desktop: bzD,
       floats: [
         {
           html: `<div class="row"><span class="h3" style="font-size:22px">Son Aktiviteler</span>${tag("3 modül", "blue", "margin-left:auto;font-size:13.5px;padding:5px 11px")}</div>
@@ -299,9 +313,25 @@ const business = [
   },
   {
     name: "guru-business-og", w: 1200, h: 630,
-    html: og({ name: "Business", headline: "İşletmeniz için *bütünleşik* dijital yönetim", desktop: bzD, mobile: bzM }),
+    html: og({ name: "Business", theme: THEME.business, headline: "İşletmeniz için *bütünleşik* dijital yönetim", desktop: bzD, mobile: bzM }),
   },
 ];
+
+/* ---------------- App Store tarzı kapaklar ve video kapakları ---------------- */
+const COVER = [
+  { slug: "guru-chatbot", key: "chatbot", name: "Chatbot", theme: THEME.chatbot, headline: "Müşterinize *7/24* anında yanıt", sub: "Web sitesi, WhatsApp ve Instagram tek gelen kutusunda", mobile: cbM, desktop: cbD, cardStyle: "left:28px;top:1130px;width:440px;transform:rotate(-3deg) scale(1.3);transform-origin:0 0" },
+  { slug: "guru-crm", key: "crm", name: "CRM", theme: THEME.crm, headline: "Her fırsat *tek* ekranda", sub: "Teklif, hatırlatma ve görüşme geçmişi aynı kartta", mobile: crM, desktop: crD, cardStyle: "left:600px;top:1110px;width:440px;transform:rotate(3deg) scale(1.3);transform-origin:0 0" },
+  { slug: "guru-operation", key: "operation", name: "Operation", theme: THEME.operation, headline: "Her iş *görünür* ve takipte", sub: "Görevler, ekip kapasitesi ve haftalık plan tek panoda", mobile: opM, desktop: opD, cardStyle: "left:28px;top:1150px;width:440px;transform:rotate(-3deg) scale(1.3);transform-origin:0 0" },
+  { slug: "guru-business", key: "business", name: "Business", theme: THEME.business, headline: "İşletmeniz *tek* panelde", sub: "Chatbot, CRM ve Operation aynı veriyle birlikte çalışır", mobile: bzM, desktop: bzD, cardStyle: "left:600px;top:1060px;width:440px;transform:rotate(3deg) scale(1.3);transform-origin:0 0" },
+];
+const covers = COVER.map((c) => ({
+  name: `${c.slug}-cover`, w: 1200, h: 1500,
+  html: cover({ theme: THEME[c.key], name: c.name, headline: c.headline, sub: c.sub, mobile: c.mobile, card: CARD[c.key], cardStyle: c.cardStyle }),
+}));
+const posters = COVER.map((c) => ({
+  name: `${c.slug}-poster`, w: 1920, h: 1080,
+  html: poster({ theme: THEME[c.key], name: c.name, desktop: c.desktop, mobile: c.mobile }),
+}));
 
 export const SCENES = [
   { name: "raw-chatbot-desktop", w: 1440, h: 900, html: page({ w: 1440, h: 900, bg: "", body: cbD }) },
@@ -317,4 +347,6 @@ export const SCENES = [
   { name: "raw-business-desktop", w: 1440, h: 900, html: page({ w: 1440, h: 900, bg: "", body: bzD }) },
   { name: "raw-business-mobile", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: bzM }) },
   ...business,
+  ...covers,
+  ...posters,
 ];

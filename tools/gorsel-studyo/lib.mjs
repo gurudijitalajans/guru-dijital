@@ -61,6 +61,20 @@ export const BG = {
   /* Açık buz mavisi: ince ışık süzmesi */
   ice: `background-color:#e9f3ff;background-image:radial-gradient(60% 55% at 12% 8%, rgb(255 255 255 / .95), rgb(255 255 255 / 0) 70%),radial-gradient(55% 60% at 100% 100%, rgb(110 190 250 / .45), rgb(110 190 250 / 0) 70%),conic-gradient(from 200deg at 105% -10%, #e9f3ff 0deg, #e9f3ff 30deg, #d5e9ff 36deg, #ffffff 39deg, #cfe6ff 44deg, #e2efff 52deg, #e9f3ff 70deg);`,
 };
+/* Ürün temaları: hepsi marka lacivertinden çıkar, ışık yelpazesi ürüne özgü tonda */
+export const THEME = {
+  chatbot: { deep: "#011441", mid: "#0f3a8c", hi: "#3c95ee", glow: "#8fd0ff", ice: "#cfeeff" },
+  crm: { deep: "#0a1145", mid: "#2b3aa8", hi: "#6d7cf6", glow: "#b3bcff", ice: "#e2e6ff" },
+  operation: { deep: "#011a3d", mid: "#0b4f7a", hi: "#1aa9c4", glow: "#8fe6f2", ice: "#d4f6fa" },
+  business: { deep: "#000c2e", mid: "#12419b", hi: "#2c74d8", glow: "#bcecff", ice: "#eef8ff" },
+};
+export const themeBg = (t) =>
+  `background-color:${t.deep};background-image:radial-gradient(60% 45% at 50% 108%, ${t.hi}99 0%, ${t.mid}55 45%, transparent 75%),radial-gradient(48% 40% at 0% 100%, ${t.glow}55 0%, transparent 70%),conic-gradient(from 180deg at 104% -4%, ${t.mid} 0deg, ${t.deep} 14deg, ${t.deep} 34deg, ${t.mid} 39deg, ${t.hi} 41deg, ${t.ice} 42.6deg, ${t.glow} 45deg, ${t.hi} 50deg, ${t.mid} 58deg, ${t.deep} 72deg, ${t.deep} 90deg);`;
+
+/* Açık zemin, ürün tonunda hafif renklenir */
+export const iceBg = (t) =>
+  `background-color:${t.ice};background-image:radial-gradient(60% 55% at 12% 8%, rgb(255 255 255 / .95), rgb(255 255 255 / 0) 70%),radial-gradient(55% 60% at 100% 100%, ${t.hi}55, transparent 70%),linear-gradient(160deg,#ffffff 0%,${t.ice} 55%,${t.glow}66 100%);`;
+
 export const grainLayer = (op = 0.07) =>
   `<div style="position:absolute;inset:0;background-image:${GRAIN};opacity:${op};mix-blend-mode:overlay;pointer-events:none"></div>`;
 
@@ -95,7 +109,7 @@ export const UI_CSS = `
 const AV_COLORS = ["#2a6aca", "#7c5cff", "#0ea5a5", "#e8833a", "#d9467a", "#12419b", "#16a34a", "#5b6bf5"];
 export function av(initials, d = 34, i) {
   const c = AV_COLORS[(i ?? initials.charCodeAt(0) + initials.charCodeAt(1)) % AV_COLORS.length];
-  return `<span class="av" style="width:${d}px;height:${d}px;font-size:${Math.round(d * 0.36)}px;background:linear-gradient(140deg,${c},${c}cc)">${initials}</span>`;
+  return `<span class="av" style="width:${d}px;height:${d}px;font-size:${Math.round(d * 0.36)}px;line-height:1;letter-spacing:0;background:linear-gradient(140deg,${c},${c}cc)">${initials}</span>`;
 }
 const TONES = {
   blue: ["#eaf2ff", "#12419b"],

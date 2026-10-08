@@ -55,6 +55,13 @@ for (const p of docs) {
   const base = products.find((b) => b.slug === slug);
   if (!x || !base) continue;
   await replace(p.heroVisual, x.heroVisual, stem(x.heroVisual.src));
+  /* Kapak yeni alan: boşsa medyaya eklenip ürüne bağlanır */
+  if (p.cover) await replace(p.cover, x.cover, `${slug}-kapak`, `${slug}-kapak.webp`);
+  else {
+    const doc = await payload.create({ collection: "media", data: { alt: x.cover.alt }, filePath: copyTo(x.cover.src, `${slug}-kapak.webp`) });
+    await payload.update({ collection: "products", id: p.id, data: { cover: doc.id } });
+    updated++;
+  }
   for (const [i, s] of (p.showcase ?? []).entries()) {
     if (x.showcase[i]) await replace(s.image, x.showcase[i].image, stem(x.showcase[i].image.src));
   }

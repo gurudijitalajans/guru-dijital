@@ -47,7 +47,7 @@ export function activityRows({ big = false, n = 5 } = {}) {
   ).join("");
 }
 
-export function businessDesktop() {
+export function businessDesktop({ lift = false } = {}) {
   const side = sidebar({
     product: "Business",
     items: [["layout-dashboard", "Genel Bakış", true], ["message-circle", "Chatbot"], ["handshake", "CRM"], ["list-checks", "Operation"], ["chart-column", "Raporlar"], ["receipt", "Faturalar"], ["settings", "Ayarlar"]],
@@ -63,7 +63,7 @@ export function businessDesktop() {
       <span class="btn pri">${icon("download", { size: 16, stroke: 2.2 })}Rapor İndir</span></div>
     <div class="row" style="gap:14px">
       ${kpi("Aktif müşteri", "1.248", "%8,4", "users", { note: "geçen aya göre" })}
-      ${kpi("Aylık gelir", "₺684.500", "%12,1", "wallet", { note: "geçen aya göre" })}
+      ${lift ? `<div style="flex:1;min-width:0;height:118px;border-radius:16px;background:#e3eaf5;box-shadow:inset 0 0 0 2px #cfdbee"></div>` : kpi("Aylık gelir", "₺684.500", "%12,1", "wallet", { note: "geçen aya göre" })}
       ${kpi("Açık görev", "37", "6 azaldı", "list-checks", { tone: "gooddown", note: "geçen haftaya göre" })}
       ${kpi("Bot çözüm oranı", "%87", "%3,2", "sparkles", { note: "geçen aya göre" })}
     </div>

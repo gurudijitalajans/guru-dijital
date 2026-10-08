@@ -288,6 +288,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"desc" varchar,
   	"screenshot_id" integer,
   	"hero_visual_id" integer,
+  	"cover_id" integer,
   	"og_image_id" integer,
   	"hero_eyebrow" varchar,
   	"hero_headline" varchar,
@@ -447,6 +448,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_desc" varchar,
   	"version_screenshot_id" integer,
   	"version_hero_visual_id" integer,
+  	"version_cover_id" integer,
   	"version_og_image_id" integer,
   	"version_hero_eyebrow" varchar,
   	"version_hero_headline" varchar,
@@ -857,6 +859,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "products_seo_keywords" ADD CONSTRAINT "products_seo_keywords_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "products" ADD CONSTRAINT "products_screenshot_id_media_id_fk" FOREIGN KEY ("screenshot_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "products" ADD CONSTRAINT "products_hero_visual_id_media_id_fk" FOREIGN KEY ("hero_visual_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "products" ADD CONSTRAINT "products_cover_id_media_id_fk" FOREIGN KEY ("cover_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "products" ADD CONSTRAINT "products_og_image_id_media_id_fk" FOREIGN KEY ("og_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "products" ADD CONSTRAINT "products_tour_poster_id_media_id_fk" FOREIGN KEY ("tour_poster_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "products_rels" ADD CONSTRAINT "products_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;
@@ -879,6 +882,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_parent_id_products_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_screenshot_id_media_id_fk" FOREIGN KEY ("version_screenshot_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_hero_visual_id_media_id_fk" FOREIGN KEY ("version_hero_visual_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_cover_id_media_id_fk" FOREIGN KEY ("version_cover_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_og_image_id_media_id_fk" FOREIGN KEY ("version_og_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_products_v" ADD CONSTRAINT "_products_v_version_tour_poster_id_media_id_fk" FOREIGN KEY ("version_tour_poster_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "_products_v_rels" ADD CONSTRAINT "_products_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."_products_v"("id") ON DELETE cascade ON UPDATE no action;
@@ -987,6 +991,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "products_seo_keywords_parent_id_idx" ON "products_seo_keywords" USING btree ("_parent_id");
   CREATE INDEX "products_screenshot_idx" ON "products" USING btree ("screenshot_id");
   CREATE INDEX "products_hero_visual_idx" ON "products" USING btree ("hero_visual_id");
+  CREATE INDEX "products_cover_idx" ON "products" USING btree ("cover_id");
   CREATE INDEX "products_og_image_idx" ON "products" USING btree ("og_image_id");
   CREATE INDEX "products_tour_tour_poster_idx" ON "products" USING btree ("tour_poster_id");
   CREATE UNIQUE INDEX "products_slug_idx" ON "products" USING btree ("slug");
@@ -1029,6 +1034,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_products_v_parent_idx" ON "_products_v" USING btree ("parent_id");
   CREATE INDEX "_products_v_version_version_screenshot_idx" ON "_products_v" USING btree ("version_screenshot_id");
   CREATE INDEX "_products_v_version_version_hero_visual_idx" ON "_products_v" USING btree ("version_hero_visual_id");
+  CREATE INDEX "_products_v_version_version_cover_idx" ON "_products_v" USING btree ("version_cover_id");
   CREATE INDEX "_products_v_version_version_og_image_idx" ON "_products_v" USING btree ("version_og_image_id");
   CREATE INDEX "_products_v_version_tour_version_tour_poster_idx" ON "_products_v" USING btree ("version_tour_poster_id");
   CREATE INDEX "_products_v_version_version_slug_idx" ON "_products_v" USING btree ("version_slug");

@@ -2977,6 +2977,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "cover_id": {
+          "name": "cover_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "og_image_id": {
           "name": "og_image_id",
           "type": "integer",
@@ -3120,6 +3126,21 @@
           "method": "btree",
           "with": {}
         },
+        "products_cover_idx": {
+          "name": "products_cover_idx",
+          "columns": [
+            {
+              "expression": "cover_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "products_og_image_idx": {
           "name": "products_og_image_idx",
           "columns": [
@@ -3231,6 +3252,19 @@
           "tableTo": "media",
           "columnsFrom": [
             "hero_visual_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "products_cover_id_media_id_fk": {
+          "name": "products_cover_id_media_id_fk",
+          "tableFrom": "products",
+          "tableTo": "media",
+          "columnsFrom": [
+            "cover_id"
           ],
           "columnsTo": [
             "id"
@@ -4784,6 +4818,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "version_cover_id": {
+          "name": "version_cover_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "version_og_image_id": {
           "name": "version_og_image_id",
           "type": "integer",
@@ -4950,6 +4990,21 @@
           "columns": [
             {
               "expression": "version_hero_visual_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_products_v_version_version_cover_idx": {
+          "name": "_products_v_version_version_cover_idx",
+          "columns": [
+            {
+              "expression": "version_cover_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5129,6 +5184,19 @@
           "tableTo": "media",
           "columnsFrom": [
             "version_hero_visual_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_products_v_version_cover_id_media_id_fk": {
+          "name": "_products_v_version_cover_id_media_id_fk",
+          "tableFrom": "_products_v",
+          "tableTo": "media",
+          "columnsFrom": [
+            "version_cover_id"
           ],
           "columnsTo": [
             "id"
@@ -9654,6 +9722,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "3916c108-12e7-4b73-9ca5-69a338a4b71b",
+  "id": "3cf17712-5020-462a-b549-a267e9a67146",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

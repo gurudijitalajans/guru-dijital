@@ -397,6 +397,10 @@ export interface Product {
    */
   heroVisual?: (number | null) | Media;
   /**
+   * Ana sayfa ve ürün kartlarındaki App Store tarzı dikey kapak (4:5, 1200x1500).
+   */
+  cover?: (number | null) | Media;
+  /**
    * Sosyal medyada paylaşılınca görünen görsel (1200x630). Boşsa ürünün hazır paylaşım görseli kullanılır.
    */
   ogImage?: (number | null) | Media;
@@ -1106,6 +1110,7 @@ export interface ProductsSelect<T extends boolean = true> {
       };
   screenshot?: T;
   heroVisual?: T;
+  cover?: T;
   ogImage?: T;
   hero?:
     | T
