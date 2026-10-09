@@ -1741,3 +1741,32 @@ button.guru-plan__nav {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---- Müşteri kanalları: site bağlantısı kodu ---- */
+.guru-embed {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--guru-soft);
+}
+.guru-embed .guru-crm__hint {
+  margin: 0;
+}
+.guru-embed__code {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.guru-embed__code code {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  overflow-x: auto;
+  white-space: nowrap;
+}

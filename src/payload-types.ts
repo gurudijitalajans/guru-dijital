@@ -93,6 +93,8 @@ export interface Config {
     users: User;
     tenants: Tenant;
     'business-config': BusinessConfig;
+    'site-connection': SiteConnection;
+    usage: Usage;
     'audit-log': AuditLog;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
@@ -132,6 +134,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'business-config': BusinessConfigSelect<false> | BusinessConfigSelect<true>;
+    'site-connection': SiteConnectionSelect<false> | SiteConnectionSelect<true>;
+    usage: UsageSelect<false> | UsageSelect<true>;
     'audit-log': AuditLogSelect<false> | AuditLogSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -714,6 +718,8 @@ export interface Knowledge {
    */
   content: string;
   active?: boolean | null;
+  source?: ('elle' | 'site' | 'belge') | null;
+  sourceUrl?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -759,6 +765,10 @@ export interface ChatbotConfig {
       }[]
     | null;
   notifyHandoff?: boolean | null;
+  /**
+   * Abonelik paketine göre Guru belirler. Sınır dolunca asistan susar, mesajlar doğrudan ekibe düşer. Boşsa sınır yok.
+   */
+  monthlyLimit?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1435,6 +1445,77 @@ export interface BusinessConfig {
   createdAt: string;
 }
 /**
+ * İşletmenin kendi web sitesine sohbet balonu ve talep formu eklemek için kod ve ayarlar.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-connection".
+ */
+export interface SiteConnection {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Balon ve form yalnız bu adreslerde açılır; siteyi tarama da yalnız bunlardan okur. Ör. https://www.ornekklinik.com
+   */
+  allowedOrigins?:
+    | {
+        origin: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Balon, başlık ve düğmelerin rengi; sitenizin ana rengi önerilir.
+   */
+  accentColor?: string | null;
+  form?: {
+    enabled?: boolean | null;
+    title?: string | null;
+    askPhone?: boolean | null;
+    /**
+     * Boşsa konu sorulmaz. Seçilen konu CRM'de fırsatın hizmeti olur.
+     */
+    topics?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    successText?: string | null;
+    /**
+     * Gönder düğmesinin üstünde işaret kutusuyla. Metin işletmenin sorumluluğundadır; KVKK aydınlatma metninize bağlantı ekleyin.
+     */
+    consentText?: string | null;
+    privacyUrl?: string | null;
+  };
+  label?: string | null;
+  /**
+   * Kodda görünür; gizli değildir.
+   */
+  siteKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * İşletme başına aylık sohbet ve yapay zekâ kullanımı. Kendiliğinden tutulur.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "usage".
+ */
+export interface Usage {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  month?: string | null;
+  conversations?: number | null;
+  visitorMessages?: number | null;
+  chatLeads?: number | null;
+  formLeads?: number | null;
+  aiCalls?: number | null;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  cacheReadTokens?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Paneldeki her değişiklik ve giriş: kim, ne zaman, ne yaptı. Yalnız yöneticiler görür.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1579,6 +1660,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'business-config';
         value: number | BusinessConfig;
+      } | null)
+    | ({
+        relationTo: 'site-connection';
+        value: number | SiteConnection;
+      } | null)
+    | ({
+        relationTo: 'usage';
+        value: number | Usage;
       } | null)
     | ({
         relationTo: 'audit-log';
@@ -1896,6 +1985,8 @@ export interface KnowledgeSelect<T extends boolean = true> {
   title?: T;
   content?: T;
   active?: T;
+  source?: T;
+  sourceUrl?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1925,6 +2016,7 @@ export interface ChatbotConfigSelect<T extends boolean = true> {
         id?: T;
       };
   notifyHandoff?: T;
+  monthlyLimit?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2363,6 +2455,58 @@ export interface BusinessConfigSelect<T extends boolean = true> {
         email?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-connection_select".
+ */
+export interface SiteConnectionSelect<T extends boolean = true> {
+  tenant?: T;
+  allowedOrigins?:
+    | T
+    | {
+        origin?: T;
+        id?: T;
+      };
+  accentColor?: T;
+  form?:
+    | T
+    | {
+        enabled?: T;
+        title?: T;
+        askPhone?: T;
+        topics?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        successText?: T;
+        consentText?: T;
+        privacyUrl?: T;
+      };
+  label?: T;
+  siteKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "usage_select".
+ */
+export interface UsageSelect<T extends boolean = true> {
+  tenant?: T;
+  month?: T;
+  conversations?: T;
+  visitorMessages?: T;
+  chatLeads?: T;
+  formLeads?: T;
+  aiCalls?: T;
+  inputTokens?: T;
+  outputTokens?: T;
+  cacheReadTokens?: T;
   updatedAt?: T;
   createdAt?: T;
 }

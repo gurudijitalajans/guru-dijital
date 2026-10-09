@@ -17,16 +17,16 @@ type Msg = { id: string | number; role: string; text: string; at: string; author
 const KEY = "guru-sohbet";
 let seq = 0;
 const store = {
-  get: () => {
+  get: (key: string) => {
     try {
-      return localStorage.getItem(KEY) ?? "";
+      return localStorage.getItem(key) ?? "";
     } catch {
       return "";
     }
   },
-  set: (v: string) => {
+  set: (key: string, v: string) => {
     try {
-      localStorage.setItem(KEY, v);
+      localStorage.setItem(key, v);
     } catch {
       /* gizli pencere: sohbet yalnız bu sayfada sürer */
     }
@@ -51,8 +51,38 @@ function Rich({ text }: { text: string }) {
   );
 }
 
-export function ChatWidget({ info }: { info: ChatInfo }) {
-  const pathname = usePathname();
+/* Gömülü mod: müşteri sitesindeki çerçevede (guru-site.js) çalışır; işletme site anahtarından */
+type Embed = { key: string; page: string; accent: string; desktop?: boolean };
+
+/* Gömülü modda yalnız tam adresler bağlantı olur ve yeni sekmede açılır */
+const URL_RE = /(https:\/\/[^\s)]+[^\s).,;:!?])/g;
+function RichUrls({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(URL_RE).map((part, i) =>
+        i % 2 === 1 ? (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-2">
+            {part}
+          </a>
+        ) : (
+          <span key={i}>{part.replace(/\*\*/g, "")}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
+  const routePath = usePathname();
+  const pathname = embed ? embed.page : routePath;
+  const accent = embed?.accent;
+  const paint = accent ? { backgroundColor: accent } : undefined;
+  const storeKey = embed ? `${KEY}-${embed.key}` : KEY;
+  const kq = embed ? `&k=${encodeURIComponent(embed.key)}` : "";
+  /* Çerçeveyi büyüten betiğe haber */
+  const tell = (open: boolean) => {
+    if (embed && window.parent !== window) window.parent.postMessage({ guru: "sohbet", open }, "*");
+  };
   const [open, setOpen] = useState(false);
   const [token, setToken] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -67,18 +97,19 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
   /* İlk açılışta: kayıtlı sohbet varsa geçmişi getir */
   const openChat = () => {
     setOpen(true);
+    tell(true);
     if (loaded.current) return;
     loaded.current = true;
-    const saved = store.get();
+    const saved = store.get(storeKey);
     if (!saved) return;
     setToken(saved);
-    fetch(`/api/conversations/gecmis?token=${encodeURIComponent(saved)}`)
+    fetch(`/api/conversations/gecmis?token=${encodeURIComponent(saved)}${kq}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((j: { messages?: Msg[]; status?: string } | null) => {
         if (j?.messages) {
           setMessages(j.messages);
           setStatus(j.status ?? "bot");
-        } else store.set("");
+        } else store.set(storeKey, "");
       })
       .catch(() => {});
   };
@@ -89,7 +120,7 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
     if (!open || !token || waiting) return;
     const t = setInterval(() => {
       const after = messages[messages.length - 1]?.at ?? "";
-      fetch(`/api/conversations/akis?token=${encodeURIComponent(token)}&after=${encodeURIComponent(after)}`)
+      fetch(`/api/conversations/akis?token=${encodeURIComponent(token)}&after=${encodeURIComponent(after)}${kq}`)
         .then((r) => (r.ok ? r.json() : null))
         .then((j: { messages?: Msg[]; status?: string } | null) => {
           if (!j?.messages?.length) return;
@@ -99,7 +130,7 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
         .catch(() => {});
     }, 4000);
     return () => clearInterval(t);
-  }, [open, token, messages, waiting]);
+  }, [open, token, messages, waiting, kq]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -108,10 +139,14 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
   useEffect(() => {
     if (!open) return;
     inputRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      if (embed && window.parent !== window) window.parent.postMessage({ guru: "sohbet", open: false }, "*");
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, embed]);
 
   const sendText = async (value: string) => {
     const t = value.trim();
@@ -125,13 +160,13 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
       const r = await fetch("/api/conversations/mesaj", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: token || undefined, text: t, page: pathname }),
+        body: JSON.stringify({ token: token || undefined, text: t, page: pathname, ...(embed ? { k: embed.key } : {}) }),
       });
       const j = (await r.json().catch(() => null)) as { ok?: boolean; token?: string; status?: string; messages?: Msg[]; error?: string } | null;
       if (!r.ok || !j?.ok) throw new Error(j?.error ?? "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
       if (j.token && j.token !== token) {
         setToken(j.token);
-        store.set(j.token);
+        store.set(storeKey, j.token);
       }
       setStatus(j.status ?? "bot");
       setMessages((old) => [...old.filter((m) => m.id !== temp.id), ...(j.messages ?? []).filter((m) => !old.some((o) => o.id === m.id))]);
@@ -144,7 +179,11 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
     }
   };
 
-  if (pathname.startsWith("/admin")) return null;
+  if (!embed && routePath.startsWith("/admin")) return null;
+  const close = () => {
+    setOpen(false);
+    tell(false);
+  };
 
   return (
     <>
@@ -154,7 +193,11 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
           onClick={openChat}
           aria-label={`${info.botName} ile sohbet edin`}
           data-umami-event="sohbet-ac"
-          className="fixed bottom-[88px] right-4 z-[45] inline-flex size-14 items-center justify-center rounded-full bg-navy text-white shadow-[0_14px_32px_-12px_rgb(1_20_65/0.55)] transition-colors hover:bg-brand lg:bottom-6 lg:right-6"
+          style={paint}
+          className={cn(
+            "fixed z-[45] inline-flex size-14 items-center justify-center rounded-full bg-navy text-white shadow-[0_14px_32px_-12px_rgb(1_20_65/0.55)] transition-colors hover:bg-brand",
+            embed ? "bottom-5 right-5" : "bottom-[88px] right-4 lg:bottom-6 lg:right-6",
+          )}
         >
           <MessageCircle aria-hidden className="size-6" strokeWidth={2} />
         </button>
@@ -163,17 +206,24 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
         <section
           role="dialog"
           aria-label={`${info.botName} sohbeti`}
-          className="fixed inset-0 z-[130] flex flex-col bg-white sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[min(620px,calc(100dvh-48px))] sm:w-[390px] sm:overflow-hidden sm:rounded-2xl sm:shadow-[0_24px_60px_-20px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]"
+          className={cn(
+            "fixed z-[130] flex flex-col bg-white",
+            embed
+              ? embed.desktop
+                ? "inset-3 overflow-hidden rounded-2xl shadow-[0_18px_44px_-18px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]"
+                : "inset-0"
+              : "inset-0 sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[min(620px,calc(100dvh-48px))] sm:w-[390px] sm:overflow-hidden sm:rounded-2xl sm:shadow-[0_24px_60px_-20px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]",
+          )}
         >
-          <header className="flex items-center gap-3 bg-navy px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-white sm:pt-3">
+          <header style={paint} className="flex items-center gap-3 bg-navy px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-white sm:pt-3">
             <span className="inline-flex size-9 items-center justify-center rounded-full bg-white/15" aria-hidden>
               <MessageCircle className="size-[18px]" strokeWidth={2} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-[15px] font-medium">{info.botName}</p>
-              <p className="text-[12.5px] text-white/75">{status === "ekip" ? "Guru ekibi yazışmayı devraldı" : "Yapay zekâ asistanı, gerekirse ekibe aktarır"}</p>
+              <p className="text-[12.5px] text-white/75">{status === "ekip" ? (embed ? "Ekibimiz yazışmayı devraldı" : "Guru ekibi yazışmayı devraldı") : "Yapay zekâ asistanı, gerekirse ekibe aktarır"}</p>
             </div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Sohbeti kapat" className="inline-flex size-11 items-center justify-center rounded-full hover:bg-white/15">
+            <button type="button" onClick={close} aria-label="Sohbeti kapat" className="inline-flex size-11 items-center justify-center rounded-full hover:bg-white/15">
               <X aria-hidden className="size-5" />
             </button>
           </header>
@@ -204,6 +254,7 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
               ) : (
                 <div
                   key={m.id}
+                  style={m.role === "ziyaretci" ? paint : undefined}
                   className={cn(
                     "max-w-[85%] whitespace-pre-line break-words rounded-2xl px-3.5 py-2.5 text-[14.5px] leading-relaxed",
                     m.role === "ziyaretci"
@@ -211,8 +262,8 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
                       : "rounded-bl-md bg-white text-body shadow-[0_0_0_1px_rgb(1_20_65/0.05)]",
                   )}
                 >
-                  {m.role === "ekip" && <span className="mb-0.5 block text-[12px] font-medium text-brand">{m.author ? `${m.author}, Guru ekibi` : "Guru ekibi"}</span>}
-                  {m.role === "ziyaretci" ? m.text : <Rich text={m.text} />}
+                  {m.role === "ekip" && <span className="mb-0.5 block text-[12px] font-medium text-brand">{embed ? (m.author ?? "Ekibimiz") : m.author ? `${m.author}, Guru ekibi` : "Guru ekibi"}</span>}
+                  {m.role === "ziyaretci" ? m.text : embed ? <RichUrls text={m.text} /> : <Rich text={m.text} />}
                 </div>
               ),
             )}
@@ -262,6 +313,7 @@ export function ChatWidget({ info }: { info: ChatInfo }) {
                 type="submit"
                 disabled={waiting || !text.trim()}
                 aria-label="Gönder"
+                style={paint}
                 className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-navy text-white transition-colors hover:bg-brand disabled:opacity-40"
               >
                 <Send aria-hidden className="size-[18px]" />

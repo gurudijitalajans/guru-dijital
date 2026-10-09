@@ -29,12 +29,16 @@ export async function getKnowledge(req: PayloadRequest, tenant: number | string)
   if (!(await isGuruTenant(req, tenant))) {
     const [t, docs] = await Promise.all([
       req.payload.findByID({ collection: "tenants", id: tenant, depth: 0, req, overrideAccess: true }),
-      req.payload.find({ collection: "knowledge", where: { and: [{ active: { equals: true } }, { tenant: { equals: tenant } }] }, limit: 200, depth: 0, pagination: false, req, overrideAccess: true }),
+      req.payload.find({ collection: "knowledge", where: { and: [{ active: { equals: true } }, { tenant: { equals: tenant } }] }, sort: "-updatedAt", limit: 300, depth: 0, pagination: false, req, overrideAccess: true }),
     ]);
     const p = t.profile ?? {};
+    /* Bilgi tabanı sınırı: istem çok büyümesin (maliyet ve hız); en yeni kayıtlar önce */
+    let budget = 60000;
     const parts = [
       [`## ${p.legalName || t.name}`, p.website && `Web sitesi: ${p.website}`, p.email && `E-posta: ${p.email}`, p.phone && `Telefon: ${p.phone}`, p.address && `Adres: ${p.address}`].filter(Boolean).join("\n"),
-      ...(docs.docs as { title: string; content: string }[]).map((d) => `### ${d.title}\n${d.content}`),
+      ...(docs.docs as { title: string; content: string; sourceUrl?: string | null }[])
+        .map((d) => `### ${d.title}${d.sourceUrl?.startsWith("http") ? ` (${d.sourceUrl})` : ""}\n${d.content}`)
+        .filter((x) => (budget -= x.length) > 0),
     ];
     const entry = { at: Date.now(), text: parts.join("\n\n"), topics: [...(docs.docs as { title: string }[]).map((d) => d.title).slice(0, 12), "Fiyat ve teklif", "Toplantı", "İletişim", "Diğer"] };
     cache.set(key, entry);

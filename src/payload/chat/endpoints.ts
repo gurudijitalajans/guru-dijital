@@ -3,6 +3,8 @@ import { addDataAndFileToRequest, type PayloadHandler, type PayloadRequest } fro
 import type { ChatbotConfig, Conversation } from "@/payload-types";
 import { defaultTenantId, idOf } from "../crm/tenant";
 import { chatConfigOf } from "./collections";
+import { connectionByKey } from "../channels/collections";
+import { addUsage } from "../channels/usage";
 import { clientIp, rateLimited } from "../utils";
 import { botReply } from "./engine";
 
@@ -22,9 +24,18 @@ type Out = { id: number | string; role: string; text: string; at: string; author
 const fail = (status: number, error: string) => Response.json({ ok: false, error }, { status, headers: { "Cache-Control": "no-store" } });
 const ok = (body: Record<string, unknown>) => Response.json({ ok: true, ...body }, { headers: { "Cache-Control": "no-store" } });
 
-/* Bugün balon yalnız Guru'nun sitesinde: işletme Guru Dijital. Müşteri sitesine gömülünce işletme anahtarından gelecek. */
-async function siteTenant(req: PayloadRequest) {
-  return defaultTenantId(req);
+/**
+ * Sohbetin işletmesi: gömülü balonda site anahtarından (k), Guru'nun kendi
+ * sitesindeki balonda Guru Dijital. Askıdaki işletmenin balonu çalışmaz.
+ */
+async function siteTenant(req: PayloadRequest, key: unknown): Promise<number | null> {
+  if (key === undefined || key === null || key === "") return defaultTenantId(req);
+  const conn = await connectionByKey(req.payload, key, req);
+  const tenant = idOf(conn?.tenant);
+  if (!tenant) return null;
+  const t = await req.payload.findByID({ collection: "tenants", id: tenant, depth: 0, req, overrideAccess: true }).catch(() => null);
+  if (!t || t.status === "askida" || !(t.modules ?? []).includes("chat")) return null;
+  return Number(tenant);
 }
 async function settingsOf(req: PayloadRequest, tenant: number | string): Promise<ChatbotConfig> {
   return chatConfigOf(req.payload, tenant, req);
@@ -65,12 +76,13 @@ async function messagesOf(req: PayloadRequest, conv: Conversation, after?: strin
 export const chatSend: PayloadHandler = async (req) => {
   /* Panele girmiş biri siteden yazsa da ziyaretçi sayılır (mesaj ekip mesajına dönmesin) */
   asServer(req);
-  const tenant = await siteTenant(req);
-  const settings = await settingsOf(req, tenant);
-  if (!settings.enabled) return fail(403, "Sohbet şu an kapalı. İletişim sayfasından bize yazabilirsiniz.");
-  if (rateLimited(`chat:${clientIp(req.headers)}`, 25)) return fail(429, "Kısa sürede çok fazla mesaj gönderildi. Lütfen birkaç dakika sonra tekrar deneyin.");
   await addDataAndFileToRequest(req);
   const body = (req.data ?? {}) as Record<string, unknown>;
+  const tenant = await siteTenant(req, body.k);
+  if (!tenant) return fail(404, "Sohbet bulunamadı.");
+  const settings = await settingsOf(req, tenant);
+  if (!settings.enabled) return fail(403, "Sohbet şu an kapalı. İletişim sayfasından bize yazabilirsiniz.");
+  if (rateLimited(`chat:${tenant}:${clientIp(req.headers)}`, 25)) return fail(429, "Kısa sürede çok fazla mesaj gönderildi. Lütfen birkaç dakika sonra tekrar deneyin.");
   if (typeof body.website === "string" && body.website) return ok({ messages: [] });
   const text = typeof body.text === "string" ? body.text.trim().slice(0, MAX_TEXT) : "";
   if (!text) return fail(400, "Mesaj boş olamaz.");
@@ -88,7 +100,9 @@ export const chatSend: PayloadHandler = async (req) => {
       req,
       overrideAccess: true,
     })) as Conversation;
+    await addUsage(req.payload, tenant, { conversations: 1 }, req);
   }
+  await addUsage(req.payload, tenant, { visitorMessages: 1 }, req);
   if ((conv.visitorMessages ?? 0) >= MAX_VISITOR_MESSAGES) return fail(429, "Bu sohbet çok uzadı. Ekibimize iletişim sayfasından yazabilirsiniz.");
 
   const visitor = await req.payload.create({
@@ -121,9 +135,17 @@ export const chatSend: PayloadHandler = async (req) => {
 };
 
 /** GET /api/conversations/akis: ekip yanıtları için yoklama */
+/* Anahtar + işletme eşleşmesi: başka işletmenin sohbet anahtarıyla okunamaz */
+async function convFor(req: PayloadRequest): Promise<Conversation | null> {
+  const conv = await byToken(req, req.searchParams.get("token"));
+  if (!conv) return null;
+  const tenant = await siteTenant(req, req.searchParams.get("k") ?? undefined);
+  return tenant && String(idOf(conv.tenant)) === String(tenant) ? conv : null;
+}
+
 export const chatPoll: PayloadHandler = async (req) => {
   asServer(req);
-  const conv = await byToken(req, req.searchParams.get("token"));
+  const conv = await convFor(req);
   if (!conv) return fail(404, "Sohbet bulunamadı.");
   const after = req.searchParams.get("after") ?? undefined;
   const valid = after && !Number.isNaN(Date.parse(after)) ? new Date(after).toISOString() : undefined;
@@ -133,7 +155,7 @@ export const chatPoll: PayloadHandler = async (req) => {
 /** GET /api/conversations/gecmis: pencere yeniden açılınca tüm geçmiş */
 export const chatHistory: PayloadHandler = async (req) => {
   asServer(req);
-  const conv = await byToken(req, req.searchParams.get("token"));
+  const conv = await convFor(req);
   if (!conv) return fail(404, "Sohbet bulunamadı.");
   return ok({ status: conv.status, messages: await messagesOf(req, conv) });
 };

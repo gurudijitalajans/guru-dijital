@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { scopeOf } from "../tenant-scope";
+import { usageThisMonth } from "../../channels/usage";
+import { chatConfigOf } from "../../chat/collections";
 import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
@@ -32,6 +34,8 @@ export async function ReportView({ initPageResult, params, searchParams }: Admin
     req.payload.find({ collection: "conversations", where: w({ createdAt: { greater_than_equal: since } }), limit: 5000, depth: 0, pagination: false, req }),
     req.payload.find({ collection: "chat-messages", where: w({ and: [{ unanswered: { equals: true } }, { createdAt: { greater_than_equal: since } }] }), sort: "-createdAt", limit: 20, depth: 0, req }),
   ]);
+  const [usage, cfg] = await Promise.all([usageThisMonth(req.payload, scope.tenantId), chatConfigOf(req.payload, scope.tenantId)]);
+  const limit = cfg.monthlyLimit ?? 0;
   const all = convs.docs;
   const handed = all.filter((c) => c.handedOffAt);
   const botOnly = all.length - handed.length;
@@ -75,7 +79,9 @@ export async function ReportView({ initPageResult, params, searchParams }: Admin
           <header className="guru-pipe__head">
             <div>
               <h1>Sohbet raporu</h1>
-              <p>Son 30 gün, sitedeki sohbet balonu</p>
+              <p>
+                Son 30 gün, sitedeki sohbet balonu. Bu ay {nf.format(usage?.conversations ?? 0)} sohbet{limit ? ` (sınır ${nf.format(limit)})` : ""}, {nf.format(usage?.aiCalls ?? 0)} yapay zekâ yanıtı, {nf.format(Math.round(((usage?.inputTokens ?? 0) + (usage?.outputTokens ?? 0)) / 1000))} bin token.
+              </p>
             </div>
             <nav className="guru-pipe__tools" aria-label="Sohbet bağlantıları">
               <Link className="guru-plan__nav" href="/admin/sohbetler">

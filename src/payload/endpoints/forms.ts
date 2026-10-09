@@ -3,6 +3,8 @@ import type { Booking } from "@/payload-types";
 import { notifyTeam } from "../notify";
 import { bookingToCrm, leadToCrm } from "../crm/automation";
 import { defaultTenantId } from "../crm/tenant";
+import { connectionByKey } from "../channels/collections";
+import { addUsage } from "../channels/usage";
 import { clientIp, dayKey, rateLimited } from "../utils";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
@@ -130,12 +132,22 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
 export const submitLead: PayloadHandler = async (req) => {
   /* Oturumsuz site isteği sunucu adına yazar: çok kiracılı eklenti işletme atamasını ancak yerel işlemde kabul eder */
   req.payloadAPI = "local";
-  if (rateLimited(`lead:${clientIp(req.headers)}`)) {
+  if (rateLimited(`lead:${clientIp(req.headers)}`, 8)) {
     return fail(429, "Kısa sürede çok fazla gönderim yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.");
   }
   const body = await readBody(req);
   if (isBot(body)) return Response.json({ ok: true });
-  const res = await createLead(req, body as unknown as LeadInput);
+  /* Gömülü form: site anahtarından işletme; formu kapalı ya da CRM'i olmayan işletmeye yazılmaz */
+  let tenant: number | undefined;
+  if (body.k) {
+    const conn = await connectionByKey(req.payload, body.k, req);
+    const t = conn?.tenant ? await req.payload.findByID({ collection: "tenants", id: typeof conn.tenant === "object" ? conn.tenant.id : conn.tenant, depth: 0, req, overrideAccess: true }).catch(() => null) : null;
+    if (!conn || !t || t.status === "askida" || !(t.modules ?? []).includes("crm") || conn.form?.enabled === false) return fail(404, "Form bulunamadı.");
+    if (conn.form?.consentText && body.consent !== true && body.consent !== "true") return fail(400, "Devam etmek için onay kutusunu işaretleyin.");
+    tenant = t.id;
+  }
+  const res = await createLead(req, body as unknown as LeadInput, "form", tenant);
+  if (res.ok && tenant) await addUsage(req.payload, tenant, { formLeads: 1 }, req);
   return res.ok ? Response.json({ ok: true }) : fail(res.status, res.error);
 };
 

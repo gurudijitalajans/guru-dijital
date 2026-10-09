@@ -7,8 +7,7 @@
  * Dijital'in hiçbir kaydını okuyamadığını, değiştiremediğini ve kendi
  * kayıtlarına bağlayamadığını denetler. Müşteri işletmesi açmadan önce ve
  * yetkiyle ilgili her değişiklikten sonra çalıştırılmalı.
- * Not: ikinci çalıştırmada teklif numarası 002 olur, üye zaten vardır; bu iki
- * satırın "başarısız" görünmesi beklenir.
+ * Tekrar tekrar çalıştırılabilir (her çalıştırmada yeni deneme kayıtları açar).
  */
 import { readFileSync } from "node:fs";
 import { parseEnv } from "node:util";
@@ -57,7 +56,7 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   const dB = await api("POST", "/api/deals", { title: "Klinik web sitesi", contact: cB.b.doc.id, value: 30000 });
   check("B fırsat açar", dB.s === 201, `durum=${dB.s}`);
   const qB = await api("POST", "/api/quotes", { title: "Klinik teklifi", deal: dB.b.doc.id, items: [{ description: "Tasarım", qty: 1, unitPrice: 30000, vatRate: "20" }] });
-  check("B teklif numarası kendi ön ekiyle", qB.s === 201 && /^DK-\d{4}-001$/.test(qB.b?.doc?.number ?? ""), `no=${qB.b?.doc?.number}`);
+  check("B teklif numarası kendi ön ekiyle", qB.s === 201 && /^DK-\d{4}-\d{3}$/.test(qB.b?.doc?.number ?? ""), `no=${qB.b?.doc?.number}`);
   const lB = await api("POST", "/api/leads", { name: "Klinik Aday", email: "deneme@guru.test", message: "Panelden talep" });
   check("B panelden talep → CRM aynı işletmede", lB.s === 201, `durum=${lB.s}`);
   await sleep(500);
@@ -69,7 +68,7 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   check("B yalnız kendi işletmesini görüyor", tl.docs.length === 1 && tl.docs[0].id === B.id, `n=${tl.docs.length}`);
   const ul = (await api("GET", "/api/users?depth=0&limit=50")).b;
   check("B yalnız kendi işletmesinin kullanıcılarını görüyor", ul.docs.every((u) => (u.tenants ?? []).some((r) => String(r.tenant) === String(B.id))), `n=${ul.docs.length}`);
-  const nu = await api("POST", "/api/users", { name: "Klinik Üye", email: "uye@klinik.test", password: env.QA_B2_PASSWORD, role: "admin", tenants: [{ tenant: B.id, role: "uye", modules: ["crm", "ops", "site"] }, { tenant: 1, role: "yonetici" }] });
+  const nu = await api("POST", "/api/users", { name: "Klinik Üye", email: `uye${Date.now()}@klinik.test`, password: env.QA_B2_PASSWORD, role: "admin", tenants: [{ tenant: B.id, role: "uye", modules: ["crm", "ops", "site"] }, { tenant: 1, role: "yonetici" }] });
   const nd = nu.b?.doc;
   check("B yöneticisi üye ekler; Guru yöneticisi yapamaz, Guru'ya ekleyemez, kapalı modül veremez", nu.s === 201 && nd.role === "editor" && nd.tenants.length === 1 && j(nd.tenants[0].modules) === j(["crm"]), `durum=${nu.s} rol=${nd?.role} satırlar=${j(nd?.tenants?.map((r) => [r.tenant, r.role, r.modules]))}`);
   const pr = await p.evalJs(`fetch("/api/quotes/1/yazdir").then(r=>r.status)`);
@@ -78,7 +77,8 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   check("B kendi teklif belgesinde kendi unvanı", myq === "200 true", myq);
   await p.goto("/admin/satis-hatti", 8000);
   const cards = await p.evalJs(`[...document.querySelectorAll('.guru-pipe__title')].map(a=>a.textContent)`);
-  check("B satış hattında yalnız kendi fırsatları", cards.length >= 1 && cards.every((t) => t.startsWith("Klinik") || t.includes("Klinik Aday") || t.includes("Panelden")), j(cards));
+  const ownTitles = new Set(((await api("GET", "/api/deals?limit=500&depth=0")).b?.docs ?? []).filter((d) => String(d.tenant) === String(B.id)).map((d) => d.title));
+  check("B satış hattında yalnız kendi fırsatları", cards.length >= 1 && cards.every((t) => ownTitles.has(t)), `${cards.length} kart`);
   await p.screenshot(`${OUT}/mt-b-hat.png`);
   await p.goto("/admin", 8000);
   const home = await p.evalJs(`document.querySelector('.guru-home')?.innerText.slice(0,400)`);

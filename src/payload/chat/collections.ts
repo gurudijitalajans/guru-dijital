@@ -5,6 +5,7 @@ import { idOf } from "../crm/automation";
 import { chatHistory, chatPoll, chatSend } from "./endpoints";
 import { resetKnowledge } from "./knowledge";
 import { revalidate } from "../utils";
+import { crawlSite, importDocument } from "../channels/importers";
 
 /**
  * Guru Chatbot: sitedeki sohbet balonu, ekip gelen kutusu ve bilgi tabanı.
@@ -102,6 +103,22 @@ export const ChatbotSettings: CollectionConfig = {
       ],
     },
     { name: "notifyHandoff", type: "checkbox", label: "Sohbet ekibe aktarılınca e-postayla bildir", defaultValue: true },
+    {
+      name: "monthlyLimit",
+      type: "number",
+      label: "Aylık sohbet sınırı",
+      min: 0,
+      access: { update: isAdminField, create: isAdminField },
+      admin: {
+        position: "sidebar",
+        description: "Abonelik paketine göre Guru belirler. Sınır dolunca asistan susar, mesajlar doğrudan ekibe düşer. Boşsa sınır yok.",
+      },
+    },
+    {
+      name: "knowledgeTools",
+      type: "ui",
+      admin: { position: "sidebar", components: { Field: "/payload/components/channels/KnowledgeTools#KnowledgeTools" } },
+    },
   ],
 };
 
@@ -115,12 +132,29 @@ export const Knowledge: CollectionConfig = {
     description:
       "Asistan hizmetleri, ürünleri, sık sorulan soruları ve iletişim bilgilerini sitenin kendisinden okur. Sitede olmayan bilgileri (çalışma saatleri, ödeme koşulları, kampanyalar) buraya ekleyin.",
   },
-  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
+  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isLoggedIn },
+  endpoints: [
+    { path: "/site-tara", method: "post", handler: crawlSite },
+    { path: "/belge", method: "post", handler: importDocument },
+  ],
   hooks: { afterChange: [() => resetKnowledge()], afterDelete: [() => resetKnowledge()] },
   fields: [
     { name: "title", type: "text", label: "Başlık", required: true, admin: { placeholder: "Çalışma saatleri" } },
     { name: "content", type: "textarea", label: "Bilgi", required: true, admin: { rows: 8, description: "Asistan bunu olduğu gibi bilgi olarak kullanır; kısa ve net yazın." } },
     { name: "active", type: "checkbox", label: "Asistan kullansın", defaultValue: true, admin: { position: "sidebar" } },
+    {
+      name: "source",
+      type: "select",
+      label: "Kaynak",
+      defaultValue: "elle",
+      options: [
+        { label: "Elle eklendi", value: "elle" },
+        { label: "Siteden tarandı", value: "site" },
+        { label: "Belgeden", value: "belge" },
+      ],
+      admin: { position: "sidebar", readOnly: true },
+    },
+    { name: "sourceUrl", type: "text", label: "Kaynak adres", index: true, admin: { position: "sidebar", readOnly: true, condition: (d) => Boolean(d?.sourceUrl) } },
   ],
 };
 

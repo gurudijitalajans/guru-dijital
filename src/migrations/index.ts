@@ -5,6 +5,7 @@ import * as migration_20261009_151131_operation from './20261009_151131_operatio
 import * as migration_20261009_163510_chatbot from './20261009_163510_chatbot';
 import * as migration_20261009_193807_business from './20261009_193807_business';
 import * as migration_20261009_204543_cok_kiracili from './20261009_204543_cok_kiracili';
+import * as migration_20261009_215414_kanallar from './20261009_215414_kanallar';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20261009_204543_cok_kiracili.up,
     down: migration_20261009_204543_cok_kiracili.down,
-    name: '20261009_204543_cok_kiracili'
+    name: '20261009_204543_cok_kiracili',
+  },
+  {
+    up: migration_20261009_215414_kanallar.up,
+    down: migration_20261009_215414_kanallar.down,
+    name: '20261009_215414_kanallar'
   },
 ];

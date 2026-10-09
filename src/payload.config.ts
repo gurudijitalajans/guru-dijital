@@ -34,6 +34,7 @@ import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./paylo
 import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
 import { AuditLog, BusinessSettings, withAudit } from "./payload/business/collections";
 import { businessEndpoints } from "./payload/business/endpoints";
+import { SiteConnections, Usage } from "./payload/channels/collections";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -194,6 +195,8 @@ export default buildConfig({
     Users,
     Tenants,
     tenanted(BusinessSettings),
+    tenanted(SiteConnections),
+    tenanted(Usage),
     tenanted(AuditLog),
   ].map(withAudit),
   /* Yönetici ay sonu raporu ve sabah özeti (Vercel Cron, vercel.json) */
@@ -239,7 +242,8 @@ export default buildConfig({
       /* Eklentinin varsayılanı oturumsuz istekte (çerez varken) yetki hatası verir; seçili işletmeyi
          yalnız oturumlu kullanıcıda kullan, gerisini fillTenant üst kayıttan ya da Guru Dijital'den doldurur */
       tenantField: { defaultValue: ({ req }: { req: PayloadRequest }) => (req.user ? Number(selectedTenant(req)) || undefined : undefined) },
-      collections: Object.fromEntries([...TENANT_COLLECTIONS].map((slug) => [slug, slug.endsWith("-config") ? { isGlobal: true } : {}])),
+      /* İşletme başına tek kayıt olanlar ("isGlobal"): ayarlar ve site bağlantısı */
+      collections: Object.fromEntries([...TENANT_COLLECTIONS].map((slug) => [slug, ["chatbot-config", "business-config", "site-connection"].includes(slug) ? { isGlobal: true } : {}])),
       i18n: {
         translations: {
           tr: {

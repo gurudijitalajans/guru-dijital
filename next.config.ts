@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   /* Canlıda panel görselleri Vercel Blob adresinden gelir */
   images: { remotePatterns: [{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" }] },
   turbopack: { root: path.resolve(dirname) },
+  /* PDF metni (bilgi tabanına belge) sunucuda paketlenmeden yüklenir */
+  serverExternalPackages: ["unpdf"],
+  /* Geliştirme simgesi gömülü sohbet çerçevesinde balonun üstüne biniyordu */
+  devIndicators: false,
   webpack: (config) => {
     config.resolve.extensionAlias = {
       ".cjs": [".cts", ".cjs"],

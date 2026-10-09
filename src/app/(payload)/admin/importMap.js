@@ -4,6 +4,7 @@ import { Timeline as Timeline_7ae76d7567d54bc78988705f2239770f } from '../../../
 import { DealToProject as DealToProject_c3bd8d5cb3ab076a467e045087296a0e } from '../../../payload/components/ops/DealToProject'
 import { QuoteActions as QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce } from '../../../payload/components/crm/QuoteActions'
 import { ProjectTasks as ProjectTasks_f499b2b2d0100bc16d713306f8cbf079 } from '../../../payload/components/ops/ProjectTasks'
+import { KnowledgeTools as KnowledgeTools_298fa8b6b3a9f76fc58346a10e0a2b23 } from '../../../payload/components/channels/KnowledgeTools'
 import { PageMap as PageMap_2d6778b53bca86433c09f51cf5b2e8d6 } from '../../../payload/components/PageMap'
 import { TextHelper as TextHelper_cc2e68801705ef6e2983d380be7a61c7 } from '../../../payload/components/TextHelper'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -33,6 +34,7 @@ import { MediaUsage as MediaUsage_162d464a9b6bd4a4a2f95103259aec53 } from '../..
 import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { EmbedCode as EmbedCode_52574d6ff55a40b02fdd96a372393c75 } from '../../../payload/components/channels/EmbedCode'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Icon as Icon_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/components/Brand'
 import { Logo as Logo_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/components/Brand'
@@ -59,6 +61,7 @@ export const importMap = {
   "/payload/components/ops/DealToProject#DealToProject": DealToProject_c3bd8d5cb3ab076a467e045087296a0e,
   "/payload/components/crm/QuoteActions#QuoteActions": QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce,
   "/payload/components/ops/ProjectTasks#ProjectTasks": ProjectTasks_f499b2b2d0100bc16d713306f8cbf079,
+  "/payload/components/channels/KnowledgeTools#KnowledgeTools": KnowledgeTools_298fa8b6b3a9f76fc58346a10e0a2b23,
   "/payload/components/PageMap#PageMap": PageMap_2d6778b53bca86433c09f51cf5b2e8d6,
   "/payload/components/TextHelper#TextHelper": TextHelper_cc2e68801705ef6e2983d380be7a61c7,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -88,6 +91,7 @@ export const importMap = {
   "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/next/rsc#FolderField": FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
+  "/payload/components/channels/EmbedCode#EmbedCode": EmbedCode_52574d6ff55a40b02fdd96a372393c75,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "/payload/components/Brand#Icon": Icon_9abc6a0eda54972459e8ec55822fafb2,
   "/payload/components/Brand#Logo": Logo_9abc6a0eda54972459e8ec55822fafb2,
