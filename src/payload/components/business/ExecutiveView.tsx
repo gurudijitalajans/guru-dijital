@@ -44,7 +44,8 @@ export async function ExecutiveView({ initPageResult, params, searchParams }: Ad
     periodMetrics(q, p.prev),
     snapshot(q),
     req.payload.findGlobal({ slug: "business-settings", depth: 0, req }),
-    req.payload.find({ collection: "audit-log", sort: "-createdAt", limit: 14, depth: 1, req }),
+    /* Girişler İşlem geçmişinde; akışta yalnız işler */
+    req.payload.find({ collection: "audit-log", where: { action: { not_equals: "giris" } }, sort: "-createdAt", limit: 12, depth: 1, req }),
   ]);
   const target = key !== "30-gun" ? (settings.monthlyTarget ?? 0) : 0;
   const reportMonth = new Date(Date.parse(p.from) + 5 * 86400000).toISOString().slice(0, 7);
