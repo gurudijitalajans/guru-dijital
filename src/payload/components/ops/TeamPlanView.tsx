@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { can } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -29,6 +30,8 @@ function span(t: T, today: string): [string, string] {
 export async function TeamPlanView({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fekip-plani");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "ops")) redirect("/admin");
 
   const today = dayOf(new Date());
   const asked = typeof searchParams?.hafta === "string" && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.hafta) ? searchParams.hafta : today;

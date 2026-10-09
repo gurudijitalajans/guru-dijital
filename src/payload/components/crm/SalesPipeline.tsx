@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { can } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -15,6 +16,8 @@ const name = (v: unknown) => (v && typeof v === "object" ? ((v as { name?: strin
 export async function SalesPipeline({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsatis-hatti");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "crm")) redirect("/admin");
 
   const res = await req.payload.find({
     collection: "deals",

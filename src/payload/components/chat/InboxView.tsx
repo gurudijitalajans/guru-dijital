@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { can } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -10,6 +11,8 @@ import { Inbox } from "./Inbox";
 export async function InboxView({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsohbetler");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "chat")) redirect("/admin");
   const settings = await req.payload.findGlobal({ slug: "chatbot-settings", depth: 0, req });
   const canned = (settings.cannedReplies ?? []).map((c) => ({ label: c.label, text: c.text }));
   const initial = typeof searchParams?.id === "string" ? searchParams.id : "";

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { can } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -20,6 +21,8 @@ const dur = (ms: number) => {
 export async function ReportView({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsohbet-raporu");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "chat")) redirect("/admin");
   const since = daysAgoIso(30);
   const [convs, unanswered] = await Promise.all([
     req.payload.find({ collection: "conversations", where: { createdAt: { greater_than_equal: since } }, limit: 5000, depth: 0, pagination: false, req }),

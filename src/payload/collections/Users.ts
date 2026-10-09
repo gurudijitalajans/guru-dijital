@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { adminOrSelf, isAdmin, isAdminField, isLoggedIn } from "../access";
+import { MODULES } from "../business/roles";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -8,6 +9,8 @@ export const Users: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "email", "role"],
     group: "Ayarlar",
+    /* Ekip üyesi kendi hesabını sağ üstten açar; kullanıcı listesi yöneticide */
+    hidden: ({ user }) => (user as { role?: string } | null)?.role !== "admin",
   },
   auth: {
     tokenExpiration: 60 * 60 * 8,
@@ -22,6 +25,14 @@ export const Users: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
+    /* Erişim kaydı: kim, ne zaman giriş yaptı (Ayarlar > İşlem geçmişi) */
+    afterLogin: [
+      async ({ user, req }) => {
+        await req.payload
+          .create({ collection: "audit-log", data: { user: user.id, action: "giris", target: "Oturum", docId: String(user.id), summary: `${user.name ?? user.email} giriş yaptı` }, overrideAccess: true })
+          .catch(() => {});
+      },
+    ],
     /* İlk hesap her zaman yönetici olur (panelin "ilk kullanıcı" ekranı dahil). */
     beforeValidate: [
       async ({ data, operation, req }) => {
@@ -51,12 +62,27 @@ export const Users: CollectionConfig = {
       saveToJWT: true,
       options: [
         { label: "Yönetici", value: "admin" },
-        { label: "Editör", value: "editor" },
+        { label: "Ekip üyesi", value: "editor" },
       ],
       access: { create: isAdminField, update: isAdminField },
       admin: {
         position: "sidebar",
-        description: "Editör içerik ve müşteri kayıtlarıyla çalışır; kullanıcı ekleme ve silme yöneticidedir.",
+        description: "Yönetici her şeyi görür, kullanıcı ekler ve siler. Ekip üyesi yalnız aşağıda işaretlenen modüllerle çalışır.",
+      },
+    },
+    {
+      name: "modules",
+      type: "select",
+      hasMany: true,
+      label: "Erişebildiği modüller",
+      saveToJWT: true,
+      defaultValue: ["site"],
+      options: [...MODULES],
+      access: { create: isAdminField, update: isAdminField },
+      admin: {
+        position: "sidebar",
+        condition: (data) => data?.role !== "admin",
+        description: "Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation, içerik editörüne Site içeriği.",
       },
     },
   ],

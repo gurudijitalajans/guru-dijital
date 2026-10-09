@@ -91,6 +91,7 @@ export interface Config {
     categories: Category;
     users: User;
     tenants: Tenant;
+    'audit-log': AuditLog;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -127,6 +128,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
+    'audit-log': AuditLogSelect<false> | AuditLogSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -141,12 +143,14 @@ export interface Config {
     'home-page': HomePage;
     'about-page': AboutPage;
     'chatbot-settings': ChatbotSetting;
+    'business-settings': BusinessSetting;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
     'chatbot-settings': ChatbotSettingsSelect<false> | ChatbotSettingsSelect<true>;
+    'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -261,9 +265,13 @@ export interface User {
    */
   weeklyHours?: number | null;
   /**
-   * Editör içerik ve müşteri kayıtlarıyla çalışır; kullanıcı ekleme ve silme yöneticidedir.
+   * Yönetici her şeyi görür, kullanıcı ekler ve siler. Ekip üyesi yalnız aşağıda işaretlenen modüllerle çalışır.
    */
   role: 'admin' | 'editor';
+  /**
+   * Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation, içerik editörüne Site içeriği.
+   */
+  modules?: ('site' | 'crm' | 'chat' | 'ops')[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -447,6 +455,7 @@ export interface Project {
    */
   owner?: (number | null) | User;
   deal?: (number | null) | Deal;
+  completedAt?: string | null;
   tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
@@ -1303,6 +1312,23 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Paneldeki her değişiklik ve giriş: kim, ne zaman, ne yaptı. Yalnız yöneticiler görür.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-log".
+ */
+export interface AuditLog {
+  id: number;
+  summary?: string | null;
+  user?: (number | null) | User;
+  action?: ('olusturdu' | 'degistirdi' | 'sildi' | 'giris') | null;
+  target?: string | null;
+  docId?: string | null;
+  fields?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -1421,6 +1447,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tenants';
         value: number | Tenant;
+      } | null)
+    | ({
+        relationTo: 'audit-log';
+        value: number | AuditLog;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -1634,6 +1664,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   status?: T;
   owner?: T;
   deal?: T;
+  completedAt?: T;
   tenant?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2102,6 +2133,7 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   weeklyHours?: T;
   role?: T;
+  modules?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -2127,6 +2159,20 @@ export interface UsersSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audit-log_select".
+ */
+export interface AuditLogSelect<T extends boolean = true> {
+  summary?: T;
+  user?: T;
+  action?: T;
+  target?: T;
+  docId?: T;
+  fields?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2480,6 +2526,32 @@ export interface ChatbotSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-settings".
+ */
+export interface BusinessSetting {
+  id: number;
+  /**
+   * Yönetici panosunda bu ay kazanılan işin hedefe oranı görünür. Boşsa hedef çubuğu gösterilmez.
+   */
+  monthlyTarget?: number | null;
+  /**
+   * Saat 08:00 civarı yöneticilere: dünkü talepler, bekleyen sohbetler, bugünkü işler, gecikenler.
+   */
+  summaryEnabled?: boolean | null;
+  /**
+   * Yöneticilere ek olarak özeti alacak adresler.
+   */
+  summaryRecipients?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
@@ -2724,6 +2796,23 @@ export interface ChatbotSettingsSelect<T extends boolean = true> {
         id?: T;
       };
   notifyHandoff?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-settings_select".
+ */
+export interface BusinessSettingsSelect<T extends boolean = true> {
+  monthlyTarget?: T;
+  summaryEnabled?: T;
+  summaryRecipients?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

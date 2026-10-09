@@ -3,6 +3,7 @@ import * as migration_20261009_132146_medya_klasorleri from './20261009_132146_m
 import * as migration_20261009_143301_crm from './20261009_143301_crm';
 import * as migration_20261009_151131_operation from './20261009_151131_operation';
 import * as migration_20261009_163510_chatbot from './20261009_163510_chatbot';
+import * as migration_20261009_193807_business from './20261009_193807_business';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261009_163510_chatbot.up,
     down: migration_20261009_163510_chatbot.down,
-    name: '20261009_163510_chatbot'
+    name: '20261009_163510_chatbot',
+  },
+  {
+    up: migration_20261009_193807_business.up,
+    down: migration_20261009_193807_business.down,
+    name: '20261009_193807_business'
   },
 ];

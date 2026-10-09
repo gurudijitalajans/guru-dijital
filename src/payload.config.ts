@@ -30,6 +30,9 @@ import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/co
 import { Tenants } from "./payload/crm/tenant";
 import { Projects, Tasks, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
+import { guardCollection, guardGlobal } from "./payload/business/roles";
+import { AuditLog, BusinessSettings, withAudit } from "./payload/business/collections";
+import { businessEndpoints } from "./payload/business/endpoints";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -132,6 +135,11 @@ export default buildConfig({
           path: "/sohbet-raporu",
           meta: { title: "Sohbet raporu" },
         },
+        yonetici: {
+          Component: "/payload/components/business/ExecutiveView#ExecutiveView",
+          path: "/yonetici",
+          meta: { title: "Yönetici panosu" },
+        },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -147,32 +155,39 @@ export default buildConfig({
   },
   /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Guru Chatbot, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
   collections: [
-    Leads,
-    Bookings,
-    Deals,
-    Contacts,
-    Companies,
-    Quotes,
-    Activities,
-    Projects,
-    Tasks,
-    Templates,
-    Conversations,
-    Knowledge,
-    ChatMessages,
-    Team,
-    CaseStudies,
-    Testimonials,
-    References,
-    Services,
-    Products,
-    Posts,
-    Media,
-    Categories,
+    /* Guru CRM: satış ekibi; sohbet ekibi de kişileri görür, operasyon işin firmasını ve kişisini görür */
+    guardCollection(Leads, "crm", { privateRead: true, readAlso: ["chat"] }),
+    guardCollection(Bookings, "crm", { privateRead: true, readAlso: ["chat"] }),
+    guardCollection(Deals, "crm", { privateRead: true, readAlso: ["ops"] }),
+    guardCollection(Contacts, "crm", { privateRead: true, readAlso: ["ops", "chat"] }),
+    guardCollection(Companies, "crm", { privateRead: true, readAlso: ["ops"] }),
+    guardCollection(Quotes, "crm", { privateRead: true }),
+    guardCollection(Activities, "crm", { privateRead: true }),
+    /* Guru Operation */
+    guardCollection(Projects, "ops", { privateRead: true }),
+    guardCollection(Tasks, "ops", { privateRead: true }),
+    guardCollection(Templates, "ops", { privateRead: true }),
+    /* Guru Chatbot */
+    guardCollection(Conversations, "chat", { privateRead: true }),
+    guardCollection(Knowledge, "chat", { privateRead: true }),
+    guardCollection(ChatMessages, "chat", { privateRead: true }),
+    /* Site içeriği: yayındaki içerik herkese açık, düzenleme site modülünde */
+    guardCollection(Team, "site"),
+    guardCollection(CaseStudies, "site"),
+    guardCollection(Testimonials, "site"),
+    guardCollection(References, "site"),
+    guardCollection(Services, "site"),
+    guardCollection(Products, "site"),
+    guardCollection(Posts, "site"),
+    guardCollection(Media, "site"),
+    guardCollection(Categories, "site"),
     Users,
     Tenants,
-  ],
-  globals: [HomePage, AboutPage, ChatbotSettings, SiteSettings],
+    AuditLog,
+  ].map(withAudit),
+  /* Yönetici ay sonu raporu ve sabah özeti (Vercel Cron, vercel.json) */
+  endpoints: businessEndpoints,
+  globals: [guardGlobal(HomePage, "site"), guardGlobal(AboutPage, "site"), guardGlobal(ChatbotSettings, "chat"), guardGlobal(BusinessSettings, "admin"), guardGlobal(SiteSettings, "site")],
   /* Medya klasörleri: "Klasöre göre gez" görünümü ve görsel başına klasör alanı */
   folders: {
     browseByFolder: true,

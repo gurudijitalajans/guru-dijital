@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { can } from "../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -171,6 +172,8 @@ export async function AnalyticsView({ initPageResult, params, searchParams }: Ad
   const { req, permissions, visibleEntities, locale } = initPageResult;
   /* Özel panel ekranları varsayılan olarak herkese açıktır: giriş zorunlu */
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fanaliz");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "site")) redirect("/admin");
 
   const days = PERIODS.find((p) => String(p) === String(searchParams?.gun)) ?? 30;
   const settings = await req.payload.findGlobal({ slug: "site-settings", depth: 0, req });

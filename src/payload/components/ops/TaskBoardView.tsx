@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { can } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -14,6 +15,8 @@ const nameOf = (v: unknown, key = "name") => (v && typeof v === "object" ? Strin
 export async function TaskBoardView({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Foperasyon");
+  /* Modülü olmayan kullanıcı panoya döner */
+  if (!can(req.user, "ops")) redirect("/admin");
 
   const [res, projects, users] = await Promise.all([
     req.payload.find({

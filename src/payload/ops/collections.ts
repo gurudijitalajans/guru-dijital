@@ -133,6 +133,10 @@ export const Projects: CollectionConfig = {
           }
         }
         if (operation === "create" && !data.startDate) data.startDate = noonUtc(dayOf(new Date()));
+        /* Teslim süresi raporu için: iş tamamlandı olarak işaretlendiği an */
+        const status = data.status ?? originalDoc?.status;
+        if (status === "tamamlandi" && !originalDoc?.completedAt && !data.completedAt) data.completedAt = new Date().toISOString();
+        if (status !== "tamamlandi" && status) data.completedAt = null;
         return data;
       },
     ],
@@ -190,6 +194,7 @@ export const Projects: CollectionConfig = {
       admin: { position: "sidebar", description: "Şablon adımında sorumlu yoksa görev buna atanır; Kontrol'e gelen işler ona bildirilir." },
     },
     { name: "deal", type: "relationship", relationTo: "deals", label: "Geldiği fırsat", admin: { position: "sidebar" } },
+    { name: "completedAt", type: "date", label: "Tamamlandı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy" }, condition: (d) => Boolean(d?.completedAt) } },
     tenantField,
   ],
 };

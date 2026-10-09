@@ -8,6 +8,7 @@ import { activityLabel, DEAL_STAGES, OPEN_STAGES } from "../crm/stages";
 import { TaskCheck } from "./crm/TaskCheck";
 import { taskCode, taskStageLabel } from "../ops/stages";
 import { aiConfigured } from "../chat/ai";
+import { can, isAdminUser, type Module } from "../business/roles";
 
 /**
  * Panel ana sayfası (Payload'un koleksiyon ızgarası yerine). Soru şu:
@@ -88,14 +89,15 @@ export async function Dashboard({ payload, user }: ServerProps) {
 
   const pipeTotal = openDeals.docs.reduce((sum, d) => sum + (d.value ?? 0), 0);
   const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
+  const has = (m: Module) => can(user, m);
   const cards = [
-    { label: "Yeni talep", value: newLeads.totalDocs, hint: "yanıt bekliyor", href: "/admin/collections/leads?where[status][equals]=yeni" },
-    { label: "Bekleyen sohbet", value: chatWaiting.totalDocs, hint: "ekipten yanıt bekliyor", href: "/admin/sohbetler" },
-    { label: "Bugünkü iş", value: tasks.totalDocs, hint: "görev ve arama", href: "/admin/collections/activities?where[done][equals]=false&sort=dueAt" },
-    { label: "Randevu", value: upcoming.totalDocs, hint: `${todayBookings.totalDocs} tanesi bugün`, href: "/admin/collections/bookings" },
-    { label: "Açık fırsat", value: openDeals.docs.length, hint: `${money.format(pipeTotal)} satış hattında`, href: "/admin/satis-hatti" },
-    { label: "Taslak", value: drafts, hint: "yayınlanmayı bekliyor", href: "/admin/collections/posts?where[_status][equals]=draft" },
-  ];
+    { mod: "crm" as Module, label: "Yeni talep", value: newLeads.totalDocs, hint: "yanıt bekliyor", href: "/admin/collections/leads?where[status][equals]=yeni" },
+    { mod: "chat" as Module, label: "Bekleyen sohbet", value: chatWaiting.totalDocs, hint: "ekipten yanıt bekliyor", href: "/admin/sohbetler" },
+    { mod: "crm" as Module, label: "Bugünkü iş", value: tasks.totalDocs, hint: "görev ve arama", href: "/admin/collections/activities?where[done][equals]=false&sort=dueAt" },
+    { mod: "crm" as Module, label: "Randevu", value: upcoming.totalDocs, hint: `${todayBookings.totalDocs} tanesi bugün`, href: "/admin/collections/bookings" },
+    { mod: "crm" as Module, label: "Açık fırsat", value: openDeals.docs.length, hint: `${money.format(pipeTotal)} satış hattında`, href: "/admin/satis-hatti" },
+    { mod: "site" as Module, label: "Taslak", value: drafts, hint: "yayınlanmayı bekliyor", href: "/admin/collections/posts?where[_status][equals]=draft" },
+  ].filter((c) => has(c.mod));
   const stageSummary = DEAL_STAGES.filter((s) => OPEN_STAGES.includes(s.value)).map((s) => {
     const list = openDeals.docs.filter((d) => d.stage === s.value);
     return { label: s.label, count: list.length, total: list.reduce((sum, d) => sum + (d.value ?? 0), 0) };
@@ -126,6 +128,12 @@ export async function Dashboard({ payload, user }: ServerProps) {
           ? "Sitede sohbet balonu açık"
           : "Chatbot ayarlarından sohbet balonunu açın",
       href: "/admin/globals/chatbot-settings",
+    },
+    {
+      done: Boolean(process.env.CRON_SECRET),
+      title: "Sabah özeti",
+      detail: process.env.CRON_SECRET ? "Hafta içi her sabah yöneticilere özet e-postası gidiyor" : "Vercel'e CRON_SECRET eklenince hafta içi her sabah özet e-postası gider",
+      href: "/admin/globals/business-settings",
     },
     { done: umamiConfigured(), title: "Ziyaretçi analizi", detail: umamiConfigured() ? "Umami bağlı" : "Vercel'e UMAMI_API_KEY eklenince bu panoda ziyaretçi sayıları görünür", href: "/admin/analiz" },
     { done: /gurudijital\.com\.tr/.test(serverURL), title: "Alan adı", detail: /gurudijital\.com\.tr/.test(serverURL) ? "gurudijital.com.tr bağlı" : "Site şimdilik vercel.app adresinde", href: null },
@@ -163,6 +171,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
       </div>
 
       <div className="guru-home__cols">
+        {has("crm") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Bugünkü işler</h2>
@@ -187,6 +196,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
             </ul>
           )}
         </section>
+        )}
+        {has("ops") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Görevlerim</h2>
@@ -212,9 +223,11 @@ export async function Dashboard({ payload, user }: ServerProps) {
             </ul>
           )}
         </section>
+        )}
       </div>
 
       <div className="guru-home__cols">
+        {has("crm") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Satış hattı</h2>
@@ -231,6 +244,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
           </ul>
           <p className="guru-home__meta">Kazanılan ve kaybedilenler panoda son 30 günle görünür.</p>
         </section>
+        )}
+        {has("ops") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Operasyon</h2>
@@ -255,9 +270,11 @@ export async function Dashboard({ payload, user }: ServerProps) {
           </ul>
           <p className="guru-home__meta">Kazanılan fırsatı, fırsat sayfasındaki &ldquo;Operasyon işi aç&rdquo; düğmesiyle işe dönüştürün.</p>
         </section>
+        )}
       </div>
 
       <div className="guru-home__cols">
+        {has("crm") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Son talepler</h2>
@@ -279,6 +296,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
             </ul>
           )}
         </section>
+        )}
+        {has("crm") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Sıradaki randevular</h2>
@@ -303,8 +322,10 @@ export async function Dashboard({ payload, user }: ServerProps) {
             </ul>
           )}
         </section>
+        )}
       </div>
 
+      {isAdminUser(user) && (
       <section className="guru-home__panel">
         <div className="guru-home__panel-head">
           <h2>Siteyi tamamla</h2>
@@ -337,7 +358,9 @@ export async function Dashboard({ payload, user }: ServerProps) {
           })}
         </ul>
       </section>
+      )}
 
+      {has("site") && (
       <section className="guru-home__panel">
         <div className="guru-home__panel-head">
           <h2>Hızlı düzenle</h2>
@@ -351,8 +374,10 @@ export async function Dashboard({ payload, user }: ServerProps) {
           ))}
         </div>
       </section>
+      )}
 
       <div className="guru-home__cols">
+        {has("site") && (
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
             <h2>Son değişiklikler</h2>
@@ -374,6 +399,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
             </ul>
           )}
         </section>
+        )}
+        {has("site") && (
         <Link href="/admin/analiz?gun=7" className="guru-home__panel guru-home__week">
           <div className="guru-home__panel-head">
             <h2>Son 7 gün</h2>
@@ -389,6 +416,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
           )}
           <p className="guru-home__meta">Son 7 günde {nf.format(weekLeads.totalDocs)} talep geldi</p>
         </Link>
+        )}
       </div>
     </Gutter>
   );
