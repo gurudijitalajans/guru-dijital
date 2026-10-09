@@ -82,7 +82,8 @@
   display: grid;
   gap: 16px;
 }
-.guru-home .sr-only {
+.guru-home .sr-only,
+.guru-pipe .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -103,7 +104,7 @@
 }
 .guru-home__cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
 }
 .guru-home__card {
@@ -213,6 +214,10 @@
 .guru-home__pill--bekliyor {
   background: #fff3dc;
   color: #8a4b06;
+}
+.guru-home__pill--gecikti {
+  background: #fde8e8;
+  color: #a12121;
 }
 .guru-home__pill--kazanildi,
 .guru-home__pill--onaylandi {
@@ -337,6 +342,9 @@
   font-weight: 600;
 }
 @media (max-width: 1100px) {
+  .guru-home__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .guru-home__checks,
   .guru-home__quick {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -345,6 +353,9 @@
 @media (max-width: 800px) {
   .guru-home__cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .guru-home__card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
   .guru-home__cols,
   .guru-home__checks,
@@ -686,4 +697,443 @@
 .guru-usage span {
   font-size: 12.5px;
   color: var(--guru-muted);
+}
+
+/* ---- Guru CRM: pano görevleri ve aşama özeti ---- */
+.guru-home__tasks li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.guru-home__tasks li > a {
+  flex: 1;
+  min-width: 0;
+}
+.guru-home__taskbox,
+.guru-crm__tasks input {
+  width: 22px;
+  height: 22px;
+  margin: 11px;
+  flex: none;
+  accent-color: var(--guru-navy);
+  cursor: pointer;
+}
+.guru-home__stages {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.guru-home__stages li {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff;
+}
+.guru-home__stages span {
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-home__stages b {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--guru-navy);
+  font-variant-numeric: tabular-nums;
+}
+.guru-home__stages small {
+  font-size: 13px;
+  color: var(--guru-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Guru CRM: kayıt altındaki zaman çizelgesi ---- */
+.guru-crm {
+  display: grid;
+  gap: 22px;
+  margin: 8px 0 24px;
+}
+.guru-crm__h {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+}
+.guru-crm__h--top {
+  margin: 0 0 -14px;
+}
+.guru-crm__hint {
+  margin: 4px 0 16px;
+  color: var(--guru-muted);
+}
+.guru-crm__error {
+  margin: 6px 0 0;
+  color: #a12121;
+}
+.guru-crm__add {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--guru-soft);
+}
+.guru-crm__types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.guru-crm__types button,
+.guru-pipe__tools button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--guru-navy);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.guru-crm__types button.is-on,
+.guru-pipe__tools button.is-on {
+  background: var(--guru-navy);
+  border-color: var(--guru-navy);
+  color: #fff;
+}
+.guru-crm__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  color: var(--theme-text);
+  resize: vertical;
+}
+.guru-crm__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.guru-crm__due {
+  display: grid;
+  gap: 2px;
+  margin-right: auto;
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-crm__due input {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--theme-text);
+  background: #fff;
+}
+.guru-crm__save,
+.guru-quote__btn,
+.guru-pipe__new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--guru-navy);
+  color: #fff;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.guru-crm__save:hover,
+.guru-quote__btn:hover,
+.guru-pipe__new:hover {
+  background: var(--guru-brand);
+}
+.guru-crm__save:disabled {
+  opacity: 0.6;
+}
+.guru-crm__tasks,
+.guru-crm__links,
+.guru-crm__feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.guru-crm__tasks label {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background: var(--guru-soft);
+  cursor: pointer;
+}
+.guru-crm__tasks span,
+.guru-crm__links a {
+  display: grid;
+  min-width: 0;
+}
+.guru-crm__tasks small,
+.guru-crm__links small,
+.guru-crm__feed small {
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-crm__tasks .is-late small {
+  color: #a12121;
+}
+.guru-crm__links {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.guru-crm__links a {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--guru-soft);
+  color: var(--guru-navy);
+  text-decoration: none;
+}
+.guru-crm__links a:hover {
+  background: var(--guru-chip);
+}
+.guru-crm__links b {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.guru-crm__feed li {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+.guru-crm__feed b {
+  font-weight: 500;
+}
+.guru-crm__feed a {
+  color: var(--guru-navy);
+  text-decoration: none;
+}
+.guru-crm__feed p {
+  margin: 2px 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.guru-crm__badge {
+  align-self: start;
+  justify-self: start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--guru-chip);
+  color: var(--guru-navy);
+  font-size: 12.5px;
+}
+.guru-quote {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.guru-quote__sum {
+  display: grid;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--guru-soft);
+}
+.guru-quote__sum span,
+.guru-quote__sum small {
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-quote__sum b {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--guru-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Guru CRM: Satış hattı panosu ---- */
+.guru-pipe {
+  padding: calc(var(--base) * 1.5) 0 calc(var(--base) * 3);
+}
+.guru-pipe__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.guru-pipe__head h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.guru-pipe__head p {
+  margin: 4px 0 0;
+  color: var(--guru-muted);
+}
+.guru-pipe__head p b {
+  color: var(--guru-navy);
+  font-weight: 600;
+}
+.guru-pipe__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.guru-pipe__tools input {
+  min-height: 44px;
+  width: 260px;
+  max-width: 100%;
+  padding: 0 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  font: inherit;
+  background: #fff;
+}
+.guru-pipe__tools button {
+  min-height: 44px;
+}
+.guru-pipe__board {
+  /* Kartlardaki gizli (mutlak konumlu) etiketler de kaydırma alanında kalsın; yoksa telefonda sayfa genişler */
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;
+}
+.guru-pipe__col {
+  min-width: 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--guru-soft);
+  scroll-snap-align: start;
+  transition: box-shadow 0.15s ease;
+}
+.guru-pipe__col.is-over {
+  box-shadow: inset 0 0 0 2px var(--guru-brand);
+}
+.guru-pipe__col > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.guru-pipe__col h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+.guru-pipe__col h2 span {
+  margin-left: 4px;
+  color: var(--guru-muted);
+  font-weight: 400;
+}
+.guru-pipe__col > header small {
+  font-size: 13px;
+  color: var(--guru-navy);
+  font-variant-numeric: tabular-nums;
+}
+.guru-pipe__col--kazanildi {
+  background: #eef8f2;
+}
+.guru-pipe__col--kaybedildi {
+  background: #f6f6f8;
+}
+.guru-pipe__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  min-height: 40px;
+}
+.guru-pipe__empty {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-pipe__card {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(1 20 65 / 0.06);
+  cursor: grab;
+}
+.guru-pipe__card.is-drag {
+  opacity: 0.5;
+}
+.guru-pipe__title {
+  font-weight: 500;
+  color: var(--guru-navy);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.guru-pipe__title:hover {
+  color: var(--guru-brand);
+}
+.guru-pipe__who {
+  font-size: 13px;
+  color: var(--guru-muted);
+  overflow-wrap: anywhere;
+}
+.guru-pipe__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-pipe__meta b {
+  color: var(--guru-navy);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.guru-pipe__late {
+  color: #a12121;
+}
+.guru-pipe__stage select {
+  width: 100%;
+  min-height: 36px;
+  margin-top: 4px;
+  padding: 0 8px;
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: 8px;
+  background: var(--guru-soft);
+  font: inherit;
+  font-size: 13px;
+  color: var(--guru-navy);
+  cursor: pointer;
+}
+@media (max-width: 800px) {
+  .guru-pipe__board {
+    grid-template-columns: repeat(5, 82%);
+  }
+  .guru-pipe__tools,
+  .guru-pipe__tools input {
+    width: 100%;
+  }
+  .guru-pipe__stage select {
+    min-height: 44px;
+  }
+  .guru-crm__feed li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
 }

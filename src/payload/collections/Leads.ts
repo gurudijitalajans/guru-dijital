@@ -1,6 +1,9 @@
 import type { CollectionConfig } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
 import { submitLead } from "../endpoints/forms";
+import { CRM_SKIP, idOf, leadToCrm } from "../crm/automation";
+
+const STAGE_FOR: Record<string, string> = { yeni: "aday", iletisim: "gorusme", teklif: "teklif", kazanildi: "kazanildi", kaybedildi: "kaybedildi" };
 
 export const LEAD_STATUS = [
   { label: "Yeni", value: "yeni" },
@@ -20,13 +23,31 @@ export const Leads: CollectionConfig = {
   labels: { singular: "Talep", plural: "Talepler" },
   admin: {
     useAsTitle: "name",
-    group: "Müşteriler",
+    group: "Guru CRM",
     defaultColumns: ["name", "service", "status", "createdAt"],
     listSearchableFields: ["name", "email", "message"],
   },
   defaultSort: "-createdAt",
   access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
   endpoints: [{ path: "/gonder", method: "post", handler: submitLead }],
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req, context }) => {
+        if (context[CRM_SKIP]) return;
+        /* Panelden eklenen talep aynı işlemde CRM'e aktarılır. Siteden gelen talep
+           önce kaydedilir, aktarımı form ucu yapar (forms.ts): aktarım hata verse de talep kaybolmaz. */
+        if (operation === "create") {
+          if (req.user) await leadToCrm(req, doc);
+          return;
+        }
+        /* Talebin durumu elle değişince bağlı fırsatın aşaması da değişir */
+        const deal = idOf(doc.deal);
+        if (deal && previousDoc?.status !== doc.status && STAGE_FOR[doc.status]) {
+          await req.payload.update({ collection: "deals", id: deal, data: { stage: STAGE_FOR[doc.status] } as never, req, overrideAccess: true });
+        }
+      },
+    ],
+  },
   fields: [
     {
       type: "row",
@@ -54,6 +75,8 @@ export const Leads: CollectionConfig = {
       label: "Geldiği sayfa",
       admin: { position: "sidebar", readOnly: true },
     },
+    { name: "contact", type: "relationship", relationTo: "contacts", label: "Kişi", admin: { position: "sidebar", readOnly: true } },
+    { name: "deal", type: "relationship", relationTo: "deals", label: "Fırsat", admin: { position: "sidebar", readOnly: true } },
     {
       name: "notes",
       type: "textarea",

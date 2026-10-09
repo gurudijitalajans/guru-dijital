@@ -1,6 +1,7 @@
 import { APIError, addDataAndFileToRequest, type PayloadHandler } from "payload";
 import type { Booking } from "@/payload-types";
 import { notifyTeam } from "../notify";
+import { bookingToCrm, leadToCrm } from "../crm/automation";
 import { clientIp, dayKey, rateLimited } from "../utils";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
@@ -43,6 +44,8 @@ export const submitLead: PayloadHandler = async (req) => {
   }
 
   const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni" }, overrideAccess: true });
+  /* Talep kaydedildi; CRM aktarımı (kişi, fırsat, görev) ayrı işlemlerde, hata talebi etkilemez */
+  await leadToCrm(req, lead).catch((err) => req.payload.logger.error({ err }, "CRM: talep aktarılamadı"));
   await notifyTeam(req, {
     subject: `Yeni talep: ${data.subject || data.service || data.name}`,
     intro: "Siteden yeni bir talep geldi.",
@@ -100,6 +103,7 @@ export const submitBooking: PayloadHandler = async (req) => {
       overrideAccess: true,
     });
     bookingId = booking.id;
+    await bookingToCrm(req, booking).catch((err) => req.payload.logger.error({ err }, "CRM: randevu aktarılamadı"));
   } catch (err) {
     if (err instanceof APIError && err.status === 409) return fail(409, err.message, { code: "dolu" });
     throw err;

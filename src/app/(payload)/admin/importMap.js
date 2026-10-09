@@ -1,3 +1,5 @@
+import { Timeline as Timeline_7ae76d7567d54bc78988705f2239770f } from '../../../payload/components/crm/Timeline'
+import { QuoteActions as QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce } from '../../../payload/components/crm/QuoteActions'
 import { PageMap as PageMap_2d6778b53bca86433c09f51cf5b2e8d6 } from '../../../payload/components/PageMap'
 import { TextHelper as TextHelper_cc2e68801705ef6e2983d380be7a61c7 } from '../../../payload/components/TextHelper'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -31,12 +33,15 @@ import { Icon as Icon_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/
 import { Logo as Logo_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/components/Brand'
 import { PanelNav as PanelNav_7e914adafbf74ff8c71060cac18a9bc0 } from '../../../payload/components/PanelNav'
 import { Dashboard as Dashboard_85b72bc5c0d30238d51de444df4399a6 } from '../../../payload/components/Dashboard'
+import { SalesPipeline as SalesPipeline_be5e74d62e9619266690e4e014d9e83d } from '../../../payload/components/crm/SalesPipeline'
 import { AnalyticsView as AnalyticsView_e82a66e171163cfda89984b1174b76e8 } from '../../../payload/components/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/payload/components/crm/Timeline#Timeline": Timeline_7ae76d7567d54bc78988705f2239770f,
+  "/payload/components/crm/QuoteActions#QuoteActions": QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce,
   "/payload/components/PageMap#PageMap": PageMap_2d6778b53bca86433c09f51cf5b2e8d6,
   "/payload/components/TextHelper#TextHelper": TextHelper_cc2e68801705ef6e2983d380be7a61c7,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -70,6 +75,7 @@ export const importMap = {
   "/payload/components/Brand#Logo": Logo_9abc6a0eda54972459e8ec55822fafb2,
   "/payload/components/PanelNav#PanelNav": PanelNav_7e914adafbf74ff8c71060cac18a9bc0,
   "/payload/components/Dashboard#Dashboard": Dashboard_85b72bc5c0d30238d51de444df4399a6,
+  "/payload/components/crm/SalesPipeline#SalesPipeline": SalesPipeline_be5e74d62e9619266690e4e014d9e83d,
   "/payload/components/AnalyticsView#AnalyticsView": AnalyticsView_e82a66e171163cfda89984b1174b76e8,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e

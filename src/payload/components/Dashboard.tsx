@@ -4,6 +4,8 @@ import type { ServerProps, Where } from "payload";
 import { dayKey, daysAgoIso } from "../utils";
 import { getOverview, umamiConfigured } from "@/lib/umami";
 import { LEAD_STATUS } from "../collections/Leads";
+import { activityLabel, DEAL_STAGES, OPEN_STAGES } from "../crm/stages";
+import { TaskCheck } from "./crm/TaskCheck";
 
 /**
  * Panel ana sayfası (Payload'un koleksiyon ızgarası yerine). Soru şu:
@@ -15,6 +17,7 @@ import { LEAD_STATUS } from "../collections/Leads";
 type BookingRow = { id: number | string; name: string; date: string; time: string; status: string; topic?: string | null };
 type LeadRow = { id: number | string; name: string; service?: string | null; status: string; createdAt: string };
 type Recent = { label: string; kind: string; href: string; updatedAt: string };
+type TaskRow = { id: number | string; type: string; title: string; dueAt?: string | null; deal?: { id: number | string; title: string } | null; contact?: { id: number | string; name: string } | null };
 
 const TZ = "Europe/Istanbul";
 const dayFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: TZ, day: "numeric", month: "long", weekday: "long" });
@@ -39,6 +42,12 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const draftWhere: Where = { and: [{ latest: { equals: true } }, { "version._status": { equals: "draft" } }] };
 
   const weekAgo = daysAgoIso(7);
+  const endOfToday = new Date(`${today}T23:59:59+03:00`).toISOString();
+  const taskWhere: Where = { and: [{ done: { equals: false } }, { dueAt: { less_than_equal: endOfToday } }] };
+  const [tasks, openDeals] = await Promise.all([
+    payload.find({ collection: "activities", where: taskWhere, sort: "dueAt", limit: 8, depth: 1 }),
+    payload.find({ collection: "deals", where: { stage: { in: OPEN_STAGES } }, limit: 500, depth: 0, pagination: false, select: { stage: true, value: true } }),
+  ]);
   const [settings, newLeads, todayBookings, upcoming, nextBookings, lastLeads, draftCounts, team, refs, quotes, users, recent, weekLeads] =
     await Promise.all([
       payload.findGlobal({ slug: "site-settings", depth: 0 }),
@@ -64,12 +73,20 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const drafts = draftCounts.reduce((a, b) => a + b, 0);
   const firstName = (user as { name?: string } | null)?.name?.split(" ")[0];
 
+  const pipeTotal = openDeals.docs.reduce((sum, d) => sum + (d.value ?? 0), 0);
+  const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
   const cards = [
     { label: "Yeni talep", value: newLeads.totalDocs, hint: "yanıt bekliyor", href: "/admin/collections/leads?where[status][equals]=yeni" },
-    { label: "Bugünkü randevu", value: todayBookings.totalDocs, hint: "bugün", href: "/admin/collections/bookings" },
-    { label: "Yaklaşan randevu", value: upcoming.totalDocs, hint: "bugün ve sonrası", href: "/admin/collections/bookings" },
+    { label: "Bugünkü iş", value: tasks.totalDocs, hint: "görev ve arama", href: "/admin/collections/activities?where[done][equals]=false&sort=dueAt" },
+    { label: "Randevu", value: upcoming.totalDocs, hint: `${todayBookings.totalDocs} tanesi bugün`, href: "/admin/collections/bookings" },
+    { label: "Açık fırsat", value: openDeals.docs.length, hint: `${money.format(pipeTotal)} satış hattında`, href: "/admin/satis-hatti" },
     { label: "Taslak", value: drafts, hint: "yayınlanmayı bekliyor", href: "/admin/collections/posts?where[_status][equals]=draft" },
   ];
+  const stageSummary = DEAL_STAGES.filter((s) => OPEN_STAGES.includes(s.value)).map((s) => {
+    const list = openDeals.docs.filter((d) => d.stage === s.value);
+    return { label: s.label, count: list.length, total: list.reduce((sum, d) => sum + (d.value ?? 0), 0) };
+  });
+  const nowIso = now.toISOString();
 
   /* Siteyi tamamla: her madde verinin kendisinden ya da ortam ayarından okunur */
   const teamDocs = team.docs as { name?: string; photo?: unknown }[];
@@ -119,6 +136,49 @@ export async function Dashboard({ payload, user }: ServerProps) {
             <span className="guru-home__hint">{c.hint}</span>
           </Link>
         ))}
+      </div>
+
+      <div className="guru-home__cols">
+        <section className="guru-home__panel">
+          <div className="guru-home__panel-head">
+            <h2>Bugünkü işler</h2>
+            <Link href="/admin/collections/activities?where[done][equals]=false&sort=dueAt">Tümü</Link>
+          </div>
+          {tasks.docs.length === 0 ? (
+            <p className="guru-home__empty">Bugün için açık görev yok. Talep gelince &ldquo;İlk dönüşü yapın&rdquo; görevi kendiliğinden eklenir.</p>
+          ) : (
+            <ul className="guru-home__rows guru-home__tasks">
+              {(tasks.docs as unknown as TaskRow[]).map((t) => (
+                <li key={t.id}>
+                  <TaskCheck id={t.id} title={t.title} />
+                  <Link href={t.deal ? `/admin/collections/deals/${t.deal.id}` : `/admin/collections/activities/${t.id}`}>
+                    <span className="guru-home__who">{t.title}</span>
+                    <span className="guru-home__meta">
+                      {[activityLabel(t.type), t.dueAt ? stampFmt.format(new Date(t.dueAt)) : null, t.contact?.name].filter(Boolean).join(" · ")}
+                    </span>
+                    {t.dueAt && t.dueAt < nowIso ? <span className="guru-home__pill guru-home__pill--gecikti">Gecikti</span> : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <section className="guru-home__panel">
+          <div className="guru-home__panel-head">
+            <h2>Satış hattı</h2>
+            <Link href="/admin/satis-hatti">Panoyu aç</Link>
+          </div>
+          <ul className="guru-home__stages">
+            {stageSummary.map((s) => (
+              <li key={s.label}>
+                <span>{s.label}</span>
+                <b>{s.count}</b>
+                <small>{money.format(s.total)}</small>
+              </li>
+            ))}
+          </ul>
+          <p className="guru-home__meta">Kazanılan ve kaybedilenler panoda son 30 günle görünür.</p>
+        </section>
       </div>
 
       <div className="guru-home__cols">

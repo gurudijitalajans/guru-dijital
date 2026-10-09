@@ -2,6 +2,7 @@ import { APIError, type CollectionConfig } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
 import { busySlots, submitBooking } from "../endpoints/forms";
 import { dayKey } from "../utils";
+import { bookingToCrm, CRM_SKIP, syncBookingActivity } from "../crm/automation";
 
 /* Sitedeki toplantı planlayıcısıyla aynı saatler (öğle arası hariç). */
 export const TIME_SLOTS = ["10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
@@ -23,7 +24,7 @@ export const Bookings: CollectionConfig = {
   labels: { singular: "Randevu", plural: "Randevular" },
   admin: {
     useAsTitle: "name",
-    group: "Müşteriler",
+    group: "Guru CRM",
     defaultColumns: ["name", "date", "time", "status", "topic"],
     listSearchableFields: ["name", "email", "topic"],
   },
@@ -34,6 +35,17 @@ export const Bookings: CollectionConfig = {
     { path: "/dolu", method: "get", handler: busySlots },
   ],
   hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req, context }) => {
+        if (context[CRM_SKIP]) return;
+        /* Siteden gelen randevuyu form ucu aktarır (forms.ts); panelden eklenen burada */
+        if (operation === "create") {
+          if (req.user) await bookingToCrm(req, doc);
+        } else if (previousDoc && (previousDoc.date !== doc.date || previousDoc.time !== doc.time || previousDoc.status !== doc.status)) {
+          await syncBookingActivity(req, doc);
+        }
+      },
+    ],
     beforeChange: [
       async ({ data, originalDoc, req }) => {
         const date = data.date ?? originalDoc?.date;
@@ -109,6 +121,8 @@ export const Bookings: CollectionConfig = {
       admin: { hidden: true },
     },
     { name: "source", type: "text", label: "Geldiği sayfa", admin: { position: "sidebar", readOnly: true } },
+    { name: "contact", type: "relationship", relationTo: "contacts", label: "Kişi", admin: { position: "sidebar", readOnly: true } },
+    { name: "deal", type: "relationship", relationTo: "deals", label: "Fırsat", admin: { position: "sidebar", readOnly: true } },
     {
       name: "notes",
       type: "textarea",

@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     leads: Lead;
     bookings: Booking;
+    deals: Deal;
+    contacts: Contact;
+    companies: Company;
+    quotes: Quote;
+    activities: Activity;
     team: Team;
     'case-studies': CaseStudy;
     testimonials: Testimonial;
@@ -79,6 +84,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    tenants: Tenant;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -93,6 +99,11 @@ export interface Config {
   collectionsSelect: {
     leads: LeadsSelect<false> | LeadsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
+    deals: DealsSelect<false> | DealsSelect<true>;
+    contacts: ContactsSelect<false> | ContactsSelect<true>;
+    companies: CompaniesSelect<false> | CompaniesSelect<true>;
+    quotes: QuotesSelect<false> | QuotesSelect<true>;
+    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
@@ -103,6 +114,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -165,10 +177,136 @@ export interface Lead {
   message: string;
   status: 'yeni' | 'iletisim' | 'teklif' | 'kazanildi' | 'kaybedildi';
   source?: string | null;
+  contact?: (number | null) | Contact;
+  deal?: (number | null) | Deal;
   /**
    * Yalnız panelde görünür.
    */
   notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Görüştüğünüz kişiler. Siteden talep ya da randevu bırakan herkes e-posta adresine göre buraya eklenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts".
+ */
+export interface Contact {
+  id: number;
+  name: string;
+  title?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  company?: (number | null) | Company;
+  notes?: string | null;
+  source?: ('form' | 'randevu' | 'chatbot' | 'referans' | 'manuel') | null;
+  /**
+   * Yazıp Enter'a basın (ör. e-ticaret, sıcak).
+   */
+  tags?: string[] | null;
+  owner?: (number | null) | User;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Müşteri ve aday firmalar. Kişiler ve fırsatlar firmaya bağlanır.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies".
+ */
+export interface Company {
+  id: number;
+  name: string;
+  sector?: string | null;
+  website?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxOffice?: string | null;
+  /**
+   * Teklif belgesinde müşteri bilgisi olarak görünür.
+   */
+  taxNumber?: string | null;
+  notes?: string | null;
+  owner?: (number | null) | User;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  /**
+   * Editör içerik ve müşteri kayıtlarıyla çalışır; kullanıcı ekleme ve silme yöneticidedir.
+   */
+  role: 'admin' | 'editor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * Paneli kullanan işletmeler. Bugün yalnız Guru Dijital.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: number;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Satışa dönüşebilecek her iş. Aşamaları Satış hattı panosunda sürükleyerek değiştirebilirsiniz.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "deals".
+ */
+export interface Deal {
+  id: number;
+  title: string;
+  contact?: (number | null) | Contact;
+  /**
+   * Boşsa kişinin firması.
+   */
+  company?: (number | null) | Company;
+  value?: number | null;
+  expectedClose?: string | null;
+  service?: string | null;
+  /**
+   * Fiyat, zamanlama, rakip… Sonraki teklifler için ipucu.
+   */
+  lostReason?: string | null;
+  notes?: string | null;
+  stage: 'aday' | 'gorusme' | 'teklif' | 'kazanildi' | 'kaybedildi';
+  owner?: (number | null) | User;
+  lead?: (number | null) | Lead;
+  closedAt?: string | null;
+  order?: number | null;
+  tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -188,10 +326,79 @@ export interface Booking {
   status: 'bekliyor' | 'onaylandi' | 'tamamlandi' | 'iptal';
   slot?: string | null;
   source?: string | null;
+  contact?: (number | null) | Contact;
+  deal?: (number | null) | Deal;
   /**
    * Yalnız panelde görünür.
    */
   notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kalem kalem teklif; toplamlar kendiliğinden hesaplanır. Kaydettikten sonra "Yazdır / PDF" ile müşteriye gönderilecek belge açılır.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  title: string;
+  deal?: (number | null) | Deal;
+  contact?: (number | null) | Contact;
+  company?: (number | null) | Company;
+  items?:
+    | {
+        description: string;
+        qty: number;
+        unit?: string | null;
+        unitPrice: number;
+        vatRate: '20' | '10' | '1' | '0';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Belgede kalemlerin altında görünür: kapsam, teslim süresi, dahil olmayanlar.
+   */
+  notes?: string | null;
+  terms?: string | null;
+  /**
+   * Kaydedince verilir (GD-yıl-sıra).
+   */
+  number?: string | null;
+  status: 'taslak' | 'gonderildi' | 'kabul' | 'red';
+  issueDate?: string | null;
+  validUntil?: string | null;
+  subtotal?: number | null;
+  vatTotal?: number | null;
+  total?: number | null;
+  owner?: (number | null) | User;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Arama, toplantı, not ve görevler. Kişi, firma ya da fırsat sayfasının altından da hızlıca eklenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: number;
+  type: 'not' | 'arama' | 'eposta' | 'toplanti' | 'gorev' | 'sistem';
+  title: string;
+  body?: string | null;
+  /**
+   * Görev ve toplantılarda.
+   */
+  dueAt?: string | null;
+  done?: boolean | null;
+  deal?: (number | null) | Deal;
+  contact?: (number | null) | Contact;
+  company?: (number | null) | Company;
+  booking?: (number | null) | Booking;
+  owner?: (number | null) | User;
+  tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
 }
@@ -904,37 +1111,6 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name: string;
-  /**
-   * Editör içerik ve müşteri kayıtlarıyla çalışır; kullanıcı ekleme ve silme yöneticidedir.
-   */
-  role: 'admin' | 'editor';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -964,6 +1140,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'bookings';
         value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'deals';
+        value: number | Deal;
+      } | null)
+    | ({
+        relationTo: 'contacts';
+        value: number | Contact;
+      } | null)
+    | ({
+        relationTo: 'companies';
+        value: number | Company;
+      } | null)
+    | ({
+        relationTo: 'quotes';
+        value: number | Quote;
+      } | null)
+    | ({
+        relationTo: 'activities';
+        value: number | Activity;
       } | null)
     | ({
         relationTo: 'team';
@@ -1004,6 +1200,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'tenants';
+        value: number | Tenant;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -1064,6 +1264,8 @@ export interface LeadsSelect<T extends boolean = true> {
   message?: T;
   status?: T;
   source?: T;
+  contact?: T;
+  deal?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1083,7 +1285,120 @@ export interface BookingsSelect<T extends boolean = true> {
   status?: T;
   slot?: T;
   source?: T;
+  contact?: T;
+  deal?: T;
   notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "deals_select".
+ */
+export interface DealsSelect<T extends boolean = true> {
+  title?: T;
+  contact?: T;
+  company?: T;
+  value?: T;
+  expectedClose?: T;
+  service?: T;
+  lostReason?: T;
+  notes?: T;
+  stage?: T;
+  owner?: T;
+  lead?: T;
+  closedAt?: T;
+  order?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts_select".
+ */
+export interface ContactsSelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  email?: T;
+  phone?: T;
+  company?: T;
+  notes?: T;
+  source?: T;
+  tags?: T;
+  owner?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies_select".
+ */
+export interface CompaniesSelect<T extends boolean = true> {
+  name?: T;
+  sector?: T;
+  website?: T;
+  phone?: T;
+  email?: T;
+  address?: T;
+  taxOffice?: T;
+  taxNumber?: T;
+  notes?: T;
+  owner?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes_select".
+ */
+export interface QuotesSelect<T extends boolean = true> {
+  title?: T;
+  deal?: T;
+  contact?: T;
+  company?: T;
+  items?:
+    | T
+    | {
+        description?: T;
+        qty?: T;
+        unit?: T;
+        unitPrice?: T;
+        vatRate?: T;
+        id?: T;
+      };
+  notes?: T;
+  terms?: T;
+  number?: T;
+  status?: T;
+  issueDate?: T;
+  validUntil?: T;
+  subtotal?: T;
+  vatTotal?: T;
+  total?: T;
+  owner?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities_select".
+ */
+export interface ActivitiesSelect<T extends boolean = true> {
+  type?: T;
+  title?: T;
+  body?: T;
+  dueAt?: T;
+  done?: T;
+  deal?: T;
+  contact?: T;
+  company?: T;
+  booking?: T;
+  owner?: T;
+  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1457,6 +1772,16 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

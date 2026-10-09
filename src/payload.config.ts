@@ -26,6 +26,8 @@ import { AboutPage } from "./payload/globals/AboutPage";
 import { HomePage } from "./payload/globals/HomePage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 import { trOverrides } from "./payload/translations";
+import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
+import { Tenants } from "./payload/crm/tenant";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -103,6 +105,11 @@ export default buildConfig({
       views: {
         /* Koleksiyon ızgarası yerine görev odaklı pano */
         dashboard: { Component: "/payload/components/Dashboard#Dashboard" },
+        satisHatti: {
+          Component: "/payload/components/crm/SalesPipeline#SalesPipeline",
+          path: "/satis-hatti",
+          meta: { title: "Satış hattı" },
+        },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -116,8 +123,27 @@ export default buildConfig({
     fallbackLanguage: "tr",
     translations: { tr: trOverrides },
   },
-  /* Sıra menü gruplarının sırasını belirler: Müşteriler, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
-  collections: [Leads, Bookings, Team, CaseStudies, Testimonials, References, Services, Products, Posts, Media, Categories, Users],
+  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
+  collections: [
+    Leads,
+    Bookings,
+    Deals,
+    Contacts,
+    Companies,
+    Quotes,
+    Activities,
+    Team,
+    CaseStudies,
+    Testimonials,
+    References,
+    Services,
+    Products,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Tenants,
+  ],
   globals: [HomePage, AboutPage, SiteSettings],
   /* Medya klasörleri: "Klasöre göre gez" görünümü ve görsel başına klasör alanı */
   folders: {
