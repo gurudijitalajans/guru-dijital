@@ -1,5 +1,4 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
-import { seedTemplates } from '../payload/ops/seed-templates'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
@@ -132,9 +131,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_tasks_id_idx" ON "payload_locked_documents_rels" USING btree ("tasks_id");
   CREATE INDEX "payload_locked_documents_rels_templates_id_idx" ON "payload_locked_documents_rels" USING btree ("templates_id");`)
 
-  /* Başlangıç süreç şablonları (Web sitesi projesi, Sosyal medya aylık içerik); şablon varsa eklenmez */
-  const n = await seedTemplates(payload, req)
-  payload.logger.info(`Süreç şablonları: ${n} eklendi`)
+  /* Başlangıç süreç şablonları çok kiracılı geçişte (20261009_204543) eklenir: tohumlama güncel
+     kodu kullanır, bu noktadaki şemada işletme yapısı henüz tamam değildir. */
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {

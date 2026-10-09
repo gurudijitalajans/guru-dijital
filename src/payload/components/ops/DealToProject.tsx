@@ -17,6 +17,7 @@ type Template = { id: Id; name: string };
 export function DealToProject() {
   const { id } = useDocumentInfo();
   const stage = useFormFields(([f]) => f.stage?.value as string | undefined);
+  const tenant = useFormFields(([f]) => f.tenant?.value as number | string | undefined);
   const router = useRouter();
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -27,7 +28,7 @@ export function DealToProject() {
   useEffect(() => {
     if (!id) return;
     let alive = true;
-    Promise.all([getDocs<Project>(listUrl("projects", { deal: { equals: id } })), getDocs<Template>("/api/templates?limit=100&depth=0&sort=name")]).then(([p, t]) => {
+    Promise.all([getDocs<Project>(listUrl("projects", { deal: { equals: id } })), getDocs<Template>(`/api/templates?limit=100&depth=0&sort=name${tenant ? `&where[tenant][equals]=${tenant}` : ""}`)]).then(([p, t]) => {
       if (!alive) return;
       setProjects(p);
       setTemplates(t);
@@ -35,7 +36,7 @@ export function DealToProject() {
     return () => {
       alive = false;
     };
-  }, [id]);
+  }, [id, tenant]);
 
   if (!id || !projects) return null;
 

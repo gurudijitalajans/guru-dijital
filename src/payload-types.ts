@@ -79,6 +79,7 @@ export interface Config {
     templates: Template;
     conversations: Conversation;
     knowledge: Knowledge;
+    'chatbot-config': ChatbotConfig;
     'chat-messages': ChatMessage;
     team: Team;
     'case-studies': CaseStudy;
@@ -91,6 +92,7 @@ export interface Config {
     categories: Category;
     users: User;
     tenants: Tenant;
+    'business-config': BusinessConfig;
     'audit-log': AuditLog;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
@@ -116,6 +118,7 @@ export interface Config {
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
     conversations: ConversationsSelect<false> | ConversationsSelect<true>;
     knowledge: KnowledgeSelect<false> | KnowledgeSelect<true>;
+    'chatbot-config': ChatbotConfigSelect<false> | ChatbotConfigSelect<true>;
     'chat-messages': ChatMessagesSelect<false> | ChatMessagesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
@@ -128,6 +131,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
+    'business-config': BusinessConfigSelect<false> | BusinessConfigSelect<true>;
     'audit-log': AuditLogSelect<false> | AuditLogSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -142,15 +146,11 @@ export interface Config {
   globals: {
     'home-page': HomePage;
     'about-page': AboutPage;
-    'chatbot-settings': ChatbotSetting;
-    'business-settings': BusinessSetting;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
-    'chatbot-settings': ChatbotSettingsSelect<false> | ChatbotSettingsSelect<true>;
-    'business-settings': BusinessSettingsSelect<false> | BusinessSettingsSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -187,6 +187,7 @@ export interface UserAuthOperations {
  */
 export interface Lead {
   id: number;
+  tenant?: (number | null) | Tenant;
   name: string;
   email: string;
   phone?: string | null;
@@ -205,95 +206,7 @@ export interface Lead {
   createdAt: string;
 }
 /**
- * Görüştüğünüz kişiler. Siteden talep ya da randevu bırakan herkes e-posta adresine göre buraya eklenir.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "contacts".
- */
-export interface Contact {
-  id: number;
-  name: string;
-  title?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  company?: (number | null) | Company;
-  notes?: string | null;
-  source?: ('form' | 'randevu' | 'chatbot' | 'referans' | 'manuel') | null;
-  /**
-   * Yazıp Enter'a basın (ör. e-ticaret, sıcak).
-   */
-  tags?: string[] | null;
-  owner?: (number | null) | User;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Müşteri ve aday firmalar. Kişiler ve fırsatlar firmaya bağlanır.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "companies".
- */
-export interface Company {
-  id: number;
-  name: string;
-  sector?: string | null;
-  website?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  address?: string | null;
-  taxOffice?: string | null;
-  /**
-   * Teklif belgesinde müşteri bilgisi olarak görünür.
-   */
-  taxNumber?: string | null;
-  notes?: string | null;
-  owner?: (number | null) | User;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  name: string;
-  /**
-   * Guru Operation ekip planındaki doluluk yüzdesi bu saate göre hesaplanır.
-   */
-  weeklyHours?: number | null;
-  /**
-   * Yönetici her şeyi görür, kullanıcı ekler ve siler. Ekip üyesi yalnız aşağıda işaretlenen modüllerle çalışır.
-   */
-  role: 'admin' | 'editor';
-  /**
-   * Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation, içerik editörüne Site içeriği.
-   */
-  modules?: ('site' | 'crm' | 'chat' | 'ops')[] | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
- * Paneli kullanan işletmeler. Bugün yalnız Guru Dijital.
+ * Paneli kullanan işletmeler. Her işletmenin kaydı ayrıdır; kullanıcılar Kullanıcılar ekranından işletmeye eklenir.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenants".
@@ -301,329 +214,46 @@ export interface User {
 export interface Tenant {
   id: number;
   name: string;
+  /**
+   * Küçük harf, boşluksuz (ör. ornek-klinik).
+   */
   slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Satışa dönüşebilecek her iş. Aşamaları Satış hattı panosunda sürükleyerek değiştirebilirsiniz.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "deals".
- */
-export interface Deal {
-  id: number;
-  title: string;
-  contact?: (number | null) | Contact;
   /**
-   * Boşsa kişinin firması.
+   * Aboneliğe dahil modüller. İşletmenin kullanıcıları yalnız bunları görebilir.
    */
-  company?: (number | null) | Company;
-  value?: number | null;
-  expectedClose?: string | null;
-  service?: string | null;
+  modules?: ('crm' | 'chat' | 'ops' | 'business')[] | null;
   /**
-   * Fiyat, zamanlama, rakip… Sonraki teklifler için ipucu.
+   * Teklif belgesinde, raporlarda ve bildirim e-postalarında işletmenin kendi bilgisi olarak görünür.
    */
-  lostReason?: string | null;
-  notes?: string | null;
-  stage: 'aday' | 'gorusme' | 'teklif' | 'kazanildi' | 'kaybedildi';
-  owner?: (number | null) | User;
-  lead?: (number | null) | Lead;
-  closedAt?: string | null;
-  order?: number | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookings".
- */
-export interface Booking {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string | null;
-  date: string;
-  time: '10:00' | '11:00' | '13:00' | '14:00' | '15:00' | '16:00';
-  topic?: string | null;
-  note?: string | null;
-  status: 'bekliyor' | 'onaylandi' | 'tamamlandi' | 'iptal';
-  slot?: string | null;
-  source?: string | null;
-  contact?: (number | null) | Contact;
-  deal?: (number | null) | Deal;
+  profile?: {
+    /**
+     * Boşsa işletme adı.
+     */
+    legalName?: string | null;
+    /**
+     * Yatay, açık zeminde okunur logo.
+     */
+    logo?: (number | null) | Media;
+    email?: string | null;
+    phone?: string | null;
+    website?: string | null;
+    address?: string | null;
+    taxOffice?: string | null;
+    taxNumber?: string | null;
+    /**
+     * Yeni talep, randevu ve ekibe aktarılan sohbet buraya bildirilir. Boşsa işletme yöneticilerine.
+     */
+    notifyEmail?: string | null;
+  };
   /**
-   * Yalnız panelde görünür.
+   * Ör. GD: GD-2026-001
+   */
+  quotePrefix?: string | null;
+  status?: ('aktif' | 'pilot' | 'askida') | null;
+  /**
+   * Yalnız Guru yöneticileri görür: sözleşme, paket, iletişim kişisi.
    */
   notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Kalem kalem teklif; toplamlar kendiliğinden hesaplanır. Kaydettikten sonra "Yazdır / PDF" ile müşteriye gönderilecek belge açılır.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quotes".
- */
-export interface Quote {
-  id: number;
-  title: string;
-  deal?: (number | null) | Deal;
-  contact?: (number | null) | Contact;
-  company?: (number | null) | Company;
-  items?:
-    | {
-        description: string;
-        qty: number;
-        unit?: string | null;
-        unitPrice: number;
-        vatRate: '20' | '10' | '1' | '0';
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Belgede kalemlerin altında görünür: kapsam, teslim süresi, dahil olmayanlar.
-   */
-  notes?: string | null;
-  terms?: string | null;
-  /**
-   * Kaydedince verilir (GD-yıl-sıra).
-   */
-  number?: string | null;
-  status: 'taslak' | 'gonderildi' | 'kabul' | 'red';
-  issueDate?: string | null;
-  validUntil?: string | null;
-  subtotal?: number | null;
-  vatTotal?: number | null;
-  total?: number | null;
-  owner?: (number | null) | User;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Arama, toplantı, not ve görevler. Kişi, firma ya da fırsat sayfasının altından da hızlıca eklenir.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "activities".
- */
-export interface Activity {
-  id: number;
-  type: 'not' | 'arama' | 'eposta' | 'toplanti' | 'gorev' | 'sistem';
-  title: string;
-  body?: string | null;
-  /**
-   * Görev ve toplantılarda.
-   */
-  dueAt?: string | null;
-  done?: boolean | null;
-  deal?: (number | null) | Deal;
-  contact?: (number | null) | Contact;
-  company?: (number | null) | Company;
-  booking?: (number | null) | Booking;
-  owner?: (number | null) | User;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Müşteri işleri ve iç projeler. Şablon seçerek açarsanız görevler kendiliğinden oluşur.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "projects".
- */
-export interface Project {
-  id: number;
-  title: string;
-  company?: (number | null) | Company;
-  contact?: (number | null) | Contact;
-  startDate?: string | null;
-  /**
-   * Şablonla açılırsa son adımın bitişi.
-   */
-  dueDate?: string | null;
-  /**
-   * Yalnız iş açılırken uygulanır: adımlar görev olarak eklenir.
-   */
-  template?: (number | null) | Template;
-  description?: string | null;
-  status: 'aktif' | 'beklemede' | 'tamamlandi' | 'iptal';
-  /**
-   * Şablon adımında sorumlu yoksa görev buna atanır; Kontrol'e gelen işler ona bildirilir.
-   */
-  owner?: (number | null) | User;
-  deal?: (number | null) | Deal;
-  completedAt?: string | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Tekrarlayan işlerin adımları. Şablondan iş açınca her adım sorumlusuna ve tarihine göre görev olur.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "templates".
- */
-export interface Template {
-  id: number;
-  name: string;
-  description?: string | null;
-  /**
-   * Başlangıç ve süre iş günüdür: işin başladığı günden kaç gün sonra başlar, kaç günde biter.
-   */
-  steps?:
-    | {
-        title: string;
-        assignee?: (number | null) | User;
-        offset: number;
-        duration: number;
-        /**
-         * Ekip kapasitesi bu saatle hesaplanır.
-         */
-        hours?: number | null;
-        priority?: ('dusuk' | 'normal' | 'yuksek' | 'acil') | null;
-        checklist?:
-          | {
-              text: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Operasyon görevleri. Görev panosunda sürükleyerek aşamasını değiştirebilirsiniz; Tamam'a yalnız Kontrol'den ve kontrol listesi bitince geçilir.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tasks".
- */
-export interface Task {
-  id: number;
-  title: string;
-  project?: (number | null) | Project;
-  assignee?: (number | null) | User;
-  startDate?: string | null;
-  dueDate?: string | null;
-  /**
-   * Ekip planındaki doluluk bununla hesaplanır.
-   */
-  hours?: number | null;
-  description?: string | null;
-  /**
-   * Açık madde varken görev Tamam'a geçmez.
-   */
-  checklist?:
-    | {
-        done?: boolean | null;
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  stage: 'yapilacak' | 'devam' | 'kontrol' | 'tamam';
-  priority: 'dusuk' | 'normal' | 'yuksek' | 'acil';
-  /**
-   * Panoda G-numara olarak görünür.
-   */
-  seq?: number | null;
-  startedAt?: string | null;
-  completedAt?: string | null;
-  order?: number | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Sitedeki sohbetler. Yanıtlamak için menüdeki Sohbetler ekranını kullanın.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "conversations".
- */
-export interface Conversation {
-  id: number;
-  label?: string | null;
-  name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  /**
-   * Asistan sohbetin konusunu kendisi etiketler.
-   */
-  topic?: string | null;
-  page?: string | null;
-  lastText?: string | null;
-  status: 'bot' | 'ekip' | 'kapali';
-  needsReply?: boolean | null;
-  assignee?: (number | null) | User;
-  contact?: (number | null) | Contact;
-  lead?: (number | null) | Lead;
-  booking?: (number | null) | Booking;
-  lastMessageAt?: string | null;
-  handedOffAt?: string | null;
-  firstTeamReplyAt?: string | null;
-  visitorMessages?: number | null;
-  token?: string | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Asistan hizmetleri, ürünleri, sık sorulan soruları ve iletişim bilgilerini sitenin kendisinden okur. Sitede olmayan bilgileri (çalışma saatleri, ödeme koşulları, kampanyalar) buraya ekleyin.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "knowledge".
- */
-export interface Knowledge {
-  id: number;
-  title: string;
-  /**
-   * Asistan bunu olduğu gibi bilgi olarak kullanır; kısa ve net yazın.
-   */
-  content: string;
-  active?: boolean | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "chat-messages".
- */
-export interface ChatMessage {
-  id: number;
-  conversation: number | Conversation;
-  role: 'ziyaretci' | 'bot' | 'ekip' | 'sistem';
-  text: string;
-  author?: (number | null) | User;
-  unanswered?: boolean | null;
-  tenant?: (number | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Fotoğraf yüklenmeyen kişi için marka renklerinde yer tutucu görünür.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: number;
-  name: string;
-  role: string;
-  /**
-   * Dikey portre önerilir (4:5). Yüz odağını görselin kendisinden ayarlayabilirsiniz.
-   */
-  photo?: (number | null) | Media;
-  linkedin?: string | null;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  showOnHome?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -701,6 +331,472 @@ export interface FolderInterface {
     totalDocs?: number;
   };
   folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Görüştüğünüz kişiler. Siteden talep ya da randevu bırakan herkes e-posta adresine göre buraya eklenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts".
+ */
+export interface Contact {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  title?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  company?: (number | null) | Company;
+  notes?: string | null;
+  source?: ('form' | 'randevu' | 'chatbot' | 'referans' | 'manuel') | null;
+  /**
+   * Yazıp Enter'a basın (ör. e-ticaret, sıcak).
+   */
+  tags?: string[] | null;
+  owner?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Müşteri ve aday firmalar. Kişiler ve fırsatlar firmaya bağlanır.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies".
+ */
+export interface Company {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  sector?: string | null;
+  website?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxOffice?: string | null;
+  /**
+   * Teklif belgesinde müşteri bilgisi olarak görünür.
+   */
+  taxNumber?: string | null;
+  notes?: string | null;
+  owner?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name: string;
+  /**
+   * Guru Operation ekip planındaki doluluk yüzdesi bu saate göre hesaplanır.
+   */
+  weeklyHours?: number | null;
+  /**
+   * Guru yöneticisi tüm işletmeleri görür. İşletme kullanıcısı yalnız aşağıdaki işletmelerde, işaretli modüllerle çalışır.
+   */
+  role: 'admin' | 'editor';
+  /**
+   * Kullanıcının çalıştığı işletmeler ve her birindeki yetkisi.
+   */
+  tenants?:
+    | {
+        tenant: number | Tenant;
+        role: 'yonetici' | 'uye';
+        /**
+         * Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation. İşletmede açık olmayan modül kaydedilmez.
+         */
+        modules?: ('site' | 'crm' | 'chat' | 'ops' | 'business')[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * Satışa dönüşebilecek her iş. Aşamaları Satış hattı panosunda sürükleyerek değiştirebilirsiniz.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "deals".
+ */
+export interface Deal {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  contact?: (number | null) | Contact;
+  /**
+   * Boşsa kişinin firması.
+   */
+  company?: (number | null) | Company;
+  value?: number | null;
+  expectedClose?: string | null;
+  service?: string | null;
+  /**
+   * Fiyat, zamanlama, rakip… Sonraki teklifler için ipucu.
+   */
+  lostReason?: string | null;
+  notes?: string | null;
+  stage: 'aday' | 'gorusme' | 'teklif' | 'kazanildi' | 'kaybedildi';
+  owner?: (number | null) | User;
+  lead?: (number | null) | Lead;
+  closedAt?: string | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookings".
+ */
+export interface Booking {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  email: string;
+  phone?: string | null;
+  date: string;
+  time: '10:00' | '11:00' | '13:00' | '14:00' | '15:00' | '16:00';
+  topic?: string | null;
+  note?: string | null;
+  status: 'bekliyor' | 'onaylandi' | 'tamamlandi' | 'iptal';
+  slot?: string | null;
+  source?: string | null;
+  contact?: (number | null) | Contact;
+  deal?: (number | null) | Deal;
+  /**
+   * Yalnız panelde görünür.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kalem kalem teklif; toplamlar kendiliğinden hesaplanır. Kaydettikten sonra "Yazdır / PDF" ile müşteriye gönderilecek belge açılır.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  deal?: (number | null) | Deal;
+  contact?: (number | null) | Contact;
+  company?: (number | null) | Company;
+  items?:
+    | {
+        description: string;
+        qty: number;
+        unit?: string | null;
+        unitPrice: number;
+        vatRate: '20' | '10' | '1' | '0';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Belgede kalemlerin altında görünür: kapsam, teslim süresi, dahil olmayanlar.
+   */
+  notes?: string | null;
+  terms?: string | null;
+  /**
+   * Kaydedince verilir (GD-yıl-sıra).
+   */
+  number?: string | null;
+  status: 'taslak' | 'gonderildi' | 'kabul' | 'red';
+  issueDate?: string | null;
+  validUntil?: string | null;
+  subtotal?: number | null;
+  vatTotal?: number | null;
+  total?: number | null;
+  owner?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Arama, toplantı, not ve görevler. Kişi, firma ya da fırsat sayfasının altından da hızlıca eklenir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  type: 'not' | 'arama' | 'eposta' | 'toplanti' | 'gorev' | 'sistem';
+  title: string;
+  body?: string | null;
+  /**
+   * Görev ve toplantılarda.
+   */
+  dueAt?: string | null;
+  done?: boolean | null;
+  deal?: (number | null) | Deal;
+  contact?: (number | null) | Contact;
+  company?: (number | null) | Company;
+  booking?: (number | null) | Booking;
+  owner?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Müşteri işleri ve iç projeler. Şablon seçerek açarsanız görevler kendiliğinden oluşur.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  company?: (number | null) | Company;
+  contact?: (number | null) | Contact;
+  startDate?: string | null;
+  /**
+   * Şablonla açılırsa son adımın bitişi.
+   */
+  dueDate?: string | null;
+  /**
+   * Yalnız iş açılırken uygulanır: adımlar görev olarak eklenir.
+   */
+  template?: (number | null) | Template;
+  description?: string | null;
+  status: 'aktif' | 'beklemede' | 'tamamlandi' | 'iptal';
+  /**
+   * Şablon adımında sorumlu yoksa görev buna atanır; Kontrol'e gelen işler ona bildirilir.
+   */
+  owner?: (number | null) | User;
+  deal?: (number | null) | Deal;
+  completedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Tekrarlayan işlerin adımları. Şablondan iş açınca her adım sorumlusuna ve tarihine göre görev olur.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "templates".
+ */
+export interface Template {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  description?: string | null;
+  /**
+   * Başlangıç ve süre iş günüdür: işin başladığı günden kaç gün sonra başlar, kaç günde biter.
+   */
+  steps?:
+    | {
+        title: string;
+        assignee?: (number | null) | User;
+        offset: number;
+        duration: number;
+        /**
+         * Ekip kapasitesi bu saatle hesaplanır.
+         */
+        hours?: number | null;
+        priority?: ('dusuk' | 'normal' | 'yuksek' | 'acil') | null;
+        checklist?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Operasyon görevleri. Görev panosunda sürükleyerek aşamasını değiştirebilirsiniz; Tamam'a yalnız Kontrol'den ve kontrol listesi bitince geçilir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tasks".
+ */
+export interface Task {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  project?: (number | null) | Project;
+  assignee?: (number | null) | User;
+  startDate?: string | null;
+  dueDate?: string | null;
+  /**
+   * Ekip planındaki doluluk bununla hesaplanır.
+   */
+  hours?: number | null;
+  description?: string | null;
+  /**
+   * Açık madde varken görev Tamam'a geçmez.
+   */
+  checklist?:
+    | {
+        done?: boolean | null;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  stage: 'yapilacak' | 'devam' | 'kontrol' | 'tamam';
+  priority: 'dusuk' | 'normal' | 'yuksek' | 'acil';
+  /**
+   * Panoda G-numara olarak görünür.
+   */
+  seq?: number | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Sitedeki sohbetler. Yanıtlamak için menüdeki Sohbetler ekranını kullanın.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  label?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  /**
+   * Asistan sohbetin konusunu kendisi etiketler.
+   */
+  topic?: string | null;
+  page?: string | null;
+  lastText?: string | null;
+  status: 'bot' | 'ekip' | 'kapali';
+  needsReply?: boolean | null;
+  assignee?: (number | null) | User;
+  contact?: (number | null) | Contact;
+  lead?: (number | null) | Lead;
+  booking?: (number | null) | Booking;
+  lastMessageAt?: string | null;
+  handedOffAt?: string | null;
+  firstTeamReplyAt?: string | null;
+  visitorMessages?: number | null;
+  token?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Asistan hizmetleri, ürünleri, sık sorulan soruları ve iletişim bilgilerini sitenin kendisinden okur. Sitede olmayan bilgileri (çalışma saatleri, ödeme koşulları, kampanyalar) buraya ekleyin.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "knowledge".
+ */
+export interface Knowledge {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  /**
+   * Asistan bunu olduğu gibi bilgi olarak kullanır; kısa ve net yazın.
+   */
+  content: string;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chatbot-config".
+ */
+export interface ChatbotConfig {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Açınca sitenin sağ alt köşesinde sohbet balonu çıkar. Yapay zekâ anahtarı yoksa mesajlar doğrudan ekibe düşer.
+   */
+  enabled?: boolean | null;
+  botName: string;
+  model?: ('claude-haiku-5-5' | 'claude-sonnet-5-5') | null;
+  greeting?: string | null;
+  /**
+   * Sohbet açılınca ziyaretçiye dokunulabilir öneri olarak görünür.
+   */
+  suggestions?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sohbet penceresinin altında küçük yazıyla görünür. KVKK aydınlatma metni gelince bağlantısı eklenir.
+   */
+  notice?: string | null;
+  /**
+   * Ton, vurgulanacak kampanya ya da yanıtlanmayacak konular. Ör. "Ekim boyunca web sitesi projelerinde ücretsiz keşif görüşmesi var."
+   */
+  instructions?: string | null;
+  /**
+   * Gelen kutusunda tek tıkla eklenen kısa yanıtlar.
+   */
+  cannedReplies?:
+    | {
+        label: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  notifyHandoff?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-messages".
+ */
+export interface ChatMessage {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  conversation: number | Conversation;
+  role: 'ziyaretci' | 'bot' | 'ekip' | 'sistem';
+  text: string;
+  author?: (number | null) | User;
+  unanswered?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Fotoğraf yüklenmeyen kişi için marka renklerinde yer tutucu görünür.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  role: string;
+  /**
+   * Dikey portre önerilir (4:5). Yüz odağını görselin kendisinden ayarlayabilirsiniz.
+   */
+  photo?: (number | null) | Media;
+  linkedin?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  showOnHome?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1312,6 +1408,33 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-config".
+ */
+export interface BusinessConfig {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Yönetici panosunda bu ay kazanılan işin hedefe oranı görünür. Boşsa hedef çubuğu gösterilmez.
+   */
+  monthlyTarget?: number | null;
+  /**
+   * Saat 08:00 civarı yöneticilere: dünkü talepler, bekleyen sohbetler, bugünkü işler, gecikenler.
+   */
+  summaryEnabled?: boolean | null;
+  /**
+   * Yöneticilere ek olarak özeti alacak adresler.
+   */
+  summaryRecipients?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Paneldeki her değişiklik ve giriş: kim, ne zaman, ne yaptı. Yalnız yöneticiler görür.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1319,6 +1442,7 @@ export interface Category {
  */
 export interface AuditLog {
   id: number;
+  tenant?: (number | null) | Tenant;
   summary?: string | null;
   user?: (number | null) | User;
   action?: ('olusturdu' | 'degistirdi' | 'sildi' | 'giris') | null;
@@ -1401,6 +1525,10 @@ export interface PayloadLockedDocument {
         value: number | Knowledge;
       } | null)
     | ({
+        relationTo: 'chatbot-config';
+        value: number | ChatbotConfig;
+      } | null)
+    | ({
         relationTo: 'chat-messages';
         value: number | ChatMessage;
       } | null)
@@ -1447,6 +1575,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tenants';
         value: number | Tenant;
+      } | null)
+    | ({
+        relationTo: 'business-config';
+        value: number | BusinessConfig;
       } | null)
     | ({
         relationTo: 'audit-log';
@@ -1503,6 +1635,7 @@ export interface PayloadMigration {
  * via the `definition` "leads_select".
  */
 export interface LeadsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   email?: T;
   phone?: T;
@@ -1522,6 +1655,7 @@ export interface LeadsSelect<T extends boolean = true> {
  * via the `definition` "bookings_select".
  */
 export interface BookingsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   email?: T;
   phone?: T;
@@ -1543,6 +1677,7 @@ export interface BookingsSelect<T extends boolean = true> {
  * via the `definition` "deals_select".
  */
 export interface DealsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   contact?: T;
   company?: T;
@@ -1556,7 +1691,6 @@ export interface DealsSelect<T extends boolean = true> {
   lead?: T;
   closedAt?: T;
   order?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1565,6 +1699,7 @@ export interface DealsSelect<T extends boolean = true> {
  * via the `definition` "contacts_select".
  */
 export interface ContactsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   title?: T;
   email?: T;
@@ -1574,7 +1709,6 @@ export interface ContactsSelect<T extends boolean = true> {
   source?: T;
   tags?: T;
   owner?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1583,6 +1717,7 @@ export interface ContactsSelect<T extends boolean = true> {
  * via the `definition` "companies_select".
  */
 export interface CompaniesSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   sector?: T;
   website?: T;
@@ -1593,7 +1728,6 @@ export interface CompaniesSelect<T extends boolean = true> {
   taxNumber?: T;
   notes?: T;
   owner?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1602,6 +1736,7 @@ export interface CompaniesSelect<T extends boolean = true> {
  * via the `definition` "quotes_select".
  */
 export interface QuotesSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   deal?: T;
   contact?: T;
@@ -1626,7 +1761,6 @@ export interface QuotesSelect<T extends boolean = true> {
   vatTotal?: T;
   total?: T;
   owner?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1635,6 +1769,7 @@ export interface QuotesSelect<T extends boolean = true> {
  * via the `definition` "activities_select".
  */
 export interface ActivitiesSelect<T extends boolean = true> {
+  tenant?: T;
   type?: T;
   title?: T;
   body?: T;
@@ -1645,7 +1780,6 @@ export interface ActivitiesSelect<T extends boolean = true> {
   company?: T;
   booking?: T;
   owner?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1654,6 +1788,7 @@ export interface ActivitiesSelect<T extends boolean = true> {
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   company?: T;
   contact?: T;
@@ -1665,7 +1800,6 @@ export interface ProjectsSelect<T extends boolean = true> {
   owner?: T;
   deal?: T;
   completedAt?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1674,6 +1808,7 @@ export interface ProjectsSelect<T extends boolean = true> {
  * via the `definition` "tasks_select".
  */
 export interface TasksSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   project?: T;
   assignee?: T;
@@ -1694,7 +1829,6 @@ export interface TasksSelect<T extends boolean = true> {
   startedAt?: T;
   completedAt?: T;
   order?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1703,6 +1837,7 @@ export interface TasksSelect<T extends boolean = true> {
  * via the `definition` "templates_select".
  */
 export interface TemplatesSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   description?: T;
   steps?:
@@ -1722,7 +1857,6 @@ export interface TemplatesSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1731,6 +1865,7 @@ export interface TemplatesSelect<T extends boolean = true> {
  * via the `definition` "conversations_select".
  */
 export interface ConversationsSelect<T extends boolean = true> {
+  tenant?: T;
   label?: T;
   name?: T;
   email?: T;
@@ -1749,7 +1884,6 @@ export interface ConversationsSelect<T extends boolean = true> {
   firstTeamReplyAt?: T;
   visitorMessages?: T;
   token?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1758,10 +1892,39 @@ export interface ConversationsSelect<T extends boolean = true> {
  * via the `definition` "knowledge_select".
  */
 export interface KnowledgeSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   content?: T;
   active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chatbot-config_select".
+ */
+export interface ChatbotConfigSelect<T extends boolean = true> {
   tenant?: T;
+  enabled?: T;
+  botName?: T;
+  model?: T;
+  greeting?: T;
+  suggestions?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  notice?: T;
+  instructions?: T;
+  cannedReplies?:
+    | T
+    | {
+        label?: T;
+        text?: T;
+        id?: T;
+      };
+  notifyHandoff?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1770,12 +1933,12 @@ export interface KnowledgeSelect<T extends boolean = true> {
  * via the `definition` "chat-messages_select".
  */
 export interface ChatMessagesSelect<T extends boolean = true> {
+  tenant?: T;
   conversation?: T;
   role?: T;
   text?: T;
   author?: T;
   unanswered?: T;
-  tenant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2133,7 +2296,14 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   weeklyHours?: T;
   role?: T;
-  modules?: T;
+  tenants?:
+    | T
+    | {
+        tenant?: T;
+        role?: T;
+        modules?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -2159,6 +2329,40 @@ export interface UsersSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  modules?: T;
+  profile?:
+    | T
+    | {
+        legalName?: T;
+        logo?: T;
+        email?: T;
+        phone?: T;
+        website?: T;
+        address?: T;
+        taxOffice?: T;
+        taxNumber?: T;
+        notifyEmail?: T;
+      };
+  quotePrefix?: T;
+  status?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "business-config_select".
+ */
+export interface BusinessConfigSelect<T extends boolean = true> {
+  tenant?: T;
+  monthlyTarget?: T;
+  summaryEnabled?: T;
+  summaryRecipients?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2167,6 +2371,7 @@ export interface TenantsSelect<T extends boolean = true> {
  * via the `definition` "audit-log_select".
  */
 export interface AuditLogSelect<T extends boolean = true> {
+  tenant?: T;
   summary?: T;
   user?: T;
   action?: T;
@@ -2482,76 +2687,6 @@ export interface AboutPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "chatbot-settings".
- */
-export interface ChatbotSetting {
-  id: number;
-  /**
-   * Açınca sitenin sağ alt köşesinde sohbet balonu çıkar. Yapay zekâ anahtarı yoksa mesajlar doğrudan ekibe düşer.
-   */
-  enabled?: boolean | null;
-  botName: string;
-  model?: ('claude-haiku-5-5' | 'claude-sonnet-5-5') | null;
-  greeting?: string | null;
-  /**
-   * Sohbet açılınca ziyaretçiye dokunulabilir öneri olarak görünür.
-   */
-  suggestions?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Sohbet penceresinin altında küçük yazıyla görünür. KVKK aydınlatma metni gelince bağlantısı eklenir.
-   */
-  notice?: string | null;
-  /**
-   * Ton, vurgulanacak kampanya ya da yanıtlanmayacak konular. Ör. "Ekim boyunca web sitesi projelerinde ücretsiz keşif görüşmesi var."
-   */
-  instructions?: string | null;
-  /**
-   * Gelen kutusunda tek tıkla eklenen kısa yanıtlar.
-   */
-  cannedReplies?:
-    | {
-        label: string;
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  notifyHandoff?: boolean | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "business-settings".
- */
-export interface BusinessSetting {
-  id: number;
-  /**
-   * Yönetici panosunda bu ay kazanılan işin hedefe oranı görünür. Boşsa hedef çubuğu gösterilmez.
-   */
-  monthlyTarget?: number | null;
-  /**
-   * Saat 08:00 civarı yöneticilere: dünkü talepler, bekleyen sohbetler, bugünkü işler, gecikenler.
-   */
-  summaryEnabled?: boolean | null;
-  /**
-   * Yöneticilere ek olarak özeti alacak adresler.
-   */
-  summaryRecipients?:
-    | {
-        email: string;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
@@ -2766,52 +2901,6 @@ export interface AboutPageSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "chatbot-settings_select".
- */
-export interface ChatbotSettingsSelect<T extends boolean = true> {
-  enabled?: T;
-  botName?: T;
-  model?: T;
-  greeting?: T;
-  suggestions?:
-    | T
-    | {
-        text?: T;
-        id?: T;
-      };
-  notice?: T;
-  instructions?: T;
-  cannedReplies?:
-    | T
-    | {
-        label?: T;
-        text?: T;
-        id?: T;
-      };
-  notifyHandoff?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "business-settings_select".
- */
-export interface BusinessSettingsSelect<T extends boolean = true> {
-  monthlyTarget?: T;
-  summaryEnabled?: T;
-  summaryRecipients?:
-    | T
-    | {
-        email?: T;
-        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

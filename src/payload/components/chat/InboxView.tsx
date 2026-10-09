@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { can } from "../../business/roles";
+import { scopeOf } from "../tenant-scope";
+import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { aiConfigured } from "../../chat/ai";
+import { chatConfigOf } from "../../chat/collections";
 import { Inbox } from "./Inbox";
 
 /** Panel > Sohbetler (/admin/sohbetler): sitedeki sohbetlerin gelen kutusu. ?id=<sohbet> ile açılır. */
@@ -12,8 +14,10 @@ export async function InboxView({ initPageResult, params, searchParams }: AdminV
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsohbetler");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "chat")) redirect("/admin");
-  const settings = await req.payload.findGlobal({ slug: "chatbot-settings", depth: 0, req });
+  if (!canReq(req, "chat")) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const settings = await chatConfigOf(req.payload, scope.tenantId);
   const canned = (settings.cannedReplies ?? []).map((c) => ({ label: c.label, text: c.text }));
   const initial = typeof searchParams?.id === "string" ? searchParams.id : "";
 
@@ -45,7 +49,7 @@ export async function InboxView({ initPageResult, params, searchParams }: AdminV
               <Link className="guru-plan__nav" href="/admin/sohbet-raporu">
                 Sohbet raporu
               </Link>
-              <Link className="guru-plan__nav" href="/admin/globals/chatbot-settings">
+              <Link className="guru-plan__nav" href="/admin/collections/chatbot-config">
                 Ayarlar
               </Link>
               <Link className="guru-plan__nav" href="/admin/collections/knowledge">
@@ -53,7 +57,7 @@ export async function InboxView({ initPageResult, params, searchParams }: AdminV
               </Link>
             </nav>
           </header>
-          <Inbox canned={canned} initialId={initial} />
+          <Inbox canned={canned} initialId={initial} tenantId={scope.tenantId} />
         </div>
       </Gutter>
     </DefaultTemplate>

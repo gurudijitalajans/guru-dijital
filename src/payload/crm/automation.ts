@@ -38,12 +38,20 @@ export function nextBusinessDay(from = new Date()): string {
   return d.toISOString();
 }
 
+/** Kişi e-postaya göre YALNIZ aynı işletmede aranır: iki işletmenin kişileri asla birleşmez */
 export async function findOrCreateContact(
   req: PayloadRequest,
-  input: { name: string; email: string; phone?: string | null; source: string },
+  input: { name: string; email: string; phone?: string | null; source: string; tenant: Id },
 ): Promise<Id> {
   const email = input.email.trim().toLocaleLowerCase("tr-TR");
-  const found = await req.payload.find({ collection: "contacts", where: { email: { equals: email } }, limit: 1, depth: 0, req, overrideAccess: true });
+  const found = await req.payload.find({
+    collection: "contacts",
+    where: { and: [{ email: { equals: email } }, { tenant: { equals: input.tenant } }] },
+    limit: 1,
+    depth: 0,
+    req,
+    overrideAccess: true,
+  });
   const existing = found.docs[0];
   if (existing) {
     if (!existing.phone && input.phone) {
@@ -53,7 +61,7 @@ export async function findOrCreateContact(
   }
   const created = await quietly(req, async () => req.payload.create({
     collection: "contacts",
-    data: { name: input.name, email, phone: input.phone || undefined, source: input.source as never, tenant: await defaultTenantId(req) },
+    data: { name: input.name, email, phone: input.phone || undefined, source: input.source as never, tenant: Number(input.tenant) },
     req,
     overrideAccess: true,
     context: { [CRM_SKIP]: true },
@@ -80,7 +88,8 @@ export async function logActivity(
 ) {
   return quietly(req, async () => req.payload.create({
     collection: "activities",
-    data: { ...data, done: data.done ?? data.type !== "gorev", tenant: await defaultTenantId(req) } as never,
+    /* İşletme fırsattan ya da kişiden gelir (fillTenant) */
+    data: { ...data, done: data.done ?? data.type !== "gorev" } as never,
     req,
     overrideAccess: true,
     context: { [CRM_SKIP]: true },
@@ -90,14 +99,15 @@ export async function logActivity(
 /** Talep (leads) oluşturulunca */
 export async function leadToCrm(
   req: PayloadRequest,
-  lead: { id: Id; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; source?: string | null },
+  lead: { id: Id; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; source?: string | null; tenant?: unknown },
   via: "form" | "chatbot" = "form",
 ) {
-  const contact = await findOrCreateContact(req, { name: lead.name, email: lead.email, phone: lead.phone, source: via });
+  const tenant = idOf(lead.tenant) ?? (await defaultTenantId(req));
+  const contact = await findOrCreateContact(req, { name: lead.name, email: lead.email, phone: lead.phone, source: via, tenant });
   const topic = lead.service || lead.subject || "Siteden talep";
   const deal = await quietly(req, async () => req.payload.create({
     collection: "deals",
-    data: { title: `${topic} · ${lead.name}`, contact, stage: "aday", service: lead.service || undefined, lead: lead.id, tenant: await defaultTenantId(req) } as never,
+    data: { title: `${topic} · ${lead.name}`, contact, stage: "aday", service: lead.service || undefined, lead: lead.id, tenant } as never,
     req,
     overrideAccess: true,
     context: { [CRM_SKIP]: true },
@@ -108,15 +118,16 @@ export async function leadToCrm(
 }
 
 /** Randevu (bookings) oluşturulunca */
-export async function bookingToCrm(req: PayloadRequest, b: { id: Id; name: string; email: string; phone?: string | null; topic?: string | null; note?: string | null; date: string; time: string }) {
-  const contact = await findOrCreateContact(req, { name: b.name, email: b.email, phone: b.phone, source: "randevu" });
+export async function bookingToCrm(req: PayloadRequest, b: { id: Id; name: string; email: string; phone?: string | null; topic?: string | null; note?: string | null; date: string; time: string; tenant?: unknown }) {
+  const tenant = idOf(b.tenant) ?? (await defaultTenantId(req));
+  const contact = await findOrCreateContact(req, { name: b.name, email: b.email, phone: b.phone, source: "randevu", tenant });
   let deal = await openDealOf(req, contact);
   /* Toplantı alındıysa fırsat en az "Görüşme" aşamasındadır (aşama kaydı ve talep durumu da güncellenir) */
   if (deal?.stage === "aday") deal = await req.payload.update({ collection: "deals", id: deal.id, data: { stage: "gorusme" }, req, overrideAccess: true });
   if (!deal) {
     deal = await quietly(req, async () => req.payload.create({
       collection: "deals",
-      data: { title: `${b.topic || "Tanışma toplantısı"} · ${b.name}`, contact, stage: "gorusme", tenant: await defaultTenantId(req) } as never,
+      data: { title: `${b.topic || "Tanışma toplantısı"} · ${b.name}`, contact, stage: "gorusme", tenant } as never,
       req,
       overrideAccess: true,
       context: { [CRM_SKIP]: true },

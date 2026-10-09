@@ -2,6 +2,7 @@ import { APIError, addDataAndFileToRequest, type PayloadHandler, type PayloadReq
 import type { Booking } from "@/payload-types";
 import { notifyTeam } from "../notify";
 import { bookingToCrm, leadToCrm } from "../crm/automation";
+import { defaultTenantId } from "../crm/tenant";
 import { clientIp, dayKey, rateLimited } from "../utils";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
@@ -30,7 +31,8 @@ type Result = { ok: true; id: number | string } | { ok: false; status: number; e
  * Talebi doğrular, kaydeder, CRM'e aktarır ve ekibe bildirir. Site formu ve
  * sohbet asistanı aynı kuralları kullanır. `via` CRM'deki kaynak etiketidir.
  */
-export async function createLead(req: PayloadRequest, input: LeadInput, via: "form" | "chatbot" = "form"): Promise<Result> {
+export async function createLead(req: PayloadRequest, input: LeadInput, via: "form" | "chatbot" = "form", tenantId?: number | string): Promise<Result> {
+  const tenant = Number(tenantId ?? (await defaultTenantId(req)));
   const data = {
     name: str(input.name, 120),
     email: str(input.email, 160),
@@ -43,7 +45,7 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
   if (!data.name || !EMAIL_RE.test(data.email) || !data.message) {
     return { ok: false, status: 400, error: "Lütfen ad, geçerli bir e-posta ve mesaj yazın." };
   }
-  const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni" }, overrideAccess: true });
+  const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni", tenant }, overrideAccess: true });
   /* Talep kaydedildi; CRM aktarımı (kişi, fırsat, görev) ayrı işlemlerde, hata talebi etkilemez */
   await leadToCrm(req, lead, via).catch((err) => req.payload.logger.error({ err }, "CRM: talep aktarılamadı"));
   await notifyTeam(req, {
@@ -60,12 +62,14 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
     ],
     replyTo: data.email,
     adminPath: `/collections/leads/${lead.id}`,
+    tenant,
   });
   return { ok: true, id: lead.id };
 }
 
 /** Randevuyu doğrular (gün, saat, hafta içi, dolu saat), kaydeder, CRM'e aktarır ve bildirir. */
-export async function createBooking(req: PayloadRequest, input: BookingInput): Promise<Result> {
+export async function createBooking(req: PayloadRequest, input: BookingInput, tenantId?: number | string): Promise<Result> {
+  const tenant = Number(tenantId ?? (await defaultTenantId(req)));
   const day = str(input.day, 10);
   const time = str(input.time, 5);
   const data = {
@@ -93,7 +97,7 @@ export async function createBooking(req: PayloadRequest, input: BookingInput): P
   try {
     const booking = await req.payload.create({
       collection: "bookings",
-      data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor" },
+      data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor", tenant },
       overrideAccess: true,
     });
     bookingId = booking.id;
@@ -117,12 +121,15 @@ export async function createBooking(req: PayloadRequest, input: BookingInput): P
     ],
     replyTo: data.email,
     adminPath: `/collections/bookings/${bookingId}`,
+    tenant,
   });
   return { ok: true, id: bookingId };
 }
 
 /** POST /api/leads/gonder */
 export const submitLead: PayloadHandler = async (req) => {
+  /* Oturumsuz site isteği sunucu adına yazar: çok kiracılı eklenti işletme atamasını ancak yerel işlemde kabul eder */
+  req.payloadAPI = "local";
   if (rateLimited(`lead:${clientIp(req.headers)}`)) {
     return fail(429, "Kısa sürede çok fazla gönderim yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.");
   }
@@ -134,6 +141,7 @@ export const submitLead: PayloadHandler = async (req) => {
 
 /** POST /api/bookings/gonder */
 export const submitBooking: PayloadHandler = async (req) => {
+  req.payloadAPI = "local";
   if (rateLimited(`booking:${clientIp(req.headers)}`)) {
     return fail(429, "Kısa sürede çok fazla gönderim yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.");
   }
@@ -144,12 +152,13 @@ export const submitBooking: PayloadHandler = async (req) => {
 };
 
 /** Önümüzdeki dolu saatler ("YYYY-MM-DD HH:MM"); sohbet asistanı da boş saat önerirken kullanır */
-export async function busySlotList(req: PayloadRequest): Promise<string[]> {
+export async function busySlotList(req: PayloadRequest, tenantId?: number | string): Promise<string[]> {
   const today = dayKey(new Date());
+  const tenant = tenantId ?? (await defaultTenantId(req));
   const res = await req.payload.find({
     collection: "bookings",
     where: {
-      and: [{ status: { not_equals: "iptal" } }, { slot: { greater_than: today } }],
+      and: [{ status: { not_equals: "iptal" } }, { slot: { greater_than: today } }, { tenant: { equals: tenant } }],
     },
     select: { slot: true },
     limit: 500,

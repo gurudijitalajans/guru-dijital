@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@payloadcms/ui";
-import { can, isAdminUser } from "../business/roles";
+import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
+import { can as canIn, isAdminUser, isTenantAdmin } from "../business/roles";
 
 /**
  * Menünün başı (kullanıcının modüllerine göre): pano, yönetici panosu, satış hattı, görev panosu, ekip planı, sohbetler, ziyaretçi analizi ve sitenin sayfaları, site haritası
@@ -29,6 +30,10 @@ const Icon = ({ d }: { d: string }) => (
 export function PanelNav() {
   const pathname = usePathname();
   const { user } = useAuth();
+  /* Yetki üstteki işletme seçicisinde seçili işletmeye göre */
+  const { selectedTenantID } = useTenantSelection();
+  const scoped = isAdminUser(user) ? undefined : selectedTenantID;
+  const can = (u: unknown, m: Parameters<typeof canIn>[1]) => canIn(u, m, scoped);
   /* Sitedeki "Bu sayfayı düzenle" bağlantısı için işaret: yalnız panele girmiş tarayıcıda olur, kimlik bilgisi taşımaz */
   useEffect(() => {
     document.cookie = "guru-panel=1; path=/; max-age=2592000; samesite=lax";
@@ -40,7 +45,7 @@ export function PanelNav() {
         <Icon d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" />
         Pano
       </Link>
-      {isAdminUser(user) && (
+      {(isAdminUser(user) || (isTenantAdmin(user, scoped) && can(user, "business"))) && (
         <Link href="/admin/yonetici" className="guru-nav__main" aria-current={isActive("/admin/yonetici") ? "page" : undefined}>
           <Icon d="M3 3v18h18M7 15l4-4 3 3 5-6" />
           Yönetici panosu

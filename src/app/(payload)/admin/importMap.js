@@ -1,3 +1,5 @@
+import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { Timeline as Timeline_7ae76d7567d54bc78988705f2239770f } from '../../../payload/components/crm/Timeline'
 import { DealToProject as DealToProject_c3bd8d5cb3ab076a467e045087296a0e } from '../../../payload/components/ops/DealToProject'
 import { QuoteActions as QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce } from '../../../payload/components/crm/QuoteActions'
@@ -30,10 +32,14 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { MediaUsage as MediaUsage_162d464a9b6bd4a4a2f95103259aec53 } from '../../../payload/components/MediaUsage'
 import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Icon as Icon_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/components/Brand'
 import { Logo as Logo_9abc6a0eda54972459e8ec55822fafb2 } from '../../../payload/components/Brand'
+import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { PanelNav as PanelNav_7e914adafbf74ff8c71060cac18a9bc0 } from '../../../payload/components/PanelNav'
+import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { Dashboard as Dashboard_85b72bc5c0d30238d51de444df4399a6 } from '../../../payload/components/Dashboard'
 import { SalesPipeline as SalesPipeline_be5e74d62e9619266690e4e014d9e83d } from '../../../payload/components/crm/SalesPipeline'
 import { TaskBoardView as TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8 } from '../../../payload/components/ops/TaskBoardView'
@@ -47,6 +53,8 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
+  "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/payload/components/crm/Timeline#Timeline": Timeline_7ae76d7567d54bc78988705f2239770f,
   "/payload/components/ops/DealToProject#DealToProject": DealToProject_c3bd8d5cb3ab076a467e045087296a0e,
   "/payload/components/crm/QuoteActions#QuoteActions": QuoteActions_e7de15a8bae176d8e7aa3162651bf4ce,
@@ -79,10 +87,14 @@ export const importMap = {
   "/payload/components/MediaUsage#MediaUsage": MediaUsage_162d464a9b6bd4a4a2f95103259aec53,
   "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/next/rsc#FolderField": FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "/payload/components/Brand#Icon": Icon_9abc6a0eda54972459e8ec55822fafb2,
   "/payload/components/Brand#Logo": Logo_9abc6a0eda54972459e8ec55822fafb2,
+  "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
+  "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "/payload/components/PanelNav#PanelNav": PanelNav_7e914adafbf74ff8c71060cac18a9bc0,
+  "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "/payload/components/Dashboard#Dashboard": Dashboard_85b72bc5c0d30238d51de444df4399a6,
   "/payload/components/crm/SalesPipeline#SalesPipeline": SalesPipeline_be5e74d62e9619266690e4e014d9e83d,
   "/payload/components/ops/TaskBoardView#TaskBoardView": TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8,

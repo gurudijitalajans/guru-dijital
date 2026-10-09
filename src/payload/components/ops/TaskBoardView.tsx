@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { can } from "../../business/roles";
+import { scopeOf } from "../tenant-scope";
+import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -16,20 +17,23 @@ export async function TaskBoardView({ initPageResult, params, searchParams }: Ad
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Foperasyon");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "ops")) redirect("/admin");
+  if (!canReq(req, "ops")) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const { w } = scope;
 
   const [res, projects, users] = await Promise.all([
     req.payload.find({
       collection: "tasks",
-      where: { or: [{ stage: { not_equals: "tamam" } }, { completedAt: { greater_than_equal: daysAgoIso(14) } }] },
+      where: w({ or: [{ stage: { not_equals: "tamam" } }, { completedAt: { greater_than_equal: daysAgoIso(14) } }] }),
       sort: "order",
       limit: 1000,
       depth: 1,
       pagination: false,
       req,
     }),
-    req.payload.find({ collection: "projects", where: { status: { in: ["aktif", "beklemede"] } }, sort: "title", limit: 200, depth: 0, pagination: false, req, select: { title: true } }),
-    req.payload.find({ collection: "users", limit: 100, depth: 0, pagination: false, req, select: { name: true } }),
+    req.payload.find({ collection: "projects", where: w({ status: { in: ["aktif", "beklemede"] } }), sort: "title", limit: 200, depth: 0, pagination: false, req, select: { title: true } }),
+    req.payload.find({ collection: "users", where: { or: [{ "tenants.tenant": { equals: scope.tenantId } }, ...(scope.isGuru ? [{ role: { equals: "admin" } }] : [])] }, limit: 100, depth: 0, pagination: false, req, select: { name: true } }),
   ]);
 
   const tasks: BoardTask[] = res.docs.map((t) => ({

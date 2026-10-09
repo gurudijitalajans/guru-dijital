@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { scopeOf } from "../tenant-scope";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
-import { isAdminUser } from "../../business/roles";
+import { canReq, isAdminUser, isTenantAdminReq } from "../../business/roles";
+import { businessConfigOf } from "../../business/collections";
 import { change, money, periodMetrics, periodOf, snapshot } from "../../business/metrics";
 import { SummaryButton } from "./SummaryButton";
 
@@ -34,18 +36,22 @@ function Delta({ now, before, label = "önceki döneme göre" }: { now: number; 
 export async function ExecutiveView({ initPageResult, params, searchParams }: AdminViewServerProps) {
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fyonetici");
-  if (!isAdminUser(req.user)) redirect("/admin");
+  /* Guru yöneticisi ya da Business modülü açık işletmenin yöneticisi */
+  if (!isAdminUser(req.user) && !(isTenantAdminReq(req) && canReq(req, "business"))) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const { w } = scope;
 
   const key = PERIODS.some((p) => p.key === searchParams?.donem) ? String(searchParams?.donem) : "bu-ay";
   const p = periodOf(key);
-  const q = { payload: req.payload, req };
+  const q = { payload: req.payload, req, tenant: scope.tenantId };
   const [m, prev, s, settings, feed] = await Promise.all([
     periodMetrics(q, p),
     periodMetrics(q, p.prev),
     snapshot(q),
-    req.payload.findGlobal({ slug: "business-settings", depth: 0, req }),
+    businessConfigOf(req.payload, scope.tenantId),
     /* Girişler İşlem geçmişinde; akışta yalnız işler */
-    req.payload.find({ collection: "audit-log", where: { action: { not_equals: "giris" } }, sort: "-createdAt", limit: 12, depth: 1, req }),
+    req.payload.find({ collection: "audit-log", where: w({ action: { not_equals: "giris" } }), sort: "-createdAt", limit: 12, depth: 1, req }),
   ]);
   const target = key !== "30-gun" ? (settings.monthlyTarget ?? 0) : 0;
   const reportMonth = new Date(Date.parse(p.from) + 5 * 86400000).toISOString().slice(0, 7);
@@ -67,7 +73,7 @@ export async function ExecutiveView({ initPageResult, params, searchParams }: Ad
           <header className="guru-pipe__head">
             <div>
               <h1>Yönetici panosu</h1>
-              <p>{p.label} · tutarlar KDV hariç, CRM&apos;de kazanılan fırsatlardan</p>
+              <p>{scope.name ? `${scope.name} · ` : ""}{p.label} · tutarlar KDV hariç, CRM&apos;de kazanılan fırsatlardan</p>
             </div>
             <nav className="guru-pipe__tools" aria-label="Dönem ve rapor">
               {PERIODS.map((x) => (
@@ -119,7 +125,7 @@ export async function ExecutiveView({ initPageResult, params, searchParams }: Ad
             </section>
           ) : (
             <p className="guru-home__meta">
-              Aylık hedef girilmedi. <Link href="/admin/globals/business-settings">Yönetici ayarlarından</Link> ekleyince ilerleme burada görünür.
+              Aylık hedef girilmedi. <Link href="/admin/collections/business-config">Yönetici ayarlarından</Link> ekleyince ilerleme burada görünür.
             </p>
           )}
 
@@ -185,7 +191,7 @@ export async function ExecutiveView({ initPageResult, params, searchParams }: Ad
             <section className="guru-home__panel">
               <div className="guru-home__panel-head">
                 <h2>Son aktiviteler</h2>
-                <Link href="/admin/collections/audit-log">İşlem geçmişi</Link>
+                {isAdminUser(req.user) ? <Link href="/admin/collections/audit-log">İşlem geçmişi</Link> : null}
               </div>
               {feed.docs.length === 0 ? (
                 <p className="guru-home__empty">Henüz kayıt yok. Paneldeki değişiklikler ve girişler burada görünür.</p>

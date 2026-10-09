@@ -37,7 +37,7 @@ const FILTERS = [
 ];
 const STATUS: Record<string, string> = { bot: "Asistan", ekip: "Ekipte", kapali: "Kapandı" };
 
-export function Inbox({ canned, initialId }: { canned: { label: string; text: string }[]; initialId: string }) {
+export function Inbox({ canned, initialId, tenantId }: { canned: { label: string; text: string }[]; initialId: string; tenantId: number }) {
   const [filter, setFilter] = useState(initialId ? "tumu" : "bekleyen");
   const [list, setList] = useState<Conv[] | null>(null);
   const [selected, setSelected] = useState<string>(initialId);
@@ -53,11 +53,11 @@ export function Inbox({ canned, initialId }: { canned: { label: string; text: st
   useEffect(() => {
     const where = FILTERS.find((f) => f.key === filter)?.where;
     const run = () =>
-      getDocs<Conv>(`/api/conversations?sort=-lastMessageAt&limit=60&depth=0${where ? `&${where}` : ""}`).then((docs) => setList(docs));
+      getDocs<Conv>(`/api/conversations?sort=-lastMessageAt&limit=60&depth=0&where[tenant][equals]=${tenantId}${where ? `&${where}` : ""}`).then((docs) => setList(docs));
     run();
     const t = setInterval(run, 6000);
     return () => clearInterval(t);
-  }, [filter, tick]);
+  }, [filter, tick, tenantId]);
 
   useEffect(() => {
     if (!selected) return;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { can } from "../../business/roles";
+import { scopeOf } from "../tenant-scope";
+import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -22,11 +23,14 @@ export async function ReportView({ initPageResult, params, searchParams }: Admin
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsohbet-raporu");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "chat")) redirect("/admin");
+  if (!canReq(req, "chat")) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const { w } = scope;
   const since = daysAgoIso(30);
   const [convs, unanswered] = await Promise.all([
-    req.payload.find({ collection: "conversations", where: { createdAt: { greater_than_equal: since } }, limit: 5000, depth: 0, pagination: false, req }),
-    req.payload.find({ collection: "chat-messages", where: { and: [{ unanswered: { equals: true } }, { createdAt: { greater_than_equal: since } }] }, sort: "-createdAt", limit: 20, depth: 0, req }),
+    req.payload.find({ collection: "conversations", where: w({ createdAt: { greater_than_equal: since } }), limit: 5000, depth: 0, pagination: false, req }),
+    req.payload.find({ collection: "chat-messages", where: w({ and: [{ unanswered: { equals: true } }, { createdAt: { greater_than_equal: since } }] }), sort: "-createdAt", limit: 20, depth: 0, req }),
   ]);
   const all = convs.docs;
   const handed = all.filter((c) => c.handedOffAt);

@@ -1,4 +1,4 @@
-import type { Payload, PayloadRequest } from "payload";
+import type { Payload, PayloadRequest, Where } from "payload";
 import { SOURCES } from "../crm/stages";
 import { dayOf } from "../ops/dates";
 
@@ -35,22 +35,25 @@ export function periodOf(key: string): Period {
   return month(y, m, "bu-ay");
 }
 
-type Q = { payload: Payload; req?: PayloadRequest };
+/* Her hesap bir işletme için: tenant zorunlu */
+type Q = { payload: Payload; req?: PayloadRequest; tenant: number | string };
+const scoped = (q: Q) => (x?: Where): Where => (x ? { and: [x, { tenant: { equals: q.tenant } }] } : { tenant: { equals: q.tenant } });
 const base = (q: Q) => ({ req: q.req, overrideAccess: true, pagination: false as const, limit: 5000 });
 const inRange = (field: string, r: Range) => ({ and: [{ [field]: { greater_than_equal: r.from } }, { [field]: { less_than: r.to } }] });
 const sourceLabel = (v?: string | null) => SOURCES.find((s) => s.value === v)?.label ?? "Elle eklendi";
 
 export async function periodMetrics(q: Q, r: Range) {
   const { payload } = q;
+  const w = scoped(q);
   const [won, lost, leads, bookings, convs, quotes, tasksDone, projectsDone] = await Promise.all([
-    payload.find({ collection: "deals", where: { and: [{ stage: { equals: "kazanildi" } }, inRange("closedAt", r)] }, depth: 1, ...base(q) }),
-    payload.count({ collection: "deals", where: { and: [{ stage: { equals: "kaybedildi" } }, inRange("closedAt", r)] }, req: q.req, overrideAccess: true }),
-    payload.find({ collection: "leads", where: inRange("createdAt", r), depth: 0, select: { source: true }, ...base(q) }),
-    payload.count({ collection: "bookings", where: inRange("createdAt", r), req: q.req, overrideAccess: true }),
-    payload.find({ collection: "conversations", where: inRange("createdAt", r), depth: 0, select: { handedOffAt: true, lead: true, booking: true }, ...base(q) }),
-    payload.find({ collection: "quotes", where: { and: [{ status: { in: ["gonderildi", "kabul", "red"] } }, inRange("issueDate", r)] }, depth: 0, select: { subtotal: true }, ...base(q) }),
-    payload.find({ collection: "tasks", where: inRange("completedAt", r), depth: 0, select: { completedAt: true, dueDate: true }, ...base(q) }),
-    payload.find({ collection: "projects", where: inRange("completedAt", r), depth: 0, select: { startDate: true, completedAt: true, createdAt: true }, ...base(q) }),
+    payload.find({ collection: "deals", where: w({ and: [{ stage: { equals: "kazanildi" } }, inRange("closedAt", r)] }), depth: 1, ...base(q) }),
+    payload.count({ collection: "deals", where: w({ and: [{ stage: { equals: "kaybedildi" } }, inRange("closedAt", r)] }), req: q.req, overrideAccess: true }),
+    payload.find({ collection: "leads", where: w(inRange("createdAt", r)), depth: 0, select: { source: true }, ...base(q) }),
+    payload.count({ collection: "bookings", where: w(inRange("createdAt", r)), req: q.req, overrideAccess: true }),
+    payload.find({ collection: "conversations", where: w(inRange("createdAt", r)), depth: 0, select: { handedOffAt: true, lead: true, booking: true }, ...base(q) }),
+    payload.find({ collection: "quotes", where: w({ and: [{ status: { in: ["gonderildi", "kabul", "red"] } }, inRange("issueDate", r)] }), depth: 0, select: { subtotal: true }, ...base(q) }),
+    payload.find({ collection: "tasks", where: w(inRange("completedAt", r)), depth: 0, select: { completedAt: true, dueDate: true }, ...base(q) }),
+    payload.find({ collection: "projects", where: w(inRange("completedAt", r)), depth: 0, select: { startDate: true, completedAt: true, createdAt: true }, ...base(q) }),
   ]);
 
   const wonDeals = won.docs.map((d) => {
@@ -100,23 +103,24 @@ export type PeriodMetrics = Awaited<ReturnType<typeof periodMetrics>>;
 /** Şu anki durum (döneme bağlı olmayan) */
 export async function snapshot(q: Q) {
   const { payload } = q;
+  const w = scoped(q);
   const today = dayOf(new Date());
   const startToday = new Date(`${today}T00:00:00+03:00`).toISOString();
   const endToday = new Date(`${today}T23:59:59+03:00`).toISOString();
-  const c = (collection: Parameters<Payload["count"]>[0]["collection"], where: Parameters<Payload["count"]>[0]["where"]) =>
-    payload.count({ collection, where, req: q.req, overrideAccess: true }).then((r) => r.totalDocs);
+  const c = (collection: Parameters<Payload["count"]>[0]["collection"], where: Where) =>
+    payload.count({ collection, where: w(where), req: q.req, overrideAccess: true }).then((r) => r.totalDocs);
   const [openDeals, newLeads, waitingChats, openTasks, lateTasks, review, activeProjects, crmToday, opsToday, meetings, pendingQuotes] = await Promise.all([
-    payload.find({ collection: "deals", where: { stage: { in: ["aday", "gorusme", "teklif"] } }, depth: 0, select: { value: true }, ...base(q) }),
+    payload.find({ collection: "deals", where: w({ stage: { in: ["aday", "gorusme", "teklif"] } }), depth: 0, select: { value: true }, ...base(q) }),
     c("leads", { status: { equals: "yeni" } }),
     c("conversations", { needsReply: { equals: true } }),
     c("tasks", { stage: { not_equals: "tamam" } }),
     c("tasks", { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startToday } }] }),
     c("tasks", { stage: { equals: "kontrol" } }),
-    payload.find({ collection: "projects", where: { status: { equals: "aktif" } }, depth: 0, select: { company: true, contact: true }, ...base(q) }),
+    payload.find({ collection: "projects", where: w({ status: { equals: "aktif" } }), depth: 0, select: { company: true, contact: true }, ...base(q) }),
     c("activities", { and: [{ done: { equals: false } }, { dueAt: { less_than_equal: endToday } }] }),
     c("tasks", { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { greater_than_equal: startToday } }, { dueDate: { less_than_equal: endToday } }] }),
     c("bookings", { and: [{ slot: { like: today } }, { status: { in: ["bekliyor", "onaylandi"] } }] }),
-    payload.find({ collection: "quotes", where: { status: { equals: "gonderildi" } }, depth: 0, select: { subtotal: true }, ...base(q) }),
+    payload.find({ collection: "quotes", where: w({ status: { equals: "gonderildi" } }), depth: 0, select: { subtotal: true }, ...base(q) }),
   ]);
   const customers = new Set(activeProjects.docs.map((p) => `${p.company ?? ""}|${p.company ? "" : (p.contact ?? p.id)}`));
   return {

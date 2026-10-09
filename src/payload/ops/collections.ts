@@ -1,6 +1,5 @@
 import { APIError, type CollectionConfig, type Field, type PayloadRequest } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
-import { tenantField } from "../crm/tenant";
 import { CRM_SKIP, idOf, logActivity } from "../crm/automation";
 import { sendNotice } from "../notify";
 import { PRIORITIES, PROJECT_STATUS, TASK_STAGES, taskCode } from "./stages";
@@ -70,7 +69,6 @@ export const Templates: CollectionConfig = {
         },
       ],
     },
-    tenantField,
   ],
 };
 
@@ -195,7 +193,6 @@ export const Projects: CollectionConfig = {
     },
     { name: "deal", type: "relationship", relationTo: "deals", label: "Geldiği fırsat", admin: { position: "sidebar" } },
     { name: "completedAt", type: "date", label: "Tamamlandı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy" }, condition: (d) => Boolean(d?.completedAt) } },
-    tenantField,
   ],
 };
 
@@ -223,8 +220,10 @@ export const Tasks: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
+        /* Görev numarası işletme başına (G-1, G-2…) */
         if (operation === "create" && !data.seq) {
-          const last = await req.payload.find({ collection: "tasks", sort: "-seq", limit: 1, depth: 0, req, overrideAccess: true, select: { seq: true } });
+          const tenant = idOf(data.tenant);
+          const last = await req.payload.find({ collection: "tasks", where: tenant ? { tenant: { equals: tenant } } : undefined, sort: "-seq", limit: 1, depth: 0, req, overrideAccess: true, select: { seq: true } });
           data.seq = (last.docs[0]?.seq ?? 0) + 1;
         }
         const from = originalDoc?.stage ?? "yapilacak";
@@ -319,6 +318,5 @@ export const Tasks: CollectionConfig = {
     { name: "startedAt", type: "date", label: "Başlandı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.startedAt) } },
     { name: "completedAt", type: "date", label: "Tamamlandı", index: true, admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.completedAt) } },
     { name: "order", type: "number", admin: { hidden: true } },
-    tenantField,
   ],
 };

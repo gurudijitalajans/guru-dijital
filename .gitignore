@@ -47,3 +47,4 @@ next-env.d.ts
 
 # ürün görselleri stüdyosu çıktısı
 /tools/gorsel-studyo/out
+.qa-shots/

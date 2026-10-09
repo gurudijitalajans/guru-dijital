@@ -35,9 +35,9 @@ const TEMPLATES = [
 ];
 
 export async function seedTemplates(payload: Payload, req?: PayloadRequest) {
-  const { totalDocs } = await payload.count({ collection: "templates", req, overrideAccess: true });
+  const { totalDocs } = await payload.count({ collection: "templates", where: { "tenant.slug": { equals: "guru" } }, req, overrideAccess: true });
   if (totalDocs > 0) return 0;
-  const tenant = req ? await defaultTenantId(req) : undefined;
+  const tenant = req ? await defaultTenantId(req) : (await payload.find({ collection: "tenants", where: { slug: { equals: "guru" } }, limit: 1, depth: 0 })).docs[0]?.id;
   for (const t of TEMPLATES) {
     await payload.create({
       collection: "templates",

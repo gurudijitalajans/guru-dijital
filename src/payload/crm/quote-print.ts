@@ -1,5 +1,5 @@
 import type { PayloadHandler } from "payload";
-import { site } from "@/lib/data";
+import { brandOf } from "./brand";
 
 /**
  * GET /api/quotes/:id/yazdir: teklifin müşteriye gidecek belgesi. Tarayıcıda
@@ -21,12 +21,14 @@ const obj = (r: Rel) => (r && typeof r === "object" ? r : null);
 export const quotePrint: PayloadHandler = async (req) => {
   if (!req.user) return new Response("Bu belgeyi görmek için panele giriş yapın.", { status: 401 });
   const id = req.routeParams?.id as string;
-  const q = await req.payload.findByID({ collection: "quotes", id, depth: 1, req }).catch(() => null);
+  /* Yetkiye tabi okuma: kullanıcı yalnız kendi işletmesinin teklifini açabilir */
+  const q = await req.payload.findByID({ collection: "quotes", id, depth: 1, req, overrideAccess: false }).catch(() => null);
   if (!q) return new Response("Teklif bulunamadı.", { status: 404 });
-  const settings = await req.payload.findGlobal({ slug: "site-settings", depth: 0, req });
+  /* Teklifi veren: teklifin işletmesi (Guru Dijital ya da müşteri işletmesi) */
+  const brand = await brandOf(req, q.tenant);
   const company = obj(q.company as Rel);
   const contact = obj(q.contact as Rel);
-  const from = [settings.contact?.email || site.email, settings.contact?.phone, settings.contact?.address].filter(Boolean);
+  const from = [brand.email, brand.phone, brand.address, brand.tax].filter(Boolean);
 
   const rows = (q.items ?? [])
     .map((it, i) => {
@@ -71,11 +73,11 @@ export const quotePrint: PayloadHandler = async (req) => {
 <div class="bar"><button onclick="window.print()">Yazdır / PDF olarak kaydet</button></div>
 <main class="page">
   <header>
-    <img src="/brand/logo-navy.svg" alt="${esc(site.name)}">
+    ${brand.logo ? `<img src="${esc(brand.logo)}" alt="${esc(brand.name)}">` : `<b style="font-size:20px">${esc(brand.name)}</b>`}
     <div class="meta"><h1>Teklif</h1><div>No: <b>${esc(q.number)}</b></div><div class="muted">Tarih: ${date(q.issueDate)}</div><div class="muted">Geçerlilik: ${date(q.validUntil)}</div></div>
   </header>
   <section class="parties">
-    <div><h2>Teklifi veren</h2><b>${esc(site.name)}</b><br>${from.map(lines).join("<br>")}</div>
+    <div><h2>Teklifi veren</h2><b>${esc(brand.name)}</b><br>${from.map(lines).join("<br>")}</div>
     <div><h2>Teklif sunulan</h2>
       ${company ? `<b>${esc(company.name)}</b><br>` : ""}
       ${contact ? `${esc(contact.name)}${contact.title ? `, ${esc(contact.title)}` : ""}<br>` : ""}
@@ -96,7 +98,7 @@ export const quotePrint: PayloadHandler = async (req) => {
   </div>
   ${q.notes ? `<div class="block"><h2>Açıklama</h2><p>${lines(q.notes)}</p></div>` : ""}
   ${q.terms ? `<div class="block"><h2>Koşullar</h2><p class="muted">${lines(q.terms)}</p></div>` : ""}
-  <footer><span>${esc(site.name)}</span><span>${esc(site.url.replace(/^https?:\/\//, ""))}</span></footer>
+  <footer><span>${esc(brand.name)}</span><span>${esc(brand.website.replace(/^https?:\/\//, ""))}</span></footer>
 </main>
 <script>if (location.search.includes("yazdir=1")) addEventListener("load", () => setTimeout(() => print(), 300));</script>
 </body></html>`;

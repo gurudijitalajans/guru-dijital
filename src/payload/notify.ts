@@ -1,4 +1,5 @@
 import type { PayloadRequest } from "payload";
+import { isGuruTenant } from "./crm/tenant";
 
 /**
  * Siteden gelen talep ve randevuları ekibe, Operation görevlerini sorumlusuna
@@ -10,7 +11,18 @@ import type { PayloadRequest } from "payload";
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
 
-async function recipient(req: PayloadRequest) {
+/* Guru Dijital: BILDIRIM_EPOSTA ya da site e-postası. Müşteri işletmesi: kendi bildirim adresi, yoksa işletme yöneticileri */
+async function recipient(req: PayloadRequest, tenant?: number | string): Promise<string> {
+  if (tenant !== undefined && !(await isGuruTenant(req, tenant))) {
+    const t = await req.payload.findByID({ collection: "tenants", id: tenant, depth: 0, req, overrideAccess: true }).catch(() => null);
+    if (t?.profile?.notifyEmail) return t.profile.notifyEmail;
+    const admins = await req.payload.find({ collection: "users", where: { and: [{ "tenants.tenant": { equals: tenant } }, { "tenants.role": { equals: "yonetici" } }] }, depth: 0, limit: 20, pagination: false, req, overrideAccess: true });
+    return admins.docs
+      .filter((u) => (u.tenants ?? []).some((r) => String(typeof r.tenant === "object" ? r.tenant?.id : r.tenant) === String(tenant) && r.role === "yonetici"))
+      .map((u) => u.email)
+      .filter((e) => e && !/\.test$/i.test(e))
+      .join(",");
+  }
   if (process.env.BILDIRIM_EPOSTA) return process.env.BILDIRIM_EPOSTA;
   try {
     const settings = await req.payload.findGlobal({ slug: "site-settings", depth: 0, overrideAccess: true });
@@ -20,10 +32,10 @@ async function recipient(req: PayloadRequest) {
   }
 }
 
-type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; adminPath: string };
+type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; adminPath: string; tenant?: number | string };
 
 export async function notifyTeam(req: PayloadRequest, opts: Notice) {
-  const to = await recipient(req);
+  const to = await recipient(req, opts.tenant);
   if (!to) return;
   await sendNotice(req, to, opts);
 }

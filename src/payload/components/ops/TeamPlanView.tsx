@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { can } from "../../business/roles";
+import { scopeOf } from "../tenant-scope";
+import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -31,7 +32,10 @@ export async function TeamPlanView({ initPageResult, params, searchParams }: Adm
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fekip-plani");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "ops")) redirect("/admin");
+  if (!canReq(req, "ops")) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const { w } = scope;
 
   const today = dayOf(new Date());
   const asked = typeof searchParams?.hafta === "string" && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.hafta) ? searchParams.hafta : today;
@@ -39,18 +43,18 @@ export async function TeamPlanView({ initPageResult, params, searchParams }: Adm
   const week = businessDays(monday, shiftDays(monday, 4));
 
   const [users, open, weekTasks, done30, lateOpen] = await Promise.all([
-    req.payload.find({ collection: "users", limit: 100, depth: 0, pagination: false, req, select: { name: true, weeklyHours: true } }),
-    req.payload.find({ collection: "tasks", where: { stage: { not_equals: "tamam" } }, limit: 2000, depth: 0, pagination: false, req }),
+    req.payload.find({ collection: "users", where: { or: [{ "tenants.tenant": { equals: scope.tenantId } }, ...(scope.isGuru ? [{ role: { equals: "admin" } }] : [])] }, limit: 100, depth: 0, pagination: false, req, select: { name: true, weeklyHours: true } }),
+    req.payload.find({ collection: "tasks", where: w({ stage: { not_equals: "tamam" } }), limit: 2000, depth: 0, pagination: false, req }),
     req.payload.find({
       collection: "tasks",
-      where: { and: [{ or: [{ dueDate: { greater_than_equal: `${monday}T00:00:00.000Z` } }, { stage: { not_equals: "tamam" } }] }] },
+      where: w({ and: [{ or: [{ dueDate: { greater_than_equal: `${monday}T00:00:00.000Z` } }, { stage: { not_equals: "tamam" } }] }] }),
       limit: 2000,
       depth: 1,
       pagination: false,
       req,
     }),
-    req.payload.find({ collection: "tasks", where: { completedAt: { greater_than_equal: daysAgoIso(30) } }, limit: 2000, depth: 0, pagination: false, req, select: { completedAt: true, dueDate: true } }),
-    req.payload.count({ collection: "tasks", where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: `${today}T00:00:00.000Z` } }] }, req }),
+    req.payload.find({ collection: "tasks", where: w({ completedAt: { greater_than_equal: daysAgoIso(30) } }), limit: 2000, depth: 0, pagination: false, req, select: { completedAt: true, dueDate: true } }),
+    req.payload.count({ collection: "tasks", where: w({ and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: `${today}T00:00:00.000Z` } }] }), req }),
   ]);
 
   /* Doluluk: kişi başına bu haftaya düşen saat */

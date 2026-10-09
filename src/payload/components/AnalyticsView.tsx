@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { can } from "../business/roles";
+import { canReq } from "../business/roles";
+import { defaultTenantId } from "../crm/tenant";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -173,16 +174,18 @@ export async function AnalyticsView({ initPageResult, params, searchParams }: Ad
   /* Özel panel ekranları varsayılan olarak herkese açıktır: giriş zorunlu */
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fanaliz");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "site")) redirect("/admin");
+  if (!canReq(req, "site")) redirect("/admin");
 
+  const guru = await defaultTenantId(req);
   const days = PERIODS.find((p) => String(p) === String(searchParams?.gun)) ?? 30;
   const settings = await req.payload.findGlobal({ slug: "site-settings", depth: 0, req });
   const websiteId = settings.analytics?.websiteId ?? "";
   const since = daysAgoIso(days);
   const [result, leads, bookings] = await Promise.all([
     getOverview(websiteId, days),
-    req.payload.count({ collection: "leads", where: { createdAt: { greater_than_equal: since } }, req }),
-    req.payload.count({ collection: "bookings", where: { createdAt: { greater_than_equal: since } }, req }),
+    /* Sitenin ziyaretçi analizi Guru Dijital'in kendi talepleriyle karşılaştırılır */
+    req.payload.count({ collection: "leads", where: { and: [{ createdAt: { greater_than_equal: since } }, { tenant: { equals: guru } }] }, req }),
+    req.payload.count({ collection: "bookings", where: { and: [{ createdAt: { greater_than_equal: since } }, { tenant: { equals: guru } }] }, req }),
   ]);
   const conversions = leads.totalDocs + bookings.totalDocs;
 

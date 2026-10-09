@@ -73,8 +73,9 @@ export type ChatInfo = { botName: string; greeting: string; suggestions: string[
 export const getChatInfo = cache(async (): Promise<ChatInfo | null> => {
   try {
     const payload = await cms();
-    const s = await payload.findGlobal({ slug: "chatbot-settings", depth: 0 });
-    if (!s.enabled) return null;
+    /* Sitedeki balon Guru Dijital işletmesinin sohbet ayarıyla çalışır */
+    const s = (await payload.find({ collection: "chatbot-config", where: { "tenant.slug": { equals: "guru" } }, limit: 1, depth: 0 })).docs[0];
+    if (!s?.enabled) return null;
     return {
       botName: s.botName || "Guru Asistan",
       greeting: s.greeting ?? "",

@@ -6,6 +6,8 @@ import { getOverview, umamiConfigured } from "@/lib/umami";
 import { LEAD_STATUS } from "../collections/Leads";
 import { activityLabel, DEAL_STAGES, OPEN_STAGES } from "../crm/stages";
 import { TaskCheck } from "./crm/TaskCheck";
+import { scopeOf } from "./tenant-scope";
+import { chatConfigOf } from "../chat/collections";
 import { taskCode, taskStageLabel } from "../ops/stages";
 import { aiConfigured } from "../chat/ai";
 import { can, isAdminUser, type Module } from "../business/roles";
@@ -39,6 +41,9 @@ function greeting(now: Date) {
 }
 
 export async function Dashboard({ payload, user }: ServerProps) {
+  /* İşletmeye bağlı her sorgu seçili işletmeyle süzülür (yerel sorgular yetkiyi atlar) */
+  const scope = await scopeOf(payload, user);
+  const { w } = scope;
   const now = new Date();
   const today = dayKey(now);
   const upcomingWhere: Where = { and: [{ slot: { greater_than_equal: today } }, { status: { in: ["bekliyor", "onaylandi"] } }] };
@@ -50,26 +55,26 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const taskWhere: Where = { and: [{ done: { equals: false } }, { dueAt: { less_than_equal: endOfToday } }] };
   const startOfToday = `${today}T00:00:00.000Z`;
   const [tasks, openDeals, myOps, opsOpen, opsLate, opsReview, activeProjects, chatWaiting, chatSettings] = await Promise.all([
-    payload.find({ collection: "activities", where: taskWhere, sort: "dueAt", limit: 8, depth: 1 }),
-    payload.find({ collection: "deals", where: { stage: { in: OPEN_STAGES } }, limit: 500, depth: 0, pagination: false, select: { stage: true, value: true } }),
+    payload.find({ collection: "activities", where: w(taskWhere), sort: "dueAt", limit: 8, depth: 1 }),
+    payload.find({ collection: "deals", where: w({ stage: { in: OPEN_STAGES } }), limit: 500, depth: 0, pagination: false, select: { stage: true, value: true } }),
     user
-      ? payload.find({ collection: "tasks", where: { and: [{ assignee: { equals: user.id } }, { stage: { not_equals: "tamam" } }] }, sort: "dueDate", limit: 6, depth: 1 })
+      ? payload.find({ collection: "tasks", where: w({ and: [{ assignee: { equals: user.id } }, { stage: { not_equals: "tamam" } }] }), sort: "dueDate", limit: 6, depth: 1 })
       : Promise.resolve({ docs: [], totalDocs: 0 }),
-    payload.count({ collection: "tasks", where: { stage: { not_equals: "tamam" } } }),
-    payload.count({ collection: "tasks", where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startOfToday } }] } }),
-    payload.count({ collection: "tasks", where: { stage: { equals: "kontrol" } } }),
-    payload.count({ collection: "projects", where: { status: { equals: "aktif" } } }),
-    payload.count({ collection: "conversations", where: { needsReply: { equals: true } } }),
-    payload.findGlobal({ slug: "chatbot-settings", depth: 0 }),
+    payload.count({ collection: "tasks", where: w({ stage: { not_equals: "tamam" } }) }),
+    payload.count({ collection: "tasks", where: w({ and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startOfToday } }] }) }),
+    payload.count({ collection: "tasks", where: w({ stage: { equals: "kontrol" } }) }),
+    payload.count({ collection: "projects", where: w({ status: { equals: "aktif" } }) }),
+    payload.count({ collection: "conversations", where: w({ needsReply: { equals: true } }) }),
+    scope.tenantId > 0 ? chatConfigOf(payload, scope.tenantId) : Promise.resolve({ enabled: false }),
   ]);
   const [settings, newLeads, todayBookings, upcoming, nextBookings, lastLeads, draftCounts, team, refs, quotes, users, recent, weekLeads] =
     await Promise.all([
       payload.findGlobal({ slug: "site-settings", depth: 0 }),
-      payload.count({ collection: "leads", where: { status: { equals: "yeni" } } }),
-      payload.count({ collection: "bookings", where: todayWhere }),
-      payload.count({ collection: "bookings", where: upcomingWhere }),
-      payload.find({ collection: "bookings", where: upcomingWhere, sort: "slot", limit: 5, depth: 0 }),
-      payload.find({ collection: "leads", sort: "-createdAt", limit: 5, depth: 0 }),
+      payload.count({ collection: "leads", where: w({ status: { equals: "yeni" } }) }),
+      payload.count({ collection: "bookings", where: w(todayWhere) }),
+      payload.count({ collection: "bookings", where: w(upcomingWhere) }),
+      payload.find({ collection: "bookings", where: w(upcomingWhere), sort: "slot", limit: 5, depth: 0 }),
+      payload.find({ collection: "leads", where: w(), sort: "-createdAt", limit: 5, depth: 0 }),
       Promise.all(
         (["posts", "services", "products"] as const).map((c) =>
           payload.countVersions({ collection: c, where: draftWhere }).then((r) => r.totalDocs).catch(() => 0)
@@ -80,7 +85,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
       payload.count({ collection: "testimonials", where: { and: [{ consent: { equals: true } }, { quote: { exists: true } }] } }),
       payload.find({ collection: "users", limit: 50, depth: 0, pagination: false }),
       recentChanges(payload),
-      payload.count({ collection: "leads", where: { createdAt: { greater_than_equal: weekAgo } } }),
+      payload.count({ collection: "leads", where: w({ createdAt: { greater_than_equal: weekAgo } }) }),
     ]);
   const overview = await getOverview(settings.analytics?.websiteId ?? "", 7);
   const nf = new Intl.NumberFormat("tr-TR");
@@ -89,7 +94,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
 
   const pipeTotal = openDeals.docs.reduce((sum, d) => sum + (d.value ?? 0), 0);
   const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
-  const has = (m: Module) => can(user, m);
+  /* Site içeriği yalnız Guru Dijital seçiliyken; diğer modüller seçili işletmedeki yetkiye göre */
+  const has = (m: Module) => can(user, m, isAdminUser(user) ? undefined : scope.tenantId) && (m !== "site" || scope.isGuru);
   const cards = [
     { mod: "crm" as Module, label: "Yeni talep", value: newLeads.totalDocs, hint: "yanıt bekliyor", href: "/admin/collections/leads?where[status][equals]=yeni" },
     { mod: "chat" as Module, label: "Bekleyen sohbet", value: chatWaiting.totalDocs, hint: "ekipten yanıt bekliyor", href: "/admin/sohbetler" },
@@ -127,13 +133,13 @@ export async function Dashboard({ payload, user }: ServerProps) {
         : chatSettings.enabled
           ? "Sitede sohbet balonu açık"
           : "Chatbot ayarlarından sohbet balonunu açın",
-      href: "/admin/globals/chatbot-settings",
+      href: "/admin/collections/chatbot-config",
     },
     {
       done: Boolean(process.env.CRON_SECRET),
       title: "Sabah özeti",
       detail: process.env.CRON_SECRET ? "Hafta içi her sabah yöneticilere özet e-postası gidiyor" : "Vercel'e CRON_SECRET eklenince hafta içi her sabah özet e-postası gider",
-      href: "/admin/globals/business-settings",
+      href: "/admin/collections/business-config",
     },
     { done: umamiConfigured(), title: "Ziyaretçi analizi", detail: umamiConfigured() ? "Umami bağlı" : "Vercel'e UMAMI_API_KEY eklenince bu panoda ziyaretçi sayıları görünür", href: "/admin/analiz" },
     { done: /gurudijital\.com\.tr/.test(serverURL), title: "Alan adı", detail: /gurudijital\.com\.tr/.test(serverURL) ? "gurudijital.com.tr bağlı" : "Site şimdilik vercel.app adresinde", href: null },
@@ -325,7 +331,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
         )}
       </div>
 
-      {isAdminUser(user) && (
+      {isAdminUser(user) && scope.isGuru && (
       <section className="guru-home__panel">
         <div className="guru-home__panel-head">
           <h2>Siteyi tamamla</h2>

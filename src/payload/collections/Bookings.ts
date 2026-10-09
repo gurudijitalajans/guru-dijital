@@ -60,6 +60,8 @@ export const Bookings: CollectionConfig = {
             and: [
               { slot: { equals: data.slot } },
               { status: { not_equals: "iptal" } },
+              /* Takvim işletme başınadır */
+              ...((data.tenant ?? originalDoc?.tenant) ? [{ tenant: { equals: data.tenant ?? originalDoc?.tenant } }] : []),
               ...(originalDoc?.id ? [{ id: { not_equals: originalDoc.id } }] : []),
             ],
           },

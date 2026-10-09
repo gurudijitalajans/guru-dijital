@@ -1,6 +1,6 @@
-import type { CollectionConfig, GlobalConfig } from "payload";
+import type { CollectionConfig, Payload, PayloadRequest } from "payload";
+import type { ChatbotConfig } from "@/payload-types";
 import { isAdmin, isAdminField, isLoggedIn } from "../access";
-import { tenantField } from "../crm/tenant";
 import { idOf } from "../crm/automation";
 import { chatHistory, chatPoll, chatSend } from "./endpoints";
 import { resetKnowledge } from "./knowledge";
@@ -29,11 +29,12 @@ export const MSG_ROLES = [
   { label: "Sistem", value: "sistem" },
 ];
 
-export const ChatbotSettings: GlobalConfig = {
-  slug: "chatbot-settings",
-  label: "Chatbot ayarları",
-  admin: { group: GROUP },
-  access: { read: isLoggedIn, update: isLoggedIn },
+/* İşletme başına tek kayıt (çok kiracılı eklentide "isGlobal"): her işletmenin kendi asistan ayarı */
+export const ChatbotSettings: CollectionConfig = {
+  slug: "chatbot-config",
+  labels: { singular: "Chatbot ayarları", plural: "Chatbot ayarları" },
+  admin: { group: GROUP, useAsTitle: "botName" },
+  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
   /* Balon sitenin her sayfasında: ayar değişince sayfalar yenilenir */
   hooks: { afterChange: [() => resetKnowledge(), () => revalidate(["/"], "layout")] },
   fields: [
@@ -47,7 +48,7 @@ export const ChatbotSettings: GlobalConfig = {
     {
       type: "row",
       fields: [
-        { name: "botName", type: "text", label: "Asistanın adı", defaultValue: "Guru Asistan", required: true },
+        { name: "botName", type: "text", label: "Asistanın adı", defaultValue: "Asistan", required: true },
         { name: "model", type: "select", label: "Yapay zekâ modeli", defaultValue: "claude-haiku-5-5", options: MODELS, access: { update: isAdminField } },
       ],
     },
@@ -55,7 +56,7 @@ export const ChatbotSettings: GlobalConfig = {
       name: "greeting",
       type: "textarea",
       label: "Karşılama mesajı",
-      defaultValue: "Merhaba, ben Guru Dijital'in asistanıyım. Hizmetlerimiz, ürünlerimiz ya da teklif almak hakkında sorularınızı yanıtlayabilirim.",
+      defaultValue: "Merhaba, size nasıl yardımcı olabilirim? Hizmetlerimiz ya da teklif almak hakkında sorularınızı yanıtlayabilirim.",
     },
     {
       name: "suggestions",
@@ -87,7 +88,7 @@ export const ChatbotSettings: GlobalConfig = {
       labels: { singular: "Hazır yanıt", plural: "Hazır yanıtlar" },
       admin: { description: "Gelen kutusunda tek tıkla eklenen kısa yanıtlar." },
       defaultValue: [
-        { label: "Selam", text: "Merhaba, ben Guru Dijital ekibinden yazıyorum. Size nasıl yardımcı olabilirim?" },
+        { label: "Selam", text: "Merhaba, ekibimizden yazıyorum. Size nasıl yardımcı olabilirim?" },
         { label: "Dönüş", text: "Teşekkürler, bilgileri aldım. Bugün içinde e-postayla dönüş yapacağız." },
       ],
       fields: [
@@ -120,7 +121,6 @@ export const Knowledge: CollectionConfig = {
     { name: "title", type: "text", label: "Başlık", required: true, admin: { placeholder: "Çalışma saatleri" } },
     { name: "content", type: "textarea", label: "Bilgi", required: true, admin: { rows: 8, description: "Asistan bunu olduğu gibi bilgi olarak kullanır; kısa ve net yazın." } },
     { name: "active", type: "checkbox", label: "Asistan kullansın", defaultValue: true, admin: { position: "sidebar" } },
-    tenantField,
   ],
 };
 
@@ -175,7 +175,6 @@ export const Conversations: CollectionConfig = {
     { name: "firstTeamReplyAt", type: "date", label: "Ekibin ilk yanıtı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" } } },
     { name: "visitorMessages", type: "number", defaultValue: 0, admin: { hidden: true } },
     { name: "token", type: "text", index: true, admin: { hidden: true }, access: { read: () => false } },
-    tenantField,
   ],
 };
 
@@ -228,6 +227,14 @@ export const ChatMessages: CollectionConfig = {
     { name: "text", type: "textarea", label: "Mesaj", required: true, maxLength: 4000 },
     { name: "author", type: "relationship", relationTo: "users", label: "Ekip üyesi" },
     { name: "unanswered", type: "checkbox", label: "Asistan yanıtlayamadı", defaultValue: false, index: true },
-    tenantField,
   ],
 };
+
+/** İşletmenin sohbet ayarı; yoksa varsayılanlarla açılır */
+export async function chatConfigOf(payload: Payload, tenant: number | string, req?: PayloadRequest): Promise<ChatbotConfig> {
+  const found = await payload.find({ collection: "chatbot-config", where: { tenant: { equals: tenant } }, limit: 1, depth: 0, req, overrideAccess: true });
+  if (found.docs[0]) return found.docs[0];
+  const t = await payload.findByID({ collection: "tenants", id: tenant, depth: 0, req, overrideAccess: true }).catch(() => null);
+  const botName = t?.slug === "guru" ? "Guru Asistan" : `${t?.name ?? "İşletme"} Asistanı`;
+  return payload.create({ collection: "chatbot-config", data: { tenant: Number(tenant), botName }, req, overrideAccess: true });
+}

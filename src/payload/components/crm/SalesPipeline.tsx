@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { can } from "../../business/roles";
+import { scopeOf } from "../tenant-scope";
+import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
 import { Gutter } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
@@ -17,11 +18,14 @@ export async function SalesPipeline({ initPageResult, params, searchParams }: Ad
   const { req, permissions, visibleEntities, locale } = initPageResult;
   if (!req.user) redirect("/admin/login?redirect=%2Fadmin%2Fsatis-hatti");
   /* Modülü olmayan kullanıcı panoya döner */
-  if (!can(req.user, "crm")) redirect("/admin");
+  if (!canReq(req, "crm")) redirect("/admin");
+  /* İşletmeye bağlı sorgular seçili işletmeyle süzülür */
+  const scope = await scopeOf(req.payload, req.user);
+  const { w } = scope;
 
   const res = await req.payload.find({
     collection: "deals",
-    where: { or: [{ stage: { in: ["aday", "gorusme", "teklif"] } }, { closedAt: { greater_than_equal: daysAgoIso(30) } }] },
+    where: w({ or: [{ stage: { in: ["aday", "gorusme", "teklif"] } }, { closedAt: { greater_than_equal: daysAgoIso(30) } }] }),
     sort: "order",
     limit: 500,
     depth: 1,
@@ -31,7 +35,7 @@ export async function SalesPipeline({ initPageResult, params, searchParams }: Ad
   const today = new Date().toISOString();
   const tasks = await req.payload.find({
     collection: "activities",
-    where: { and: [{ done: { equals: false } }, { deal: { exists: true } }, { dueAt: { less_than_equal: today } }] },
+    where: w({ and: [{ done: { equals: false } }, { deal: { exists: true } }, { dueAt: { less_than_equal: today } }] }),
     limit: 500,
     depth: 0,
     pagination: false,

@@ -1,39 +1,75 @@
-import type { Access, CollectionConfig, GlobalConfig } from "payload";
+import type { Access, CollectionConfig, GlobalConfig, PayloadRequest } from "payload";
 
 /**
- * Rol bazlı yetki. Yönetici her şeyi görür. Ekip üyesi yalnız işaretlenen
- * modüllerle çalışır: Site içeriği, Guru CRM, Guru Chatbot, Guru Operation.
- * Modülü olmayan kullanıcı o menü grubunu ve ekranları görmez, kayıtlarını
- * okuyamaz (site içeriğinde yalnız düzenleyemez; yayındaki içerik herkese açık).
- * Rol ve modüller oturum anahtarına yazılır (veritabanına ek sorgu yok).
+ * Rol ve modül yetkisi (çok kiracılı).
+ * - Guru yöneticisi (role: admin): tüm işletmeler, tüm modüller, site içeriği.
+ * - İşletme kullanıcısı: her işletmedeki satırında rolü (yönetici ya da üye)
+ *   ve modülleri durur. İşletme yöneticisi o işletmenin açık modüllerinin
+ *   hepsini alır ve ekibini yönetir; üye yalnız işaretlenen modülleri görür.
+ * Yetki, paneldeki seçili işletmeye göre hesaplanır (işletme seçicisinin
+ * çerezi); kayıtların işletmeye göre süzülmesini çok kiracılı eklenti yapar.
+ * Bu dosya istemci bileşenlerinde de kullanılır: sunucuya özel içe aktarım yok.
  */
 export const MODULES = [
-  { label: "Site içeriği", value: "site" },
-  { label: "Guru CRM (satış)", value: "crm" },
-  { label: "Guru Chatbot (sohbetler)", value: "chat" },
-  { label: "Guru Operation (işler ve görevler)", value: "ops" },
+  { label: "Site içeriği (yalnız Guru Dijital)", value: "site" },
+  { label: "Guru CRM", value: "crm" },
+  { label: "Guru Chatbot", value: "chat" },
+  { label: "Guru Operation", value: "ops" },
+  { label: "Guru Business (yönetici panosu ve raporlar)", value: "business" },
 ] as const;
 export type Module = (typeof MODULES)[number]["value"];
 const ALL: Module[] = MODULES.map((m) => m.value);
 
-type U = { role?: string | null; modules?: string[] | null } | null | undefined;
+type Id = number | string;
+type Row = { tenant?: unknown; role?: string | null; modules?: string[] | null };
+type U = { role?: string | null; tenants?: Row[] | null } | null | undefined;
+const tid = (v: unknown) => String(v && typeof v === "object" ? (v as { id?: Id }).id : v);
 
-export function userModules(user: unknown): Module[] {
-  const u = user as U;
-  if (!u) return [];
-  if (u.role === "admin") return ALL;
-  /* Modül seçilmemiş eski ekip üyesi: yalnız site içeriği */
-  const m = (u.modules ?? []).filter((x): x is Module => (ALL as string[]).includes(x));
-  return m.length ? m : ["site"];
-}
-export const can = (user: unknown, mod: Module) => userModules(user).includes(mod);
 export const isAdminUser = (user: unknown) => (user as U)?.role === "admin";
+const rowsOf = (user: unknown) => ((user as U)?.tenants ?? []) as Row[];
+
+/** Kullanıcının o işletmedeki satırı; işletme verilmezse ilk satır */
+export function tenantRow(user: unknown, tenant?: unknown): Row | undefined {
+  const rows = rowsOf(user);
+  if (tenant === undefined || tenant === null || tenant === "") return rows[0];
+  return rows.find((r) => tid(r.tenant) === tid(tenant));
+}
+
+/**
+ * Kullanıcının modülleri. İşletme verilirse o işletmedeki, verilmezse tüm
+ * işletmelerindeki modüllerin birleşimi (menüde gizleme gibi işletmenin
+ * bilinmediği yerler için).
+ */
+export function userModules(user: unknown, tenant?: unknown): Module[] {
+  if (!user) return [];
+  if (isAdminUser(user)) return ALL;
+  const rows = tenant === undefined ? rowsOf(user) : [tenantRow(user, tenant)].filter(Boolean);
+  const set = new Set<string>();
+  for (const r of rows as Row[]) for (const m of r.modules ?? []) set.add(m);
+  return ALL.filter((m) => set.has(m));
+}
+export const can = (user: unknown, mod: Module, tenant?: unknown) => userModules(user, tenant).includes(mod);
+export const isTenantAdmin = (user: unknown, tenant?: unknown) =>
+  isAdminUser(user) || (tenant === undefined ? rowsOf(user).some((r) => r.role === "yonetici") : tenantRow(user, tenant)?.role === "yonetici");
+
+/** İşletme seçicisinin çerezi (eklentinin "payload-tenant" çerezi) */
+export function selectedTenant(req: Pick<PayloadRequest, "headers" | "user">): string | undefined {
+  const raw = req.headers?.get("cookie") ?? "";
+  const m = raw.match(/(?:^|;\s*)payload-tenant=([^;]+)/);
+  const cookie = m ? decodeURIComponent(m[1]) : "";
+  if (cookie && (isAdminUser(req.user) || tenantRow(req.user, cookie))) return cookie;
+  const first = tenantRow(req.user);
+  return first ? tid(first.tenant) : undefined;
+}
+/** İstekteki seçili işletmeye göre modül yetkisi */
+export const canReq = (req: Pick<PayloadRequest, "headers" | "user">, mod: Module) => can(req.user, mod, isAdminUser(req.user) ? undefined : selectedTenant(req));
+export const isTenantAdminReq = (req: Pick<PayloadRequest, "headers" | "user">) => isTenantAdmin(req.user, isAdminUser(req.user) ? undefined : selectedTenant(req));
 
 type AnyAccess = Access | undefined;
 const wrap =
-  (fn: AnyAccess, allowed: (user: unknown) => boolean): Access =>
+  (fn: AnyAccess, allowed: (req: PayloadRequest) => boolean): Access =>
   (args) =>
-    allowed(args.req.user) ? (fn ? fn(args) : Boolean(args.req.user)) : false;
+    allowed(args.req) ? (fn ? fn(args) : Boolean(args.req.user)) : false;
 
 /**
  * Koleksiyonu modüle bağlar. privateRead: kayıtlar herkese kapalıysa (CRM,
@@ -42,16 +78,16 @@ const wrap =
  */
 export function guardCollection(c: CollectionConfig, mod: Module, opts: { privateRead?: boolean; readAlso?: Module[] } = {}): CollectionConfig {
   const a = c.access ?? {};
-  const readers = (user: unknown) => can(user, mod) || (opts.readAlso ?? []).some((m) => can(user, m));
+  const readers = (req: PayloadRequest) => canReq(req, mod) || (opts.readAlso ?? []).some((m) => canReq(req, m));
   const hidden = c.admin?.hidden;
   return {
     ...c,
     access: {
       ...a,
       ...(opts.privateRead ? { read: wrap(a.read, readers) } : {}),
-      create: wrap(a.create, (u) => can(u, mod)),
-      update: wrap(a.update, (u) => can(u, mod)),
-      delete: wrap(a.delete, (u) => can(u, mod)),
+      create: wrap(a.create, (req) => canReq(req, mod)),
+      update: wrap(a.update, (req) => canReq(req, mod)),
+      delete: wrap(a.delete, (req) => canReq(req, mod)),
     },
     admin: {
       ...c.admin,
@@ -65,7 +101,7 @@ export function guardGlobal(g: GlobalConfig, mod: Module | "admin"): GlobalConfi
   const ok = (u: unknown) => (mod === "admin" ? isAdminUser(u) : can(u, mod));
   return {
     ...g,
-    access: { ...a, update: wrap(a.update as AnyAccess, ok) as never },
+    access: { ...a, update: wrap(a.update as AnyAccess, (req) => (mod === "admin" ? isAdminUser(req.user) : canReq(req, mod))) as never },
     admin: { ...g.admin, hidden: ({ user }) => !ok(user) },
   };
 }

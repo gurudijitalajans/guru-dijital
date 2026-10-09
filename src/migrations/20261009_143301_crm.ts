@@ -221,9 +221,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_activities_id_idx" ON "payload_locked_documents_rels" USING btree ("activities_id");
   CREATE INDEX "payload_locked_documents_rels_tenants_id_idx" ON "payload_locked_documents_rels" USING btree ("tenants_id");`)
 
-  /* CRM'den önce gelmiş talep ve randevular: kişi, fırsat, görev ve toplantı kaydı */
-  const res = await backfillCrm(payload, req)
-  payload.logger.info(`CRM aktarımı: ${res.leads} talep, ${res.bookings} randevu`)
+  /* CRM'den önce gelmiş talep ve randevular: kişi, fırsat, görev ve toplantı kaydı.
+     Boş veritabanında atlanır: aktarım güncel kodu kullanır ve sonraki geçişlerin sütunlarını bekler. */
+  const { rows } = await db.execute(sql`SELECT (SELECT count(*) FROM "leads") + (SELECT count(*) FROM "bookings") AS n`)
+  if (Number((rows[0] as { n: number | string }).n) > 0) {
+    const res = await backfillCrm(payload, req)
+    payload.logger.info(`CRM aktarımı: ${res.leads} talep, ${res.bookings} randevu`)
+  }
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {

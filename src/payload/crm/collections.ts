@@ -1,7 +1,6 @@
 import type { CollectionConfig, Field } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
 import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
-import { tenantField } from "./tenant";
 import { CRM_SKIP, dealStageChanged, idOf, logActivity } from "./automation";
 import { quotePrint } from "./quote-print";
 
@@ -72,7 +71,6 @@ export const Companies: CollectionConfig = {
     { name: "notes", type: "textarea", label: "Notlar" },
     timeline("company"),
     ownerField,
-    tenantField,
   ],
 };
 
@@ -123,7 +121,6 @@ export const Contacts: CollectionConfig = {
       admin: { position: "sidebar", description: "Yazıp Enter'a basın (ör. e-ticaret, sıcak)." },
     },
     ownerField,
-    tenantField,
   ],
 };
 
@@ -203,7 +200,6 @@ export const Deals: CollectionConfig = {
     { name: "lead", type: "relationship", relationTo: "leads", label: "Geldiği talep", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.lead) } },
     { name: "closedAt", type: "date", label: "Kapanış", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (data) => Boolean(data?.closedAt) } },
     { name: "order", type: "number", admin: { hidden: true } },
-    tenantField,
   ],
 };
 
@@ -251,7 +247,6 @@ export const Activities: CollectionConfig = {
     },
     { name: "booking", type: "relationship", relationTo: "bookings", label: "Randevu", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.booking) } },
     ownerField,
-    tenantField,
   ],
 };
 
@@ -294,11 +289,23 @@ export const Quotes: CollectionConfig = {
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
         Object.assign(data, quoteTotals(data.items ?? originalDoc?.items));
+        /* Numara işletme başına: işletmenin ön eki, yıl ve sıra (GD-2026-001) */
         if (operation === "create" && !data.number) {
           const year = istanbulYear();
-          const last = await req.payload.find({ collection: "quotes", where: { number: { like: `GD-${year}-` } }, sort: "-number", limit: 1, depth: 0, req, overrideAccess: true });
+          const tenant = idOf(data.tenant);
+          const t = tenant ? await req.payload.findByID({ collection: "tenants", id: tenant, depth: 0, req, overrideAccess: true }).catch(() => null) : null;
+          const prefix = (t?.quotePrefix || "GD").toUpperCase().replace(/[^A-Z0-9]/g, "") || "GD";
+          const last = await req.payload.find({
+            collection: "quotes",
+            where: { and: [{ number: { like: `${prefix}-${year}-` } }, ...(tenant ? [{ tenant: { equals: tenant } }] : [])] },
+            sort: "-number",
+            limit: 1,
+            depth: 0,
+            req,
+            overrideAccess: true,
+          });
           const n = Number(String(last.docs[0]?.number ?? "").split("-")[2] ?? 0) + 1;
-          data.number = `GD-${year}-${String(n).padStart(3, "0")}`;
+          data.number = `${prefix}-${year}-${String(n).padStart(3, "0")}`;
         }
         /* Kişi ve firma boşsa fırsattan */
         const deal = idOf(data.deal ?? originalDoc?.deal);
@@ -376,7 +383,7 @@ export const Quotes: CollectionConfig = {
       defaultValue: "Bu teklif geçerlilik tarihine kadar geçerlidir. Ödeme ve teslim koşulları sözleşmede netleşir.",
     },
     { name: "actions", type: "ui", admin: { position: "sidebar", components: { Field: "/payload/components/crm/QuoteActions#QuoteActions" } } },
-    { name: "number", type: "text", label: "Teklif no", unique: true, index: true, admin: { position: "sidebar", readOnly: true, description: "Kaydedince verilir (GD-yıl-sıra)." } },
+    { name: "number", type: "text", label: "Teklif no", index: true, admin: { position: "sidebar", readOnly: true, description: "Kaydedince verilir (GD-yıl-sıra)." } },
     { name: "status", type: "select", label: "Durum", required: true, defaultValue: "taslak", options: QUOTE_STATUS, admin: { position: "sidebar" } },
     {
       name: "issueDate",
@@ -396,6 +403,5 @@ export const Quotes: CollectionConfig = {
     { name: "vatTotal", type: "number", label: "KDV (₺)", admin: { position: "sidebar", readOnly: true } },
     { name: "total", type: "number", label: "Genel toplam (₺)", admin: { position: "sidebar", readOnly: true } },
     ownerField,
-    tenantField,
   ],
 };

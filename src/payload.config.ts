@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
-import { buildConfig } from "payload";
+import { buildConfig, type CollectionConfig, type PayloadRequest } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { resendAdapter } from "@payloadcms/email-resend";
@@ -9,6 +9,7 @@ import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { tr } from "@payloadcms/translations/languages/tr";
 import sharp from "sharp";
+import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 
 import { Users } from "./payload/collections/Users";
 import { Media } from "./payload/collections/Media";
@@ -27,14 +28,21 @@ import { HomePage } from "./payload/globals/HomePage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
 import { trOverrides } from "./payload/translations";
 import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
-import { Tenants } from "./payload/crm/tenant";
+import { fillTenant, Tenants } from "./payload/crm/tenant";
 import { Projects, Tasks, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
-import { guardCollection, guardGlobal } from "./payload/business/roles";
+import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
 import { AuditLog, BusinessSettings, withAudit } from "./payload/business/collections";
 import { businessEndpoints } from "./payload/business/endpoints";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/* İşletmeye bağlı koleksiyonlar (çok kiracılı eklentiye verilir) */
+const TENANT_COLLECTIONS = new Set<string>();
+const tenanted = <T extends CollectionConfig>(c: T, parents: Parameters<typeof fillTenant>[0] = []): T => {
+  TENANT_COLLECTIONS.add(c.slug);
+  return { ...c, hooks: { ...c.hooks, beforeValidate: [fillTenant(parents) as never, ...(c.hooks?.beforeValidate ?? [])] } };
+};
 
 /**
  * Guru Panel (Payload CMS). Veritabanı adresine göre adaptör seçilir:
@@ -153,25 +161,27 @@ export default buildConfig({
     fallbackLanguage: "tr",
     translations: { tr: trOverrides },
   },
-  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Guru Chatbot, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
+  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Guru Chatbot, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da).
+     İşletmeye bağlı koleksiyonlarda yeni kaydın işletmesi üst kayıttan ya da seçili işletmeden gelir (fillTenant). */
   collections: [
     /* Guru CRM: satış ekibi; sohbet ekibi de kişileri görür, operasyon işin firmasını ve kişisini görür */
-    guardCollection(Leads, "crm", { privateRead: true, readAlso: ["chat"] }),
-    guardCollection(Bookings, "crm", { privateRead: true, readAlso: ["chat"] }),
-    guardCollection(Deals, "crm", { privateRead: true, readAlso: ["ops"] }),
-    guardCollection(Contacts, "crm", { privateRead: true, readAlso: ["ops", "chat"] }),
-    guardCollection(Companies, "crm", { privateRead: true, readAlso: ["ops"] }),
-    guardCollection(Quotes, "crm", { privateRead: true }),
-    guardCollection(Activities, "crm", { privateRead: true }),
+    tenanted(guardCollection(Leads, "crm", { privateRead: true, readAlso: ["chat"] })),
+    tenanted(guardCollection(Bookings, "crm", { privateRead: true, readAlso: ["chat"] })),
+    tenanted(guardCollection(Deals, "crm", { privateRead: true, readAlso: ["ops"] }), ["lead", "contact", "company"]),
+    tenanted(guardCollection(Contacts, "crm", { privateRead: true, readAlso: ["ops", "chat"] }), ["company"]),
+    tenanted(guardCollection(Companies, "crm", { privateRead: true, readAlso: ["ops"] })),
+    tenanted(guardCollection(Quotes, "crm", { privateRead: true }), ["deal", "contact", "company"]),
+    tenanted(guardCollection(Activities, "crm", { privateRead: true }), ["deal", "contact", "company", "booking"]),
     /* Guru Operation */
-    guardCollection(Projects, "ops", { privateRead: true }),
-    guardCollection(Tasks, "ops", { privateRead: true }),
-    guardCollection(Templates, "ops", { privateRead: true }),
+    tenanted(guardCollection(Projects, "ops", { privateRead: true }), ["deal", "company", "contact"]),
+    tenanted(guardCollection(Tasks, "ops", { privateRead: true }), ["project"]),
+    tenanted(guardCollection(Templates, "ops", { privateRead: true })),
     /* Guru Chatbot */
-    guardCollection(Conversations, "chat", { privateRead: true }),
-    guardCollection(Knowledge, "chat", { privateRead: true }),
-    guardCollection(ChatMessages, "chat", { privateRead: true }),
-    /* Site içeriği: yayındaki içerik herkese açık, düzenleme site modülünde */
+    tenanted(guardCollection(Conversations, "chat", { privateRead: true })),
+    tenanted(guardCollection(Knowledge, "chat", { privateRead: true })),
+    tenanted(guardCollection(ChatbotSettings, "chat", { privateRead: true })),
+    tenanted(guardCollection(ChatMessages, "chat", { privateRead: true }), ["conversation"]),
+    /* Site içeriği (yalnız Guru Dijital): yayındaki içerik herkese açık, düzenleme site modülünde */
     guardCollection(Team, "site"),
     guardCollection(CaseStudies, "site"),
     guardCollection(Testimonials, "site"),
@@ -183,11 +193,12 @@ export default buildConfig({
     guardCollection(Categories, "site"),
     Users,
     Tenants,
-    AuditLog,
+    tenanted(BusinessSettings),
+    tenanted(AuditLog),
   ].map(withAudit),
   /* Yönetici ay sonu raporu ve sabah özeti (Vercel Cron, vercel.json) */
   endpoints: businessEndpoints,
-  globals: [guardGlobal(HomePage, "site"), guardGlobal(AboutPage, "site"), guardGlobal(ChatbotSettings, "chat"), guardGlobal(BusinessSettings, "admin"), guardGlobal(SiteSettings, "site")],
+  globals: [guardGlobal(HomePage, "site"), guardGlobal(AboutPage, "site"), guardGlobal(SiteSettings, "site")],
   /* Medya klasörleri: "Klasöre göre gez" görünümü ve görsel başına klasör alanı */
   folders: {
     browseByFolder: true,
@@ -219,6 +230,27 @@ export default buildConfig({
       })
     : undefined,
   plugins: [
+    /* Çok kiracılı yapı: kayıtlar işletmeye bağlı, kullanıcı yalnız kendi işletmelerini görür,
+       Guru yöneticisi hepsini görür ve üstteki seçiciden işletme değiştirir */
+    multiTenantPlugin({
+      tenantsSlug: "tenants",
+      tenantsArrayField: { includeDefaultField: false },
+      userHasAccessToAllTenants: (user) => (user as { role?: string } | null)?.role === "admin",
+      /* Eklentinin varsayılanı oturumsuz istekte (çerez varken) yetki hatası verir; seçili işletmeyi
+         yalnız oturumlu kullanıcıda kullan, gerisini fillTenant üst kayıttan ya da Guru Dijital'den doldurur */
+      tenantField: { defaultValue: ({ req }: { req: PayloadRequest }) => (req.user ? Number(selectedTenant(req)) || undefined : undefined) },
+      collections: Object.fromEntries([...TENANT_COLLECTIONS].map((slug) => [slug, slug.endsWith("-config") ? { isGlobal: true } : {}])),
+      i18n: {
+        translations: {
+          tr: {
+            "nav-tenantSelector-label": "İşletme",
+            "assign-tenant-button-label": "İşletmeye ata",
+            "assign-tenant-modal-title": "\"{{title}}\" kaydını işletmeye ata",
+            "field-assignedTenant-label": "İşletme",
+          },
+        },
+      },
+    }),
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       token: process.env.BLOB_READ_WRITE_TOKEN,

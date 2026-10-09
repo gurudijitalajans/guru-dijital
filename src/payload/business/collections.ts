@@ -1,4 +1,6 @@
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field, GlobalConfig } from "payload";
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field, Payload, PayloadRequest } from "payload";
+import type { BusinessConfig } from "@/payload-types";
+import { isTenantAdminReq } from "./roles";
 import { isAdmin } from "../access";
 
 /**
@@ -90,6 +92,8 @@ export function withAudit(c: CollectionConfig): CollectionConfig {
         collection: "audit-log",
         data: {
           user: req.user.id,
+          /* Kaydın işletmesi; işletmesiz kayıtta (site içeriği, kullanıcı) seçili işletme */
+          ...(doc.tenant ? { tenant: typeof doc.tenant === "object" ? doc.tenant.id : doc.tenant } : {}),
           action: operation === "create" ? "olusturdu" : "degistirdi",
           target: singular,
           docId: String(doc.id),
@@ -106,7 +110,7 @@ export function withAudit(c: CollectionConfig): CollectionConfig {
     await req.payload
       .create({
         collection: "audit-log",
-        data: { user: req.user.id, action: "sildi", target: singular, docId: String(doc.id), summary: `${singular}: ${titleOf(doc)} silindi` },
+        data: { user: req.user.id, ...(doc.tenant ? { tenant: typeof doc.tenant === "object" ? doc.tenant.id : doc.tenant } : {}), action: "sildi", target: singular, docId: String(doc.id), summary: `${singular}: ${titleOf(doc)} silindi` },
         req,
         overrideAccess: true,
       })
@@ -115,11 +119,17 @@ export function withAudit(c: CollectionConfig): CollectionConfig {
   return { ...c, hooks: { ...c.hooks, afterChange: [...(c.hooks?.afterChange ?? []), afterChange], afterDelete: [...(c.hooks?.afterDelete ?? []), afterDelete] } };
 }
 
-export const BusinessSettings: GlobalConfig = {
-  slug: "business-settings",
-  label: "Yönetici ayarları",
-  admin: { group: "Ayarlar" },
-  access: { read: isAdmin, update: isAdmin },
+/* İşletme başına tek kayıt: hedef ve sabah özeti işletmenin kendisine */
+export const BusinessSettings: CollectionConfig = {
+  slug: "business-config",
+  labels: { singular: "Yönetici ayarları", plural: "Yönetici ayarları" },
+  admin: { group: "Ayarlar", hidden: ({ user }) => !(user as { role?: string; tenants?: { role?: string }[] } | null)?.tenants?.some((t) => t.role === "yonetici") && (user as { role?: string } | null)?.role !== "admin" },
+  access: {
+    read: ({ req }) => isTenantAdminReq(req),
+    create: ({ req }) => isTenantAdminReq(req),
+    update: ({ req }) => isTenantAdminReq(req),
+    delete: isAdmin,
+  },
   fields: [
     {
       name: "monthlyTarget",
@@ -145,3 +155,10 @@ export const BusinessSettings: GlobalConfig = {
     },
   ],
 };
+
+/** İşletmenin yönetici ayarı; yoksa varsayılanlarla açılır */
+export async function businessConfigOf(payload: Payload, tenant: number | string, req?: PayloadRequest): Promise<BusinessConfig> {
+  const found = await payload.find({ collection: "business-config", where: { tenant: { equals: tenant } }, limit: 1, depth: 0, req, overrideAccess: true });
+  if (found.docs[0]) return found.docs[0];
+  return payload.create({ collection: "business-config", data: { tenant: Number(tenant) }, req, overrideAccess: true });
+}
