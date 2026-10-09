@@ -15,8 +15,8 @@ export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) 
               <Image src="/brand/mark-white.svg" alt="" width={52} height={52} className="h-[52px] w-[52px]" />
             </div>
           </div>
-          <h2 className="mt-5 text-[32px] font-medium tracking-[-0.025em] text-heading md:text-[36px]">{title}</h2>
-          <p className="mx-auto mt-3 max-w-[560px] text-[15.5px] leading-relaxed text-muted">
+          <h2 className="mt-5 text-balance text-[32px] font-medium leading-[1.15] tracking-[-0.025em] text-heading md:text-[36px]">{title}</h2>
+          <p className="mx-auto mt-3 max-w-[560px] text-balance text-[15.5px] leading-relaxed text-muted">
             {text}
           </p>
           <div className="mt-7 flex justify-center">

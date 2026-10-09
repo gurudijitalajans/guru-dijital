@@ -1,3 +1,5 @@
+import { existsSync } from "fs";
+import { join } from "path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,7 +7,7 @@ import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { site, webProjects } from "@/lib/data";
 import { getAbout, getCases, getService, getServices } from "@/lib/content";
 import { iconFor } from "@/lib/icons";
-import { cn, countWord, formatStat } from "@/lib/utils";
+import { cn, countWord, formatStat, sentenceStart } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -21,7 +23,8 @@ import {
   sectionY,
 } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { ServiceGallery } from "@/components/pages/hizmetler/ServiceGallery";
+import { ServiceGallery, type GalleryVideo } from "@/components/pages/hizmetler/ServiceGallery";
+import { VIDEO_POSTER, VIDEO_SRC } from "@/components/home/VideoBlock";
 import { ClosingCta } from "@/components/site/ClosingCta";
 
 type Params = Promise<{ slug: string }>;
@@ -50,6 +53,11 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
   if (!service) notFound();
 
   const { gallery, faq } = service;
+  /* Video Tasarımı sayfasında galerinin ana karesi ajansın kendi tanıtım videosu */
+  const video: GalleryVideo | undefined =
+    service.slug === "video-tasarimi" && existsSync(join(process.cwd(), "public", VIDEO_SRC))
+      ? { src: VIDEO_SRC, poster: VIDEO_POSTER, label: "Guru Dijital tanıtım videosunu oynat", trackName: "hizmet-video-tasarimi" }
+      : undefined;
   /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */
   const [caseStudies, about] = service.sections.cases ? await Promise.all([getCases(), getAbout()]) : [[], null];
   const awards = about?.awards.items ?? [];
@@ -98,7 +106,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
         eyebrow="Hizmetlerimiz"
         title={service.title}
         lead={service.short}
-        visual={gallery.length > 0 ? <ServiceGallery images={gallery} /> : undefined}
+        visual={gallery.length > 0 || video ? <ServiceGallery images={gallery} video={video} /> : undefined}
       >
         <Btn href={contactHref} size="lg" arrow>
           Teklif Al
@@ -110,7 +118,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
 
       {/* 2. Kapsam: solda tanıtım, sağda numaralı kartlar */}
       <section id="kapsam" className={cn(sectionY, "scroll-mt-28 bg-soft")}>
-        <div className="container-g grid gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="container-g grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
           <Reveal className="lg:col-span-5">
             <p className="mb-4 inline-flex items-center gap-2 text-[13px] font-medium text-brand">
               <span className="size-1.5 rounded-full bg-brand" aria-hidden />
@@ -175,10 +183,11 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                       {cs.featured.map((stat) => (
                           <div
                             key={stat.label}
-                            className="flex items-center justify-between gap-4 rounded-xl bg-soft px-4 py-3 min-[420px]:block min-[420px]:p-4"
+                            /* 420px üstünde rakam üstte, etiket altta: etiket kaç satır olursa olsun rakamlar aynı hizada */
+                            className="flex items-center justify-between gap-4 rounded-xl bg-soft px-4 py-3 min-[420px]:flex-col-reverse min-[420px]:items-start min-[420px]:justify-end min-[420px]:gap-1.5 min-[420px]:p-4"
                           >
                             <dt className="text-[13px] leading-snug text-muted">{stat.label}</dt>
-                            <dd className="shrink-0 text-[22px] font-medium tabular-nums leading-none tracking-[-0.02em] text-brand min-[420px]:mt-1.5 min-[420px]:text-[26px]">
+                            <dd className="shrink-0 text-[22px] font-medium tabular-nums leading-none tracking-[-0.02em] text-brand min-[420px]:text-[26px]">
                               {formatStat(stat)}
                             </dd>
                           </div>
@@ -256,7 +265,15 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
             <SectionHead
               center
               title="Sık Sorulan Sorular"
-              lead={`${service.title} hakkında en çok merak edilenler. Aklınızdaki başka sorular için bize yazabilirsiniz.`}
+              lead={
+                <>
+                  {sentenceStart(service.title)} hakkında en çok merak edilenler. Aklınızdaki başka sorular için{" "}
+                  <Link href={contactHref} className="font-medium text-brand underline-offset-4 hover:underline">
+                    bize yazabilirsiniz
+                  </Link>
+                  .
+                </>
+              }
             />
             <Reveal className="mt-10">
               <FaqGrid items={faq} />
@@ -269,25 +286,26 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       <section className={cn(sectionY, "bg-soft")}>
         <div className="container-g">
           <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
-          <StaggerGroup className="mt-10 grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          <StaggerGroup className="mt-10 grid auto-rows-fr gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {others.map((s) => {
               const Icon = iconFor(s.icon);
               return (
                 <StaggerItem key={s.slug} className="h-full">
+                  {/* items-start: açıklaması iki satıra inen kartta da başlıklar aynı hizada */}
                   <Link
                     href={`/hizmetler/${s.slug}`}
-                    className={cn(cardCls, cardHoverCls, "group flex h-full items-center gap-4 p-5")}
+                    className={cn(cardCls, cardHoverCls, "group flex h-full items-start gap-4 p-5")}
                   >
                     <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
                       <Icon className="size-5" strokeWidth={1.8} />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[16px] font-medium leading-snug text-heading">{s.title}</span>
-                      <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{s.headline}</span>
+                      <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{s.menuDesc}</span>
                     </span>
                     <ArrowRight
                       aria-hidden
-                      className="size-4 shrink-0 text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
+                      className="size-4 shrink-0 self-center text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
                     />
                   </Link>
                 </StaggerItem>
@@ -296,18 +314,18 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
             <StaggerItem className="h-full">
               <Link
                 href="/hizmetler"
-                className={cn(cardCls, cardHoverCls, "group flex h-full items-center gap-4 p-5")}
+                className={cn(cardCls, cardHoverCls, "group flex h-full items-start gap-4 p-5")}
               >
                 <span className={cn(iconBoxCls, "shrink-0 bg-navy text-white")} aria-hidden>
                   <LayoutGrid className="size-5" strokeWidth={1.8} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[16px] font-medium leading-snug text-heading">Tüm hizmetler</span>
+                  <span className="block text-[16px] font-medium leading-snug text-heading">Tüm Hizmetler</span>
                   <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{`${countWord(services.length).replace(/^./, (c) => c.toLocaleUpperCase("tr-TR"))} hizmeti bir arada inceleyin`}</span>
                 </span>
                 <ArrowRight
                   aria-hidden
-                  className="size-4 shrink-0 text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
+                  className="size-4 shrink-0 self-center text-heading transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-brand"
                 />
               </Link>
             </StaggerItem>
@@ -318,7 +336,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       {/* 6. Kapanış çağrısı */}
       <ClosingCta
         title="Tanışalım"
-        lead={`${service.title} için hedeflerinizi dinleyelim; size uygun kapsamı ve planı birlikte belirleyelim.`}
+        lead={`${sentenceStart(service.title)} için hedeflerinizi dinleyelim; size uygun kapsamı ve planı birlikte belirleyelim.`}
         primary={{ href: contactHref, label: "Teklif Al" }}
       />
     </>

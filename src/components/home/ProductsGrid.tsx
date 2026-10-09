@@ -39,7 +39,7 @@ export async function ProductsGrid({ title, lead }: { title: string; lead: strin
                       <Icon aria-hidden className="size-[18px] text-brand" strokeWidth={1.9} />
                       {p.name}
                     </h3>
-                    <p className="mt-1 text-[14px] text-muted">{p.tagline}</p>
+                    <p className="mt-1 text-pretty text-[14px] text-muted">{p.tagline}</p>
                   </div>
                 </Link>
               </StaggerItem>

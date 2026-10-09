@@ -27,3 +27,16 @@ export function formatStat({ value, prefix, suffix }: { value: number; prefix?: 
   if (suffix === "%") return `${prefix ?? ""}%${num}`;
   return `${prefix ?? ""}${num}${suffix ?? ""}`;
 }
+
+/** Hizmet adını cümle içine uyarlar: "Web Tasarım" → "web tasarım"; kısaltmalar (SEO) korunur */
+export const inSentence = (name: string) =>
+  name
+    .split(" ")
+    .map((w) => (w.length > 1 && w === w.toLocaleUpperCase("tr-TR") ? w : w.toLocaleLowerCase("tr-TR")))
+    .join(" ");
+
+/** Cümle başında: "Web Tasarım" → "Web tasarım" */
+export const sentenceStart = (name: string) => {
+  const s = inSentence(name);
+  return s.charAt(0).toLocaleUpperCase("tr-TR") + s.slice(1);
+};

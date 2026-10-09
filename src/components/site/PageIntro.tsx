@@ -33,7 +33,7 @@ export function PageIntro({ eyebrow, title, lead, children, visual, className }:
             {title}
           </h1>
           {lead && (
-            <p className="mx-auto mt-5 max-w-2xl text-[16px] leading-relaxed text-muted md:text-[16.5px]">{lead}</p>
+            <p className="mx-auto mt-5 max-w-2xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{lead}</p>
           )}
           {children && <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>}
         </Reveal>

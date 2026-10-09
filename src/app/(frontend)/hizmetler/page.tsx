@@ -110,7 +110,7 @@ export default async function HizmetlerPage() {
             title="Nasıl Çalışıyoruz"
             lead="Hangi hizmetle başlarsanız başlayın, süreç aynı netlikte ilerler: önce dinliyor, sonra planlıyor, üretiyor ve ölçüyoruz."
           />
-          <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-4">
+          <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 xl:grid-cols-4">
             {process.map((step) => (
               <StaggerItem key={step.no} className="h-full">
                 <article className={cn(cardCls, "flex h-full flex-col gap-3 p-6 md:p-7")}>

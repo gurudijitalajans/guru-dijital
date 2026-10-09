@@ -6,6 +6,7 @@ import { cursor, kpi } from "./screens-common.mjs";
 import { CAP, COLS, capacityRows, gantt, operationDesktop, operationMobile, taskCard } from "./screens-operation.mjs";
 import { MODULES, activityRows, businessDesktop, businessMobile, moduleCard, revenueBlock } from "./screens-business.mjs";
 import { av } from "./lib.mjs";
+import { BLOG_SCENES, POSTER_SCENES } from "./scenes-blog.mjs";
 
 const notif = (app, appIcon, title, text, time = "şimdi") => `
   <div class="row" style="gap:10px;font-size:14px;color:#7f8aa3">${appIcon}<span style="font-weight:600;color:#3b4763;letter-spacing:.02em">${app}</span><span style="margin-left:auto">${time}</span></div>
@@ -274,9 +275,11 @@ const business = [
       win: { crop: [250, 10, 1180, 880], scale: 0.92, style: "left:46px;top:70px" },
       floats: [{
         html: kpi("Aylık gelir", "₺684.500", "%12,1", "wallet", { note: "geçen aya göre", big: true }).replace('class="card"', 'class=""'),
-        style: "left:286px;top:168px;width:340px;transform:rotate(-2.5deg);box-shadow:0 0 0 2px #2a6aca,0 50px 80px -30px rgb(1 12 40/.6)", pad: "2px",
+        /* Kendi yuvasının (2. KPI, tuvalde x 333-582) üstünde, yuvadan biraz büyük:
+           yandaki kartları örtmez, altta boş yuvası görünür */
+        style: "left:326px;top:172px;width:262px;transform:rotate(-2deg);box-shadow:0 0 0 2px #2a6aca,0 50px 80px -30px rgb(1 12 40/.6)", pad: "2px",
       }],
-      chips: cursor("left:590px;top:290px"),
+      chips: cursor("left:548px;top:284px"),
     }),
   },
   {
@@ -319,14 +322,14 @@ const business = [
 
 /* ---------------- App Store tarzı kapaklar ve video kapakları ---------------- */
 const COVER = [
-  { slug: "guru-chatbot", key: "chatbot", name: "Chatbot", theme: THEME.chatbot, headline: "Müşterinize *7/24* anında yanıt", sub: "Web sitesi, WhatsApp ve Instagram tek gelen kutusunda", mobile: cbM, desktop: cbD, cardStyle: "left:28px;top:1130px;width:440px;transform:rotate(-3deg) scale(1.3);transform-origin:0 0" },
-  { slug: "guru-crm", key: "crm", name: "CRM", theme: THEME.crm, headline: "Her fırsat *tek* ekranda", sub: "Teklif, hatırlatma ve görüşme geçmişi aynı kartta", mobile: crM, desktop: crD, cardStyle: "left:600px;top:1110px;width:440px;transform:rotate(3deg) scale(1.3);transform-origin:0 0" },
-  { slug: "guru-operation", key: "operation", name: "Operation", theme: THEME.operation, headline: "Her iş *görünür* ve takipte", sub: "Görevler, ekip kapasitesi ve haftalık plan tek panoda", mobile: opM, desktop: opD, cardStyle: "left:28px;top:1150px;width:440px;transform:rotate(-3deg) scale(1.3);transform-origin:0 0" },
-  { slug: "guru-business", key: "business", name: "Business", theme: THEME.business, headline: "İşletmeniz *tek* panelde", sub: "Chatbot, CRM ve Operation aynı veriyle birlikte çalışır", mobile: bzM, desktop: bzD, cardStyle: "left:600px;top:1060px;width:440px;transform:rotate(3deg) scale(1.3);transform-origin:0 0" },
+  { slug: "guru-chatbot", key: "chatbot", name: "Chatbot", theme: THEME.chatbot, headline: "Müşterinize *7/24* anında yanıt", sub: "Web sitesi, WhatsApp ve Instagram tek gelen kutusunda", mobile: cbM, desktop: cbD, phoneLeft: 530, phoneWidth: 560, cardStyle: "left:50px;top:1040px;width:440px;transform:rotate(-3deg) scale(1.15);transform-origin:0 0" },
+  { slug: "guru-crm", key: "crm", name: "CRM", theme: THEME.crm, headline: "Her fırsat *tek* ekranda", sub: "Teklif, hatırlatma ve görüşme geçmişi aynı kartta", mobile: crM, desktop: crD, phoneLeft: 110, phoneWidth: 560, cardStyle: "left:642px;top:1000px;width:440px;transform:rotate(3deg) scale(1.15);transform-origin:0 0" },
+  { slug: "guru-operation", key: "operation", name: "Operation", theme: THEME.operation, headline: "Her iş *görünür* ve takipte", sub: "Görevler, ekip kapasitesi ve haftalık plan tek panoda", mobile: opM, desktop: opD, phoneLeft: 530, phoneWidth: 560, cardStyle: "left:50px;top:1060px;width:440px;transform:rotate(-3deg) scale(1.15);transform-origin:0 0" },
+  { slug: "guru-business", key: "business", name: "Business", theme: THEME.business, headline: "İşletmeniz *tek* panelde", sub: "Chatbot, CRM ve Operation aynı veriyle birlikte çalışır", mobile: bzM, desktop: bzD, phoneLeft: 110, phoneWidth: 560, cardStyle: "left:642px;top:980px;width:440px;transform:rotate(3deg) scale(1.15);transform-origin:0 0" },
 ];
 const covers = COVER.map((c) => ({
   name: `${c.slug}-cover`, w: 1200, h: 1500,
-  html: cover({ theme: THEME[c.key], name: c.name, headline: c.headline, sub: c.sub, mobile: c.mobile, card: CARD[c.key], cardStyle: c.cardStyle }),
+  html: cover({ theme: THEME[c.key], name: c.name, headline: c.headline, sub: c.sub, mobile: c.mobile, card: CARD[c.key], cardStyle: c.cardStyle, phoneLeft: c.phoneLeft, phoneWidth: c.phoneWidth }),
 }));
 const posters = COVER.map((c) => ({
   name: `${c.slug}-poster`, w: 1920, h: 1080,
@@ -349,4 +352,6 @@ export const SCENES = [
   ...business,
   ...covers,
   ...posters,
+  ...BLOG_SCENES,
+  ...POSTER_SCENES,
 ];

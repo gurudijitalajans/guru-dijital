@@ -22,10 +22,10 @@ export function SectionHead({ title, lead, action, center, as = "h2", className 
   const H = as;
   const head = (
     <div className={cn(center && "mx-auto text-center", "max-w-3xl")}>
-      <H className="text-[27px] font-medium leading-[1.15] tracking-[-0.025em] text-heading sm:text-[32px]">
+      <H className="text-balance text-[27px] font-medium leading-[1.15] tracking-[-0.025em] text-heading sm:text-[32px]">
         {title}
       </H>
-      {lead && <p className={cn("mt-3 text-[15.5px] leading-relaxed text-muted", center && "mx-auto")}>{lead}</p>}
+      {lead && <p className={cn("mt-3 text-pretty text-[15.5px] leading-relaxed text-muted", center && "mx-auto")}>{lead}</p>}
     </div>
   );
   if (!action) return <div className={className}>{head}</div>;
@@ -34,7 +34,8 @@ export function SectionHead({ title, lead, action, center, as = "h2", className 
       {head}
       <Link
         href={action.href}
-        className="group inline-flex min-h-11 shrink-0 items-center gap-1.5 text-[14.5px] font-medium text-heading transition-colors hover:text-brand"
+        /* 44px dokunma alanı korunur; metin açıklamanın son satırıyla aynı hizaya iner */
+        className="group inline-flex min-h-11 shrink-0 items-center gap-1.5 text-[14.5px] font-medium text-heading transition-colors hover:text-brand sm:-mb-2.5"
       >
         {action.label}
         <ArrowRight aria-hidden className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />

@@ -32,8 +32,9 @@ export function renderHeadline(text: string) {
 
 /* ---------------- Giriş: solda metin, sağda marka görseli ---------------- */
 export function ProductHero({ product, hasTour }: { product: ProductView; hasTour: boolean }) {
+  /* Alt boşluk görsel gölgesinin (~50px) tamamını içerir: yapışkan alt menünün beyaz zemini gölgeyi düz çizgiyle kesmez */
   return (
-    <section id="genel-bakis" className={cn(anchorCls, "pb-10 pt-10 md:pb-14 md:pt-14")}>
+    <section id="genel-bakis" className={cn(anchorCls, "pb-14 pt-10 md:pb-16 md:pt-14")}>
       <div className="container-g grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-14">
         <Reveal>
           <p className="inline-flex items-center gap-2.5 rounded-full bg-chip py-1.5 pl-1.5 pr-4 text-[14px] font-medium text-heading">
@@ -52,7 +53,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
             </Btn>
             {hasTour && (
               <Btn href="#urun-turu" variant="light" size="lg">
-                Ürün turunu izleyin
+                Ürün Turunu İzleyin
               </Btn>
             )}
           </div>
@@ -70,7 +71,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
           )}
         </Reveal>
         {/* LCP görseli: Reveal'e sarılmaz, preload edilir */}
-        <div className="overflow-hidden rounded-[24px] shadow-[0_40px_80px_-46px_rgb(1_20_65/0.75)] sm:rounded-[28px]">
+        <div className="overflow-hidden rounded-[24px] shadow-[0_28px_56px_-34px_rgb(1_20_65/0.6)] sm:rounded-[28px]">
           <Image
             src={product.heroVisual.src}
             alt={product.heroVisual.alt}
@@ -109,7 +110,8 @@ export function ShowcaseRows({ product }: { product: ProductView }) {
                 />
               </div>
             </Reveal>
-            <Reveal className={cn("lg:col-span-5", flip && "lg:order-1")} delay={0.06}>
+            {/* Tek sütunda (lg altı) metin satırı ~75 karakteri aşmasın */}
+            <Reveal className={cn("max-w-2xl lg:col-span-5 lg:max-w-none", flip && "lg:order-1")} delay={0.06}>
               {s.eyebrow && (
                 <p className="mb-3 inline-flex items-center gap-2 text-[13px] font-medium text-brand">
                   <span className="grid size-6 place-items-center rounded-full bg-chip text-[12px] tabular-nums text-brand" aria-hidden>
@@ -185,7 +187,7 @@ export function ComparisonBlock({ product }: { product: ProductView }) {
               <ul className="mt-5 grid gap-4">
                 {before.map((b) => (
                   <li key={b} className="flex items-start gap-3 text-[15.5px] leading-relaxed text-body">
-                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-white text-muted" aria-hidden>
+                    <span className="mt-px grid size-6 shrink-0 place-items-center rounded-full bg-white text-muted" aria-hidden>
                       <Minus className="size-3.5" strokeWidth={2.4} />
                     </span>
                     {b}
@@ -204,7 +206,7 @@ export function ComparisonBlock({ product }: { product: ProductView }) {
               <ul className="mt-5 grid gap-4">
                 {after.map((a) => (
                   <li key={a} className="flex items-start gap-3 text-[15.5px] leading-relaxed text-white">
-                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-white text-brand" aria-hidden>
+                    <span className="mt-px grid size-6 shrink-0 place-items-center rounded-full bg-white text-brand" aria-hidden>
                       <Check className="size-3.5" strokeWidth={3} />
                     </span>
                     {a}

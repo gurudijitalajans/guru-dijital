@@ -36,6 +36,13 @@ export const Services: CollectionConfig = {
       admin: { description: "Kartlarda ve sayfa girişinde görünen tek cümle." },
     },
     {
+      name: "menuDesc",
+      type: "text",
+      label: "Menü açıklaması",
+      maxLength: 48,
+      admin: { description: "Üst menüde hizmet adının altındaki kısa satır (örn. \"Logo, kurumsal kimlik ve ambalaj\"). Boşsa varsayılan kullanılır." },
+    },
+    {
       type: "tabs",
       tabs: [
         {
@@ -55,7 +62,7 @@ export const Services: CollectionConfig = {
               labels: { singular: "Görsel", plural: "Görseller" },
               admin: {
                 description:
-                  "İlk görsel solda büyük, sonraki iki görsel sağda üst üste, kalanlar altta tam genişlikte görünür. Kırpma odağını görselin kendisinden ayarlayabilirsiniz.",
+                  "İlk görsel solda büyük, sonraki iki görsel sağda üst üste görünür. Kalanlardan yalnız yatay bant biçimindekiler (en az 2:1, ör. logo şeridi) altta tam genişlikte basılır. Video Tasarımı sayfasında ana karede tanıtım videosu durur, görseller yana geçer. Kırpma odağını görselin kendisinden ayarlayabilirsiniz.",
               },
               fields: [{ name: "image", type: "upload", relationTo: "media", label: "Görsel", required: true }],
             },

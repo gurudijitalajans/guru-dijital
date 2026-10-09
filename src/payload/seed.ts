@@ -96,7 +96,7 @@ if (posts.totalDocs === 0) {
       excerpt:
         "Düzenli ve tutarlı paylaşım için içerik takvimini hedef, kitle ve kaynaklarınıza göre adım adım nasıl kurabileceğinizi anlattık.",
       category: categoryIds["Sosyal Medya"] as number,
-      cover: (await cover("instagram-postlar.webp", "Bir markanın Instagram gönderilerinden oluşan ızgara")) as number,
+      cover: (await cover("blog-icerik-takvimi.webp", "Haftalık sosyal medya içerik takvimi: gönderi, Reels ve hikâye planı")) as number,
       _status: "published",
       content: doc(
         p(text("İçerik takvimi, ne zaman ne paylaşacağınızı önceden planladığınız bir yol haritasıdır. Takvim olmadan paylaşımlar günün yoğunluğuna kalır; markanın sesi ve düzeni kaybolur.")),
@@ -174,6 +174,7 @@ if ((await payload.count({ collection: "services" })).totalDocs === 0) {
         order: (i + 1) * 10,
         icon: iconNameOf(s.icon),
         short: s.short,
+        menuDesc: s.menuDesc,
         headline: s.headline,
         offeringsTitle: s.offeringsTitle,
         intro: rows(s.intro),

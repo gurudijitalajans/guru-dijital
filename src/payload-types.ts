@@ -201,11 +201,15 @@ export interface Service {
    */
   short: string;
   /**
+   * Üst menüde hizmet adının altındaki kısa satır (örn. "Logo, kurumsal kimlik ve ambalaj"). Boşsa varsayılan kullanılır.
+   */
+  menuDesc?: string | null;
+  /**
    * /hizmetler sayfasındaki kartta görünür.
    */
   cardImage?: (number | null) | Media;
   /**
-   * İlk görsel solda büyük, sonraki iki görsel sağda üst üste, kalanlar altta tam genişlikte görünür. Kırpma odağını görselin kendisinden ayarlayabilirsiniz.
+   * İlk görsel solda büyük, sonraki iki görsel sağda üst üste görünür. Kalanlardan yalnız yatay bant biçimindekiler (en az 2:1, ör. logo şeridi) altta tam genişlikte basılır. Video Tasarımı sayfasında ana karede tanıtım videosu durur, görseller yana geçer. Kırpma odağını görselin kendisinden ayarlayabilirsiniz.
    */
   gallery?:
     | {
@@ -1050,6 +1054,7 @@ export interface BookingsSelect<T extends boolean = true> {
 export interface ServicesSelect<T extends boolean = true> {
   title?: T;
   short?: T;
+  menuDesc?: T;
   cardImage?: T;
   gallery?:
     | T

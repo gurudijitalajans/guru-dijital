@@ -20,9 +20,10 @@ const asMedia = (m: Post["cover"]): Media | null => (m && typeof m === "object" 
 const asCategory = (c: Post["category"]): Category | null => (c && typeof c === "object" ? c : null);
 
 /** Kart ve kapak için uygun boyut: varsa "card"/"wide", yoksa orijinal */
-export function mediaSrc(m: Media | null, size: "card" | "wide" = "card") {
+/** size "original": yüklenen dosyanın kendisi (ör. 2x ekranda 1024px kapak için 2048px kaynak) */
+export function mediaSrc(m: Media | null, size: "card" | "wide" | "original" = "card") {
   if (!m?.url) return null;
-  const s = m.sizes?.[size];
+  const s = size === "original" ? null : m.sizes?.[size];
   const pick = s?.url ? s : m;
   return {
     url: pick.url as string,

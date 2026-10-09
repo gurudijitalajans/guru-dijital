@@ -91,7 +91,8 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
     { id: "nasil-calisir", label: "Nasıl çalışır" },
     ...(product.included.length > 0 ? [{ id: "neler-dahil", label: "Neler dahil" }] : []),
     { id: "sss", label: "SSS" },
-    { id: "demo", label: "Demo" },
+    /* Masaüstünde sağdaki düğme var; mobilde menünün sonunda dolu düğme olarak durur */
+    { id: "demo", label: "Demo", cta: true },
   ];
 
   const jsonLd = [
@@ -190,7 +191,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
               title="Pakete Dahil Ürünler"
               lead="Her biri tek başına da kullanılabilir; pakette aynı veri tabanını ve tek girişi paylaşır."
             />
-            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-3 md:gap-5">
               {bundle.map((b) => (
                 <StaggerItem key={b.slug} className="h-full">
                   <ProductCardLink product={b} />
@@ -310,9 +311,9 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
               lead="Mevcut kanallarınızı ve araçlarınızı değiştirmeden bağlanır; veri tek yerde toplanır."
             />
             <Reveal delay={0.06}>
-              <ul className="flex flex-wrap gap-2.5 lg:pt-2">
+              <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:pt-2">
                 {product.integrations.map((integration) => (
-                  <li key={integration} className={cn(pillCls, "px-4 py-2 text-[14px]")}>
+                  <li key={integration} className={cn(pillCls, "bg-chip px-4 py-2.5 text-[14px] shadow-none")}>
                     <span className="size-1.5 rounded-full bg-brand" aria-hidden />
                     {integration}
                   </li>
@@ -340,7 +341,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         <section className={sectionY}>
           <div className="container-g">
             <SectionHead title="Diğer Ürünlerimiz" lead="Hepsi aynı veri tabanını paylaşır; ihtiyacınız büyüdükçe birbirine bağlanır." />
-            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-3 md:gap-5">
               {others.map((p) => (
                 <StaggerItem key={p.slug} className="h-full">
                   <ProductCardLink product={p} />
@@ -352,8 +353,11 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
       )}
 
       {/* 14. Demo talebi */}
-      <section id="demo" className={cn(anchorCls, "bg-soft", sectionY)}>
+      {/* Beyaz bölüm içinde açık panel: SSS (açık bant) ve alt bilgiyle aynı zeminde tek uzun bant oluşmaz.
+          Diğer ürünler (beyaz) varsa üst boşluk tekrarlanmaz. */}
+      <section id="demo" className={cn(anchorCls, sectionY, others.length > 0 && "pt-0 md:pt-0")}>
         <div className="container-g">
+          <div className="rounded-[24px] bg-soft px-3 py-10 sm:px-6 md:rounded-[28px] md:px-10 md:py-14">
           <SectionHead
             center
             title="Demo Talep Edin"
@@ -365,10 +369,17 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           />
           <DemoSwitch
             form={
-              <ContactForm defaultService={name} subjectPrefix="Demo Talebi" serviceLabel="İlgilendiğiniz ürün" serviceOptions={productNames} />
+              <ContactForm
+                defaultService={name}
+                subjectPrefix="Demo Talebi"
+                serviceLabel="İlgilendiğiniz ürün"
+                serviceOptions={productNames}
+                messagePlaceholder="Ekibinizden ve bugün kullandığınız araçlardan kısaca bahsedin."
+              />
             }
             scheduler={<MeetingScheduler topic={`${name} Demo`} />}
           />
+          </div>
         </div>
       </section>
     </>

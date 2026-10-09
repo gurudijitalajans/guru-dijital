@@ -50,7 +50,7 @@ export const serviceFaq: Record<string, FaqItem[]> = {
     },
     {
       q: "Mevcut logomuzu yenileyebilir misiniz?",
-      a: "Evet. Markanızın tanınırlığını koruyarak logonuzu sadeleştirebilir ya da güncel kullanım alanlarına uygun hale getirebiliriz. Yenilemenin mi yoksa baştan tasarımın mı doğru olduğuna ilk incelemeden sonra birlikte karar veriyoruz.",
+      a: "Evet. Markanızın tanınırlığını koruyarak logonuzu sadeleştirebilir ya da güncel kullanım alanlarına uygun hâle getirebiliriz. Yenilemenin mi yoksa baştan tasarımın mı doğru olduğuna ilk incelemeden sonra birlikte karar veriyoruz.",
     },
     {
       q: "Ambalaj tasarımında nelere dikkat ediyorsunuz?",
@@ -72,7 +72,7 @@ export const serviceFaq: Record<string, FaqItem[]> = {
     },
     {
       q: "İçerikler yayından önce onayımıza sunuluyor mu?",
-      a: "Evet. Tüm içerikler yayından önce onayınıza sunulur ve geri bildirimlerinize göre son haline getirilir.",
+      a: "Evet. Tüm içerikler yayından önce onayınıza sunulur ve geri bildirimlerinize göre son hâline getirilir.",
     },
     {
       q: "Metin ve görsel üretimi birlikte mi yürüyor?",

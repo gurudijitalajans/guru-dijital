@@ -22,8 +22,8 @@ export function CasesBlock({ title, lead, cases }: { title: string; lead: string
                   <span className="size-1.5 rounded-full bg-brand" aria-hidden />
                   {c.sector}
                 </span>
-                <h3 className="mt-5 text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">{c.title}</h3>
-                <p className="mt-3 text-[14.5px] leading-relaxed text-muted">{c.summary}</p>
+                <h3 className="mt-5 text-balance text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">{c.title}</h3>
+                <p className="mt-3 text-pretty text-[14.5px] leading-relaxed text-muted">{c.summary}</p>
                 <dl className="mt-auto grid gap-2.5 pt-7 sm:grid-cols-3 sm:gap-3">
                   {c.featured.map((s) => (
                     <div key={s.label} className="flex items-center gap-4 rounded-xl bg-soft px-4 py-3 sm:block sm:px-3 sm:py-3.5">
@@ -31,7 +31,8 @@ export function CasesBlock({ title, lead, cases }: { title: string; lead: string
                       <dd className="w-[92px] shrink-0 text-[24px] font-medium leading-none tracking-[-0.03em] text-heading sm:w-auto md:text-[28px]">
                         {formatStat(s)}
                       </dd>
-                      <dd aria-hidden className="text-[13px] leading-snug text-muted sm:mt-2 sm:text-[12.5px]">{s.label}</dd>
+                      {/* Etiket iki satırlık yer ayırır: yan yana kartlarda kutular aynı boyda, satırlar aynı hizada */}
+                      <dd aria-hidden className="text-[13px] leading-snug text-muted sm:mt-2 sm:min-h-[2lh] sm:text-[12.5px]">{s.label}</dd>
                     </div>
                   ))}
                 </dl>

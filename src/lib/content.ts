@@ -34,6 +34,8 @@ export type ServiceView = {
   title: string;
   headline: string;
   short: string;
+  /** Üst menüde başlığın altındaki tek satır */
+  menuDesc: string;
   icon: IconName;
   intro: string[];
   offeringsTitle: string;
@@ -109,6 +111,7 @@ export function fallbackServices(): ServiceView[] {
     title: s.title,
     headline: s.headline,
     short: s.short,
+    menuDesc: s.menuDesc,
     icon: iconNameOf(s.icon),
     intro: s.intro,
     offeringsTitle: s.offeringsTitle,
@@ -186,6 +189,10 @@ function fromService(s: Service, i: number): ServiceView {
     title: s.title,
     headline: s.headline,
     short: s.short,
+    menuDesc:
+      s.menuDesc?.trim() ||
+      staticServices.find((x) => x.slug === s.slug)?.menuDesc ||
+      texts(s.keywords).slice(0, 3).join(", "),
     icon: iconOf(s.icon),
     intro: texts(s.intro),
     offeringsTitle: s.offeringsTitle,
@@ -302,7 +309,50 @@ export async function getProduct(slug: string) {
 /*  Ana sayfa, ekip, referanslar                                       */
 /* ------------------------------------------------------------------ */
 
-export type TeamView = { name: string; role: string; linkedin: string | null; photo: WorkImage | null; showOnHome: boolean };
+export type TeamView = {
+  name: string;
+  role: string;
+  linkedin: string | null;
+  photo: WorkImage | null;
+  showOnHome: boolean;
+  /** Ad henüz girilmedi ("Ad Soyad"): kartta rol başlık olur, uydurma isim yazılmaz */
+  placeholder: boolean;
+  /** Fotoğraf yokken avatarda görünen, role uygun ikon */
+  icon: IconName;
+  /** Rolün sitedeki hizmetlerle karşılığı (isim girilmemiş kartın alt satırı) */
+  focus: string;
+};
+
+const PLACEHOLDER_NAMES = new Set(["", "ad soyad"]);
+/** Rol adından ikon: fotoğraf ve isim gelene kadar kartı rolle anlatır */
+function roleIcon(role: string): IconName {
+  const r = role.toLocaleLowerCase("tr-TR");
+  if (r.includes("kurucu") || r.includes("direktör") || r.includes("müdür")) return "rocket";
+  if (r.includes("sosyal")) return "share";
+  if (r.includes("grafik") || r.includes("tasarım")) return "palette";
+  if (r.includes("performans") || r.includes("reklam") || r.includes("pazarlama")) return "chart-bar";
+  if (r.includes("içerik") || r.includes("editör") || r.includes("metin")) return "pen";
+  if (r.includes("yazılım") || r.includes("geliştirici")) return "code";
+  if (r.includes("video")) return "clapperboard";
+  return "users";
+}
+function roleFocus(role: string): string {
+  const r = role.toLocaleLowerCase("tr-TR");
+  if (r.includes("kurucu") || r.includes("direktör") || r.includes("müdür")) return "Strateji ve marka yönetimi";
+  if (r.includes("sosyal")) return "İçerik takvimi ve topluluk yönetimi";
+  if (r.includes("grafik") || r.includes("tasarım")) return "Kurumsal kimlik ve kreatif tasarım";
+  if (r.includes("performans") || r.includes("reklam") || r.includes("pazarlama")) return "Google ve Meta reklam yönetimi";
+  if (r.includes("içerik") || r.includes("editör") || r.includes("metin")) return "Metin, SEO ve içerik planlama";
+  if (r.includes("yazılım") || r.includes("geliştirici")) return "Web siteleri ve işletme yazılımları";
+  if (r.includes("video")) return "Reels, motion ve reklam filmi";
+  return "Guru Dijital ekibi";
+}
+const teamView = (m: { name: string; role: string; linkedin: string | null; photo: WorkImage | null; showOnHome: boolean }): TeamView => ({
+  ...m,
+  placeholder: PLACEHOLDER_NAMES.has(m.name.trim().toLocaleLowerCase("tr-TR")),
+  icon: roleIcon(m.role),
+  focus: roleFocus(m.role),
+});
 export type ReferenceView = { name: string; logo: WorkImage | null };
 
 /**
@@ -339,17 +389,19 @@ export const getTeam = cache(async (): Promise<TeamView[]> => {
     const payload = await cms();
     const res = await payload.find({ collection: "team", sort: "order", depth: 1, limit: 100, pagination: false });
     if (res.docs.length > 0)
-      return res.docs.map((m) => ({
-        name: m.name,
-        role: m.role,
-        linkedin: m.linkedin || null,
-        photo: toImage(m.photo, m.name),
-        showOnHome: m.showOnHome !== false,
-      }));
+      return res.docs.map((m) =>
+        teamView({
+          name: m.name,
+          role: m.role,
+          linkedin: m.linkedin || null,
+          photo: toImage(m.photo, m.name),
+          showOnHome: m.showOnHome !== false,
+        })
+      );
   } catch {
     /* panel yok: varsayılan içerik */
   }
-  return staticTeam.map((m) => ({ name: m.name, role: m.role, linkedin: m.linkedin ?? null, photo: null, showOnHome: true }));
+  return staticTeam.map((m) => teamView({ name: m.name, role: m.role, linkedin: m.linkedin ?? null, photo: null, showOnHome: true }));
 });
 
 export const getReferences = cache(async (): Promise<ReferenceView[]> => {

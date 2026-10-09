@@ -27,16 +27,22 @@ const IMG = {
   postKare: {
     src: "/work/instagram-post-kare.webp",
     alt: "Kampanya ve ürün odaklı sosyal medya gönderi tasarımları",
-    w: 1600,
+    w: 1580,
     h: 1131,
   },
+  /* Dört gönderilik şerit (tam genişlikte basılmak için) */
   postlar: {
     src: "/work/instagram-postlar.webp",
     alt: "Instagram gönderi akışı tasarımları",
-    w: 1600,
-    h: 471,
-    /* sol yarı postKare ile aynı kareleri taşır; dar kesitte sağ taraf gösterilir */
-    position: "100% 50%",
+    w: 1250,
+    h: 387,
+  },
+  /* Şeridin son iki gönderisi: yan karede kırpılmadan görünür; ilk ikisi postKare'de zaten var */
+  postlarIkili: {
+    src: "/work/instagram-postlar-ikili.webp",
+    alt: "Kozmetik ve gıda markaları için Instagram gönderi tasarımları",
+    w: 631,
+    h: 387,
   },
   cita: {
     src: "/work/sosyal-icerik-cita.webp",
@@ -48,7 +54,7 @@ const IMG = {
     src: "/work/logo-tasarimlari.webp",
     alt: "Farklı markalar için logo tasarımı örnekleri",
     w: 1600,
-    h: 620,
+    h: 440,
   },
   ambalajEtiket: {
     src: "/work/ambalaj-etiket.webp",
@@ -125,7 +131,7 @@ export type ServiceVisual = {
 export const serviceVisuals: Record<string, ServiceVisual> = {
   "sosyal-medya-yonetimi": {
     card: IMG.postKare,
-    gallery: [IMG.postKare, IMG.cita, IMG.postlar],
+    gallery: [IMG.postKare, IMG.cita, IMG.postlarIkili],
   },
   "grafik-tasarim": {
     card: IMG.kavanoz,
@@ -133,7 +139,7 @@ export const serviceVisuals: Record<string, ServiceVisual> = {
   },
   "icerik-uretimi": {
     card: IMG.cita,
-    gallery: [IMG.cita, IMG.katalog, IMG.postlar],
+    gallery: [IMG.cita, IMG.katalog, IMG.postlarIkili],
   },
   "web-tasarim": {
     card: IMG.webMockupDark,

@@ -72,7 +72,7 @@ function useUrlService(catalog: ServiceRef[]): string {
    (iOS odakta yakınlaştırmasın), md+ 15px. */
 export const fieldCls = (hasError: boolean) =>
   cn(
-    "w-full rounded-xl bg-white px-4 text-base text-heading outline-none transition-shadow duration-200 placeholder:text-muted/80 md:text-[15px]",
+    "w-full rounded-xl bg-white px-4 text-base text-heading outline-none transition-shadow duration-200 placeholder:text-muted md:text-[15px]",
     hasError
       ? "shadow-[0_0_0_1px_rgb(200_30_30/0.6)] focus:shadow-[0_0_0_1px_rgb(200_30_30/0.8),0_0_0_4px_rgb(200_30_30/0.12)]"
       : "shadow-[0_0_0_1px_rgb(1_20_65/0.14)] hover:shadow-[0_0_0_1px_rgb(1_20_65/0.26)] focus:shadow-[0_0_0_1px_#2a6aca,0_0_0_4px_rgb(42_106_202/0.16)]"
@@ -158,6 +158,8 @@ export type ContactFormProps = {
   initialService?: string;
   /** Paneldeki hizmet listesi (seçenekler ve ?hizmet= eşlemesi); yoksa koddaki varsayılan liste. */
   services?: ServiceRef[];
+  /** Mesaj alanının yer tutucusu; ürün sayfalarında ajans metni yerine ürüne uygun soru. */
+  messagePlaceholder?: string;
 };
 
 export function ContactForm({
@@ -167,6 +169,7 @@ export function ContactForm({
   serviceOptions,
   initialService,
   services = defaultServices,
+  messagePlaceholder = "Projenizden, hedeflerinizden ya da aklınızdaki sorudan kısaca bahsedin.",
 }: ContactFormProps = {}) {
   const options = serviceOptions ?? services.map((s) => s.title);
   const optionList =
@@ -276,7 +279,8 @@ export function ContactForm({
   }
 
   return (
-    <div className={formCardCls}>
+    /* flex-col: yan yana yerleşimde (DemoSwitch) kart sütun boyuna uzar, mesaj alanı aradaki boşluğu doldurur */
+    <div className={cn(formCardCls, "flex flex-col")}>
       <AnimatePresence mode="wait" initial={false}>
         {submitted ? (
           <motion.div
@@ -285,7 +289,7 @@ export function ContactForm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="flex min-h-96 flex-col items-center justify-center text-center"
+            className="flex min-h-96 flex-1 flex-col items-center justify-center text-center"
           >
             <span className="grid size-16 place-items-center rounded-full bg-chip text-brand">
               <Check className="size-7" strokeWidth={2.2} aria-hidden />
@@ -345,18 +349,18 @@ export function ContactForm({
             noValidate
             onSubmit={onSubmit}
             aria-busy={sending}
-            className="relative"
+            className="relative flex flex-1 flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <p className="inline-flex items-center gap-2 rounded-full bg-chip px-3.5 py-1.5 text-[13px] font-medium leading-none text-heading">
+            <p className="inline-flex items-center gap-2 self-start rounded-full bg-chip px-3.5 py-1.5 text-[13px] font-medium leading-none text-heading">
               <Clock className="size-3.5 shrink-0 text-brand" strokeWidth={2.2} aria-hidden />
               Ortalama yanıt: aynı gün
             </p>
 
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <div className="mt-6 grid flex-1 gap-5 sm:grid-cols-2 sm:grid-rows-[auto_auto_1fr]">
               <div className="space-y-2">
                 <label htmlFor="cf-name" className={labelCls}>
                   Ad soyad <Req />
@@ -453,7 +457,7 @@ export function ContactForm({
                 <FieldError id="cf-service-error" message={errors.service} />
               </div>
 
-              <div className="space-y-2 sm:col-span-2">
+              <div className="flex flex-col space-y-2 sm:col-span-2">
                 <label htmlFor="cf-message" className={labelCls}>
                   Mesajınız <Req />
                 </label>
@@ -461,13 +465,13 @@ export function ContactForm({
                   id="cf-message"
                   name="message"
                   rows={5}
-                  placeholder="Projenizden, hedeflerinizden ya da aklınızdaki sorudan kısaca bahsedin."
+                  placeholder={messagePlaceholder}
                   value={values.message}
                   onChange={(e) => set("message", e.target.value)}
                   aria-required
                   aria-invalid={Boolean(errors.message)}
                   aria-describedby={errors.message ? "cf-message-error" : undefined}
-                  className={cn(fieldCls(Boolean(errors.message)), "block min-h-32 resize-y py-3 leading-relaxed")}
+                  className={cn(fieldCls(Boolean(errors.message)), "block min-h-32 flex-1 resize-y py-3 leading-relaxed")}
                 />
                 <FieldError id="cf-message-error" message={errors.message} />
               </div>
@@ -476,7 +480,7 @@ export function ContactForm({
             <Honeypot value={trap} onChange={setTrap} />
             <FormNotice message={notice} />
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+            <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
               <Btn
                 type="submit"
                 variant="primary"
@@ -488,7 +492,7 @@ export function ContactForm({
                 {sending ? "Gönderiliyor" : "Mesajı Gönder"}
               </Btn>
               <p className="text-[13px] leading-relaxed text-muted">
-                Mesajınız doğrudan ekibimize iletilir; aynı gün dönüş yaparız.
+                Mesajınız doğrudan ekibimize iletilir; size e-posta ya da telefonla dönüş yaparız.
               </p>
             </div>
           </motion.form>

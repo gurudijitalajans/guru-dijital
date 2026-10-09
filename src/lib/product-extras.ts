@@ -73,7 +73,7 @@ export const productExtras: Record<string, ProductExtras> = {
         desc: "Guru Bot sipariş, kargo, fiyat ve iade sorularını yalnız sizin onayladığınız bilgilerle yanıtlar. Emin olmadığı ya da satış fırsatı gördüğü konuşmayı ekibe önerir; temsilci tek tıkla devralır.",
         bullets: [
           "Onaylı bilgi tabanından tutarlı yanıtlar",
-          "\"Ekibe Aktar\" önerisiyle kesintisiz devir",
+          "“Ekibe Aktar” önerisiyle kesintisiz devir",
           "Hazır yanıt kısayollarıyla hızlı müdahale",
         ],
         image: V("guru-chatbot", 2, "Telefonda ziyaretçinin sohbeti, panelde Guru Bot'un yanıtları ve ekibe aktarma önerisi"),
@@ -144,7 +144,7 @@ export const productExtras: Record<string, ProductExtras> = {
       {
         eyebrow: "Raporlar",
         title: "Ciroyu tahmin edin, ekibi veriyle yönetin",
-        desc: "Açık fırsat, pipeline değeri, kazanma oranı ve aylık gelir trendi hazır raporlarla elinizde. Geçen yılla karşılaştırarak hedefleri gerçekçi koyarsınız.",
+        desc: "Açık fırsat, satış hattı değeri, kazanma oranı ve aylık gelir trendi hazır raporlarla elinizde. Geçen yılla karşılaştırarak hedefleri gerçekçi koyarsınız.",
         bullets: [
           "Pipeline değeri ve kazanma oranı",
           "Aylık gelir trendi, geçen yılla karşılaştırma",
@@ -176,7 +176,7 @@ export const productExtras: Record<string, ProductExtras> = {
   },
 
   "guru-operation": {
-    trust: ["İlk gün görev takibiyle başlayın", "Ekip büyüklüğü sınırı yok", "Guru CRM ile bütünleşik"],
+    trust: ["İlk gün görev takibi", "Ekip büyüklüğü sınırı yok", "Guru CRM ile bütünleşik"],
     heroVisual: hero("guru-operation", "Guru Operation dizüstü ve telefonda: görev panosu, zaman çizelgesi ve kontrolden geçen görev bildirimi"),
     cover: cover("guru-operation", "Guru Operation kapağı: “Her iş görünür ve takipte” başlığı ve telefonda günün görevleri"),
     ogImage: "/products/og/guru-operation.jpg",

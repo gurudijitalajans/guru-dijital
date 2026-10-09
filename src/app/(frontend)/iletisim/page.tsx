@@ -144,7 +144,7 @@ export default async function IletisimPage() {
             <SectionHead
               center
               title="Toplantı Planlayın"
-              lead="Size uygun günü ve saati seçin; talebinize aynı gün onay dönüşü yapalım."
+              lead="Size uygun günü ve saati seçin; onayı ve görüşme bağlantısını e-postanıza gönderelim."
             />
           </Reveal>
           <Reveal className="mt-10" delay={0.05}>

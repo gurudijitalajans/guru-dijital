@@ -17,20 +17,12 @@
   /* Nötrler */
   --color-heading: #011441;
   --color-body: #44506b;        /* gövde metni (beyaz üzerinde 8.1:1) */
-  --color-muted: #6b7487;       /* ikincil metin (beyaz üzerinde 4.7:1) */
+  --color-muted: #646d80;       /* ikincil metin (beyazda 5.2:1, açık bantta 4.8:1) */
   --color-line: #e3e8f0;        /* kart çerçevesi */
   --color-soft: #f4f7fb;        /* açık bant zemini */
   --color-chip: #eef3fa;        /* ikon zemini, hap rozet */
 
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --animate-marquee: marquee 120s linear infinite;
-  --animate-marquee-slow: marquee 160s linear infinite;
-}
-
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
 }
 
 html {
@@ -97,6 +89,11 @@ body {
   label:has(> input[type="checkbox"], > input[type="radio"]) {
     cursor: pointer;
   }
+  /* Klavye odağı her yerde aynı: 2px marka mavisi halka (Btn ile aynı dil) */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
   button:disabled,
   [aria-disabled="true"],
   select:disabled,
@@ -135,27 +132,7 @@ body {
   .hero-sweep { animation: none; background-position: 0 0; }
 }
 
-/* ---- yavaş kayan şerit (logo duvarı) ---- */
-.marquee {
-  overflow: hidden;
-  display: flex;
-  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-}
-.marquee-track {
-  display: flex;
-  flex-shrink: 0;
-  width: max-content;
-  animation: var(--animate-marquee);
-}
-.marquee-reverse .marquee-track { animation-direction: reverse; }
-.marquee-slow .marquee-track { animation: var(--animate-marquee-slow); }
-@media (hover: hover) {
-  .marquee:hover .marquee-track { animation-play-state: paused; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
   html { scroll-behavior: auto; }
 }
 
@@ -185,6 +162,8 @@ body {
 }
 .prose-guru h4 { margin-top: 1.4em; font-size: 18px; font-weight: 600; color: var(--color-heading); }
 .prose-guru strong { font-weight: 600; color: var(--color-heading); }
+/* Outfit'in italik kesimi yok: tarayıcının sahte eğimi yerine vurgu renkle verilir */
+.prose-guru em { font-style: normal; font-weight: 500; color: var(--color-heading); }
 .prose-guru a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
 .prose-guru a:hover { color: var(--color-navy); }
 .prose-guru ul, .prose-guru ol { padding-left: 1.3em; }

@@ -42,7 +42,7 @@ export const HOME_DEFAULTS = {
   },
   cases: {
     show: true,
-    title: "Başarı Hikayeleri",
+    title: "Başarı Hikâyeleri",
     lead: "Strateji, reklam ve içeriği aynı hedefe bağladığımızda ortaya çıkan sonuçlar.",
   },
   team: {

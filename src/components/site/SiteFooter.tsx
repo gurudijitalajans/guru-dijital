@@ -5,7 +5,8 @@ import { site } from "@/lib/data";
 import { Logo } from "./Logo";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
-const linkCls = "block py-1.5 text-[14px] text-body transition-colors hover:text-brand";
+/* mobilde 44px dokunma alanı, masaüstünde sık liste */
+const linkCls = "block py-2.5 text-[14px] text-body transition-colors hover:text-brand md:py-1.5";
 
 /** "https://www.instagram.com/gurudijital/" → "gurudijital" */
 const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "gurudijital";
@@ -30,7 +31,7 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_1.1fr_1fr_1fr]">
           <div className="col-span-2 lg:col-span-1">
             <Logo height={30} />
-            <p className="mt-4 max-w-[260px] text-[14px] leading-relaxed text-muted">
+            <p className="mt-4 max-w-[260px] text-pretty text-[14px] leading-relaxed text-muted">
               Markanızı dijitalde büyüten entegre ajans hizmetleri ve işletme yazılımları.
             </p>
             {badge && (
@@ -42,10 +43,10 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
           </div>
 
           <nav aria-label="Kurumsal">
-            <h2 className={headCls}>Guru</h2>
+            <h2 className={headCls}>Kurumsal</h2>
             <Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link>
             <Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link>
-            <Link href="/#referanslar" className={linkCls}>Referanslarımız</Link>
+            <Link href="/referanslar" className={linkCls}>Referanslarımız</Link>
             {showBlog && <Link href="/blog" className={linkCls}>Blog</Link>}
             <Link href="/iletisim" className={linkCls}>İletişim</Link>
           </nav>

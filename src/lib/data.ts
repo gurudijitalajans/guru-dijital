@@ -11,6 +11,7 @@ import {
   Clapperboard,
   type LucideIcon,
 } from "lucide-react";
+import type { IconName } from "@/lib/icon-names";
 
 /* ------------------------------------------------------------------ */
 /*  Site                                                               */
@@ -63,11 +64,14 @@ export type Service = {
   keywords: string[];
   /** Arama sonucu açıklaması (140-160 karakter); yoksa short kullanılır */
   seoDescription?: string;
+  /** Üst menüde başlığın altındaki tek satır (en fazla 48 karakter) */
+  menuDesc: string;
 };
 
 export const services: Service[] = [
   {
     slug: "sosyal-medya-yonetimi",
+    menuDesc: "Strateji, içerik ve topluluk yönetimi",
     no: "01",
     title: "Sosyal Medya Yönetimi",
     headline: "Markanızı dijital dünyada öne çıkarın",
@@ -87,10 +91,10 @@ export const services: Service[] = [
       "Performans takibi, veri analizi ve düzenli raporlama",
     ],
     outro:
-      "Markanızı sosyal medyada sadece görünür kılmakla kalmıyor; kalıcı bir etki yaratarak fark edilir, güvenilir ve ilham veren bir dijital varlık haline getiriyoruz.",
+      "Markanızı sosyal medyada sadece görünür kılmakla kalmıyor; kalıcı bir etki yaratarak fark edilir, güvenilir ve ilham veren bir dijital varlık hâline getiriyoruz.",
     images: [
       { src: "/work/sosyal-medya-telefon.webp", alt: "Guru Dijital Instagram hesabı telefon mockup" },
-      { src: "/work/instagram-postlar.webp", alt: "Instagram gönderi tasarımları" },
+      { src: "/work/instagram-postlar-ikili.webp", alt: "Kozmetik ve gıda markaları için Instagram gönderi tasarımları" },
     ],
     seoDescription:
       "Platforma özel strateji, içerik, topluluk yönetimi ve Meta, TikTok, LinkedIn reklam kampanyalarıyla markanızı doğru kitleyle buluşturan sosyal medya yönetimi.",
@@ -98,6 +102,7 @@ export const services: Service[] = [
   },
   {
     slug: "grafik-tasarim",
+    menuDesc: "Logo, kurumsal kimlik ve ambalaj",
     no: "02",
     title: "Grafik Tasarım",
     headline: "Markanıza değer katan tasarımlar",
@@ -111,7 +116,7 @@ export const services: Service[] = [
     offeringsTitle: "Neler Tasarlıyoruz",
     offerings: [
       "Marka ve logo tasarımı",
-      "Kurumsal kimlik tasarımı (kartvizit, antetli kağıt, zarf vb.)",
+      "Kurumsal kimlik tasarımı (kartvizit, antetli kâğıt, zarf vb.)",
       "Dijital ve basılı tanıtım materyalleri (afiş, broşür, katalog)",
       "Ambalaj ve etiket tasarımları",
       "Sosyal medya ve dijital mecralara özel görsel içerikler",
@@ -130,6 +135,7 @@ export const services: Service[] = [
   },
   {
     slug: "icerik-uretimi",
+    menuDesc: "Metin, SEO içerik ve kreatif konsept",
     no: "03",
     title: "İçerik Üretimi",
     headline: "Doğru kelimelerle güçlü etki",
@@ -137,7 +143,7 @@ export const services: Service[] = [
       "Markanızın sesini doğru şekilde duyuracak, hedef kitlenize gerçekten dokunan içerikler üretiyoruz.",
     icon: PenLine,
     intro: [
-      "Dijital dünyada dikkat çekmenin yolu, etkili içerikten geçer. Biz, markanızın sesini doğru şekilde duyuracak içerikler üretiyor, hikâyenizi ilgiyle okunacak hale getiriyoruz.",
+      "Dijital dünyada dikkat çekmenin yolu, etkili içerikten geçer. Biz, markanızın sesini doğru şekilde duyuracak içerikler üretiyor, hikâyenizi ilgiyle okunacak hâle getiriyoruz.",
       "Her içerikte samimiyet, özgünlük ve strateji bir arada. Amacımız sadece yazmak değil; hedef kitlenize gerçekten dokunan, değer katan içerikler sunmak.",
     ],
     offeringsTitle: "İçerik Başlıklarımız",
@@ -157,6 +163,7 @@ export const services: Service[] = [
   },
   {
     slug: "web-tasarim",
+    menuDesc: "Kurumsal site ve e-ticaret",
     no: "04",
     title: "Web Tasarım",
     headline: "Markanızın dijitaldeki yüzü",
@@ -188,11 +195,12 @@ export const services: Service[] = [
   },
   {
     slug: "dijital-pazarlama",
+    menuDesc: "Google ve Meta reklam yönetimi",
     no: "05",
     title: "Dijital Pazarlama",
     headline: "Dijitalde stratejik büyüme",
     short:
-      "Veriye dayalı, ROAS odaklı kampanyalarla reklam bütçenizi büyümeye dönüştürüyoruz. Google Partner'ıyız.",
+      "Veriye dayalı, ROAS odaklı kampanyalarla reklam bütçenizi büyümeye dönüştürüyoruz. Google Partner rozetine sahibiz.",
     icon: BarChart3,
     intro: [
       "Dijital pazarlama sadece görünür olmak değil; doğru zamanda, doğru yerde, doğru kitleyle buluşmaktır. Guru Dijital olarak markanız için veriye dayalı, sonuç odaklı dijital stratejiler geliştiriyoruz.",
@@ -206,7 +214,7 @@ export const services: Service[] = [
       "ROAS odaklı analiz ve düzenli raporlama",
     ],
     outro:
-      "Dijital pazarlamayı bir reklam gideri değil, markanızı büyüten stratejik bir yatırım olarak görüyoruz. 2025'te Google Partner'ı olduk ve Google Ads Impact Awards'ta Data Innovation kategorisinde aday gösterildik.",
+      "Dijital pazarlamayı bir reklam gideri değil, markanızı büyüten stratejik bir yatırım olarak görüyoruz. 2025'te Google Partner olduk ve Google Ads Impact Awards'ta Data Innovation kategorisinde aday gösterildik.",
     images: [
       { src: "/work/dijital-pazarlama.webp", alt: "Dijital pazarlama kreatif kolaj" },
     ],
@@ -216,6 +224,7 @@ export const services: Service[] = [
   },
   {
     slug: "video-tasarimi",
+    menuDesc: "Reels, motion ve reklam filmi",
     no: "06",
     title: "Video Tasarımı",
     headline: "Hikâyenizi harekete geçirin",
@@ -268,10 +277,10 @@ export const caseStudies: CaseStudy[] = [
       "Kliniğin dijital reklam süreçlerini devraldığımızda sonuçlar potansiyelin oldukça altındaydı. Reklam bütçesini artırmadan, stratejiyi tamamen yenileyerek yalnızca 3 ayda etkileyici bir dönüşüm sağladık.",
     note: "Reklam bütçesi artırılmadan, 3 ayda",
     stats: [
-      { value: 300, suffix: "%", label: "Yurtdışı hasta sayısı artışı" },
-      { value: 350, suffix: "%", label: "Yurtiçi hasta sayısı artışı" },
-      { value: 320, suffix: "%", label: "Yurtdışı hasta geliri artışı" },
-      { value: 245, suffix: "%", label: "Yurtiçi hasta geliri artışı" },
+      { value: 300, suffix: "%", label: "Yurt dışı hasta sayısı artışı" },
+      { value: 350, suffix: "%", label: "Yurt içi hasta sayısı artışı" },
+      { value: 320, suffix: "%", label: "Yurt dışı hasta geliri artışı" },
+      { value: 245, suffix: "%", label: "Yurt içi hasta geliri artışı" },
       { value: 120, suffix: "%", label: "Aylık talep artışı" },
       { value: 54.5, suffix: "%", label: "Talep başı maliyette düşüş", down: true },
     ],
@@ -341,7 +350,7 @@ export const awards = [
   {
     title: "Google Partner",
     year: "2025",
-    desc: "2025 yılında Google Partner'ı olduk; kampanyalarımız Google'ın performans ve yetkinlik standartlarını karşılıyor.",
+    desc: "Google'ın performans, reklam harcaması ve yetkinlik kriterlerini karşılayan ajanslara verilen rozet; reklam hesaplarınız bu standartlarla yönetilir.",
   },
   {
     title: "Google Ads Impact Awards",
@@ -368,7 +377,7 @@ export const process = [
   {
     no: "03",
     title: "Tasarım & Üretim",
-    desc: "İçerik, tasarım ve kampanyaları markanızın diliyle üretiyor; yayına hazır hale getiriyoruz.",
+    desc: "İçerik, tasarım ve kampanyaları markanızın diliyle üretiyor; yayına hazır hâle getiriyoruz.",
   },
   {
     no: "04",
@@ -561,37 +570,42 @@ export const navLinks = [
 /*  Ana menü (açılır gruplar) ve duyuru bandı                          */
 /* ------------------------------------------------------------------ */
 
-export type NavItem = { label: string; href: string; desc?: string };
-export type NavGroup = { label: string; href: string; items?: NavItem[] };
+export type NavItem = { label: string; href: string; desc: string; icon: IconName };
+/** Açılır menü: her öğe ikon + başlık + tek satır açıklama; altta aynı biçimde bir bağlantı satırı */
+export type NavGroup = { label: string; href: string; items?: NavItem[]; footer?: { hint: string; label: string; href: string } };
 
 export const announcement = "Strateji, tasarım ve teknoloji tek çatıda.";
 
 /** Üst menü: hizmet ve ürün grupları panelden gelen listeyle kurulur */
 export function buildNavMenu(
-  svc: { title: string; slug: string }[],
-  prd: { name: string; slug: string; tagline: string }[]
+  svc: { title: string; slug: string; icon: IconName; menuDesc: string }[],
+  prd: { name: string; slug: string; tagline: string; icon: IconName }[]
 ): NavGroup[] {
   return [
     {
       label: "Kurumsal",
       href: "/hakkimizda",
       items: [
-        { label: "Hakkımızda", href: "/hakkimizda", desc: "Hikayemiz ve ilkelerimiz" },
-        { label: "Ekibimiz", href: "/hakkimizda#ekip", desc: "Markanızla çalışacak ekip" },
-        { label: "İletişim", href: "/iletisim", desc: "Teklif ve toplantı" },
+        { label: "Hakkımızda", href: "/hakkimizda", desc: "Hikâyemiz ve ilkelerimiz", icon: "lightbulb" },
+        { label: "Ekibimiz", href: "/hakkimizda#ekip", desc: "Markanızla çalışacak ekip", icon: "users" },
+        { label: "Ödüllerimiz", href: "/hakkimizda#oduller", desc: "Google Partner ve sektör ödülleri", icon: "award" },
+        { label: "İletişim", href: "/iletisim", desc: "Teklif, toplantı ve iletişim kanalları", icon: "mail" },
       ],
+      footer: { hint: "30 dakikalık tanışma görüşmesi", label: "Toplantı Planla", href: "/iletisim#toplanti" },
     },
     {
       label: "Hizmetlerimiz",
       href: "/hizmetler",
-      items: svc.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}` })),
+      items: svc.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}`, desc: s.menuDesc, icon: s.icon })),
+      footer: { hint: "Tek ekip, uçtan uca hizmet", label: "Tüm Hizmetler", href: "/hizmetler" },
     },
     {
       label: "Ürünlerimiz",
       href: "/urunler",
-      items: prd.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline })),
+      items: prd.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline, icon: p.icon })),
+      footer: { hint: "Aynı veri tabanında çalışan yazılımlar", label: "Tüm Ürünler", href: "/urunler" },
     },
-    { label: "Referanslarımız", href: "/#referanslar" },
+    { label: "Referanslarımız", href: "/referanslar" },
   ];
 }
 
@@ -621,7 +635,7 @@ export const testimonials: Testimonial[] = [
 
 /* Ana sayfa sık sorulan sorular */
 export const homeFaq: { q: string; a: string }[] = [
-  { q: "Hangi hizmetleri birlikte alabilirim?", a: "Altı hizmetimizin tamamını tek bir planla birlikte yürütebilir ya da yalnız ihtiyacınız olanı seçebilirsiniz. Birlikte çalıştığımızda strateji, tasarım ve reklam aynı hedefe bakar." },
+  { q: "Hangi hizmetleri birlikte alabilirim?", a: "Hizmetlerimizin tamamını tek bir planla birlikte yürütebilir ya da yalnız ihtiyacınız olanı seçebilirsiniz. Birlikte çalıştığımızda strateji, tasarım ve reklam aynı hedefe bakar." },
   { q: "Sosyal medya yönetimine neler dahil?", a: "Platforma özel strateji, aylık içerik planı, tasarım ve metin üretimi, topluluk yönetimi ve düzenli raporlama. Reklam kampanyaları isteğe göre pakete eklenir." },
   { q: "Reklam bütçesini nasıl planlıyorsunuz?", a: "Hedefinizi, kâr marjınızı ve mevcut verinizi inceleyip bütçeyi kanallara göre dağıtıyoruz. Kampanyaları sonuçlara göre haftalık olarak optimize ediyoruz." },
   { q: "Web sitesi ne kadar sürede hazır olur?", a: "Kapsama göre değişir. Kurumsal bir site genellikle birkaç hafta içinde yayına alınır; net süreyi tanışma görüşmesinden sonra planla birlikte paylaşırız." },

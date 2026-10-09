@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import type { NavGroup } from "@/lib/data";
+import { IconByName } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
@@ -21,7 +22,7 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
       )}
     >
       <span className="relative inline-flex size-2.5" aria-hidden>
-        <span className="absolute inset-0 animate-ping rounded-full bg-brand/40 motion-reduce:animate-none" />
+        <span className="absolute inset-0 animate-ping rounded-full bg-brand/40 [animation-duration:2.4s] motion-reduce:animate-none" />
         <span className="relative inline-block size-2.5 rounded-full bg-brand" />
       </span>
       Tanışalım
@@ -38,6 +39,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   const id = useId();
   const closeTimer = useRef<number | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   /* Fareyle (hover) açıldıysa tetikleyiciye tıklamak menüyü kapatmaz */
   const hoverOpened = useRef(false);
 
@@ -57,7 +59,10 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      /* Odak paneldeyse kaybolmasın: tetikleyiciye döner */
+      if (wrapRef.current?.contains(document.activeElement)) triggerRef.current?.focus();
     };
     const onDoc = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
@@ -84,8 +89,20 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   }
 
   return (
-    <div ref={wrapRef} className="relative" onMouseEnter={show} onMouseLeave={hideSoon}>
+    /* Panel nav'a göre konumlanır (sarmalayıcı relative değil): bütün menüler aynı
+       merkezde açılır, dar masaüstünde de ekran dışına taşmaz */
+    <div
+      ref={wrapRef}
+      onMouseEnter={show}
+      onMouseLeave={hideSoon}
+      onBlur={(e) => {
+        /* Klavyeyle Tab ile dışarı çıkınca kapanır; tıklama dışarıda zaten kapatır */
+        const next = e.relatedTarget as Node | null;
+        if (next && !wrapRef.current?.contains(next)) setOpen(false);
+      }}
+    >
       <button
+        ref={triggerRef}
         type="button"
         aria-expanded={open}
         aria-controls={id}
@@ -102,30 +119,45 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
           className={cn("size-4 text-muted transition-transform duration-200", open && "rotate-180")}
         />
       </button>
-      <div
-        id={id}
-        hidden={!open}
-        className="absolute left-1/2 top-full z-50 w-[300px] -translate-x-1/2 pt-3"
-      >
-        <ul className="rounded-2xl bg-white p-2 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_24px_48px_-20px_rgb(1_20_65/0.35)]">
-          {group.items.map((it) => (
-            <li key={it.href}>
+      {/* Tüm açılır menüler aynı yapıda: iki sütun, her öğede ikon + başlık + tek satır açıklama, altta bağlantı satırı */}
+      <div id={id} hidden={!open} className="absolute left-1/2 top-full z-50 w-[620px] max-w-[calc(100vw-48px)] -translate-x-1/2 pt-3">
+        <div className="rounded-[20px] bg-white p-2 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_24px_48px_-20px_rgb(1_20_65/0.35)]">
+          <ul className="grid grid-cols-2 gap-1">
+            {group.items.map((it) => (
+              <li key={it.href}>
+                <Link
+                  href={it.href}
+                  onClick={() => setOpen(false)}
+                  className="group/item flex items-center gap-3.5 rounded-2xl p-3 transition-colors hover:bg-soft"
+                >
+                  <span
+                    aria-hidden
+                    className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand transition-colors group-hover/item:bg-white"
+                  >
+                    <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[14.5px] font-medium leading-snug text-heading">{it.label}</span>
+                    <span className="mt-0.5 block truncate text-[13px] leading-snug text-muted">{it.desc}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {group.footer && (
+            <div className="mt-1 flex items-center justify-between gap-4 rounded-2xl bg-soft px-4 py-3">
+              <span className="text-[13px] text-muted">{group.footer.hint}</span>
               <Link
-                href={it.href}
+                href={group.footer.href}
                 onClick={() => setOpen(false)}
-                className="block rounded-xl px-3.5 py-2.5 transition-colors hover:bg-soft"
+                className="inline-flex shrink-0 items-center gap-1.5 text-[13.5px] font-medium text-brand transition-colors hover:text-navy"
               >
-                <span className="block text-[14.5px] font-medium text-heading">{it.label}</span>
-                {it.desc && <span className="block text-[13px] leading-snug text-muted">{it.desc}</span>}
+                {group.footer.label}
+                <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
               </Link>
-            </li>
-          ))}
-          <li className="mt-1 px-3.5 pb-1.5 pt-2">
-            <Link href={group.href} onClick={() => setOpen(false)} className="text-[13.5px] font-medium text-brand hover:underline">
-              Tümünü gör
-            </Link>
-          </li>
-        </ul>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -143,6 +175,8 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
   const [scrolled, setScrolled] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const [panelTop, setPanelTop] = useState(0);
 
   /* Rota değişince menü kapanır (render sırasında durum düzeltmesi, effect yok) */
   const [lastPath, setLastPath] = useState(pathname);
@@ -193,9 +227,11 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
   return (
     <>
     <header
+      ref={headerRef}
       className={cn(
         "sticky top-0 z-50 bg-white/95 backdrop-blur-md transition-shadow duration-300",
-        scrolled && "shadow-[0_1px_0_rgb(1_20_65/0.06),0_10px_30px_-24px_rgb(1_20_65/0.4)]"
+        /* çizgi yok: kaydırınca yalnız yumuşak gölge */
+        scrolled && "shadow-[0_10px_30px_-18px_rgb(1_20_65/0.32)] [html[data-subnav='1']_&]:shadow-none"
       )}
     >
       <div className="container-g flex h-[68px] items-center lg:h-[76px]">
@@ -206,7 +242,10 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
           aria-expanded={open}
           aria-controls="mobil-menu"
           aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            if (!open) setPanelTop(Math.max(0, headerRef.current?.getBoundingClientRect().top ?? 0));
+            setOpen((v) => !v);
+          }}
           className="-ml-2 inline-grid size-11 place-items-center rounded-full text-heading lg:hidden"
         >
           {open ? <X className="size-6" strokeWidth={1.8} /> : <Menu className="size-6" strokeWidth={1.8} />}
@@ -215,12 +254,12 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
         <Link
           href="/"
           aria-label="Guru Dijital Ajans ana sayfa"
-          className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
+          className="absolute left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center lg:static lg:translate-x-0"
         >
           <Logo height={32} priority />
         </Link>
 
-        <nav aria-label="Ana menü" className="mx-auto hidden items-center gap-8 lg:flex">
+        <nav aria-label="Ana menü" className="relative mx-auto hidden items-center gap-8 lg:flex">
           {menu.map((g) => (
             <DesktopGroup key={g.label} group={g} active={isActive(g)} />
           ))}
@@ -238,7 +277,8 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
         aria-modal="true"
         aria-label="Menü"
         hidden={!open}
-        className="fixed inset-0 z-[60] overflow-y-auto bg-white px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] lg:hidden"
+        style={{ top: panelTop }}
+        className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto bg-white px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] lg:hidden"
       >
         {/* Panelin kendi üst satırı: header ile aynı hizada kapat düğmesi, logo, Tanışalım */}
         <div className="relative -mx-5 mb-2 flex h-[68px] items-center px-5">
@@ -253,7 +293,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
           >
             <X className="size-6" strokeWidth={1.8} />
           </button>
-          <Link href="/" onClick={close} aria-label="Guru Dijital Ajans ana sayfa" className="absolute left-1/2 -translate-x-1/2">
+          <Link href="/" onClick={close} aria-label="Guru Dijital Ajans ana sayfa" className="absolute left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center">
             <Logo height={32} />
           </Link>
           <TalkLink className="ml-auto" onClick={close} />
@@ -274,19 +314,28 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
                       {g.label}
                       <ChevronDown aria-hidden className={cn("size-5 text-muted transition-transform", isOpen && "rotate-180")} />
                     </button>
-                    <ul hidden={!isOpen} className="mb-3 space-y-1 pl-1">
+                    <ul hidden={!isOpen} className="mb-3 grid gap-1">
                       {g.items.map((it) => (
                         <li key={it.href}>
-                          <Link href={it.href} onClick={close} className="flex min-h-11 items-center text-[16px] text-body">
-                            {it.label}
+                          <Link href={it.href} onClick={close} className="flex min-h-14 items-center gap-3.5 rounded-2xl px-1 py-2">
+                            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand">
+                              <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-[16px] font-medium leading-snug text-heading">{it.label}</span>
+                              <span className="mt-0.5 block truncate text-[13.5px] leading-snug text-muted">{it.desc}</span>
+                            </span>
                           </Link>
                         </li>
                       ))}
-                      <li>
-                        <Link href={g.href} onClick={close} className="flex min-h-11 items-center text-[15px] font-medium text-brand">
-                          Tümünü gör
-                        </Link>
-                      </li>
+                      {g.footer && (
+                        <li>
+                          <Link href={g.footer.href} onClick={close} className="flex min-h-11 items-center gap-1.5 px-1 text-[15px] font-medium text-brand">
+                            {g.footer.label}
+                            <ArrowRight aria-hidden className="size-4" strokeWidth={2.2} />
+                          </Link>
+                        </li>
+                      )}
                     </ul>
                   </>
                 ) : (

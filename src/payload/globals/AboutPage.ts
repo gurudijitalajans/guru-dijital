@@ -47,7 +47,7 @@ export const AboutPage: GlobalConfig = {
         },
         {
           name: "story",
-          label: "Hikaye ve ilkeler",
+          label: "Hikâye ve ilkeler",
           fields: [
             { name: "title", type: "text", label: "Başlık", required: true, defaultValue: D.story.title },
             {

@@ -37,7 +37,7 @@ export function ClosingCta({
             <h2 className="mx-auto mt-6 max-w-2xl text-balance text-[30px] font-normal leading-[1.15] tracking-[-0.03em] text-white md:text-[40px]">
               {title}
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-[15.5px] leading-relaxed text-white/80 md:text-[16.5px]">
+            <p className="mx-auto mt-4 max-w-xl text-pretty text-[15.5px] leading-relaxed text-white/80 md:text-[16.5px]">
               {lead}
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -54,7 +54,7 @@ export function ClosingCta({
               </Btn>
               <Btn
                 href={secondary.href}
-                variant="brand"
+                variant="ghost"
                 size="lg"
                 className="w-full max-w-xs sm:w-auto"
                 data-umami-event="kapanis-ikinci-buton"

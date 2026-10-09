@@ -41,7 +41,8 @@ export type DemoSwitchProps = {
 function StepTitle({ n, children }: { n: number; children: ReactNode }) {
   return (
     <h3 className="mb-4 inline-flex items-center gap-3 text-[16px] font-medium tracking-[-0.01em] text-heading">
-      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-chip text-[13px] font-medium text-brand">
+      {/* Numara görsel: ekran okuyucu "1Formu doldurun" okumasın */}
+      <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-chip text-[13px] font-medium text-brand">
         {n}
       </span>
       {children}
@@ -72,15 +73,17 @@ export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
 
   if (isLg) {
     return (
-      <div className="mt-10 grid items-start gap-8 md:mt-12 lg:grid-cols-2 lg:gap-6">
+      /* İki kart aynı boyda: sütunlar satır boyuna uzar, kartlar kalan yüksekliği
+         doldurur; gönder düğmeleri aynı hizada biter. */
+      <div className="mt-10 grid gap-8 md:mt-12 lg:grid-cols-2 lg:gap-6">
         {/* min-w-0: takvim çipleri gibi geniş içerikler grid hücresini taşırmasın */}
-        <Reveal className="min-w-0">
-          <StepTitle n={1}>Formu doldurun</StepTitle>
-          {form}
+        <Reveal className="flex min-w-0 flex-col">
+          <StepTitle n={1}>Formu Doldurun</StepTitle>
+          <div className="flex flex-1 flex-col [&>*]:flex-1">{form}</div>
         </Reveal>
-        <Reveal delay={0.08} className="min-w-0">
-          <StepTitle n={2}>Ya da toplantı planlayın</StepTitle>
-          {scheduler}
+        <Reveal delay={0.08} className="flex min-w-0 flex-col">
+          <StepTitle n={2}>Ya da Toplantı Planlayın</StepTitle>
+          <div className="flex flex-1 flex-col [&>*]:flex-1">{scheduler}</div>
         </Reveal>
       </div>
     );

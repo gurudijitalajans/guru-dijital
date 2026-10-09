@@ -56,9 +56,16 @@ export function VideoPlayer({ src, poster, label, trackName, className }: VideoP
             Tarayıcınız video oynatmayı desteklemiyor.
           </video>
           {!started && (
-            <button type="button" onClick={start} aria-label={label} className="group absolute inset-0 grid place-items-center">
-              <span className="grid size-20 place-items-center rounded-full bg-white text-navy shadow-[0_0_0_12px_rgb(255_255_255/0.25)] transition-transform duration-300 group-hover:scale-105 md:size-24">
-                <Play aria-hidden className="ml-1 size-8 fill-current" />
+            /* Sarmalayıcı overflow-hidden: odak halkası içeri çekilir, köşeleri karta uyar */
+            <button
+              type="button"
+              onClick={start}
+              aria-label={label}
+              className="group absolute inset-0 grid place-items-center rounded-[inherit] focus-visible:outline-white focus-visible:outline-offset-[-8px]"
+            >
+              {/* Lacivert disk + beyaz halka: kapak açık (ürün arayüzü) ya da koyu (marka ışığı) olsun, düğme her zemin üstünde seçilir */}
+              <span className="grid size-16 place-items-center rounded-full bg-navy text-white shadow-[0_0_0_6px_rgb(255_255_255/0.92),0_18px_40px_-12px_rgb(1_20_65/0.55)] transition-transform duration-300 group-hover:scale-105 md:size-20 md:shadow-[0_0_0_8px_rgb(255_255_255/0.92),0_18px_40px_-12px_rgb(1_20_65/0.55)]">
+                <Play aria-hidden className="ml-1 size-6 fill-current md:size-7" />
               </span>
             </button>
           )}

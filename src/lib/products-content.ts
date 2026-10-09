@@ -79,7 +79,7 @@ export const productDetails: Record<string, ProductDetail> = {
       eyebrow: "Guru Chatbot",
       headline: "Müşterinize *7/24* yanıt veren yapay zeka asistanı",
       sub: "Web sitenizde, WhatsApp'ta ve Instagram'da soruları anında yanıtlar, nitelikli talepleri doğru kişiye iletir.",
-      ctaLabel: "Demo Talep Et",
+      ctaLabel: "Demo Talep Edin",
     },
     image: "/products/guru-chatbot.svg",
     features: [
@@ -147,7 +147,7 @@ export const productDetails: Record<string, ProductDetail> = {
       },
     ],
     stats: [
-      { value: 24, suffix: "/7", label: "Kesintisiz müşteri yanıtı" },
+      { value: 7, suffix: "/24", label: "Kesintisiz müşteri yanıtı" },
       { value: 3, suffix: "", label: "Kanal, tek gelen kutusu" },
       { value: 100, suffix: "%", label: "Konuşma geçmişi kayıt altında" },
       { value: 1, suffix: "\u00A0gün", label: "Standart kurulum süresi" },
@@ -207,7 +207,7 @@ export const productDetails: Record<string, ProductDetail> = {
       eyebrow: "Guru CRM",
       headline: "Her müşteri ve her fırsat *tek* ekranda",
       sub: "Fırsatları, teklifleri ve görüşme geçmişini tek panelden yönetin; ekibiniz kimin ne zaman aranacağını her zaman bilsin.",
-      ctaLabel: "Demo Talep Et",
+      ctaLabel: "Demo Talep Edin",
     },
     image: "/products/guru-crm.svg",
     features: [
@@ -257,7 +257,7 @@ export const productDetails: Record<string, ProductDetail> = {
       },
       {
         title: "Takip edin ve büyütün",
-        desc: "Haftalık raporlarla darboğazı görün, hedefleri güncelleyin ve kazandıran adımları ekipte standart hale getirin.",
+        desc: "Haftalık raporlarla darboğazı görün, hedefleri güncelleyin ve kazandıran adımları ekipte standart hâle getirin.",
       },
     ],
     useCases: [
@@ -277,7 +277,7 @@ export const productDetails: Record<string, ProductDetail> = {
     stats: [
       { value: 100, suffix: "%", label: "Görüşme geçmişi kayıt altında" },
       { value: 1, suffix: "\u00A0tık", label: "Markalı teklif taslağı" },
-      { value: 15, suffix: "\u00A0dk", label: "Haftalık rapor hazırlığı" },
+      { value: 1, suffix: "", label: "Kartta tüm müşteri geçmişi" },
       { value: 1, suffix: "\u00A0hafta", label: "Temel kurulum süresi" },
     ],
     faq: [
@@ -335,7 +335,7 @@ export const productDetails: Record<string, ProductDetail> = {
       eyebrow: "Guru Operation",
       headline: "Operasyonun her adımı *görünür* ve takipte",
       sub: "Görevleri, ekip planını ve süreç performansını tek panodan yönetin; darboğazı oluşmadan görün, teslimatı zamanında yapın.",
-      ctaLabel: "Demo Talep Et",
+      ctaLabel: "Demo Talep Edin",
     },
     image: "/products/guru-operation.svg",
     features: [
@@ -463,7 +463,7 @@ export const productDetails: Record<string, ProductDetail> = {
       eyebrow: "Guru Business",
       headline: "İşletmeniz için *bütünleşik* dijital yönetim",
       sub: "Chatbot, CRM ve Operation aynı veri tabanında çalışır; müşteri ilk mesajdan teslimata kadar tek sistemde izlenir.",
-      ctaLabel: "Demo Talep Et",
+      ctaLabel: "Demo Talep Edin",
     },
     image: "/products/guru-business.svg",
     features: [
@@ -533,7 +533,7 @@ export const productDetails: Record<string, ProductDetail> = {
     stats: [
       { value: 3, suffix: "", label: "Modül, tek panel" },
       { value: 1, suffix: "", label: "Veri tabanı, tüm modüller" },
-      { value: 14, suffix: "\u00A0gün", label: "İçinde ilk modül canlıda" },
+      { value: 2, suffix: "\u00A0hafta", label: "İlk modülün canlıya geçişi" },
       { value: 100, suffix: "%", label: "Modüllerde rol bazlı yetki" },
     ],
     faq: [

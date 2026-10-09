@@ -8,10 +8,10 @@ import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY 
 import { cn, countWord } from "@/lib/utils";
 
 /** Hizmet kartları: içerik panelden (Hizmetler), başlıklar Ana Sayfa > Bölümler */
-export async function ServicesGrid({ title, lead }: { title: string; lead: string }) {
+export async function ServicesGrid({ title, lead, className }: { title: string; lead: string; className?: string }) {
   const services = await getServices();
   return (
-    <section className={sectionY}>
+    <section className={cn(sectionY, className)}>
       <div className="container-g">
         <SectionHead
           title={title}

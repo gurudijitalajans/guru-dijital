@@ -15,6 +15,7 @@ import { MeetCta } from "@/components/home/MeetCta";
 import { SectionHead } from "@/components/site/SectionHead";
 import { FaqGrid } from "@/components/site/FaqGrid";
 import { sectionY } from "@/components/site/styles";
+import { cn } from "@/lib/utils";
 
 /* Ana sayfa metadata panelden (Ana Sayfa > SEO); canonical "/", başlık mutlak. */
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,9 +37,14 @@ export default async function Home() {
     getTestimonials(),
   ]);
   const homeCases = cases.filter((c) => c.showOnHome);
+  const quotes = testimonials.filter((t) => t.quote);
   /* Tanıtım videosu public/video altında varsa oynatıcı açılır (statik sayfada derleme anında bakılır). */
   const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim.mp4"));
   const faqItems = home.faq.show ? home.faq.items : [];
+  /* Aynı zeminli iki bölüm üst üste gelince aradaki boşluk iki kat olmasın: alttakinin üst boşluğu kalkar */
+  const showRefs = home.references.show && references.length > 0;
+  const showQuotes = home.quotes.show && quotes.length > 0;
+  const showTeam = home.team.show && team.some((m) => m.showOnHome);
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -51,10 +57,10 @@ export default async function Home() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />
       )}
       <Hero hero={home.hero} referenceCount={references.length} />
-      {home.references.show && references.length > 0 && (
-        <LogoWall title={home.references.title} lead={home.references.lead} references={references} />
+      {showRefs && <LogoWall title={home.references.title} lead={home.references.lead} references={references} />}
+      {home.services.show && (
+        <ServicesGrid title={home.services.title} lead={home.services.lead} className={cn(showRefs && "pt-0 md:pt-0")} />
       )}
-      {home.services.show && <ServicesGrid title={home.services.title} lead={home.services.lead} />}
       {home.products.show && <ProductsGrid title={home.products.title} lead={home.products.lead} />}
       {home.video.show && <VideoBlock hasVideo={hasVideo} title={home.video.title} lead={home.video.lead} />}
       {home.cases.show && homeCases.length > 0 && (
@@ -63,11 +69,10 @@ export default async function Home() {
       {home.team.show && (
         <TeamBlock title={home.team.title} lead={home.team.lead} members={team} limit={home.team.limit} />
       )}
-      {home.quotes.show && testimonials.length > 0 && (
-        <QuotesBlock title={home.quotes.title} lead={home.quotes.lead} items={testimonials} />
-      )}
+      {/* Yalnız metni girilmiş (yayın izni olan) yorumlar; hiç yoksa bölüm görünmez */}
+      {showQuotes && <QuotesBlock title={home.quotes.title} lead={home.quotes.lead} items={quotes} />}
       {faqItems.length > 0 && (
-        <section className={sectionY}>
+        <section className={cn(sectionY, showTeam && !showQuotes && "pt-0 md:pt-0")}>
           <div className="container-g">
             <SectionHead center title={home.faq.title} />
             <FaqGrid items={faqItems} className="mt-10" />

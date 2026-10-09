@@ -2,8 +2,10 @@ import Image from "next/image";
 import { LinkedinIcon as Linkedin } from "@/components/ui/icons";
 import type { TeamView } from "@/lib/content";
 import { SectionHead } from "@/components/site/SectionHead";
+import { TeamRoleCard } from "@/components/site/TeamRoleCard";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, sectionY } from "@/components/site/styles";
+import { IconByName } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 /* Fotoğraf gelene kadar marka mavisi tonlarında soyut portre yer tutucusu */
@@ -20,6 +22,8 @@ type TeamBlockProps = { title: string; lead: string; members: TeamView[]; limit?
 export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
   const shown = members.filter((m) => m.showOnHome).slice(0, limit);
   if (shown.length === 0) return null;
+  /* Hiç fotoğraf yoksa boş portreler yerine kompakt rol kartları */
+  const compact = shown.every((m) => !m.photo);
   return (
     <section className={sectionY}>
       <div className="container-g">
@@ -28,6 +32,15 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
           lead={lead}
           action={{ href: "/hakkimizda#ekip", label: "Tüm Ekibi Gör" }}
         />
+        {compact ? (
+          <StaggerGroup className="mt-10 grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
+            {shown.map((m, i) => (
+              <StaggerItem key={`${m.role}-${i}`} className="h-full">
+                <TeamRoleCard member={m} />
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        ) : (
         <StaggerGroup className="mt-10 grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-4">
           {shown.map((m, i) => (
             <StaggerItem key={`${m.role}-${i}`} className="h-full">
@@ -44,19 +57,20 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                     />
                   </div>
                 ) : (
-                  <div className={cn("relative aspect-[4/5] bg-gradient-to-br", TONES[i % TONES.length])} aria-hidden>
-                    <svg viewBox="0 0 100 125" className="absolute inset-x-0 bottom-0 h-[78%] w-full text-white/55" fill="currentColor">
-                      <circle cx="50" cy="42" r="19" />
-                      <path d="M12 125c0-24 17-41 38-41s38 17 38 41z" />
-                    </svg>
+                  /* Fotoğraf gelene kadar: marka tonunda zemin, ortada role uygun ikon */
+                  <div className={cn("relative grid aspect-[4/5] place-items-center bg-gradient-to-br", TONES[i % TONES.length])} aria-hidden>
+                    <span className="grid size-16 place-items-center rounded-full bg-white/80 text-navy shadow-[0_12px_30px_-14px_rgb(1_20_65/0.5)]">
+                      <IconByName name={m.icon} className="size-7" strokeWidth={1.6} />
+                    </span>
                   </div>
                 )}
-                <div className="flex items-center justify-between gap-3 p-4">
+                <div className="flex min-h-[72px] items-center justify-between gap-3 p-4">
                   <div className="min-w-0">
-                    <h3 className="truncate text-[15.5px] font-medium text-heading">{m.name}</h3>
-                    <p className="text-[13px] leading-snug text-muted">{m.role}</p>
+                    {/* İsim girilmediyse rol başlık olur; uydurma isim yazılmaz */}
+                    <h3 className="text-[15.5px] font-medium leading-snug text-heading">{m.placeholder ? m.role : m.name}</h3>
+                    <p className="text-[13px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>
                   </div>
-                  {m.linkedin ? (
+                  {m.linkedin && (
                     <a
                       href={m.linkedin}
                       target="_blank"
@@ -66,16 +80,13 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                     >
                       <Linkedin className="size-4" />
                     </a>
-                  ) : (
-                    <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl text-[#b3bccb] shadow-[0_0_0_1px_rgb(1_20_65/0.08)]">
-                      <Linkedin className="size-4" />
-                    </span>
                   )}
                 </div>
               </article>
             </StaggerItem>
           ))}
         </StaggerGroup>
+        )}
       </div>
     </section>
   );

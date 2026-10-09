@@ -736,6 +736,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "menu_desc": {
+          "name": "menu_desc",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "card_image_id": {
           "name": "card_image_id",
           "type": "integer",
@@ -1412,6 +1418,12 @@
         },
         "version_short": {
           "name": "version_short",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_menu_desc": {
+          "name": "version_menu_desc",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
@@ -9722,6 +9734,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "3cf17712-5020-462a-b549-a267e9a67146",
+  "id": "758183c4-5df7-4a93-b849-28a5bc950713",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

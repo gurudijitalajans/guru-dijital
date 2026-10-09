@@ -33,7 +33,7 @@ export const ABOUT_DEFAULTS = {
     secondaryHref: "#ekip",
   },
   story: {
-    title: "Hikayemiz",
+    title: "Hikâyemiz",
     paragraphs: [
       "Yaratıcılığın markalar için dönüştürücü bir etki yarattığına inanıyoruz. Sosyal medyadan web tasarıma, içerikten dijital pazarlamaya kadar her işi aynı hedefe bakan tek bir ekiple yürütüyoruz.",
       "Sağlıktan turizme, perakendeden inşaata farklı sektörlerden markalarla çalışıyor; ajans deneyimimizi işletmelerin günlük işini kolaylaştıran yazılımlara da taşıyoruz.",

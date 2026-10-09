@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type BtnVariant = "primary" | "brand" | "light" | "white";
+export type BtnVariant = "primary" | "brand" | "light" | "white" | "ghost";
 export type BtnSize = "md" | "lg";
 
 const variants: Record<BtnVariant, string> = {
@@ -15,6 +15,8 @@ const variants: Record<BtnVariant, string> = {
     "bg-white text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.09),0_8px_22px_-12px_rgb(1_20_65/0.35)] hover:shadow-[0_0_0_1px_rgb(42_106_202/0.5),0_10px_26px_-12px_rgb(42_106_202/0.45)]",
   /* Koyu/mavi zeminlerde beyaz hap */
   white: "bg-white text-navy hover:bg-ice",
+  /* Koyu/mavi zeminlerde ikincil: saydam hap, beyaz halka (degrade zeminde kaybolmaz) */
+  ghost: "bg-white/10 text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.55)] hover:bg-white/20 hover:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.85)]",
 };
 
 const sizes: Record<BtnSize, string> = {
@@ -37,7 +39,7 @@ type AsButton = Common & { href?: undefined } & Omit<ComponentProps<"button">, "
 export function Btn(props: AsLink | AsButton) {
   const { variant = "primary", size = "md", arrow = false, className, children } = props;
   const cls = cn(
-    "group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-[-0.005em] transition-[background-color,color,box-shadow,transform] duration-300 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+    "group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-[-0.005em] transition-[background-color,color,box-shadow,scale] duration-300 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
     variants[variant],
     sizes[size],
     className

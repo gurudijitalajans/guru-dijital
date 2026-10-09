@@ -71,7 +71,9 @@ export function og({ name, theme, headline, desktop, mobile }) {
  * App Store tarzı kapak 1200x1500: ürün tonunda zemin, üstte imza + büyük başlık,
  * altta kenardan taşan telefon ve telefonun yanına binen tek bir yüzen kart.
  */
-export function cover({ theme, name, headline, sub, mobile, card, cardStyle = "left:64px;top:1010px;width:480px;transform:rotate(-3deg)" }) {
+/* Kapakta yüzen kart telefon ekranındaki yazının üstüne binmez: telefon yana kayar,
+   kart boş zeminde durur ve telefona yalnız çerçevesinden değer (phoneLeft/phoneWidth). */
+export function cover({ theme, name, headline, sub, mobile, card, cardStyle = "left:64px;top:1010px;width:480px;transform:rotate(-3deg)", phoneLeft = 280, phoneWidth = 640 }) {
   const h = headline.replace(/\*([^*]+)\*/g, `<span style="color:${theme.ice}">$1</span>`);
   const body = `
   <div style="position:absolute;left:150px;top:520px;width:900px;height:1100px;border-radius:50%;background:radial-gradient(closest-side,${theme.hi}88,transparent);filter:blur(20px)"></div>
@@ -81,7 +83,7 @@ export function cover({ theme, name, headline, sub, mobile, card, cardStyle = "l
     <h1 style="margin-top:36px;max-width:900px;font-size:104px;line-height:1.02;font-weight:600;letter-spacing:-.045em;color:#fff;text-wrap:balance">${h}</h1>
     <p style="margin-top:26px;font-size:32px;line-height:1.35;color:rgb(255 255 255/.8);max-width:900px;text-wrap:balance">${sub}</p>
   </div>
-  <div style="position:absolute;left:280px;top:700px">${iphone(mobile, { width: 640, style: "filter:drop-shadow(0 60px 70px rgb(0 6 26/.6))" })}</div>
+  <div style="position:absolute;left:${phoneLeft}px;top:700px">${iphone(mobile, { width: phoneWidth, style: "filter:drop-shadow(0 60px 70px rgb(0 6 26/.6))" })}</div>
   ${card ? floatCard(card, cardStyle, "24px 26px") : ""}
   ${grainLayer(0.06)}`;
   return page({ w: 1200, h: 1500, bg: themeBg(theme), body });

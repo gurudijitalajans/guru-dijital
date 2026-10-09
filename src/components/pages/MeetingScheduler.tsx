@@ -21,7 +21,7 @@ type Day = {
   key: string;
   /** Kısa gün adı, ör. "Cum" */
   weekday: string;
-  /** GG.AA, ör. "22.08" */
+  /** Gün ve kısa ay, ör. "22 Ağu" (onay hapındaki GG.AA.YYYY ile karışmaz) */
   short: string;
   /** GG.AA.YYYY, ör. "22.08.2026" */
   full: string;
@@ -30,7 +30,8 @@ type Day = {
 /* Yarından itibaren önümüzdeki 10 iş günü (hafta sonları atlanır). */
 function buildBusinessDays(): Day[] {
   const wd = new Intl.DateTimeFormat("tr-TR", { weekday: "short" });
-  const dm = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "2-digit" });
+  /* { day, month: "2-digit" } Chrome'da "22/08" üretiyor; kısa ay adı her tarayıcıda aynı */
+  const dm = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" });
   const dmy = new Intl.DateTimeFormat("tr-TR", {
     day: "2-digit",
     month: "2-digit",
@@ -80,13 +81,16 @@ type SchedulerErrors = {
 /* Hata varsa ilk hatalı adıma kaydırılır; giriş alanıysa odaklanır. */
 const FIELD_ORDER = ["day", "time", "name", "email"] as const;
 
-/* Gün ve saat çipleri: beyaz zemin + ince halka; seçili olan marka mavisi */
-const chipCls = (selected: boolean) =>
+/* Gün ve saat çipleri: beyaz zemin + ince halka; seçili olan marka mavisi.
+   Seçim yapılmadan gönderilince çipler inputlar gibi kırmızı halka alır. */
+const chipCls = (selected: boolean, hasError = false) =>
   cn(
     "flex min-h-11 items-center justify-center rounded-xl transition-[background-color,color,box-shadow] duration-200",
     selected
       ? "bg-brand text-white shadow-[0_0_0_1px_#2a6aca]"
-      : "bg-white text-body shadow-[0_0_0_1px_rgb(1_20_65/0.14)] hover:text-heading hover:shadow-[0_0_0_1px_rgb(42_106_202/0.55)]"
+      : hasError
+        ? "bg-white text-body shadow-[0_0_0_1px_rgb(200_30_30/0.6)] hover:text-heading hover:shadow-[0_0_0_1px_rgb(200_30_30/0.8)]"
+        : "bg-white text-body shadow-[0_0_0_1px_rgb(1_20_65/0.14)] hover:text-heading hover:shadow-[0_0_0_1px_rgb(42_106_202/0.55)]"
   );
 
 /** Adım numarası + etiket */
@@ -215,13 +219,13 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
     const firstKey = FIELD_ORDER.find((k) => nextErrors[k]);
     if (!selectedDay || !time || firstKey) {
       setErrors(nextErrors);
-      const targetId =
-        firstKey === "day" || firstKey === "time"
-          ? `ms-${firstKey}-label`
-          : `ms-${firstKey}`;
-      const target = document.getElementById(targetId);
+      const isGroup = firstKey === "day" || firstKey === "time";
+      const target = document.getElementById(isGroup ? `ms-${firstKey}-label` : `ms-${firstKey}`);
       target?.scrollIntoView({ block: "center" });
-      if (target instanceof HTMLInputElement) target.focus({ preventScroll: true });
+      const focusable = isGroup
+        ? document.querySelector<HTMLButtonElement>(`#ms-${firstKey}-group button:not(:disabled)`)
+        : target;
+      if (focusable instanceof HTMLElement) focusable.focus({ preventScroll: true });
       return;
     }
 
@@ -263,7 +267,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
   }
 
   return (
-    <div className={cn(formCardCls, "mx-auto max-w-3xl")}>
+    <div className={cn(formCardCls, "mx-auto flex max-w-3xl flex-col")}>
       {days === null ? (
         /* SSR + hydration iskeleti: tarih üretimi istemciye kalır. */
         <div
@@ -350,7 +354,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
               noValidate
               onSubmit={onSubmit}
               aria-busy={sending}
-              className="relative"
+              className="relative flex flex-1 flex-col"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -372,8 +376,10 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                   </span>
                 </div>
                 <div
+                  id="ms-day-group"
                   role="group"
                   aria-labelledby="ms-day-label"
+                  aria-describedby={errors.day ? "ms-day-error" : undefined}
                   className="-mx-6 flex snap-x snap-proximity gap-2 overflow-x-auto scroll-px-6 px-6 py-1 [scrollbar-width:none] max-md:[mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%_-_24px),transparent)] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0 md:py-0"
                 >
                   {days.map((d) => {
@@ -390,7 +396,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                           e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
                         }}
                         aria-pressed={selected}
-                        className={cn(chipCls(selected), "min-w-[68px] shrink-0 snap-start flex-col px-3 py-2")}
+                        className={cn(chipCls(selected, Boolean(errors.day)), "min-w-[68px] shrink-0 snap-start flex-col px-3 py-2")}
                       >
                         <span
                           className={cn(
@@ -410,12 +416,17 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
 
               {/* Adım 2: saat seçimi */}
               <div className="mt-6 space-y-2.5">
-                <StepLabel id="ms-time-label" n={2}>
-                  Saat seçin <Req />
-                </StepLabel>
+                <div className="flex items-center justify-between gap-3">
+                  <StepLabel id="ms-time-label" n={2}>
+                    Saat seçin <Req />
+                  </StepLabel>
+                  <span className="text-[12.5px] font-medium text-muted">Türkiye saati (GMT+3)</span>
+                </div>
                 <div
+                  id="ms-time-group"
                   role="group"
                   aria-labelledby="ms-time-label"
+                  aria-describedby={errors.time ? "ms-time-error" : undefined}
                   className="grid grid-cols-3 gap-2 sm:grid-cols-6"
                 >
                   {TIME_SLOTS.map((t) => {
@@ -433,7 +444,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                         aria-pressed={selected}
                         aria-label={taken ? `${t}, dolu` : undefined}
                         className={cn(
-                          chipCls(selected),
+                          chipCls(selected, Boolean(errors.time) && !taken),
                           "flex-col px-2 text-[14.5px] font-medium",
                           taken && "cursor-not-allowed bg-soft text-muted/70 shadow-none hover:text-muted/70 hover:shadow-none"
                         )}
@@ -518,7 +529,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
               <Honeypot value={trap} onChange={setTrap} />
               <FormNotice message={notice} />
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
                 <Btn
                   type="submit"
                   variant="primary"

@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
 
-export type SubnavItem = { id: string; label: string };
+/** cta: mobilde dolu düğme olarak basılır (alt eylem çubuğunun yerini alır), masaüstünde sağdaki düğme var */
+export type SubnavItem = { id: string; label: string; cta?: boolean };
 
 /**
  * Ürün sayfasının yapışkan bölüm menüsü: üst menünün hemen altında durur,
  * görünürdeki bölümü vurgular. Mobilde yatay kayar; vurgulanan sekme şeride
- * kendiliğinden girer. Çizgi yok: sabitlendiğinde yalnız yumuşak gölge.
+ * kendiliğinden girer. Çizgi yok: sabitlendiğinde yalnız yumuşak gölge; üst menü
+ * gölgesini o sırada kapatır (html[data-subnav]), iki çubuk tek çubuk gibi durur.
+ * Menüde olmayan bir bölümdeyken hiçbir sekme vurgulanmaz.
  */
 export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLabel: string }) {
   const [active, setActive] = useState(items[0]?.id ?? "");
@@ -21,10 +24,15 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
     const sections = items
       .map((i) => document.getElementById(i.id))
       .filter((el): el is HTMLElement => Boolean(el));
+    /* Okuma bandındaki (ekranın %40-45'i) bölümler; band menüde olmayan bir bölümdeyse küme boşalır */
+    const inBand = new Set<string>();
     const io = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
+        for (const e of entries) {
+          if (e.isIntersecting) inBand.add(e.target.id);
+          else inBand.delete(e.target.id);
+        }
+        setActive(sections.find((s) => inBand.has(s.id))?.id ?? "");
       },
       { rootMargin: "-40% 0px -55% 0px" }
     );
@@ -44,6 +52,16 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
       so.disconnect();
     };
   }, [items]);
+
+  /* Sabitlenmişken üst menünün gölgesi kalkar (SiteHeader bu özniteliği okur) */
+  useEffect(() => {
+    const root = document.documentElement;
+    if (stuck) root.dataset.subnav = "1";
+    else delete root.dataset.subnav;
+    return () => {
+      delete root.dataset.subnav;
+    };
+  }, [stuck]);
 
   /* Vurgulanan sekme mobil şeritte görünür kalsın (yalnız yatay kaydırma) */
   useEffect(() => {
@@ -70,7 +88,7 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
             className="-mx-4 flex min-w-0 flex-1 gap-1 overflow-x-auto px-4 [scrollbar-width:none] max-lg:[mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%_-_24px),transparent)] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:px-0"
           >
             {items.map((i) => (
-              <li key={i.id} data-id={i.id} className="shrink-0">
+              <li key={i.id} data-id={i.id} className={cn("shrink-0", i.cta && "lg:hidden")}>
                 <a
                   href={`#${i.id}`}
                   aria-current={active === i.id ? "true" : undefined}
@@ -78,7 +96,11 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
                   data-umami-event-bolum={i.label}
                   className={cn(
                     "inline-flex min-h-11 items-center rounded-full px-4 text-[14.5px] font-medium transition-colors",
-                    active === i.id ? "bg-chip text-heading" : "text-muted hover:text-heading"
+                    i.cta
+                      ? "bg-navy text-white hover:bg-brand"
+                      : active === i.id
+                        ? "bg-chip text-heading"
+                        : "text-muted hover:text-heading"
                   )}
                 >
                   {i.label}

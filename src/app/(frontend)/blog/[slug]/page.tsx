@@ -12,6 +12,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { formatDate, getPostBySlug, getPublishedPosts, mediaSrc, readingMinutes, toCard } from "@/lib/blog";
 import { site } from "@/lib/data";
 import { pageMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 import type { Category, Media, User } from "@/payload-types";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -42,7 +43,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   const category = typeof post.category === "object" ? (post.category as Category | null) : null;
   const author = typeof post.author === "object" ? (post.author as User | null) : null;
-  const cover = mediaSrc(typeof post.cover === "object" ? (post.cover as Media) : null, "wide");
+  /* Kapak 1024px genişlikte basılır: 2x ekranda keskin kalsın diye özgün dosya kaynak olur */
+  const cover = mediaSrc(typeof post.cover === "object" ? (post.cover as Media) : null, "original");
   const minutes = readingMinutes(post.content);
   const others = (await getPublishedPosts(4))
     .filter((p) => p.slug !== slug)
@@ -117,7 +119,8 @@ export default async function BlogPostPage({ params }: Props) {
         )}
 
         <div className="container-g">
-          <RichText data={post.content} className="prose-guru mx-auto max-w-[720px] pb-4 pt-10 md:pt-14" />
+          {/* ~75 karakterlik satır: 17px gövdede rahat okuma genişliği */}
+          <RichText data={post.content} className="prose-guru mx-auto max-w-[620px] pb-4 pt-10 md:pt-14" />
         </div>
       </article>
 
@@ -125,9 +128,10 @@ export default async function BlogPostPage({ params }: Props) {
         <section className={`bg-soft ${sectionY} mt-12`}>
           <div className="container-g">
             <SectionHead title="Diğer Yazılar" action={{ href: "/blog", label: "Tüm yazılar" }} />
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            {/* Tek yazı yatay kartla, ikisi iki sütunda: üç sütunlu ızgarada boş sütun kalmaz */}
+            <div className={cn("mt-10 grid gap-5 md:gap-6", others.length === 2 ? "sm:grid-cols-2" : others.length > 2 && "sm:grid-cols-2 lg:grid-cols-3")}>
               {others.map((p) => (
-                <PostCard key={p.slug} post={p} />
+                <PostCard key={p.slug} post={p} as="h3" layout={others.length === 1 ? "wide" : "card"} />
               ))}
             </div>
           </div>
@@ -135,8 +139,8 @@ export default async function BlogPostPage({ params }: Props) {
       )}
 
       <ClosingCta
-        title="Bu konuyu markanız için konuşalım"
-        lead="Hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz."
+        title="Bu Konuyu Markanız İçin Konuşalım"
+        lead="Yazıdaki adımları kendi hedeflerinize göre birlikte uyarlayalım; ilk görüşme ücretsiz."
       />
     </>
   );

@@ -15,8 +15,9 @@ const BLOCKER_SELECTOR = "footer, form, [data-hide-cta-bar]";
  * Mobil/tablet için başparmak bölgesinde kalıcı dönüşüm girişi.
  * - Hero (main içindeki ilk section) ekrandan çıkınca alttan gelir.
  * - Footer, form ya da [data-hide-cta-bar] görünümdeyken gizlenir.
- * - /iletisim'de hiç render edilmez (hedefi zaten o sayfa).
- * - Ürün detayında "#demo" çapasına, diğer sayfalarda /iletisim'e gider.
+ * - /iletisim'de (hedefi zaten o sayfa) ve ürün detayında (yapışkan alt menüde
+ *   Demo düğmesi var) hiç render edilmez.
+ * - /iletisim'e gider; hizmet sayfasında hizmet ön seçili olarak.
  * Hydration: SSR'da hiçbir şey basılmaz (show=false); görünürlük yalnız
  * IntersectionObserver callback'lerinde güncellenir.
  */
@@ -24,7 +25,8 @@ export function MobileCtaBar() {
   const pathname = usePathname();
   const [heroOut, setHeroOut] = useState(false);
   const [blocked, setBlocked] = useState(false);
-  const enabled = pathname !== "/iletisim";
+  /* İletişimde hedef zaten o sayfa; ürün detayında yapışkan alt menüdeki Demo düğmesi bu işi görür (ekranda üç sabit çubuk olmasın) */
+  const enabled = pathname !== "/iletisim" && !pathname.startsWith("/urunler/");
 
   useEffect(() => {
     if (!enabled) return;
@@ -67,9 +69,9 @@ export function MobileCtaBar() {
 
   if (!enabled) return null;
 
-  const isProduct = pathname.startsWith("/urunler/");
-  const href = isProduct ? "#demo" : "/iletisim";
-  const label = isProduct ? "Demo Talep Et" : "Teklif Al";
+  /* Hizmet sayfasında form o hizmet seçili açılır (sayfadaki Teklif Al düğmeleri gibi) */
+  const service = pathname.match(/^\/hizmetler\/([^/]+)$/)?.[1];
+  const href = service ? `/iletisim?hizmet=${service}` : "/iletisim";
   const show = heroOut && !blocked;
 
   return (
@@ -81,14 +83,14 @@ export function MobileCtaBar() {
           animate={{ y: 0 }}
           exit={{ y: "110%" }}
           transition={{ duration: 0.35, ease: EASE }}
-          className="fixed inset-x-0 bottom-0 z-40 bg-white/95 shadow-[0_-1px_0_rgb(1_20_65/0.06),0_-12px_30px_-20px_rgb(1_20_65/0.35)] backdrop-blur-md lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 bg-white/95 shadow-[0_-10px_30px_-18px_rgb(1_20_65/0.32)] backdrop-blur-md lg:hidden"
         >
           <div className="container-g flex items-center justify-between gap-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
             <span className="min-w-0 text-[13px] font-medium text-muted">
               Aynı gün dönüş
             </span>
             <Btn href={href} variant="primary" size="md" className="shrink-0" data-umami-event="teklif-al" data-umami-event-konum="mobil-bar">
-              {label}
+              Teklif Al
             </Btn>
           </div>
         </motion.div>
