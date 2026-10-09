@@ -74,6 +74,9 @@ export interface Config {
     companies: Company;
     quotes: Quote;
     activities: Activity;
+    projects: Project;
+    tasks: Task;
+    templates: Template;
     team: Team;
     'case-studies': CaseStudy;
     testimonials: Testimonial;
@@ -104,6 +107,9 @@ export interface Config {
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
     quotes: QuotesSelect<false> | QuotesSelect<true>;
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    tasks: TasksSelect<false> | TasksSelect<true>;
+    templates: TemplatesSelect<false> | TemplatesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
@@ -242,6 +248,10 @@ export interface Company {
 export interface User {
   id: number;
   name: string;
+  /**
+   * Guru Operation ekip planındaki doluluk yüzdesi bu saate göre hesaplanır.
+   */
+  weeklyHours?: number | null;
   /**
    * Editör içerik ve müşteri kayıtlarıyla çalışır; kullanıcı ekleme ve silme yöneticidedir.
    */
@@ -398,6 +408,115 @@ export interface Activity {
   company?: (number | null) | Company;
   booking?: (number | null) | Booking;
   owner?: (number | null) | User;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Müşteri işleri ve iç projeler. Şablon seçerek açarsanız görevler kendiliğinden oluşur.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  title: string;
+  company?: (number | null) | Company;
+  contact?: (number | null) | Contact;
+  startDate?: string | null;
+  /**
+   * Şablonla açılırsa son adımın bitişi.
+   */
+  dueDate?: string | null;
+  /**
+   * Yalnız iş açılırken uygulanır: adımlar görev olarak eklenir.
+   */
+  template?: (number | null) | Template;
+  description?: string | null;
+  status: 'aktif' | 'beklemede' | 'tamamlandi' | 'iptal';
+  /**
+   * Şablon adımında sorumlu yoksa görev buna atanır; Kontrol'e gelen işler ona bildirilir.
+   */
+  owner?: (number | null) | User;
+  deal?: (number | null) | Deal;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Tekrarlayan işlerin adımları. Şablondan iş açınca her adım sorumlusuna ve tarihine göre görev olur.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "templates".
+ */
+export interface Template {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Başlangıç ve süre iş günüdür: işin başladığı günden kaç gün sonra başlar, kaç günde biter.
+   */
+  steps?:
+    | {
+        title: string;
+        assignee?: (number | null) | User;
+        offset: number;
+        duration: number;
+        /**
+         * Ekip kapasitesi bu saatle hesaplanır.
+         */
+        hours?: number | null;
+        priority?: ('dusuk' | 'normal' | 'yuksek' | 'acil') | null;
+        checklist?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Operasyon görevleri. Görev panosunda sürükleyerek aşamasını değiştirebilirsiniz; Tamam'a yalnız Kontrol'den ve kontrol listesi bitince geçilir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tasks".
+ */
+export interface Task {
+  id: number;
+  title: string;
+  project?: (number | null) | Project;
+  assignee?: (number | null) | User;
+  startDate?: string | null;
+  dueDate?: string | null;
+  /**
+   * Ekip planındaki doluluk bununla hesaplanır.
+   */
+  hours?: number | null;
+  description?: string | null;
+  /**
+   * Açık madde varken görev Tamam'a geçmez.
+   */
+  checklist?:
+    | {
+        done?: boolean | null;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  stage: 'yapilacak' | 'devam' | 'kontrol' | 'tamam';
+  priority: 'dusuk' | 'normal' | 'yuksek' | 'acil';
+  /**
+   * Panoda G-numara olarak görünür.
+   */
+  seq?: number | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  order?: number | null;
   tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
@@ -1162,6 +1281,18 @@ export interface PayloadLockedDocument {
         value: number | Activity;
       } | null)
     | ({
+        relationTo: 'projects';
+        value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'tasks';
+        value: number | Task;
+      } | null)
+    | ({
+        relationTo: 'templates';
+        value: number | Template;
+      } | null)
+    | ({
         relationTo: 'team';
         value: number | Team;
       } | null)
@@ -1398,6 +1529,82 @@ export interface ActivitiesSelect<T extends boolean = true> {
   company?: T;
   booking?: T;
   owner?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  company?: T;
+  contact?: T;
+  startDate?: T;
+  dueDate?: T;
+  template?: T;
+  description?: T;
+  status?: T;
+  owner?: T;
+  deal?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tasks_select".
+ */
+export interface TasksSelect<T extends boolean = true> {
+  title?: T;
+  project?: T;
+  assignee?: T;
+  startDate?: T;
+  dueDate?: T;
+  hours?: T;
+  description?: T;
+  checklist?:
+    | T
+    | {
+        done?: T;
+        text?: T;
+        id?: T;
+      };
+  stage?: T;
+  priority?: T;
+  seq?: T;
+  startedAt?: T;
+  completedAt?: T;
+  order?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "templates_select".
+ */
+export interface TemplatesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        assignee?: T;
+        offset?: T;
+        duration?: T;
+        hours?: T;
+        priority?: T;
+        checklist?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   tenant?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1754,6 +1961,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  weeklyHours?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -919,6 +919,9 @@
 .guru-crm__feed b {
   font-weight: 500;
 }
+.guru-crm__feed small {
+  display: block;
+}
 .guru-crm__feed a {
   color: var(--guru-navy);
   text-decoration: none;
@@ -1125,6 +1128,9 @@
   .guru-pipe__board {
     grid-template-columns: repeat(5, 82%);
   }
+  .guru-ops__board {
+    grid-template-columns: repeat(4, 82%);
+  }
   .guru-pipe__tools,
   .guru-pipe__tools input {
     width: 100%;
@@ -1136,4 +1142,289 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 4px;
   }
+}
+
+/* ---- Guru Operation: görev panosu, iş sayfası, ekip planı ---- */
+.guru-home__bad {
+  color: #a12121 !important;
+}
+.guru-pipe__tools select,
+.guru-crm__due select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: var(--guru-navy);
+  cursor: pointer;
+}
+.guru-crm__due select {
+  border-radius: 8px;
+}
+.guru-ops__board {
+  grid-template-columns: repeat(4, minmax(230px, 1fr));
+}
+.guru-ops__col--tamam {
+  background: #eef8f2;
+}
+.guru-ops__col--kontrol {
+  background: #fff8ea;
+}
+.guru-ops__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.guru-ops__code {
+  font-size: 12px;
+  color: var(--guru-muted);
+  font-variant-numeric: tabular-nums;
+}
+.guru-ops__prio {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.guru-ops__prio--yuksek {
+  background: #fff3dc;
+  color: #8a4b06;
+}
+.guru-ops__prio--acil {
+  background: #fde8e8;
+  color: #a12121;
+}
+.guru-ops__late {
+  color: #a12121 !important;
+}
+.guru-ops__count {
+  color: var(--guru-muted);
+  font-weight: 400;
+}
+.guru-ops__progress small {
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-ops__progress .guru-home__progress {
+  background: var(--guru-soft);
+  margin: 4px 0 6px;
+}
+.guru-ops__list {
+  grid-template-columns: minmax(0, 1fr);
+}
+.guru-ops__due input {
+  min-height: 44px;
+}
+.guru-ops__deal {
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--guru-soft);
+}
+.guru-ops__deal .guru-crm__links a {
+  background: #fff;
+}
+.guru-ops__deal-title {
+  margin: 0;
+  font-weight: 500;
+  color: var(--guru-navy);
+}
+.guru-ops__deal .guru-crm__hint {
+  margin: 0;
+}
+.guru-plan {
+  display: grid;
+  gap: 16px;
+}
+.guru-plan .guru-pipe__head {
+  margin-bottom: 0;
+}
+.guru-plan__nav {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--guru-navy);
+  text-decoration: none;
+  font-size: 14px;
+}
+.guru-plan__nav:hover {
+  border-color: var(--guru-brand);
+}
+.guru-plan__cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.guru-plan__cap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.guru-plan__cap li {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 56px;
+  grid-template-areas: "who bar pct" "who note note";
+  align-items: center;
+  column-gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+}
+.guru-plan__who {
+  grid-area: who;
+  font-weight: 500;
+  color: var(--guru-navy);
+}
+.guru-plan__bar {
+  grid-area: bar;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--guru-soft);
+  overflow: hidden;
+}
+.guru-plan__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--guru-brand);
+}
+.guru-plan__cap .is-full .guru-plan__bar span {
+  background: #d98a10;
+}
+.guru-plan__cap .is-over .guru-plan__bar span {
+  background: #c62828;
+}
+.guru-plan__cap .is-over .guru-plan__pct,
+.guru-plan__cap .is-over small {
+  color: #a12121;
+}
+.guru-plan__pct {
+  grid-area: pct;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--guru-navy);
+}
+.guru-plan__cap small {
+  grid-area: note;
+  font-size: 13px;
+  color: var(--guru-muted);
+}
+.guru-plan__scroll {
+  position: relative;
+  overflow-x: auto;
+}
+.guru-plan__grid {
+  min-width: 760px;
+  display: grid;
+  gap: 4px;
+}
+.guru-plan__head,
+.guru-plan__row {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.6fr) repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+.guru-plan__head span {
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--guru-muted);
+  border-radius: 8px;
+}
+.guru-plan__head .is-today {
+  background: var(--guru-navy);
+  color: #fff;
+}
+.guru-plan__lane {
+  margin: 10px 0 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--guru-navy);
+}
+.guru-plan__task {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--guru-navy);
+  text-decoration: none;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.guru-plan__task small {
+  color: var(--guru-muted);
+}
+.guru-plan__cell {
+  position: relative;
+  min-height: 32px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.55);
+}
+.guru-plan__cell.is-today {
+  background: #e3ecfa;
+}
+.guru-plan__span {
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 4px;
+  height: 18px;
+  max-width: none;
+  border-radius: 999px;
+}
+.guru-plan__span,
+.guru-plan__key {
+  background: #b9c7dd;
+}
+.guru-plan__span--devam {
+  background: var(--guru-brand);
+}
+.guru-plan__span--kontrol {
+  background: #e3a21a;
+}
+.guru-plan__span--tamam {
+  background: #2e9e63;
+}
+.guru-plan__span.is-late,
+.guru-plan__key.is-late {
+  background: #c62828;
+}
+.guru-plan__key {
+  display: inline-block;
+  width: 14px;
+  height: 8px;
+  margin: 0 4px 0 10px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.guru-plan__key:first-child {
+  margin-left: 0;
+}
+.guru-plan__legend {
+  margin-top: 10px;
+}
+@media (max-width: 800px) {
+  .guru-plan__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .guru-plan__cap li {
+    grid-template-columns: minmax(0, 1fr) 56px;
+    grid-template-areas: "who pct" "bar bar" "note note";
+    row-gap: 6px;
+  }
+  .guru-pipe__tools select {
+    flex: 1 1 140px;
+  }
+}
+.guru-plan .guru-home__panel-head {
+  flex-wrap: wrap;
+}
+.guru-plan .guru-home__panel-head h2 {
+  white-space: nowrap;
 }

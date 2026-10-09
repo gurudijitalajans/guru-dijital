@@ -198,8 +198,10 @@ export const Deals: CollectionConfig = {
     timeline("deal"),
     { name: "stage", type: "select", label: "Aşama", required: true, defaultValue: "aday", options: [...DEAL_STAGES], index: true, admin: { position: "sidebar" } },
     ownerField,
+    /* Guru Operation: kazanılan fırsattan tek tıkla iş */
+    { name: "toProject", type: "ui", admin: { position: "sidebar", components: { Field: "/payload/components/ops/DealToProject#DealToProject" } } },
     { name: "lead", type: "relationship", relationTo: "leads", label: "Geldiği talep", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.lead) } },
-    { name: "closedAt", type: "date", label: "Kapanış", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.closedAt) } },
+    { name: "closedAt", type: "date", label: "Kapanış", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (data) => Boolean(data?.closedAt) } },
     { name: "order", type: "number", admin: { hidden: true } },
     tenantField,
   ],

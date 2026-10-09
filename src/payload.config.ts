@@ -28,6 +28,7 @@ import { SiteSettings } from "./payload/globals/SiteSettings";
 import { trOverrides } from "./payload/translations";
 import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
 import { Tenants } from "./payload/crm/tenant";
+import { Projects, Tasks, Templates } from "./payload/ops/collections";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -110,6 +111,16 @@ export default buildConfig({
           path: "/satis-hatti",
           meta: { title: "Satış hattı" },
         },
+        operasyon: {
+          Component: "/payload/components/ops/TaskBoardView#TaskBoardView",
+          path: "/operasyon",
+          meta: { title: "Görev panosu" },
+        },
+        ekipPlani: {
+          Component: "/payload/components/ops/TeamPlanView#TeamPlanView",
+          path: "/ekip-plani",
+          meta: { title: "Ekip planı" },
+        },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -123,7 +134,7 @@ export default buildConfig({
     fallbackLanguage: "tr",
     translations: { tr: trOverrides },
   },
-  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
+  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
   collections: [
     Leads,
     Bookings,
@@ -132,6 +143,9 @@ export default buildConfig({
     Companies,
     Quotes,
     Activities,
+    Projects,
+    Tasks,
+    Templates,
     Team,
     CaseStudies,
     Testimonials,

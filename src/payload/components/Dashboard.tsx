@@ -6,6 +6,7 @@ import { getOverview, umamiConfigured } from "@/lib/umami";
 import { LEAD_STATUS } from "../collections/Leads";
 import { activityLabel, DEAL_STAGES, OPEN_STAGES } from "../crm/stages";
 import { TaskCheck } from "./crm/TaskCheck";
+import { taskCode, taskStageLabel } from "../ops/stages";
 
 /**
  * Panel ana sayfası (Payload'un koleksiyon ızgarası yerine). Soru şu:
@@ -17,6 +18,7 @@ import { TaskCheck } from "./crm/TaskCheck";
 type BookingRow = { id: number | string; name: string; date: string; time: string; status: string; topic?: string | null };
 type LeadRow = { id: number | string; name: string; service?: string | null; status: string; createdAt: string };
 type Recent = { label: string; kind: string; href: string; updatedAt: string };
+type OpsRow = { id: number | string; seq?: number | null; title: string; stage: string; dueDate?: string | null; project?: { title: string } | null };
 type TaskRow = { id: number | string; type: string; title: string; dueAt?: string | null; deal?: { id: number | string; title: string } | null; contact?: { id: number | string; name: string } | null };
 
 const TZ = "Europe/Istanbul";
@@ -44,9 +46,17 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const weekAgo = daysAgoIso(7);
   const endOfToday = new Date(`${today}T23:59:59+03:00`).toISOString();
   const taskWhere: Where = { and: [{ done: { equals: false } }, { dueAt: { less_than_equal: endOfToday } }] };
-  const [tasks, openDeals] = await Promise.all([
+  const startOfToday = `${today}T00:00:00.000Z`;
+  const [tasks, openDeals, myOps, opsOpen, opsLate, opsReview, activeProjects] = await Promise.all([
     payload.find({ collection: "activities", where: taskWhere, sort: "dueAt", limit: 8, depth: 1 }),
     payload.find({ collection: "deals", where: { stage: { in: OPEN_STAGES } }, limit: 500, depth: 0, pagination: false, select: { stage: true, value: true } }),
+    user
+      ? payload.find({ collection: "tasks", where: { and: [{ assignee: { equals: user.id } }, { stage: { not_equals: "tamam" } }] }, sort: "dueDate", limit: 6, depth: 1 })
+      : Promise.resolve({ docs: [], totalDocs: 0 }),
+    payload.count({ collection: "tasks", where: { stage: { not_equals: "tamam" } } }),
+    payload.count({ collection: "tasks", where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startOfToday } }] } }),
+    payload.count({ collection: "tasks", where: { stage: { equals: "kontrol" } } }),
+    payload.count({ collection: "projects", where: { status: { equals: "aktif" } } }),
   ]);
   const [settings, newLeads, todayBookings, upcoming, nextBookings, lastLeads, draftCounts, team, refs, quotes, users, recent, weekLeads] =
     await Promise.all([
@@ -165,6 +175,34 @@ export async function Dashboard({ payload, user }: ServerProps) {
         </section>
         <section className="guru-home__panel">
           <div className="guru-home__panel-head">
+            <h2>Görevlerim</h2>
+            <Link href="/admin/operasyon">Görev panosu</Link>
+          </div>
+          {myOps.docs.length === 0 ? (
+            <p className="guru-home__empty">Size atanmış açık görev yok. Operasyon görevleri Görev panosunda.</p>
+          ) : (
+            <ul className="guru-home__rows">
+              {(myOps.docs as unknown as OpsRow[]).map((t) => (
+                <li key={t.id}>
+                  <Link href={`/admin/collections/tasks/${t.id}`}>
+                    <span className="guru-home__who">
+                      {taskCode(t.seq)} {t.title}
+                    </span>
+                    <span className="guru-home__meta">
+                      {[taskStageLabel(t.stage), t.dueDate ? shortFmt.format(new Date(t.dueDate)) : null, t.project?.title].filter(Boolean).join(" · ")}
+                    </span>
+                    {t.dueDate && t.dueDate < startOfToday ? <span className="guru-home__pill guru-home__pill--gecikti">Gecikti</span> : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="guru-home__cols">
+        <section className="guru-home__panel">
+          <div className="guru-home__panel-head">
             <h2>Satış hattı</h2>
             <Link href="/admin/satis-hatti">Panoyu aç</Link>
           </div>
@@ -178,6 +216,30 @@ export async function Dashboard({ payload, user }: ServerProps) {
             ))}
           </ul>
           <p className="guru-home__meta">Kazanılan ve kaybedilenler panoda son 30 günle görünür.</p>
+        </section>
+        <section className="guru-home__panel">
+          <div className="guru-home__panel-head">
+            <h2>Operasyon</h2>
+            <Link href="/admin/ekip-plani">Ekip planı</Link>
+          </div>
+          <ul className="guru-home__stages">
+            <li>
+              <span>Süren iş</span>
+              <b>{activeProjects.totalDocs}</b>
+              <small>{opsOpen.totalDocs} açık görev</small>
+            </li>
+            <li>
+              <span>Geciken</span>
+              <b className={opsLate.totalDocs ? "guru-home__bad" : undefined}>{opsLate.totalDocs}</b>
+              <small>teslim tarihi geçti</small>
+            </li>
+            <li>
+              <span>Onay bekleyen</span>
+              <b>{opsReview.totalDocs}</b>
+              <small>Kontrol aşamasında</small>
+            </li>
+          </ul>
+          <p className="guru-home__meta">Kazanılan fırsatı, fırsat sayfasındaki &ldquo;Operasyon işi aç&rdquo; düğmesiyle işe dönüştürün.</p>
         </section>
       </div>
 

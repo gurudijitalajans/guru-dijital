@@ -35,6 +35,14 @@ export const Users: CollectionConfig = {
   fields: [
     { name: "name", type: "text", label: "Ad Soyad", required: true },
     {
+      name: "weeklyHours",
+      type: "number",
+      label: "Haftalık çalışma saati",
+      defaultValue: 40,
+      min: 0,
+      admin: { position: "sidebar", description: "Guru Operation ekip planındaki doluluk yüzdesi bu saate göre hesaplanır." },
+    },
+    {
       name: "role",
       type: "select",
       label: "Rol",

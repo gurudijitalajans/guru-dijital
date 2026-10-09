@@ -1,8 +1,8 @@
 import type { PayloadRequest } from "payload";
 
 /**
- * Siteden gelen talep ve randevuları ekibe e-postayla bildirir. Alıcı:
- * BILDIRIM_EPOSTA ortam değişkeni, yoksa Site Ayarları > İletişim e-postası.
+ * Siteden gelen talep ve randevuları ekibe, Operation görevlerini sorumlusuna
+ * e-postayla bildirir. Ekip alıcısı: BILDIRIM_EPOSTA ortam değişkeni, yoksa Site Ayarları > İletişim e-postası.
  * E-posta servisi (Resend) bağlı değilse Payload iletiyi yalnız sunucu
  * günlüğüne yazar. Gönderim hatası formu asla bozmaz: kayıt zaten panelde.
  */
@@ -20,12 +20,16 @@ async function recipient(req: PayloadRequest) {
   }
 }
 
-export async function notifyTeam(
-  req: PayloadRequest,
-  opts: { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; adminPath: string }
-) {
+type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; adminPath: string };
+
+export async function notifyTeam(req: PayloadRequest, opts: Notice) {
   const to = await recipient(req);
   if (!to) return;
+  await sendNotice(req, to, opts);
+}
+
+/** Tek kişiye bildirim (ör. görev atanınca sorumluya) */
+export async function sendNotice(req: PayloadRequest, to: string, opts: Notice) {
   const rows = opts.rows.filter((r): r is [string, string] => Boolean(r[1]?.trim()));
   const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
   const link = `${base}/admin${opts.adminPath}`;
