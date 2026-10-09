@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { isAdmin, isLoggedIn, publishedOrLoggedIn } from "../access";
-import { faqField, iconField, orderField, slugField, textList, titleDescList } from "../fields";
+import { faqField, iconField, orderField, pageMap, ratioValidate, slugField, textHelper, textList, titleDescList } from "../fields";
 import { revalidate } from "../utils";
 
 /**
@@ -12,7 +12,7 @@ export const Products: CollectionConfig = {
   labels: { singular: "Ürün", plural: "Ürünler" },
   admin: {
     useAsTitle: "name",
-    group: "İçerik",
+    group: false,
     defaultColumns: ["name", "tagline", "order", "_status"],
     preview: (doc) => (doc?.slug ? `/urunler/${doc.slug}` : null),
   },
@@ -37,96 +37,72 @@ export const Products: CollectionConfig = {
       label: "Kart açıklaması",
       required: true,
       maxLength: 240,
-      admin: { description: "Ana sayfa ve /urunler kartlarında görünür." },
+      admin: { description: "Ana sayfa ve ürünler sayfasındaki kartlarda görünür." },
     },
+    /* Beş bölüm, sayfanın yukarıdan aşağı sırasıyla. Veri adları (hero, tour,
+       comparison, seo) eski sekmelerle aynı gruplardır: veritabanı değişmez. */
     {
       type: "tabs",
       tabs: [
         {
-          label: "Kart ve görsel",
+          label: "Sayfanın üstü",
+          description: "Ürün sayfasının ilk ekranı: başlık, açıklama, düğme ve sağdaki görsel.",
           fields: [
-            textList("highlights", "Kart maddeleri", "Madde", { minRows: 1, maxRows: 4, description: "Kartta tik işaretiyle listelenir; üç madde önerilir." }),
+            pageMap("mapHero", "urun", ["Giriş"]),
             {
-              name: "screenshot",
-              type: "upload",
-              relationTo: "media",
-              label: "Ekran görüntüsü",
-              required: true,
-              admin: { description: "Yatay ürün ekranı (1600x1100 önerilir). Alternatif metni medya kaydından gelir." },
-            },
-            {
-              type: "row",
+              name: "hero",
+              type: "group",
+              label: false,
               fields: [
-                {
-                  name: "heroVisual",
-                  type: "upload",
-                  relationTo: "media",
-                  label: "Giriş görseli",
-                  admin: { description: "Ürün sayfasının girişinde, marka ışık yelpazesiyle (4:3, 1600x1200)." },
-                },
-                {
-                  name: "cover",
-                  type: "upload",
-                  relationTo: "media",
-                  label: "Kapak görseli",
-                  admin: { description: "Ana sayfa ve ürün kartlarındaki App Store tarzı dikey kapak (4:5, 1200x1500)." },
-                },
-                {
-                  name: "ogImage",
-                  type: "upload",
-                  relationTo: "media",
-                  label: "Paylaşım görseli",
-                  admin: { description: "Sosyal medyada paylaşılınca görünen görsel (1200x630). Boşsa ürünün hazır paylaşım görseli kullanılır." },
-                },
+                { name: "eyebrow", type: "text", label: "Üst etiket", admin: { description: "Başlığın üstündeki küçük etiket. Boşsa ürün adı yazar." } },
+                { name: "headline", type: "text", label: "Başlık", required: true },
+                textHelper("headlineHelper", "hero.headline", "accent"),
+                { name: "sub", type: "textarea", label: "Açıklama", required: true },
+                { name: "ctaLabel", type: "text", label: "Düğme metni", defaultValue: "Demo Talep Edin" },
+                textList("trust", "Güven ifadeleri", "İfade", {
+                  maxRows: 3,
+                  description: "Düğmelerin altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).",
+                }),
               ],
             },
-          ],
-        },
-        {
-          name: "hero",
-          label: "Sayfa girişi",
-          fields: [
-            { name: "eyebrow", type: "text", label: "Üst etiket", admin: { description: "Boşsa ürün adı kullanılır." } },
             {
-              name: "headline",
-              type: "text",
-              label: "Başlık",
-              required: true,
-              admin: { description: "Yıldız içindeki kelime bir kademe kalın yazılır: Müşterinize *7/24* yanıt veren asistan" },
+              name: "heroVisual",
+              type: "upload",
+              relationTo: "media",
+              label: "Giriş görseli",
+              validate: ratioValidate(4 / 3, "4:3", "Giriş görseli") as never,
+              admin: { description: "Başlığın yanında duran yatay görsel (4:3)." },
             },
-            { name: "sub", type: "textarea", label: "Açıklama", required: true },
-            { name: "ctaLabel", type: "text", label: "Buton metni", defaultValue: "Demo Talep Et" },
-            textList("trust", "Güven ifadeleri", "İfade", {
-              maxRows: 3,
-              description: "Butonların altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).",
-            }),
           ],
         },
         {
-          name: "tour",
-          label: "Ürün turu",
+          label: "Ekranlar ve video",
+          description: "Ürün turu videosu ve görselle metnin dönüşümlü sıralandığı ekran satırları.",
           fields: [
-            { name: "show", type: "checkbox", label: "Bölümü göster", defaultValue: true },
-            { name: "title", type: "text", label: "Başlık", admin: { placeholder: "Guru Chatbot ürün turu" } },
+            pageMap("mapScreens", "urun", ["Ürün turu videosu", "Öne çıkan ekranlar"]),
             {
-              name: "videoUrl",
-              type: "text",
-              label: "Video adresi",
-              admin: { description: "Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi." },
+              name: "tour",
+              type: "group",
+              label: "Ürün turu videosu",
+              fields: [
+                { name: "show", type: "checkbox", label: "Bölümü göster", defaultValue: true },
+                { name: "title", type: "text", label: "Başlık", admin: { placeholder: "Guru Chatbot ürün turu" } },
+                {
+                  name: "videoUrl",
+                  type: "text",
+                  label: "Video adresi",
+                  admin: { description: "Site içindeki dosya (/video/products/guru-chatbot.mp4) ya da https ile başlayan mp4 adresi." },
+                },
+                { name: "poster", type: "upload", relationTo: "media", label: "Kapak görseli", admin: { description: "Oynat düğmesinin arkasındaki kare. Boşsa videonun hazır kapağı kullanılır." } },
+              ],
             },
-            { name: "poster", type: "upload", relationTo: "media", label: "Kapak görseli", admin: { description: "Boşsa videonun hazır kapak karesi kullanılır." } },
-          ],
-        },
-        {
-          label: "Öne çıkan ekranlar",
-          fields: [
             {
               name: "showcase",
               type: "array",
               label: "Öne çıkan ekranlar",
               labels: { singular: "Ekran", plural: "Ekranlar" },
               maxRows: 4,
-              admin: { description: "Görsel ve metin dönüşümlü satırlar; üç satır önerilir. Görsel 4:3 (1200x900)." },
+              admin: { description: "Görsel ve metin dönüşümlü satırlar; üç satır önerilir." },
               fields: [
                 {
                   type: "row",
@@ -137,98 +113,164 @@ export const Products: CollectionConfig = {
                 },
                 { name: "desc", type: "textarea", label: "Açıklama", required: true },
                 textList("bullets", "Maddeler", "Madde", { maxRows: 4 }),
-                { name: "image", type: "upload", relationTo: "media", label: "Görsel", required: true },
-              ],
-            },
-          ],
-        },
-        {
-          name: "comparison",
-          label: "Karşılaştırma",
-          admin: { description: "\"Bugün\" ve \"Guru ile\" sütunları; dört madde önerilir." },
-          fields: [
-            textList("before", "Bugün", "Madde", { maxRows: 6 }),
-            textList("after", "Guru ile", "Madde", { maxRows: 6 }),
-          ],
-        },
-        {
-          label: "Neler dahil",
-          fields: [
-            {
-              name: "included",
-              type: "array",
-              label: "Neler dahil",
-              labels: { singular: "Kalem", plural: "Kalemler" },
-              maxRows: 6,
-              fields: [
                 {
-                  type: "row",
-                  fields: [{ name: "title", type: "text", label: "Başlık", required: true }, iconField({ width: "40%" })],
+                  name: "image",
+                  type: "upload",
+                  relationTo: "media",
+                  label: "Görsel",
+                  required: true,
+                  validate: ratioValidate(4 / 3, "4:3", "Ekran görseli") as never,
+                  admin: { description: "Yatay ekran görseli (4:3)." },
                 },
-                { name: "desc", type: "textarea", label: "Açıklama", required: true },
               ],
             },
           ],
         },
         {
-          label: "Özellikler",
+          label: "Ayrıntılar",
+          description: "Sayfanın orta bölümleri. Her bölümü açıp kapatabilirsiniz; boş bırakılan bölüm sitede görünmez.",
           fields: [
+            pageMap("mapDetails", "urun", ["Ve daha fazlası", "Bugün / Guru ile", "Nasıl çalışır", "Kullanım senaryoları", "Sayılar bandı", "Neler dahil", "Entegrasyonlar"]),
             {
-              name: "features",
-              type: "array",
-              label: "Özellikler",
-              labels: { singular: "Özellik", plural: "Özellikler" },
-              admin: { description: "İkonlu kartlar; altı özellik önerilir." },
+              type: "collapsible",
+              label: "Ve daha fazlası (özellik kartları)",
+              admin: { initCollapsed: true },
               fields: [
                 {
-                  type: "row",
+                  name: "features",
+                  type: "array",
+                  label: "Özellikler",
+                  labels: { singular: "Özellik", plural: "Özellikler" },
+                  admin: { description: "İkonlu kartlar; altı özellik önerilir." },
                   fields: [
-                    { name: "title", type: "text", label: "Başlık", required: true },
-                    iconField({ width: "40%" }),
+                    { type: "row", fields: [{ name: "title", type: "text", label: "Başlık", required: true }, iconField({ width: "40%" })] },
+                    { name: "desc", type: "textarea", label: "Açıklama", required: true },
                   ],
                 },
-                { name: "desc", type: "textarea", label: "Açıklama", required: true },
               ],
             },
-          ],
-        },
-        { label: "Nasıl çalışır", fields: [titleDescList("steps", "Adımlar", "Adım", "Numaralı kartlar; dört adım önerilir.")] },
-        { label: "Senaryolar", fields: [titleDescList("useCases", "Kullanım senaryoları", "Senaryo")] },
-        {
-          label: "Sayılar",
-          fields: [
             {
-              name: "stats",
-              type: "array",
+              type: "collapsible",
+              label: "Bugün / Guru ile karşılaştırması",
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: "comparison",
+                  type: "group",
+                  label: false,
+                  admin: { description: "İki sütun; dört madde önerilir." },
+                  fields: [textList("before", "Bugün", "Madde", { maxRows: 6 }), textList("after", "Guru ile", "Madde", { maxRows: 6 })],
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "Nasıl çalışır",
+              admin: { initCollapsed: true },
+              fields: [titleDescList("steps", "Adımlar", "Adım", "Numaralı kartlar; dört adım önerilir.")],
+            },
+            {
+              type: "collapsible",
+              label: "Kullanım senaryoları",
+              admin: { initCollapsed: true },
+              fields: [titleDescList("useCases", "Kullanım senaryoları", "Senaryo")],
+            },
+            {
+              type: "collapsible",
               label: "Sayılar bandı",
-              labels: { singular: "Sayı", plural: "Sayılar" },
-              maxRows: 4,
-              admin: {
-                description:
-                  "Yalnız ürün ve kurulum ifadeleri (kanal sayısı, kurulum süresi). Kaynağı olmayan performans yüzdesi yazmayın.",
-              },
+              admin: { initCollapsed: true },
               fields: [
                 {
-                  type: "row",
+                  name: "stats",
+                  type: "array",
+                  label: "Sayılar",
+                  labels: { singular: "Sayı", plural: "Sayılar" },
+                  maxRows: 4,
+                  admin: { description: "Yalnız ürün ve kurulum gerçekleri (kanal sayısı, kurulum süresi). Kaynağı olmayan performans rakamı yazmayın." },
                   fields: [
-                    { name: "value", type: "number", label: "Değer", required: true },
-                    { name: "suffix", type: "text", label: "Ek", admin: { description: "%, /7, gün…" } },
-                    { name: "label", type: "text", label: "Etiket", required: true },
+                    {
+                      type: "row",
+                      fields: [
+                        { name: "value", type: "number", label: "Değer", required: true },
+                        { name: "suffix", type: "text", label: "Ek", admin: { description: "%, /24, gün…" } },
+                        { name: "label", type: "text", label: "Etiket", required: true },
+                      ],
+                    },
                   ],
                 },
               ],
             },
+            {
+              type: "collapsible",
+              label: "Kurulumdan desteğe neler dahil",
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: "included",
+                  type: "array",
+                  label: "Neler dahil",
+                  labels: { singular: "Kalem", plural: "Kalemler" },
+                  maxRows: 6,
+                  fields: [
+                    { type: "row", fields: [{ name: "title", type: "text", label: "Başlık", required: true }, iconField({ width: "40%" })] },
+                    { name: "desc", type: "textarea", label: "Açıklama", required: true },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "collapsible",
+              label: "Entegrasyonlar",
+              admin: { initCollapsed: true },
+              fields: [textList("integrations", "Entegrasyonlar", "Entegrasyon")],
+            },
           ],
         },
-        { label: "Entegrasyonlar", fields: [textList("integrations", "Entegrasyonlar", "Entegrasyon")] },
-        { label: "SSS", fields: [faqField] },
         {
-          name: "seo",
-          label: "SEO",
+          label: "Sorular",
+          description: "Sayfanın sonundaki sık sorulan sorular.",
+          fields: [pageMap("mapFaq", "urun", ["Sık sorulan sorular"]), faqField],
+        },
+        {
+          label: "Kartlar ve paylaşım",
+          description: "Ürünün sayfa dışında göründüğü yerler: ana sayfa ve ürünler sayfasındaki kartlar, sosyal medya paylaşımı, arama sonucu.",
           fields: [
-            { name: "title", type: "text", label: "Sayfa başlığı", maxLength: 70, admin: { description: "Boşsa ürün adı ve slogan." } },
-            { name: "description", type: "textarea", label: "Arama sonucu açıklaması", maxLength: 170 },
-            textList("keywords", "Anahtar kelimeler", "Kelime"),
+            pageMap("mapCards", "urun-dis", ["Ana sayfa ürün kartı", "Ürünler sayfası kartı", "Sosyal medya paylaşımı", "Arama sonucu"], "Nerede görünür"),
+            {
+              name: "cover",
+              type: "upload",
+              relationTo: "media",
+              label: "Kart kapağı",
+              validate: ratioValidate(4 / 5, "4:5 (dikey)", "Kart kapağı") as never,
+              admin: { description: "Ana sayfa ve ürün kartlarındaki dikey kapak (4:5)." },
+            },
+            textList("highlights", "Kart maddeleri", "Madde", { minRows: 1, maxRows: 4, description: "Ürünler sayfasındaki kartta tik işaretiyle; üç madde önerilir." }),
+            {
+              name: "screenshot",
+              type: "upload",
+              relationTo: "media",
+              label: "Ekran görüntüsü",
+              required: true,
+              admin: { description: "Yatay ürün ekranı; kapak yoksa kartlarda bunun yerine kullanılır." },
+            },
+            {
+              name: "ogImage",
+              type: "upload",
+              relationTo: "media",
+              label: "Paylaşım görseli",
+              validate: ratioValidate(1200 / 630, "1200x630 (yatay)", "Paylaşım görseli") as never,
+              admin: { description: "Bağlantı WhatsApp ya da sosyal medyada paylaşılınca görünen görsel. Boşsa ürünün hazır paylaşım görseli kullanılır." },
+            },
+            {
+              name: "seo",
+              type: "group",
+              label: "Arama sonucu",
+              fields: [
+                { name: "title", type: "text", label: "Sayfa başlığı", maxLength: 70, admin: { description: "Google'da mavi başlık. Boşsa ürün adı ve slogan." } },
+                { name: "description", type: "textarea", label: "Arama sonucu açıklaması", maxLength: 170, admin: { description: "Başlığın altındaki iki satır." } },
+                textList("keywords", "Anahtar kelimeler", "Kelime"),
+              ],
+            },
           ],
         },
       ],

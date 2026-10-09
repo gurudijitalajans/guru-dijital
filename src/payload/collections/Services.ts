@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { services as staticServices } from "@/lib/data";
 import { isAdmin, isLoggedIn, publishedOrLoggedIn } from "../access";
 import { faqField, iconField, orderField, slugField, textList } from "../fields";
 import { revalidate } from "../utils";
@@ -13,7 +14,7 @@ export const Services: CollectionConfig = {
   labels: { singular: "Hizmet", plural: "Hizmetler" },
   admin: {
     useAsTitle: "title",
-    group: "İçerik",
+    group: false,
     defaultColumns: ["title", "order", "_status", "updatedAt"],
     preview: (doc) => (doc?.slug ? `/hizmetler/${doc.slug}` : null),
   },
@@ -40,7 +41,11 @@ export const Services: CollectionConfig = {
       type: "text",
       label: "Menü açıklaması",
       maxLength: 48,
-      admin: { description: "Üst menüde hizmet adının altındaki kısa satır (örn. \"Logo, kurumsal kimlik ve ambalaj\"). Boşsa varsayılan kullanılır." },
+      admin: { description: "Üst menüde hizmet adının altındaki kısa satır." },
+      /* Boşken sitede kullanılan varsayılan satır formda da görünsün: panel ve site aynı şeyi söyler */
+      hooks: {
+        afterRead: [({ value, data }) => value || staticServices.find((x) => x.slug === data?.slug)?.menuDesc || value],
+      },
     },
     {
       type: "tabs",

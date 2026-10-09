@@ -1,4 +1,5 @@
 import "server-only";
+import { isPreview } from "@/lib/preview";
 import { cache } from "react";
 import { cms } from "@/lib/cms";
 import type { Category, Media, Post } from "@/payload-types";
@@ -62,9 +63,12 @@ export function toCard(p: Post): PostCardData {
 export const getPublishedPosts = cache(async (limit = 60): Promise<Post[]> => {
   try {
     const payload = await cms();
+    /* Önizlemede taslak yazılar da listelenir */
+    const preview = await isPreview();
     const res = await payload.find({
       collection: "posts",
-      where: { _status: { equals: "published" } },
+      draft: preview,
+      where: preview ? undefined : { _status: { equals: "published" } },
       sort: "-publishedAt",
       limit,
       depth: 1,
@@ -78,9 +82,11 @@ export const getPublishedPosts = cache(async (limit = 60): Promise<Post[]> => {
 export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
   try {
     const payload = await cms();
+    const preview = await isPreview();
     const res = await payload.find({
       collection: "posts",
-      where: { and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }] },
+      draft: preview,
+      where: preview ? { slug: { equals: slug } } : { and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }] },
       limit: 1,
       depth: 2,
     });

@@ -11,7 +11,7 @@ export const Posts: CollectionConfig = {
   labels: { singular: "Blog Yazısı", plural: "Blog Yazıları" },
   admin: {
     useAsTitle: "title",
-    group: "Blog",
+    group: false,
     defaultColumns: ["title", "category", "_status", "publishedAt"],
     listSearchableFields: ["title", "excerpt"],
     preview: (doc) => (doc?.slug ? `/blog/${doc.slug}` : null),

@@ -12,7 +12,7 @@ export const References: CollectionConfig = {
   labels: { singular: "Referans", plural: "Referanslar" },
   admin: {
     useAsTitle: "name",
-    group: "Kurumsal",
+    group: false,
     defaultColumns: ["name", "logo", "order"],
     pagination: { defaultLimit: 50 },
     description: "Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.",

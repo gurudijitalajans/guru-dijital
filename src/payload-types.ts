@@ -69,36 +69,42 @@ export interface Config {
   collections: {
     leads: Lead;
     bookings: Booking;
+    team: Team;
+    'case-studies': CaseStudy;
+    testimonials: Testimonial;
+    references: Reference;
     services: Service;
     products: Product;
     posts: Post;
-    categories: Category;
-    team: Team;
-    references: Reference;
-    'case-studies': CaseStudy;
-    testimonials: Testimonial;
     media: Media;
+    categories: Category;
     users: User;
     'payload-kv': PayloadKv;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'media';
+    };
+  };
   collectionsSelect: {
     leads: LeadsSelect<false> | LeadsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
+    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    references: ReferencesSelect<false> | ReferencesSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    team: TeamSelect<false> | TeamSelect<true>;
-    references: ReferencesSelect<false> | ReferencesSelect<true>;
-    'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
-    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -190,6 +196,183 @@ export interface Booking {
   createdAt: string;
 }
 /**
+ * Fotoğraf yüklenmeyen kişi için marka renklerinde yer tutucu görünür.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  role: string;
+  /**
+   * Dikey portre önerilir (4:5). Yüz odağını görselin kendisinden ayarlayabilirsiniz.
+   */
+  photo?: (number | null) | Media;
+  linkedin?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  showOnHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Görseli göremeyen ziyaretçi ve arama motorları için kısa açıklama (ör. "Guru CRM satış hattı ekranı").
+   */
+  alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    wide?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'media';
+          value: number | Media;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Yalnız ölçülmüş ve müşterinin paylaşmayı onayladığı sonuçları yazın.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies".
+ */
+export interface CaseStudy {
+  id: number;
+  sector: string;
+  title: string;
+  summary: string;
+  /**
+   * "Kartta göster" seçili ilk üç sonuç kartta görünür; hiçbiri seçili değilse ilk üçü.
+   */
+  stats?:
+    | {
+        label: string;
+        value: number;
+        prefix?: string | null;
+        suffix?: string | null;
+        featured?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Kartın altında küçük yazı: ölçüm süresi, koşul vb.
+   */
+  note?: string | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  showOnHome?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Yorum metni, kişiden yazılı yayın izni alınıp işaretlenene kadar sitede görünmez.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote?: string | null;
+  name: string;
+  title?: string | null;
+  company?: string | null;
+  photo?: (number | null) | Media;
+  /**
+   * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
+   */
+  consent?: boolean | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references".
+ */
+export interface Reference {
+  id: number;
+  name: string;
+  logo?: (number | null) | Media;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
  */
@@ -201,7 +384,7 @@ export interface Service {
    */
   short: string;
   /**
-   * Üst menüde hizmet adının altındaki kısa satır (örn. "Logo, kurumsal kimlik ve ambalaj"). Boşsa varsayılan kullanılır.
+   * Üst menüde hizmet adının altındaki kısa satır.
    */
   menuDesc?: string | null;
   /**
@@ -323,56 +506,6 @@ export interface Service {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  /**
-   * Görseli göremeyen ziyaretçi ve arama motorları için kısa açıklama.
-   */
-  alt: string;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    wide?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
 export interface Product {
@@ -380,47 +513,19 @@ export interface Product {
   name: string;
   tagline: string;
   /**
-   * Ana sayfa ve /urunler kartlarında görünür.
+   * Ana sayfa ve ürünler sayfasındaki kartlarda görünür.
    */
   desc: string;
-  /**
-   * Kartta tik işaretiyle listelenir; üç madde önerilir.
-   */
-  highlights?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Yatay ürün ekranı (1600x1100 önerilir). Alternatif metni medya kaydından gelir.
-   */
-  screenshot: number | Media;
-  /**
-   * Ürün sayfasının girişinde, marka ışık yelpazesiyle (4:3, 1600x1200).
-   */
-  heroVisual?: (number | null) | Media;
-  /**
-   * Ana sayfa ve ürün kartlarındaki App Store tarzı dikey kapak (4:5, 1200x1500).
-   */
-  cover?: (number | null) | Media;
-  /**
-   * Sosyal medyada paylaşılınca görünen görsel (1200x630). Boşsa ürünün hazır paylaşım görseli kullanılır.
-   */
-  ogImage?: (number | null) | Media;
   hero: {
     /**
-     * Boşsa ürün adı kullanılır.
+     * Başlığın üstündeki küçük etiket. Boşsa ürün adı yazar.
      */
     eyebrow?: string | null;
-    /**
-     * Yıldız içindeki kelime bir kademe kalın yazılır: Müşterinize *7/24* yanıt veren asistan
-     */
     headline: string;
     sub: string;
     ctaLabel?: string | null;
     /**
-     * Butonların altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).
+     * Düğmelerin altında tik işaretiyle; yalnız taahhüt ettiğiniz bilgiler (ör. Standart kurulum aynı gün).
      */
     trust?:
       | {
@@ -429,6 +534,10 @@ export interface Product {
         }[]
       | null;
   };
+  /**
+   * Başlığın yanında duran yatay görsel (4:3).
+   */
+  heroVisual?: (number | null) | Media;
   tour?: {
     show?: boolean | null;
     title?: string | null;
@@ -437,12 +546,12 @@ export interface Product {
      */
     videoUrl?: string | null;
     /**
-     * Boşsa videonun hazır kapak karesi kullanılır.
+     * Oynat düğmesinin arkasındaki kare. Boşsa videonun hazır kapağı kullanılır.
      */
     poster?: (number | null) | Media;
   };
   /**
-   * Görsel ve metin dönüşümlü satırlar; üç satır önerilir. Görsel 4:3 (1200x900).
+   * Görsel ve metin dönüşümlü satırlar; üç satır önerilir.
    */
   showcase?:
     | {
@@ -455,75 +564,10 @@ export interface Product {
               id?: string | null;
             }[]
           | null;
+        /**
+         * Yatay ekran görseli (4:3).
+         */
         image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * "Bugün" ve "Guru ile" sütunları; dört madde önerilir.
-   */
-  comparison?: {
-    before?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-    after?:
-      | {
-          text: string;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  included?:
-    | {
-        title: string;
-        icon:
-          | 'share'
-          | 'palette'
-          | 'pen'
-          | 'monitor'
-          | 'chart-bar'
-          | 'clapperboard'
-          | 'bot'
-          | 'users'
-          | 'workflow'
-          | 'briefcase'
-          | 'message'
-          | 'brain'
-          | 'languages'
-          | 'bell'
-          | 'calendar'
-          | 'clipboard'
-          | 'database'
-          | 'file'
-          | 'gauge'
-          | 'handshake'
-          | 'kanban'
-          | 'dashboard'
-          | 'layers'
-          | 'link'
-          | 'pie'
-          | 'shield'
-          | 'sparkles'
-          | 'target'
-          | 'rocket'
-          | 'megaphone'
-          | 'camera'
-          | 'globe'
-          | 'cart'
-          | 'search'
-          | 'mail'
-          | 'zap'
-          | 'trending'
-          | 'code'
-          | 'lightbulb'
-          | 'award'
-          | 'badge-check'
-          | 'gem'
-          | 'chart-line';
-        desc: string;
         id?: string | null;
       }[]
     | null;
@@ -582,6 +626,23 @@ export interface Product {
       }[]
     | null;
   /**
+   * İki sütun; dört madde önerilir.
+   */
+  comparison?: {
+    before?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    after?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
    * Numaralı kartlar; dört adım önerilir.
    */
   steps?:
@@ -599,16 +660,67 @@ export interface Product {
       }[]
     | null;
   /**
-   * Yalnız ürün ve kurulum ifadeleri (kanal sayısı, kurulum süresi). Kaynağı olmayan performans yüzdesi yazmayın.
+   * Yalnız ürün ve kurulum gerçekleri (kanal sayısı, kurulum süresi). Kaynağı olmayan performans rakamı yazmayın.
    */
   stats?:
     | {
         value: number;
         /**
-         * %, /7, gün…
+         * %, /24, gün…
          */
         suffix?: string | null;
         label: string;
+        id?: string | null;
+      }[]
+    | null;
+  included?:
+    | {
+        title: string;
+        icon:
+          | 'share'
+          | 'palette'
+          | 'pen'
+          | 'monitor'
+          | 'chart-bar'
+          | 'clapperboard'
+          | 'bot'
+          | 'users'
+          | 'workflow'
+          | 'briefcase'
+          | 'message'
+          | 'brain'
+          | 'languages'
+          | 'bell'
+          | 'calendar'
+          | 'clipboard'
+          | 'database'
+          | 'file'
+          | 'gauge'
+          | 'handshake'
+          | 'kanban'
+          | 'dashboard'
+          | 'layers'
+          | 'link'
+          | 'pie'
+          | 'shield'
+          | 'sparkles'
+          | 'target'
+          | 'rocket'
+          | 'megaphone'
+          | 'camera'
+          | 'globe'
+          | 'cart'
+          | 'search'
+          | 'mail'
+          | 'zap'
+          | 'trending'
+          | 'code'
+          | 'lightbulb'
+          | 'award'
+          | 'badge-check'
+          | 'gem'
+          | 'chart-line';
+        desc: string;
         id?: string | null;
       }[]
     | null;
@@ -628,11 +740,35 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Ana sayfa ve ürün kartlarındaki dikey kapak (4:5).
+   */
+  cover?: (number | null) | Media;
+  /**
+   * Ürünler sayfasındaki kartta tik işaretiyle; üç madde önerilir.
+   */
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Yatay ürün ekranı; kapak yoksa kartlarda bunun yerine kullanılır.
+   */
+  screenshot: number | Media;
+  /**
+   * Bağlantı WhatsApp ya da sosyal medyada paylaşılınca görünen görsel. Boşsa ürünün hazır paylaşım görseli kullanılır.
+   */
+  ogImage?: (number | null) | Media;
   seo?: {
     /**
-     * Boşsa ürün adı ve slogan.
+     * Google'da mavi başlık. Boşsa ürün adı ve slogan.
      */
     title?: string | null;
+    /**
+     * Başlığın altındaki iki satır.
+     */
     description?: string | null;
     keywords?:
       | {
@@ -798,106 +934,6 @@ export interface User {
   collection: 'users';
 }
 /**
- * Fotoğraf yüklenmeyen kişi için marka renklerinde yer tutucu görünür.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: number;
-  name: string;
-  role: string;
-  /**
-   * Dikey portre önerilir (4:5). Yüz odağını görselin kendisinden ayarlayabilirsiniz.
-   */
-  photo?: (number | null) | Media;
-  linkedin?: string | null;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  showOnHome?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "references".
- */
-export interface Reference {
-  id: number;
-  name: string;
-  logo?: (number | null) | Media;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Yalnız ölçülmüş ve müşterinin paylaşmayı onayladığı sonuçları yazın.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "case-studies".
- */
-export interface CaseStudy {
-  id: number;
-  sector: string;
-  title: string;
-  summary: string;
-  /**
-   * "Kartta göster" seçili ilk üç sonuç kartta görünür; hiçbiri seçili değilse ilk üçü.
-   */
-  stats?:
-    | {
-        label: string;
-        value: number;
-        prefix?: string | null;
-        suffix?: string | null;
-        featured?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Kartın altında küçük yazı: ölçüm süresi, koşul vb.
-   */
-  note?: string | null;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  showOnHome?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Yorum metni, kişiden yazılı yayın izni alınıp işaretlenene kadar sitede görünmez.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  quote?: string | null;
-  name: string;
-  title?: string | null;
-  company?: string | null;
-  photo?: (number | null) | Media;
-  /**
-   * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
-   */
-  consent?: boolean | null;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -930,6 +966,22 @@ export interface PayloadLockedDocument {
         value: number | Booking;
       } | null)
     | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'case-studies';
+        value: number | CaseStudy;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'references';
+        value: number | Reference;
+      } | null)
+    | ({
         relationTo: 'services';
         value: number | Service;
       } | null)
@@ -942,32 +994,20 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
-        relationTo: 'categories';
-        value: number | Category;
-      } | null)
-    | ({
-        relationTo: 'team';
-        value: number | Team;
-      } | null)
-    | ({
-        relationTo: 'references';
-        value: number | Reference;
-      } | null)
-    | ({
-        relationTo: 'case-studies';
-        value: number | CaseStudy;
-      } | null)
-    | ({
-        relationTo: 'testimonials';
-        value: number | Testimonial;
-      } | null)
-    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1049,6 +1089,70 @@ export interface BookingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  photo?: T;
+  linkedin?: T;
+  order?: T;
+  showOnHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "case-studies_select".
+ */
+export interface CaseStudiesSelect<T extends boolean = true> {
+  sector?: T;
+  title?: T;
+  summary?: T;
+  stats?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        prefix?: T;
+        suffix?: T;
+        featured?: T;
+        id?: T;
+      };
+  note?: T;
+  order?: T;
+  showOnHome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  name?: T;
+  title?: T;
+  company?: T;
+  photo?: T;
+  consent?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references_select".
+ */
+export interface ReferencesSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services_select".
  */
 export interface ServicesSelect<T extends boolean = true> {
@@ -1107,16 +1211,6 @@ export interface ProductsSelect<T extends boolean = true> {
   name?: T;
   tagline?: T;
   desc?: T;
-  highlights?:
-    | T
-    | {
-        text?: T;
-        id?: T;
-      };
-  screenshot?: T;
-  heroVisual?: T;
-  cover?: T;
-  ogImage?: T;
   hero?:
     | T
     | {
@@ -1131,6 +1225,7 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  heroVisual?: T;
   tour?:
     | T
     | {
@@ -1154,6 +1249,14 @@ export interface ProductsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  features?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        desc?: T;
+        id?: T;
+      };
   comparison?:
     | T
     | {
@@ -1169,22 +1272,6 @@ export interface ProductsSelect<T extends boolean = true> {
               text?: T;
               id?: T;
             };
-      };
-  included?:
-    | T
-    | {
-        title?: T;
-        icon?: T;
-        desc?: T;
-        id?: T;
-      };
-  features?:
-    | T
-    | {
-        title?: T;
-        icon?: T;
-        desc?: T;
-        id?: T;
       };
   steps?:
     | T
@@ -1208,6 +1295,14 @@ export interface ProductsSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  included?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        desc?: T;
+        id?: T;
+      };
   integrations?:
     | T
     | {
@@ -1221,6 +1316,15 @@ export interface ProductsSelect<T extends boolean = true> {
         a?: T;
         id?: T;
       };
+  cover?: T;
+  highlights?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  screenshot?: T;
+  ogImage?: T;
   seo?:
     | T
     | {
@@ -1266,86 +1370,13 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team_select".
- */
-export interface TeamSelect<T extends boolean = true> {
-  name?: T;
-  role?: T;
-  photo?: T;
-  linkedin?: T;
-  order?: T;
-  showOnHome?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "references_select".
- */
-export interface ReferencesSelect<T extends boolean = true> {
-  name?: T;
-  logo?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "case-studies_select".
- */
-export interface CaseStudiesSelect<T extends boolean = true> {
-  sector?: T;
-  title?: T;
-  summary?: T;
-  stats?:
-    | T
-    | {
-        label?: T;
-        value?: T;
-        prefix?: T;
-        suffix?: T;
-        featured?: T;
-        id?: T;
-      };
-  note?: T;
-  order?: T;
-  showOnHome?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials_select".
- */
-export interface TestimonialsSelect<T extends boolean = true> {
-  quote?: T;
-  name?: T;
-  title?: T;
-  company?: T;
-  photo?: T;
-  consent?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   prefix?: T;
   _objectKey?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1394,6 +1425,16 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1424,6 +1465,18 @@ export interface UsersSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1466,9 +1519,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface HomePage {
   id: number;
   hero: {
-    /**
-     * Yıldız içindeki kelime bir kademe kalın yazılır: Markanızı bir üst seviyeye *taşıyoruz*
-     */
     title: string;
     sub: string;
     showServiceLinks?: boolean | null;
@@ -1477,9 +1527,6 @@ export interface HomePage {
     secondaryLabel: string;
     secondaryHref: string;
     badgeStrong?: string | null;
-    /**
-     * {sayı} yazdığınız yere referans sayısı gelir.
-     */
     badgeText?: string | null;
   };
   references: {
@@ -1490,9 +1537,6 @@ export interface HomePage {
   services: {
     show?: boolean | null;
     title: string;
-    /**
-     * {sayı} yazdığınız yere hizmet sayısı yazıyla gelir (altı, yedi…).
-     */
     lead?: string | null;
   };
   products: {

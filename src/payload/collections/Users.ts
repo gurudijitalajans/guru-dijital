@@ -7,7 +7,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "email", "role"],
-    group: "Yönetim",
+    group: "Ayarlar",
   },
   auth: {
     tokenExpiration: 60 * 60 * 8,

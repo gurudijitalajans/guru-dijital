@@ -12,7 +12,7 @@ import { ABOUT_DEFAULTS as D } from "@/lib/about-defaults";
 export const AboutPage: GlobalConfig = {
   slug: "about-page",
   label: "Hakkımızda",
-  admin: { group: "İçerik", description: "Kaydettiğinizde Hakkımızda sayfası ve ödüllerin geçtiği yerler güncellenir." },
+  admin: { group: false, description: "Kaydettiğinizde Hakkımızda sayfası ve ödüllerin geçtiği yerler güncellenir." },
   access: { read: () => true, update: isLoggedIn },
   hooks: {
     /* Ödüller alt bilgide de görünür: tüm site */

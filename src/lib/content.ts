@@ -1,4 +1,5 @@
 import "server-only";
+import { isPreview } from "@/lib/preview";
 import { cache } from "react";
 import { cms } from "@/lib/cms";
 import {
@@ -264,9 +265,12 @@ function fromProduct(p: Product): ProductView {
 export const getServices = cache(async (): Promise<ServiceView[]> => {
   try {
     const payload = await cms();
+    /* Önizlemede yayınlanmamış taslak da görünür */
+    const preview = await isPreview();
     const res = await payload.find({
       collection: "services",
-      where: { _status: { equals: "published" } },
+      draft: preview,
+      where: preview ? undefined : { _status: { equals: "published" } },
       sort: "order",
       depth: 1,
       limit: 50,
@@ -282,9 +286,11 @@ export const getServices = cache(async (): Promise<ServiceView[]> => {
 export const getProducts = cache(async (): Promise<ProductView[]> => {
   try {
     const payload = await cms();
+    const preview = await isPreview();
     const res = await payload.find({
       collection: "products",
-      where: { _status: { equals: "published" } },
+      draft: preview,
+      where: preview ? undefined : { _status: { equals: "published" } },
       sort: "order",
       depth: 1,
       limit: 50,

@@ -25,6 +25,7 @@ import { Testimonials } from "./payload/collections/Testimonials";
 import { AboutPage } from "./payload/globals/AboutPage";
 import { HomePage } from "./payload/globals/HomePage";
 import { SiteSettings } from "./payload/globals/SiteSettings";
+import { trOverrides } from "./payload/translations";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -59,6 +60,35 @@ export default buildConfig({
     theme: "light",
     dateFormat: "dd.MM.yyyy HH:mm",
     importMap: { baseDir: path.resolve(dirname) },
+    /* Yan yana önizleme: formun yanında sayfanın kendisi açık; kaydedince yenilenir.
+       Taslaklar /onizleme üzerinden (yalnız giriş yapmış kullanıcıya) görünür. */
+    livePreview: {
+      /* Panel ilk açılışta önizlemeyi kendiliğinden açar; kullanıcı kapatırsa tercihi hatırlanır */
+      openByDefault: true,
+      /* Adres TAM olmalı: panel kayıt olayını postMessage ile bu adresin kaynağına gönderir */
+      url: ({ data, collectionConfig, globalConfig, req }) => {
+        const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+        const proto = req.headers.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
+        const origin = host ? `${proto}://${host}` : (serverURL ?? "");
+        const slug = typeof data?.slug === "string" ? data.slug : "";
+        const PATHS: Record<string, string> = {
+          "home-page": "/",
+          "about-page": "/hakkimizda",
+          services: `/hizmetler/${slug}`,
+          products: `/urunler/${slug}`,
+          posts: `/blog/${slug}`,
+        };
+        const key = collectionConfig?.slug ?? globalConfig?.slug ?? "";
+        return `${origin}/onizleme?yol=${encodeURIComponent(PATHS[key] ?? "/")}`;
+      },
+      collections: ["services", "products", "posts"],
+      globals: ["home-page", "about-page"],
+      breakpoints: [
+        { label: "Telefon", name: "telefon", width: 390, height: 844 },
+        { label: "Tablet", name: "tablet", width: 820, height: 1180 },
+        { label: "Masaüstü", name: "masaustu", width: 1440, height: 900 },
+      ],
+    },
     meta: {
       titleSuffix: " · Guru Panel",
       icons: [{ rel: "icon", type: "image/png", url: "/icon.png" }],
@@ -68,9 +98,11 @@ export default buildConfig({
         Logo: "/payload/components/Brand#Logo",
         Icon: "/payload/components/Brand#Icon",
       },
-      beforeDashboard: ["/payload/components/DashboardIntro#DashboardIntro"],
-      beforeNavLinks: ["/payload/components/AnalyticsNavLink#AnalyticsNavLink"],
+      /* Menünün başı: pano, analiz ve sitenin sayfaları (site haritası sırasıyla) */
+      beforeNavLinks: ["/payload/components/PanelNav#PanelNav"],
       views: {
+        /* Koleksiyon ızgarası yerine görev odaklı pano */
+        dashboard: { Component: "/payload/components/Dashboard#Dashboard" },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -82,9 +114,22 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { tr },
     fallbackLanguage: "tr",
+    translations: { tr: trOverrides },
   },
-  collections: [Leads, Bookings, Services, Products, Posts, Categories, Team, References, CaseStudies, Testimonials, Media, Users],
+  /* Sıra menü gruplarının sırasını belirler: Müşteriler, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
+  collections: [Leads, Bookings, Team, CaseStudies, Testimonials, References, Services, Products, Posts, Media, Categories, Users],
   globals: [HomePage, AboutPage, SiteSettings],
+  /* Medya klasörleri: "Klasöre göre gez" görünümü ve görsel başına klasör alanı */
+  folders: {
+    browseByFolder: true,
+    collectionOverrides: [
+      ({ collection }) => ({
+        ...collection,
+        labels: { singular: "Klasör", plural: "Klasörler" },
+        admin: { ...collection.admin, group: "Kitaplık" },
+      }),
+    ],
+  },
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({

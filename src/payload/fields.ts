@@ -83,3 +83,56 @@ export const titleDescList = (name: string, label: string, item: string, descrip
     { name: "desc", type: "textarea", label: "Açıklama", required: true },
   ],
 });
+
+/* ---------- Panel yardımcıları (veri tutmayan ui alanları ve görsel kontrolü) ---------- */
+
+/** Sekmenin başında "sayfada nerede" krokisi */
+export const pageMap = (name: string, page: string, active: string[], note?: string): Field => ({
+  name,
+  type: "ui",
+  admin: { components: { Field: { path: "/payload/components/PageMap#PageMap", clientProps: { page, active, note } } } },
+});
+
+/** Metin alanının altında önizleme ve "kalın yap" / "sayıyı ekle" düğmeleri */
+export const textHelper = (
+  name: string,
+  target: string,
+  mode: "accent" | "count",
+  opts: { source?: "references" | "services"; words?: boolean } = {}
+): Field => ({
+  name,
+  type: "ui",
+  admin: { components: { Field: { path: "/payload/components/TextHelper#TextHelper", clientProps: { target, mode, ...opts } } } },
+});
+
+/**
+ * Görsel oranı kontrolü: oran beklenenden %12'den fazla saparsa kaydetmez ve
+ * nedenini söyler (yanlış oranlı görsel sitede kırpılır ya da boşluk bırakır).
+ */
+export const ratioValidate =
+  (ratio: number, ratioLabel: string, where: string) =>
+  async (
+    value: unknown,
+    options: {
+      required?: boolean;
+      event?: "onChange" | "submit";
+      req: { payload: { findByID: (a: { collection: "media"; id: string | number; depth: number; req: unknown }) => Promise<{ width?: number | null; height?: number | null }> } };
+    }
+  ) => {
+    if (!value) return options.required ? "Bu alan zorunludur." : true;
+    /* Form açılırken ve yazarken veritabanına gidilmez; kontrol yalnız kaydederken */
+    if (options.event === "onChange") return true;
+    const id = typeof value === "object" && value !== null && "id" in value ? (value as { id: string | number }).id : (value as string | number);
+    try {
+      /* Aynı istek (req) üzerinden: kayıt işleminin veritabanı oturumunu paylaşır, kilitlenmez */
+      const m = await options.req.payload.findByID({ collection: "media", id, depth: 0, req: options.req });
+      if (!m.width || !m.height) return true;
+      const r = m.width / m.height;
+      if (Math.abs(r - ratio) / ratio > 0.12) {
+        return `Bu görsel ${m.width}x${m.height}. ${where} ${ratioLabel} oranında olmalı; aksi hâlde sitede kırpılır.`;
+      }
+    } catch {
+      /* görsel okunamazsa kaydı engelleme */
+    }
+    return true;
+  };

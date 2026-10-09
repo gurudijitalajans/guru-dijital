@@ -4,8 +4,8 @@ import { revalidate, slugify } from "../utils";
 
 export const Categories: CollectionConfig = {
   slug: "categories",
-  labels: { singular: "Kategori", plural: "Kategoriler" },
-  admin: { useAsTitle: "title", group: "Blog", defaultColumns: ["title", "slug"] },
+  labels: { singular: "Blog kategorisi", plural: "Blog kategorileri" },
+  admin: { useAsTitle: "title", group: "Kitaplık", defaultColumns: ["title", "slug"] },
   access: { read: () => true, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
   hooks: {
     afterChange: [() => revalidate(["/blog"], "layout")],

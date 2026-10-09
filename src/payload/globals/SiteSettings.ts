@@ -11,7 +11,7 @@ import { announcement, site, umami } from "@/lib/data";
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Site Ayarları",
-  admin: { group: "Yönetim" },
+  admin: { group: "Ayarlar" },
   access: { read: () => true, update: isLoggedIn },
   hooks: {
     afterChange: [() => revalidate(["/"], "layout")],

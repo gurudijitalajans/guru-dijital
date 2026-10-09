@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from "payload";
 import { isLoggedIn } from "../access";
 import { revalidate } from "../utils";
+import { textHelper } from "../fields";
 import { HOME_DEFAULTS as D } from "@/lib/home-defaults";
 
 /** Bir ana sayfa bölümünün ortak alanları: göster, başlık, açıklama */
@@ -36,7 +37,7 @@ const section = (
 export const HomePage: GlobalConfig = {
   slug: "home-page",
   label: "Ana Sayfa",
-  admin: { group: "İçerik", description: "Kaydettiğinizde ana sayfa hemen güncellenir." },
+  admin: { group: false, description: "Kaydettiğinizde ana sayfa hemen güncellenir." },
   access: { read: () => true, update: isLoggedIn },
   hooks: {
     afterChange: [() => revalidate(["/"])],
@@ -55,8 +56,8 @@ export const HomePage: GlobalConfig = {
               label: "Başlık",
               required: true,
               defaultValue: D.hero.title,
-              admin: { description: "Yıldız içindeki kelime bir kademe kalın yazılır: Markanızı bir üst seviyeye *taşıyoruz*" },
             },
+            textHelper("titleHelper", "hero.title", "accent"),
             { name: "sub", type: "textarea", label: "Açıklama", required: true, defaultValue: D.hero.sub },
             {
               name: "showServiceLinks",
@@ -93,17 +94,17 @@ export const HomePage: GlobalConfig = {
                   type: "text",
                   label: "Rozet metni",
                   defaultValue: D.hero.badgeText,
-                  admin: { description: "{sayı} yazdığınız yere referans sayısı gelir." },
                 },
               ],
             },
+            textHelper("badgeHelper", "hero.badgeText", "count", { source: "references" }),
           ],
         },
         {
           label: "Bölümler",
           fields: [
             section("references", "Referanslar"),
-            section("services", "Hizmetler", [], "{sayı} yazdığınız yere hizmet sayısı yazıyla gelir (altı, yedi…)."),
+            section("services", "Hizmetler", [textHelper("leadHelper", "services.lead", "count", { source: "services", words: true })]),
             section("products", "Ürünler"),
             section("video", "Tanıtım videosu"),
             section("cases", "Başarı hikayeleri"),
