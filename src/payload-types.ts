@@ -77,6 +77,9 @@ export interface Config {
     projects: Project;
     tasks: Task;
     templates: Template;
+    conversations: Conversation;
+    knowledge: Knowledge;
+    'chat-messages': ChatMessage;
     team: Team;
     'case-studies': CaseStudy;
     testimonials: Testimonial;
@@ -110,6 +113,9 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     tasks: TasksSelect<false> | TasksSelect<true>;
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
+    knowledge: KnowledgeSelect<false> | KnowledgeSelect<true>;
+    'chat-messages': ChatMessagesSelect<false> | ChatMessagesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     'case-studies': CaseStudiesSelect<false> | CaseStudiesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
@@ -134,11 +140,13 @@ export interface Config {
   globals: {
     'home-page': HomePage;
     'about-page': AboutPage;
+    'chatbot-settings': ChatbotSetting;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
     'about-page': AboutPageSelect<false> | AboutPageSelect<true>;
+    'chatbot-settings': ChatbotSettingsSelect<false> | ChatbotSettingsSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -517,6 +525,72 @@ export interface Task {
   startedAt?: string | null;
   completedAt?: string | null;
   order?: number | null;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Sitedeki sohbetler. Yanıtlamak için menüdeki Sohbetler ekranını kullanın.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number;
+  label?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  /**
+   * Asistan sohbetin konusunu kendisi etiketler.
+   */
+  topic?: string | null;
+  page?: string | null;
+  lastText?: string | null;
+  status: 'bot' | 'ekip' | 'kapali';
+  needsReply?: boolean | null;
+  assignee?: (number | null) | User;
+  contact?: (number | null) | Contact;
+  lead?: (number | null) | Lead;
+  booking?: (number | null) | Booking;
+  lastMessageAt?: string | null;
+  handedOffAt?: string | null;
+  firstTeamReplyAt?: string | null;
+  visitorMessages?: number | null;
+  token?: string | null;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Asistan hizmetleri, ürünleri, sık sorulan soruları ve iletişim bilgilerini sitenin kendisinden okur. Sitede olmayan bilgileri (çalışma saatleri, ödeme koşulları, kampanyalar) buraya ekleyin.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "knowledge".
+ */
+export interface Knowledge {
+  id: number;
+  title: string;
+  /**
+   * Asistan bunu olduğu gibi bilgi olarak kullanır; kısa ve net yazın.
+   */
+  content: string;
+  active?: boolean | null;
+  tenant?: (number | null) | Tenant;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-messages".
+ */
+export interface ChatMessage {
+  id: number;
+  conversation: number | Conversation;
+  role: 'ziyaretci' | 'bot' | 'ekip' | 'sistem';
+  text: string;
+  author?: (number | null) | User;
+  unanswered?: boolean | null;
   tenant?: (number | null) | Tenant;
   updatedAt: string;
   createdAt: string;
@@ -1293,6 +1367,18 @@ export interface PayloadLockedDocument {
         value: number | Template;
       } | null)
     | ({
+        relationTo: 'conversations';
+        value: number | Conversation;
+      } | null)
+    | ({
+        relationTo: 'knowledge';
+        value: number | Knowledge;
+      } | null)
+    | ({
+        relationTo: 'chat-messages';
+        value: number | ChatMessage;
+      } | null)
+    | ({
         relationTo: 'team';
         value: number | Team;
       } | null)
@@ -1605,6 +1691,59 @@ export interface TemplatesSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  label?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  topic?: T;
+  page?: T;
+  lastText?: T;
+  status?: T;
+  needsReply?: T;
+  assignee?: T;
+  contact?: T;
+  lead?: T;
+  booking?: T;
+  lastMessageAt?: T;
+  handedOffAt?: T;
+  firstTeamReplyAt?: T;
+  visitorMessages?: T;
+  token?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "knowledge_select".
+ */
+export interface KnowledgeSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
+  active?: T;
+  tenant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-messages_select".
+ */
+export interface ChatMessagesSelect<T extends boolean = true> {
+  conversation?: T;
+  role?: T;
+  text?: T;
+  author?: T;
+  unanswered?: T;
   tenant?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2297,6 +2436,50 @@ export interface AboutPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chatbot-settings".
+ */
+export interface ChatbotSetting {
+  id: number;
+  /**
+   * Açınca sitenin sağ alt köşesinde sohbet balonu çıkar. Yapay zekâ anahtarı yoksa mesajlar doğrudan ekibe düşer.
+   */
+  enabled?: boolean | null;
+  botName: string;
+  model?: ('claude-haiku-5-5' | 'claude-sonnet-5-5') | null;
+  greeting?: string | null;
+  /**
+   * Sohbet açılınca ziyaretçiye dokunulabilir öneri olarak görünür.
+   */
+  suggestions?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sohbet penceresinin altında küçük yazıyla görünür. KVKK aydınlatma metni gelince bağlantısı eklenir.
+   */
+  notice?: string | null;
+  /**
+   * Ton, vurgulanacak kampanya ya da yanıtlanmayacak konular. Ör. "Ekim boyunca web sitesi projelerinde ücretsiz keşif görüşmesi var."
+   */
+  instructions?: string | null;
+  /**
+   * Gelen kutusunda tek tıkla eklenen kısa yanıtlar.
+   */
+  cannedReplies?:
+    | {
+        label: string;
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  notifyHandoff?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
@@ -2512,6 +2695,35 @@ export interface AboutPageSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chatbot-settings_select".
+ */
+export interface ChatbotSettingsSelect<T extends boolean = true> {
+  enabled?: T;
+  botName?: T;
+  model?: T;
+  greeting?: T;
+  suggestions?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  notice?: T;
+  instructions?: T;
+  cannedReplies?:
+    | T
+    | {
+        label?: T;
+        text?: T;
+        id?: T;
+      };
+  notifyHandoff?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

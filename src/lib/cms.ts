@@ -67,3 +67,21 @@ export const getPublishedPostCount = cache(async (): Promise<number> => {
     return 0;
   }
 });
+
+/** Sitedeki sohbet balonu: yalnız panelde açıksa (Chatbot ayarları), kişisel veri içermez */
+export type ChatInfo = { botName: string; greeting: string; suggestions: string[]; notice: string };
+export const getChatInfo = cache(async (): Promise<ChatInfo | null> => {
+  try {
+    const payload = await cms();
+    const s = await payload.findGlobal({ slug: "chatbot-settings", depth: 0 });
+    if (!s.enabled) return null;
+    return {
+      botName: s.botName || "Guru Asistan",
+      greeting: s.greeting ?? "",
+      suggestions: (s.suggestions ?? []).map((x) => x.text).filter(Boolean),
+      notice: s.notice ?? "",
+    };
+  } catch {
+    return null;
+  }
+});

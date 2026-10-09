@@ -38,6 +38,8 @@ import { Dashboard as Dashboard_85b72bc5c0d30238d51de444df4399a6 } from '../../.
 import { SalesPipeline as SalesPipeline_be5e74d62e9619266690e4e014d9e83d } from '../../../payload/components/crm/SalesPipeline'
 import { TaskBoardView as TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8 } from '../../../payload/components/ops/TaskBoardView'
 import { TeamPlanView as TeamPlanView_0044aa6e002c6d302b5f73749ecdac34 } from '../../../payload/components/ops/TeamPlanView'
+import { InboxView as InboxView_1580b4b138605f586a4021e03dae4972 } from '../../../payload/components/chat/InboxView'
+import { ReportView as ReportView_780ba89690aaf5e760fe730e08f7a2fd } from '../../../payload/components/chat/ReportView'
 import { AnalyticsView as AnalyticsView_e82a66e171163cfda89984b1174b76e8 } from '../../../payload/components/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
@@ -84,6 +86,8 @@ export const importMap = {
   "/payload/components/crm/SalesPipeline#SalesPipeline": SalesPipeline_be5e74d62e9619266690e4e014d9e83d,
   "/payload/components/ops/TaskBoardView#TaskBoardView": TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8,
   "/payload/components/ops/TeamPlanView#TeamPlanView": TeamPlanView_0044aa6e002c6d302b5f73749ecdac34,
+  "/payload/components/chat/InboxView#InboxView": InboxView_1580b4b138605f586a4021e03dae4972,
+  "/payload/components/chat/ReportView#ReportView": ReportView_780ba89690aaf5e760fe730e08f7a2fd,
   "/payload/components/AnalyticsView#AnalyticsView": AnalyticsView_e82a66e171163cfda89984b1174b76e8,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e

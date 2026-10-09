@@ -88,8 +88,12 @@ export async function logActivity(
 }
 
 /** Talep (leads) oluşturulunca */
-export async function leadToCrm(req: PayloadRequest, lead: { id: Id; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; source?: string | null }) {
-  const contact = await findOrCreateContact(req, { name: lead.name, email: lead.email, phone: lead.phone, source: "form" });
+export async function leadToCrm(
+  req: PayloadRequest,
+  lead: { id: Id; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; source?: string | null },
+  via: "form" | "chatbot" = "form",
+) {
+  const contact = await findOrCreateContact(req, { name: lead.name, email: lead.email, phone: lead.phone, source: via });
   const topic = lead.service || lead.subject || "Siteden talep";
   const deal = await quietly(req, async () => req.payload.create({
     collection: "deals",
@@ -98,7 +102,7 @@ export async function leadToCrm(req: PayloadRequest, lead: { id: Id; name: strin
     overrideAccess: true,
     context: { [CRM_SKIP]: true },
   }));
-  await logActivity(req, { type: "sistem", title: "Siteden talep geldi", body: [lead.subject, lead.message, lead.source && `Sayfa: ${lead.source}`].filter(Boolean).join("\n\n"), deal: deal.id, contact });
+  await logActivity(req, { type: "sistem", title: via === "chatbot" ? "Sohbetten talep geldi" : "Siteden talep geldi", body: [lead.subject, lead.message, lead.source && `Sayfa: ${lead.source}`].filter(Boolean).join("\n\n"), deal: deal.id, contact });
   await logActivity(req, { type: "gorev", title: `İlk dönüşü yapın: ${lead.name}`, deal: deal.id, contact, dueAt: nextBusinessDay(), done: false });
   await quietly(req, async () => req.payload.update({ collection: "leads", id: lead.id, data: { contact, deal: deal.id } as never, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));
 }

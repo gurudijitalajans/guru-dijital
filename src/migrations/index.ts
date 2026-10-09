@@ -2,6 +2,7 @@ import * as migration_20261008_230803_ilk_kurulum from './20261008_230803_ilk_ku
 import * as migration_20261009_132146_medya_klasorleri from './20261009_132146_medya_klasorleri';
 import * as migration_20261009_143301_crm from './20261009_143301_crm';
 import * as migration_20261009_151131_operation from './20261009_151131_operation';
+import * as migration_20261009_163510_chatbot from './20261009_163510_chatbot';
 
 export const migrations = [
   {
@@ -22,6 +23,11 @@ export const migrations = [
   {
     up: migration_20261009_151131_operation.up,
     down: migration_20261009_151131_operation.down,
-    name: '20261009_151131_operation'
+    name: '20261009_151131_operation',
+  },
+  {
+    up: migration_20261009_163510_chatbot.up,
+    down: migration_20261009_163510_chatbot.down,
+    name: '20261009_163510_chatbot'
   },
 ];

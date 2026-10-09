@@ -29,6 +29,7 @@ import { trOverrides } from "./payload/translations";
 import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
 import { Tenants } from "./payload/crm/tenant";
 import { Projects, Tasks, Templates } from "./payload/ops/collections";
+import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -121,6 +122,16 @@ export default buildConfig({
           path: "/ekip-plani",
           meta: { title: "Ekip planı" },
         },
+        sohbetler: {
+          Component: "/payload/components/chat/InboxView#InboxView",
+          path: "/sohbetler",
+          meta: { title: "Sohbetler" },
+        },
+        sohbetRaporu: {
+          Component: "/payload/components/chat/ReportView#ReportView",
+          path: "/sohbet-raporu",
+          meta: { title: "Sohbet raporu" },
+        },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -134,7 +145,7 @@ export default buildConfig({
     fallbackLanguage: "tr",
     translations: { tr: trOverrides },
   },
-  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
+  /* Sıra menü gruplarının sırasını belirler: Guru CRM, Guru Operation, Guru Chatbot, Kurumsal, Kitaplık, Ayarlar (sayfalar PanelNav'da) */
   collections: [
     Leads,
     Bookings,
@@ -146,6 +157,9 @@ export default buildConfig({
     Projects,
     Tasks,
     Templates,
+    Conversations,
+    Knowledge,
+    ChatMessages,
     Team,
     CaseStudies,
     Testimonials,
@@ -158,7 +172,7 @@ export default buildConfig({
     Users,
     Tenants,
   ],
-  globals: [HomePage, AboutPage, SiteSettings],
+  globals: [HomePage, AboutPage, ChatbotSettings, SiteSettings],
   /* Medya klasörleri: "Klasöre göre gez" görünümü ve görsel başına klasör alanı */
   folders: {
     browseByFolder: true,

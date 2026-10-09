@@ -12,10 +12,12 @@ import { MessageCircle } from "lucide-react";
  * İletişim sayfasında, aynı sayfaya götüreceği için gizlenir.
  * Numara panelin Site Ayarları'ndan gelir.
  */
-export function ContactTab({ whatsapp }: { whatsapp?: string }) {
+export function ContactTab({ whatsapp, chat = false }: { whatsapp?: string; chat?: boolean }) {
   const pathname = usePathname();
   const wa = whatsapp?.replace(/\D/g, "");
   if (!wa && pathname === "/iletisim") return null;
+  /* Sohbet balonu açıkken "Bize Yazın" sekmesi aynı işi görür; WhatsApp yoksa gösterilmez */
+  if (!wa && chat) return null;
   const href = wa ? `https://wa.me/${wa}` : "/iletisim";
   const label = wa ? "WhatsApp Destek" : "Bize Yazın";
   /* Sekmenin tamamı dikey yazı yönünde döner: yazı aşağıdan yukarı okunur,

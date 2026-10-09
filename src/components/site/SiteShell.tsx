@@ -6,7 +6,8 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactTab } from "@/components/site/ContactTab";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
 import { PanelBar } from "@/components/site/PanelBar";
-import { getPublishedPostCount, getSiteInfo } from "@/lib/cms";
+import { ChatWidget } from "@/components/site/ChatWidget";
+import { getChatInfo, getPublishedPostCount, getSiteInfo } from "@/lib/cms";
 import { getAbout, getProducts, getServices } from "@/lib/content";
 import { outfit } from "@/lib/fonts";
 import { buildNavMenu, site } from "@/lib/data";
@@ -14,18 +15,19 @@ import { isPreview } from "@/lib/preview";
 
 /**
  * Sitenin html/body iskeleti: duyuru bandı, üst menü, içerik, alt bilgi ve
- * sabit iletişim öğeleri. Site layout'u ve global 404 aynı kabuğu kullanır.
+ * sabit iletişim öğeleri (sohbet balonu panelde açıksa). Site layout'u ve global 404 aynı kabuğu kullanır.
  * Duyuru metni, iletişim bilgileri, menüdeki hizmet ve ürünler ile blog
  * bağlantısı panelden gelir.
  */
 export async function SiteShell({ children }: { children: React.ReactNode }) {
-  const [info, postCount, services, products, about, preview] = await Promise.all([
+  const [info, postCount, services, products, about, preview, chat] = await Promise.all([
     getSiteInfo(),
     getPublishedPostCount(),
     getServices(),
     getProducts(),
     getAbout(),
     isPreview(),
+    getChatInfo(),
   ]);
   const firstAward = about.awards.items[0];
   const footerBadge = firstAward ? `${firstAward.year} ${firstAward.title}` : undefined;
@@ -77,9 +79,10 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
             products={footerProducts}
             badge={footerBadge}
           />
-          <ContactTab whatsapp={info.whatsapp} />
+          <ContactTab whatsapp={info.whatsapp} chat={Boolean(chat)} />
           <MobileCtaBar />
           <PanelBar preview={preview} />
+          {chat && <ChatWidget info={chat} />}
         </MotionConfig>
         {/* Umami: çerezsiz ziyaretçi sayımı (Site Ayarları > Ziyaretçi analizi). Tarayıcıda
             "takip etme" tercihi açıksa sayılmaz; alan adı listesi doluysa yalnız o adresler sayılır. */}

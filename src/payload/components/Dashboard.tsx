@@ -7,6 +7,7 @@ import { LEAD_STATUS } from "../collections/Leads";
 import { activityLabel, DEAL_STAGES, OPEN_STAGES } from "../crm/stages";
 import { TaskCheck } from "./crm/TaskCheck";
 import { taskCode, taskStageLabel } from "../ops/stages";
+import { aiConfigured } from "../chat/ai";
 
 /**
  * Panel ana sayfası (Payload'un koleksiyon ızgarası yerine). Soru şu:
@@ -47,7 +48,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const endOfToday = new Date(`${today}T23:59:59+03:00`).toISOString();
   const taskWhere: Where = { and: [{ done: { equals: false } }, { dueAt: { less_than_equal: endOfToday } }] };
   const startOfToday = `${today}T00:00:00.000Z`;
-  const [tasks, openDeals, myOps, opsOpen, opsLate, opsReview, activeProjects] = await Promise.all([
+  const [tasks, openDeals, myOps, opsOpen, opsLate, opsReview, activeProjects, chatWaiting, chatSettings] = await Promise.all([
     payload.find({ collection: "activities", where: taskWhere, sort: "dueAt", limit: 8, depth: 1 }),
     payload.find({ collection: "deals", where: { stage: { in: OPEN_STAGES } }, limit: 500, depth: 0, pagination: false, select: { stage: true, value: true } }),
     user
@@ -57,6 +58,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
     payload.count({ collection: "tasks", where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startOfToday } }] } }),
     payload.count({ collection: "tasks", where: { stage: { equals: "kontrol" } } }),
     payload.count({ collection: "projects", where: { status: { equals: "aktif" } } }),
+    payload.count({ collection: "conversations", where: { needsReply: { equals: true } } }),
+    payload.findGlobal({ slug: "chatbot-settings", depth: 0 }),
   ]);
   const [settings, newLeads, todayBookings, upcoming, nextBookings, lastLeads, draftCounts, team, refs, quotes, users, recent, weekLeads] =
     await Promise.all([
@@ -87,6 +90,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
   const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
   const cards = [
     { label: "Yeni talep", value: newLeads.totalDocs, hint: "yanıt bekliyor", href: "/admin/collections/leads?where[status][equals]=yeni" },
+    { label: "Bekleyen sohbet", value: chatWaiting.totalDocs, hint: "ekipten yanıt bekliyor", href: "/admin/sohbetler" },
     { label: "Bugünkü iş", value: tasks.totalDocs, hint: "görev ve arama", href: "/admin/collections/activities?where[done][equals]=false&sort=dueAt" },
     { label: "Randevu", value: upcoming.totalDocs, hint: `${todayBookings.totalDocs} tanesi bugün`, href: "/admin/collections/bookings" },
     { label: "Açık fırsat", value: openDeals.docs.length, hint: `${money.format(pipeTotal)} satış hattında`, href: "/admin/satis-hatti" },
@@ -113,6 +117,16 @@ export async function Dashboard({ payload, user }: ServerProps) {
     { done: quotes.totalDocs > 0, title: "Müşteri yorumları", detail: quotes.totalDocs > 0 ? `${quotes.totalDocs} yorum yayında` : "İzinli yorum yok; bölüm sitede gizli", href: "/admin/collections/testimonials" },
     { done: realAdmin, title: "Yönetici e-postası", detail: realAdmin ? "Gerçek adres tanımlı" : "Hesap deneme adresinde; şifre sıfırlama e-postası gelmez", href: "/admin/account" },
     { done: Boolean(process.env.RESEND_API_KEY), title: "Bildirim e-postası", detail: process.env.RESEND_API_KEY ? "Yeni talepler e-postayla geliyor" : "Vercel'e RESEND_API_KEY eklenince talepler e-postayla da gelir", href: null },
+    {
+      done: aiConfigured() && Boolean(chatSettings.enabled),
+      title: "Sohbet asistanı",
+      detail: !aiConfigured()
+        ? "Vercel'e ANTHROPIC_API_KEY eklenince asistan yanıt verir; şimdilik sohbetler doğrudan ekibe düşer"
+        : chatSettings.enabled
+          ? "Sitede sohbet balonu açık"
+          : "Chatbot ayarlarından sohbet balonunu açın",
+      href: "/admin/globals/chatbot-settings",
+    },
     { done: umamiConfigured(), title: "Ziyaretçi analizi", detail: umamiConfigured() ? "Umami bağlı" : "Vercel'e UMAMI_API_KEY eklenince bu panoda ziyaretçi sayıları görünür", href: "/admin/analiz" },
     { done: /gurudijital\.com\.tr/.test(serverURL), title: "Alan adı", detail: /gurudijital\.com\.tr/.test(serverURL) ? "gurudijital.com.tr bağlı" : "Site şimdilik vercel.app adresinde", href: null },
     { done: false, title: "KVKK aydınlatma metni", detail: "Metin gelince formların altına bağlantısı eklenir", href: null },

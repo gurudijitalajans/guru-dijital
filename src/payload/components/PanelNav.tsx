@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Menünün başı: pano, satış hattı, görev panosu, ekip planı, ziyaretçi analizi ve sitenin sayfaları, site haritası
+ * Menünün başı: pano, satış hattı, görev panosu, ekip planı, sohbetler, ziyaretçi analizi ve sitenin sayfaları, site haritası
  * sırasıyla. Buradaki kayıtlar Payload'un kendi menü gruplarında tekrar
  * görünmez (admin.group: false); kalan gruplar altta durur.
  */
@@ -48,6 +48,10 @@ export function PanelNav() {
       <Link href="/admin/ekip-plani" className="guru-nav__main" aria-current={isActive("/admin/ekip-plani") ? "page" : undefined}>
         <Icon d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
         Ekip planı
+      </Link>
+      <Link href="/admin/sohbetler" className="guru-nav__main" aria-current={isActive("/admin/sohbetler") ? "page" : undefined}>
+        <Icon d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
+        Sohbetler
       </Link>
       <Link href="/admin/analiz" className="guru-nav__main" aria-current={isActive("/admin/analiz") ? "page" : undefined}>
         <Icon d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
