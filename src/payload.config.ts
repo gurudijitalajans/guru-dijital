@@ -29,6 +29,7 @@ import { SiteSettings } from "./payload/globals/SiteSettings";
 import { trOverrides } from "./payload/translations";
 import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
 import { fillTenant, Tenants } from "./payload/crm/tenant";
+import { demoTenant } from "./payload/setup/demo";
 import { Projects, Tasks, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
 import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
@@ -149,6 +150,16 @@ export default buildConfig({
           path: "/yonetici",
           meta: { title: "Yönetici panosu" },
         },
+        veriAktar: {
+          Component: "/payload/components/setup/ImportView#ImportView",
+          path: "/veri-aktar",
+          meta: { title: "Veri aktar" },
+        },
+        ekip: {
+          Component: "/payload/components/setup/TeamView#TeamView",
+          path: "/ekip",
+          meta: { title: "Ekibim" },
+        },
         analiz: {
           Component: "/payload/components/AnalyticsView#AnalyticsView",
           path: "/analiz",
@@ -193,7 +204,8 @@ export default buildConfig({
     guardCollection(Media, "site"),
     guardCollection(Categories, "site"),
     Users,
-    Tenants,
+    /* Satış sunumu için örnek verili işletme (Guru yöneticisi) */
+    { ...Tenants, endpoints: [{ path: "/demo", method: "post" as const, handler: demoTenant }] },
     tenanted(BusinessSettings),
     tenanted(SiteConnections),
     tenanted(Usage),

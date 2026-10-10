@@ -3,6 +3,7 @@ import { isAdmin, isLoggedIn } from "../access";
 import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
 import { CRM_SKIP, dealStageChanged, idOf, logActivity } from "./automation";
 import { quotePrint } from "./quote-print";
+import { importContacts } from "../setup/import";
 
 /**
  * Guru CRM: firma, kişi, fırsat, not/görev ve teklif. Sitedeki talep ve
@@ -86,10 +87,11 @@ export const Contacts: CollectionConfig = {
   },
   defaultSort: "-createdAt",
   access,
+  endpoints: [{ path: "/ice-aktar", method: "post", handler: importContacts }],
   hooks: {
     beforeChange: [
       ({ data }) => {
-        if (typeof data.email === "string") data.email = data.email.trim().toLocaleLowerCase("tr-TR");
+        if (typeof data.email === "string") data.email = data.email.trim().toLowerCase();
         return data;
       },
     ],

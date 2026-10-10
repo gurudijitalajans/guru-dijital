@@ -26,6 +26,7 @@ export const SOURCES = [
   { value: "chatbot", label: "Chatbot" },
   { value: "referans", label: "Referans" },
   { value: "manuel", label: "Elle eklendi" },
+  { value: "aktarim", label: "Excel'den aktarıldı" },
 ];
 
 export const QUOTE_STATUS = [

@@ -1,6 +1,8 @@
 // Headless Chrome'u CDP ile süren küçük yardımcı (QA betikleri için)
 import { spawn } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const BASE = process.env.QA_BASE || "http://localhost:3000";
@@ -10,7 +12,9 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function withPage({ width = 1440, height = 900, mobile = false } = {}, fn) {
   const port = 9900 + Math.floor(Math.random() * 90);
-  const profile = fileURLToPath(new URL(`./.profile-${port}`, import.meta.url));
+  /* Proje dışında: Chrome profilindeki soket dosyası geliştirme sunucusunun CSS taramasını düşürür */
+  const profile = join(tmpdir(), `guru-qa-profile-${port}`);
+  rmSync(profile, { recursive: true, force: true });
   const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", ["--headless=new", "--no-first-run", "--hide-scrollbars", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, "about:blank"], { stdio: "ignore" });
   try {
     let ver;

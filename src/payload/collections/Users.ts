@@ -3,6 +3,7 @@ import { tenantsArrayField } from "@payloadcms/plugin-multi-tenant/fields";
 import { isAdmin, isAdminField } from "../access";
 import { isAdminUser, isTenantAdmin, MODULES, tenantRow } from "../business/roles";
 import { defaultTenantId, idOf } from "../crm/tenant";
+import { inviteUser, resendInvite, resetEmailHTML, resetEmailSubject } from "../setup/invite";
 
 /**
  * Panel kullanıcıları. Guru yöneticisi tüm işletmeleri yönetir. İşletme
@@ -35,7 +36,13 @@ export const Users: CollectionConfig = {
     /* Ekip üyesi kendi hesabını sağ üstten açar; kullanıcı listesi Guru ve işletme yöneticisinde */
     hidden: ({ user }) => !isTenantAdmin(user),
   },
+  endpoints: [
+    { path: "/davet", method: "post", handler: inviteUser },
+    { path: "/:id/davet-yenile", method: "post", handler: resendInvite },
+  ],
   auth: {
+    /* Davet ve parola sıfırlama aynı akış: davet bağlamında davet metni gider */
+    forgotPassword: { expiration: 3 * 86400000, generateEmailSubject: resetEmailSubject as never, generateEmailHTML: resetEmailHTML as never },
     tokenExpiration: 60 * 60 * 8,
     maxLoginAttempts: 5,
     lockTime: 10 * 60 * 1000,
@@ -50,6 +57,10 @@ export const Users: CollectionConfig = {
   hooks: {
     /* Erişim kaydı: kim, ne zaman giriş yaptı (Ayarlar > İşlem geçmişi) */
     afterLogin: [
+      /* İlk giriş: davet tamamlandı */
+      async ({ user, req }) => {
+        if (user.invitePending) await req.payload.update({ collection: "users", id: user.id, data: { invitePending: false }, req, overrideAccess: true, context: { tenantSync: true } }).catch(() => {});
+      },
       async ({ user, req }) => {
         const tenant = idOf((user.tenants as Row[] | undefined)?.[0]?.tenant) ?? (await defaultTenantId(req));
         await req.payload
@@ -100,6 +111,7 @@ export const Users: CollectionConfig = {
   },
   fields: [
     { name: "name", type: "text", label: "Ad Soyad", required: true },
+    { name: "invitePending", type: "checkbox", label: "Davet bekliyor", defaultValue: false, access: { create: () => false, update: () => false }, admin: { position: "sidebar", readOnly: true, condition: (d) => Boolean(d?.invitePending), description: "Henüz giriş yapmadı. Ekibim ekranından daveti yeniden gönderebilirsiniz." } },
     {
       name: "weeklyHours",
       type: "number",

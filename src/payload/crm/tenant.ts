@@ -182,25 +182,34 @@ const PARENTS: Record<string, string> = {
   booking: "bookings",
 };
 
+/* Kullanıcı bu işletmeye kayıt açabilir mi (oturumsuz sunucu işlemi, Guru yöneticisi ya da işletmenin üyesi) */
+const mayUse = (req: PayloadRequest, tenant: Id) => {
+  const user = req.user as U;
+  return !user || user.role === "admin" || (user.tenants ?? []).some((r) => String(idOf(r.tenant)) === String(tenant));
+};
+
 /**
  * Yeni kayda işletme: üst kaydın işletmesi (fırsatın notu fırsatın
  * işletmesinde açılır), yoksa paneldeki seçili işletme, oturum yoksa (site
  * formu, sohbet) Guru Dijital. Eklentinin işletme doğrulamasından önce çalışır.
+ * Üst kayıt, seçili işletmeden gelen varsayılanın da önündedir: panelde başka
+ * işletme seçiliyken açılan alt kayıt (ör. demo kurulumunun görevleri) üst
+ * kaydın işletmesinde kalır.
  */
 export const fillTenant =
   (parents: (keyof typeof PARENTS)[] = []) =>
   async ({ data, originalDoc, req }: { data?: Record<string, unknown>; originalDoc?: Record<string, unknown>; req: PayloadRequest }) => {
-    if (!data || idOf(data.tenant) || idOf(originalDoc?.tenant)) return data;
+    if (!data || idOf(originalDoc?.tenant)) return data;
     for (const p of parents) {
       const id = idOf(data[p]);
       if (!id) continue;
       const parent = await req.payload.findByID({ collection: PARENTS[p] as never, id, depth: 0, req, overrideAccess: true }).catch(() => null);
       const t = idOf((parent as { tenant?: unknown } | null)?.tenant);
       if (t) {
-        data.tenant = t;
+        if (!idOf(data.tenant) || mayUse(req, t)) data.tenant = t;
         return data;
       }
     }
-    data.tenant = (await currentTenantId(req)) ?? (await defaultTenantId(req));
+    if (!idOf(data.tenant)) data.tenant = (await currentTenantId(req)) ?? (await defaultTenantId(req));
     return data;
   };

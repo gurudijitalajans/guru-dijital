@@ -353,7 +353,7 @@ export interface Contact {
   phone?: string | null;
   company?: (number | null) | Company;
   notes?: string | null;
-  source?: ('form' | 'randevu' | 'chatbot' | 'referans' | 'manuel') | null;
+  source?: ('form' | 'randevu' | 'chatbot' | 'referans' | 'manuel' | 'aktarim') | null;
   /**
    * Yazıp Enter'a basın (ör. e-ticaret, sıcak).
    */
@@ -394,6 +394,10 @@ export interface Company {
 export interface User {
   id: number;
   name: string;
+  /**
+   * Henüz giriş yapmadı. Ekibim ekranından daveti yeniden gönderebilirsiniz.
+   */
+  invitePending?: boolean | null;
   /**
    * Guru Operation ekip planındaki doluluk yüzdesi bu saate göre hesaplanır.
    */
@@ -2386,6 +2390,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  invitePending?: T;
   weeklyHours?: T;
   role?: T;
   tenants?:

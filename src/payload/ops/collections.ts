@@ -75,7 +75,7 @@ export const Templates: CollectionConfig = {
 type Step = { title: string; assignee?: unknown; offset?: number | null; duration?: number | null; hours?: number | null; priority?: string | null; checklist?: { text: string }[] | null };
 
 /** Şablon adımlarını işin görevleri olarak açar */
-export async function applyTemplate(req: PayloadRequest, project: { id: number | string; startDate?: string | null; owner?: unknown }, templateId: number | string) {
+export async function applyTemplate(req: PayloadRequest, project: { id: number | string; startDate?: string | null; owner?: unknown; tenant?: unknown }, templateId: number | string) {
   const tpl = await req.payload.findByID({ collection: "templates", id: templateId, depth: 0, req, overrideAccess: true });
   const start = dayOf(project.startDate ?? new Date());
   let last = start;
@@ -95,6 +95,8 @@ export async function applyTemplate(req: PayloadRequest, project: { id: number |
         priority: (step.priority ?? "normal") as never,
         checklist: (step.checklist ?? []).map((c) => ({ text: c.text, done: false })),
         stage: "yapilacak",
+        /* İşin işletmesi (paneldeki seçili işletme başka olabilir: demo kurulumu) */
+        ...(idOf(project.tenant) ? { tenant: idOf(project.tenant) } : {}),
       } as never,
       req,
       overrideAccess: true,

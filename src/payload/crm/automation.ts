@@ -43,7 +43,7 @@ export async function findOrCreateContact(
   req: PayloadRequest,
   input: { name: string; email: string; phone?: string | null; source: string; tenant: Id },
 ): Promise<Id> {
-  const email = input.email.trim().toLocaleLowerCase("tr-TR");
+  const email = input.email.trim().toLowerCase();
   const found = await req.payload.find({
     collection: "contacts",
     where: { and: [{ email: { equals: email } }, { tenant: { equals: input.tenant } }] },

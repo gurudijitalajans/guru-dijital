@@ -10,7 +10,9 @@ import { scopeOf } from "./tenant-scope";
 import { chatConfigOf } from "../chat/collections";
 import { taskCode, taskStageLabel } from "../ops/stages";
 import { aiConfigured } from "../chat/ai";
-import { can, isAdminUser, type Module } from "../business/roles";
+import { can, isAdminUser, isTenantAdmin, type Module } from "../business/roles";
+import { Onboarding } from "./setup/Onboarding";
+import { DemoTenant } from "./setup/DemoTenant";
 
 /**
  * Panel ana sayfası (Payload'un koleksiyon ızgarası yerine). Soru şu:
@@ -165,6 +167,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
           {firstName ? ` ${firstName}` : ""}
         </h1>
       </header>
+
+      {!scope.isGuru && scope.tenantId > 0 && isTenantAdmin(user, scope.tenantId) ? <Onboarding payload={payload} tenantId={scope.tenantId} has={has} /> : null}
 
       <div className="guru-home__cards">
         {cards.map((c) => (
@@ -365,6 +369,8 @@ export async function Dashboard({ payload, user }: ServerProps) {
         </ul>
       </section>
       )}
+
+      {isAdminUser(user) && scope.isGuru ? <DemoTenant payload={payload} /> : null}
 
       {has("site") && (
       <section className="guru-home__panel">

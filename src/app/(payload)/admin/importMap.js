@@ -49,6 +49,8 @@ import { TeamPlanView as TeamPlanView_0044aa6e002c6d302b5f73749ecdac34 } from '.
 import { InboxView as InboxView_1580b4b138605f586a4021e03dae4972 } from '../../../payload/components/chat/InboxView'
 import { ReportView as ReportView_780ba89690aaf5e760fe730e08f7a2fd } from '../../../payload/components/chat/ReportView'
 import { ExecutiveView as ExecutiveView_cb886b5cdd931825476f0f22eb2b1c34 } from '../../../payload/components/business/ExecutiveView'
+import { ImportView as ImportView_09bdd1e9ea7c3f678ef8fd15e8914b6a } from '../../../payload/components/setup/ImportView'
+import { TeamView as TeamView_0e583cf3681b32b90612d6af16666695 } from '../../../payload/components/setup/TeamView'
 import { AnalyticsView as AnalyticsView_e82a66e171163cfda89984b1174b76e8 } from '../../../payload/components/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
@@ -106,6 +108,8 @@ export const importMap = {
   "/payload/components/chat/InboxView#InboxView": InboxView_1580b4b138605f586a4021e03dae4972,
   "/payload/components/chat/ReportView#ReportView": ReportView_780ba89690aaf5e760fe730e08f7a2fd,
   "/payload/components/business/ExecutiveView#ExecutiveView": ExecutiveView_cb886b5cdd931825476f0f22eb2b1c34,
+  "/payload/components/setup/ImportView#ImportView": ImportView_09bdd1e9ea7c3f678ef8fd15e8914b6a,
+  "/payload/components/setup/TeamView#TeamView": TeamView_0e583cf3681b32b90612d6af16666695,
   "/payload/components/AnalyticsView#AnalyticsView": AnalyticsView_e82a66e171163cfda89984b1174b76e8,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e

@@ -8,7 +8,7 @@ import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
 import { can as canIn, isAdminUser, isTenantAdmin } from "../business/roles";
 
 /**
- * Menünün başı (kullanıcının modüllerine göre): pano, yönetici panosu, satış hattı, görev panosu, ekip planı, sohbetler, ziyaretçi analizi ve sitenin sayfaları, site haritası
+ * Menünün başı (kullanıcının modüllerine göre): pano, yönetici panosu, satış hattı, görev panosu, ekip planı, sohbetler, veri aktarma, ekip, ziyaretçi analizi ve sitenin sayfaları, site haritası
  * sırasıyla. Buradaki kayıtlar Payload'un kendi menü gruplarında tekrar
  * görünmez (admin.group: false); kalan gruplar altta durur.
  */
@@ -73,6 +73,18 @@ export function PanelNav() {
         <Link href="/admin/sohbetler" className="guru-nav__main" aria-current={isActive("/admin/sohbetler") ? "page" : undefined}>
           <Icon d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
           Sohbetler
+        </Link>
+      )}
+      {can(user, "crm") && (
+        <Link href="/admin/veri-aktar" className="guru-nav__main" aria-current={isActive("/admin/veri-aktar") ? "page" : undefined}>
+          <Icon d="M12 3v12M7 10l5 5 5-5M4 21h16" />
+          Veri aktar
+        </Link>
+      )}
+      {isTenantAdmin(user, scoped) && (
+        <Link href="/admin/ekip" className="guru-nav__main" aria-current={isActive("/admin/ekip") ? "page" : undefined}>
+          <Icon d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM22 19v-1a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8" />
+          Ekibim
         </Link>
       )}
       {can(user, "site") && (
