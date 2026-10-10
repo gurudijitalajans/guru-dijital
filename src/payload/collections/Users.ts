@@ -61,10 +61,11 @@ export const Users: CollectionConfig = {
       async ({ user, req }) => {
         if (user.invitePending) await req.payload.update({ collection: "users", id: user.id, data: { invitePending: false }, req, overrideAccess: true, context: { tenantSync: true } }).catch(() => {});
       },
+      /* Giriş kaydı girişin işleminde (req) yazılır: ayrı bağlantıdan yazınca Postgres'te kullanıcı satırının kilidini bekleyip girişi kilitliyordu */
       async ({ user, req }) => {
         const tenant = idOf((user.tenants as Row[] | undefined)?.[0]?.tenant) ?? (await defaultTenantId(req));
         await req.payload
-          .create({ collection: "audit-log", data: { user: user.id, tenant: tenant as number, action: "giris", target: "Oturum", docId: String(user.id), summary: `${user.name ?? user.email} giriş yaptı` }, overrideAccess: true })
+          .create({ collection: "audit-log", data: { user: user.id, tenant: tenant as number, action: "giris", target: "Oturum", docId: String(user.id), summary: `${user.name ?? user.email} giriş yaptı` }, req, overrideAccess: true })
           .catch(() => {});
       },
     ],
