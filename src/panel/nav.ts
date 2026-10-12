@@ -29,7 +29,7 @@ export const NAV: NavGroup[] = [
     items: [
       { id: "home", label: "Ana sayfa", href: "/panel", icon: "home", keywords: "pano özet" },
       { id: "inbox", label: "Gelen kutusu", href: "/panel/gelen", icon: "inbox", modules: ["chat", "crm"], keywords: "sohbet mesaj talep form başvuru randevu" },
-      { id: "bookings", label: "Randevular", href: "/admin/collections/bookings", icon: "calendar", modules: ["crm"], legacy: true, keywords: "toplantı takvim" },
+      { id: "calendar", label: "Takvim", href: "/panel/takvim", icon: "calendar", modules: ["crm", "ops"], keywords: "randevu toplantı arama teslim ajanda" },
     ],
   },
   {
@@ -51,7 +51,7 @@ export const NAV: NavGroup[] = [
   {
     label: "Raporlar",
     items: [
-      { id: "exec", label: "Yönetim özeti", href: "/admin/yonetici", icon: "report", modules: ["business"], tenantAdmin: true, legacy: true, keywords: "yönetici panosu rapor" },
+      { id: "exec", label: "Yönetim özeti", href: "/panel/ozet", icon: "report", modules: ["business"], tenantAdmin: true, keywords: "yönetici panosu rapor hedef" },
       { id: "chatreport", label: "Sohbet raporu", href: "/admin/sohbet-raporu", icon: "chat", modules: ["chat"], legacy: true },
       { id: "analytics", label: "Ziyaretçi analizi", href: "/admin/analiz", icon: "report", modules: ["site"], legacy: true, keywords: "umami ziyaret" },
     ],
