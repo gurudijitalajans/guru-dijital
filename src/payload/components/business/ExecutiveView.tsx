@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { scopeOf } from "../tenant-scope";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { canReq, isAdminUser, isTenantAdminReq } from "../../business/roles";
 import { businessConfigOf } from "../../business/collections";
@@ -68,6 +68,8 @@ export async function ExecutiveView({ initPageResult, params, searchParams }: Ad
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Yönetici panosu" }]} />
       <Gutter>
         <div className="guru-pipe guru-plan guru-exec">
           <header className="guru-pipe__head">

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { scopeOf } from "../tenant-scope";
 import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { daysAgoIso } from "../../utils";
 import { businessDays, dayOf, mondayOf, shiftDays } from "../../ops/dates";
@@ -106,6 +106,8 @@ export async function TeamPlanView({ initPageResult, params, searchParams }: Adm
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Ekip planı" }]} />
       <Gutter>
         <div className="guru-pipe guru-plan">
           <header className="guru-pipe__head">

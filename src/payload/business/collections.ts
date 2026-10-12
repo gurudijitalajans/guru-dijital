@@ -1,6 +1,6 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, Field, Payload, PayloadRequest } from "payload";
 import type { BusinessConfig } from "@/payload-types";
-import { isTenantAdminReq } from "./roles";
+import { can, isTenantAdmin, isTenantAdminReq } from "./roles";
 import { isAdmin } from "../access";
 
 /**
@@ -123,7 +123,8 @@ export function withAudit(c: CollectionConfig): CollectionConfig {
 export const BusinessSettings: CollectionConfig = {
   slug: "business-config",
   labels: { singular: "Yönetici ayarları", plural: "Yönetici ayarları" },
-  admin: { group: "Ayarlar", hidden: ({ user }) => !(user as { role?: string; tenants?: { role?: string }[] } | null)?.tenants?.some((t) => t.role === "yonetici") && (user as { role?: string } | null)?.role !== "admin" },
+  /* Yönetici panosunun ayarı: panoyu açabilen (işletme yöneticisi ve Business modülü) görür */
+  admin: { group: "Ayarlar", hidden: ({ user }) => !(isTenantAdmin(user) && can(user, "business")) },
   access: {
     read: ({ req }) => isTenantAdminReq(req),
     create: ({ req }) => isTenantAdminReq(req),

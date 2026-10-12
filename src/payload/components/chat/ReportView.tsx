@@ -5,7 +5,7 @@ import { usageThisMonth } from "../../channels/usage";
 import { chatConfigOf } from "../../chat/collections";
 import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { daysAgoIso } from "../../utils";
 
@@ -74,6 +74,8 @@ export async function ReportView({ initPageResult, params, searchParams }: Admin
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Sohbet raporu" }]} />
       <Gutter>
         <div className="guru-pipe guru-plan">
           <header className="guru-pipe__head">

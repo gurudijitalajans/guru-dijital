@@ -14,7 +14,7 @@ export const trOverrides = {
     noResultsDescription: "Burada henüz kayıt yok ya da seçtiğiniz filtrelere uyan bir kayıt bulunamadı.",
     createNewLabel: "Yeni {{label}} ekle",
     successfullyCreated: "{{label}} eklendi.",
-    updatedSuccessfully: "Kaydedildi. Sitedeki sayfa birkaç saniye içinde güncellenir.",
+    updatedSuccessfully: "Kaydedildi.",
   },
   authentication: {
     lockUntil: "Kilit süresi",

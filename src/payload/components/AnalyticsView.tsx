@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { canReq } from "../business/roles";
 import { defaultTenantId } from "../crm/tenant";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { getOverview, type DayPoint, type MetricRow, type Totals } from "@/lib/umami";
 import { daysAgoIso } from "../utils";
@@ -200,6 +200,8 @@ export async function AnalyticsView({ initPageResult, params, searchParams }: Ad
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Ziyaretçi Analizi" }]} />
       <Gutter>
         <div className="guru-ana">
           <header className="guru-ana__head">

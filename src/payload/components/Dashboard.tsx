@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { ServerProps, Where } from "payload";
 import { dayKey, daysAgoIso } from "../utils";
 import { getOverview, umamiConfigured } from "@/lib/umami";
@@ -159,6 +159,9 @@ export async function Dashboard({ payload, user }: ServerProps) {
   ];
 
   return (
+    <>
+    {/* Pano: yol satırı boş (önceki sayfanın başlığı kalmasın) */}
+    <SetStepNav nav={[]} />
     <Gutter className="guru-home">
       <header className="guru-home__head">
         <p className="guru-home__date">{dayFmt.format(now)}</p>
@@ -431,6 +434,7 @@ export async function Dashboard({ payload, user }: ServerProps) {
         )}
       </div>
     </Gutter>
+    </>
   );
 }
 

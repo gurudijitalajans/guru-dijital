@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { scopeOf } from "../tenant-scope";
 import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { daysAgoIso } from "../../utils";
 import { TaskBoard, type BoardTask } from "./TaskBoard";
@@ -62,6 +62,8 @@ export async function TaskBoardView({ initPageResult, params, searchParams }: Ad
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Görev panosu" }]} />
       <Gutter>
         <TaskBoard
           tasks={tasks}

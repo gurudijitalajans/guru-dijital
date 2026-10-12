@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
-import { buildConfig, type CollectionConfig, type PayloadRequest } from "payload";
+import { buildConfig, type CollectionAfterChangeHook, type CollectionBeforeDeleteHook, type CollectionConfig, type PayloadRequest } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { resendAdapter } from "@payloadcms/email-resend";
@@ -30,6 +30,7 @@ import { trOverrides } from "./payload/translations";
 import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/collections";
 import { fillTenant, Tenants } from "./payload/crm/tenant";
 import { demoTenant } from "./payload/setup/demo";
+import { deleteTenantSettings, ensureTenantSettings } from "./payload/setup/tenant-settings";
 import { Projects, Tasks, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
 import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
@@ -205,7 +206,24 @@ export default buildConfig({
     guardCollection(Categories, "site"),
     Users,
     /* Satış sunumu için örnek verili işletme (Guru yöneticisi) */
-    { ...Tenants, endpoints: [{ path: "/demo", method: "post" as const, handler: demoTenant }] },
+    {
+      ...Tenants,
+      endpoints: [{ path: "/demo", method: "post" as const, handler: demoTenant }],
+      hooks: {
+        ...Tenants.hooks,
+        /* Yeni işletmenin ayar kayıtları baştan açılır (ayar sayfası "Yeni oluştur" gibi açılmasın) */
+        afterChange: [
+          ...(Tenants.hooks?.afterChange ?? []),
+          async ({ doc, operation, req }: Parameters<CollectionAfterChangeHook>[0]) => {
+            if (operation === "create") await ensureTenantSettings(req.payload, doc.id, req);
+          },
+        ],
+        beforeDelete: [
+          ...(Tenants.hooks?.beforeDelete ?? []),
+          async ({ id, req }: Parameters<CollectionBeforeDeleteHook>[0]) => deleteTenantSettings(req.payload, id, req),
+        ],
+      },
+    },
     tenanted(BusinessSettings),
     tenanted(SiteConnections),
     tenanted(Usage),

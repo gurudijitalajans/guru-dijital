@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps, Where } from "payload";
 import { isAdminUser, isTenantAdminReq, MODULES } from "../../business/roles";
 import { scopeOf } from "../tenant-scope";
@@ -41,6 +41,8 @@ export async function TeamView({ initPageResult, params, searchParams }: AdminVi
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Ekibim" }]} />
       <Gutter>
         <div className="guru-pipe guru-plan">
           <header className="guru-pipe__head">

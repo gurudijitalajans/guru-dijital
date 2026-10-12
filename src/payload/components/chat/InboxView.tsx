@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { scopeOf } from "../tenant-scope";
 import { canReq } from "../../business/roles";
 import { DefaultTemplate } from "@payloadcms/next/templates";
-import { Gutter } from "@payloadcms/ui";
+import { Gutter, SetStepNav } from "@payloadcms/ui";
 import type { AdminViewServerProps } from "payload";
 import { aiConfigured } from "../../chat/ai";
 import { chatConfigOf } from "../../chat/collections";
@@ -32,6 +32,8 @@ export async function InboxView({ initPageResult, params, searchParams }: AdminV
       user={req.user ?? undefined}
       visibleEntities={visibleEntities}
     >
+      {/* Üstteki yol satırı bu sayfanın başlığını gösterir (önceki sayfanınkini değil) */}
+      <SetStepNav nav={[{ label: "Sohbetler" }]} />
       <Gutter>
         <div className="guru-pipe guru-inbox-page">
           <header className="guru-pipe__head">

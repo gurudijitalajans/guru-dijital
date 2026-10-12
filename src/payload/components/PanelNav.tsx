@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@payloadcms/ui";
 import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
-import { can as canIn, isAdminUser, isTenantAdmin } from "../business/roles";
+import { can as canIn, isAdminUser, isTenantAdmin, type Module } from "../business/roles";
 
 /**
  * Menünün başı (kullanıcının modüllerine göre): pano, yönetici panosu, satış hattı, görev panosu, ekip planı, sohbetler, veri aktarma, ekip, ziyaretçi analizi ve sitenin sayfaları, site haritası
@@ -21,6 +21,16 @@ const PAGES = [
   { href: "/admin/collections/posts", label: "Blog yazıları" },
 ];
 
+/* Payload'un menü gruplarındaki kayıtlar: hangi modüle bağlı (menünün tek süzgeci burası) */
+const SLUG_MODULE: Record<string, Module> = {
+  leads: "crm", bookings: "crm", deals: "crm", contacts: "crm", companies: "crm", quotes: "crm", activities: "crm",
+  projects: "ops", tasks: "ops", templates: "ops",
+  conversations: "chat", knowledge: "chat", "chatbot-config": "chat",
+  team: "site", "case-studies": "site", testimonials: "site", references: "site", services: "site", products: "site", posts: "site",
+  media: "site", categories: "site", "payload-folders": "site", "global-home-page": "site", "global-about-page": "site", "global-site-settings": "site",
+};
+type TenantInfo = { id: string; slug: string; modules: string[] };
+
 const Icon = ({ d }: { d: string }) => (
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />
@@ -33,7 +43,38 @@ export function PanelNav() {
   /* Yetki üstteki işletme seçicisinde seçili işletmeye göre */
   const { selectedTenantID } = useTenantSelection();
   const scoped = isAdminUser(user) ? undefined : selectedTenantID;
-  const can = (u: unknown, m: Parameters<typeof canIn>[1]) => canIn(u, m, scoped);
+  /* Seçili işletmenin açık modülleri: Guru yöneticisi her şeye yetkili olsa da menü işletmenin modüllerini gösterir */
+  const [tenant, setTenant] = useState<TenantInfo | null>(null);
+  useEffect(() => {
+    /* Seçim yokken eski bilgi kullanılmaz (tenantHas işletme kimliğini karşılaştırır) */
+    if (!selectedTenantID) return;
+    let live = true;
+    fetch(`/api/tenants/${selectedTenantID}?depth=0`, { credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((t) => live && setTenant(t ? { id: String(t.id), slug: t.slug, modules: t.modules ?? [] } : null))
+      .catch(() => live && setTenant(null));
+    return () => {
+      live = false;
+    };
+  }, [selectedTenantID]);
+  const tenantHas = (m: Module) => !tenant || String(tenant.id) !== String(selectedTenantID) || (m === "site" ? tenant.slug === "guru" : tenant.modules.includes(m));
+  const can = (u: unknown, m: Module) => canIn(u, m, scoped) && tenantHas(m);
+  const tenantAdmin = isTenantAdmin(user, scoped);
+  /* Payload'un gruplarındaki kayıtlar da aynı kurala göre: yetkisi olmayan bağlantı ve boş kalan grup gizlenir */
+  const visible = (key: string) => {
+    if (SLUG_MODULE[key]) return can(user, SLUG_MODULE[key]);
+    if (key === "business-config") return tenantAdmin && can(user, "business");
+    if (key === "site-connection") return can(user, "crm") || can(user, "chat");
+    if (key === "users") return tenantAdmin;
+    return true;
+  };
+  const hiddenIds = Object.keys(SLUG_MODULE)
+    .concat(["business-config", "site-connection", "users"])
+    .filter((k) => !visible(k))
+    .map((k) => `#nav-${k}`);
+  const navCss = hiddenIds.length
+    ? `${hiddenIds.join(",")}{display:none!important}.nav-group:not(:has(.nav__link:not(${hiddenIds.join(",")}))){display:none!important}${visible("payload-folders") ? "" : ".browse-by-folder-button{display:none!important}"}`
+    : "";
   /* Sitedeki "Bu sayfayı düzenle" bağlantısı için işaret: yalnız panele girmiş tarayıcıda olur, kimlik bilgisi taşımaz */
   useEffect(() => {
     document.cookie = "guru-panel=1; path=/; max-age=2592000; samesite=lax";
@@ -41,11 +82,12 @@ export function PanelNav() {
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(href + "/"));
   return (
     <div className="guru-nav">
+      {navCss ? <style>{navCss}</style> : null}
       <Link href="/admin" className="guru-nav__main" aria-current={isActive("/admin") ? "page" : undefined}>
         <Icon d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" />
         Pano
       </Link>
-      {(isAdminUser(user) || (isTenantAdmin(user, scoped) && can(user, "business"))) && (
+      {tenantAdmin && can(user, "business") && (
         <Link href="/admin/yonetici" className="guru-nav__main" aria-current={isActive("/admin/yonetici") ? "page" : undefined}>
           <Icon d="M3 3v18h18M7 15l4-4 3 3 5-6" />
           Yönetici panosu
@@ -81,7 +123,7 @@ export function PanelNav() {
           Veri aktar
         </Link>
       )}
-      {isTenantAdmin(user, scoped) && (
+      {tenantAdmin && (
         <Link href="/admin/ekip" className="guru-nav__main" aria-current={isActive("/admin/ekip") ? "page" : undefined}>
           <Icon d="M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM22 19v-1a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8" />
           Ekibim
