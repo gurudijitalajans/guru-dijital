@@ -94,6 +94,11 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
               >
                 <NavGlyph name={it.icon} className="size-[18px] shrink-0 opacity-85" />
                 <span className="min-w-0 flex-1 truncate">{it.label}</span>
+                {it.count ? (
+                  <span className="tabular shrink-0 rounded-full bg-accent px-2 text-[12px] font-medium text-white" aria-label={`${it.count} bekleyen`}>
+                    {it.count > 99 ? "99+" : it.count}
+                  </span>
+                ) : null}
                 {it.legacy ? <span className="shrink-0 text-[11px] text-nav-label">mevcut ekran</span> : null}
               </Link>
             );

@@ -34,6 +34,10 @@ export type PanelContext = {
   find: <C extends CollectionSlug>(collection: C, args?: { where?: Where; sort?: string; limit?: number; page?: number; depth?: number; select?: Record<string, boolean> }) => ReturnType<Awaited<ReturnType<typeof cms>>["find"]>;
   count: (collection: CollectionSlug, where?: Where) => Promise<number>;
   findByID: <C extends CollectionSlug>(collection: C, id: number | string, depth?: number) => Promise<unknown | null>;
+  /** Seçili işletmede yeni kayıt (işletme zorla atanır), kullanıcının yetkisiyle */
+  create: (collection: CollectionSlug, data: Record<string, unknown>) => Promise<unknown>;
+  /** Yalnız seçili işletmenin kaydı güncellenir; değilse null */
+  update: (collection: CollectionSlug, id: number | string, data: Record<string, unknown>) => Promise<unknown | null>;
 };
 
 const toOption = (t: Tenant): TenantOption => ({ id: t.id, name: t.name, slug: t.slug, modules: (t.modules ?? []) as string[] });
@@ -76,6 +80,13 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
   /* Payload'un yetki kuralları seçili işletmeyi çerezden okur: isteğe başlıkları veriyoruz */
   const req = { headers: h, user: u } as unknown as Partial<PayloadRequest>;
   const scoped = (where?: Where): Where => ({ and: [{ tenant: { equals: tenant.id } }, ...(where ? [where] : [])] });
+  /* Kaydı yetkiyle okur; başka işletmenin kaydı yokmuş gibi döner */
+  const own = async (collection: CollectionSlug, id: number | string, depth: number) => {
+    const doc = await payload.findByID({ collection, id, depth, user: u, req, overrideAccess: false }).catch(() => null);
+    const t = doc && (doc as { tenant?: unknown }).tenant;
+    const tid = t && typeof t === "object" ? (t as { id: number }).id : t;
+    return doc && String(tid) === String(tenant.id) ? doc : null;
+  };
 
   return {
     user: u,
@@ -100,12 +111,13 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
       })) as PanelContext["find"],
     count: async (collection, where) =>
       (await payload.count({ collection, where: scoped(where), user: u, req, overrideAccess: false })).totalDocs,
-    findByID: async (collection, id, depth = 1) => {
-      const doc = await payload.findByID({ collection, id, depth, user: u, req, overrideAccess: false }).catch(() => null);
-      /* Başka işletmenin kaydı: yokmuş gibi */
-      const t = doc && (doc as { tenant?: unknown }).tenant;
-      const tid = t && typeof t === "object" ? (t as { id: number }).id : t;
-      return doc && String(tid) === String(tenant.id) ? doc : null;
+    findByID: (collection, id, depth = 1) => own(collection, id, depth),
+    create: (collection, data) => payload.create({ collection, data: { ...data, tenant: tenant.id } as never, user: u, req, overrideAccess: false }),
+    update: async (collection, id, data) => {
+      if (!(await own(collection, id, 0))) return null;
+      const { tenant: _drop, ...rest } = data;
+      void _drop;
+      return payload.update({ collection, id, data: rest as never, user: u, req, overrideAccess: false });
     },
   };
 });

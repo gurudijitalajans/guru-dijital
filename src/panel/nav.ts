@@ -18,6 +18,8 @@ export type NavItem = {
   legacy?: boolean;
   /** Komut paletinde aranacak ek kelimeler */
   keywords?: string;
+  /** Menüde sayı rozeti (ör. bekleyen kayıt) */
+  count?: number;
 };
 export type NavGroup = { label: string; items: NavItem[] };
 
@@ -26,8 +28,7 @@ export const NAV: NavGroup[] = [
     label: "Bugün",
     items: [
       { id: "home", label: "Ana sayfa", href: "/panel", icon: "home", keywords: "pano özet" },
-      { id: "inbox", label: "Sohbetler", href: "/admin/sohbetler", icon: "inbox", modules: ["chat"], legacy: true, keywords: "gelen kutusu mesaj" },
-      { id: "leads", label: "Talepler", href: "/admin/collections/leads", icon: "inbox", modules: ["crm"], legacy: true, keywords: "form başvuru" },
+      { id: "inbox", label: "Gelen kutusu", href: "/panel/gelen", icon: "inbox", modules: ["chat", "crm"], keywords: "sohbet mesaj talep form başvuru randevu" },
       { id: "bookings", label: "Randevular", href: "/admin/collections/bookings", icon: "calendar", modules: ["crm"], legacy: true, keywords: "toplantı takvim" },
     ],
   },
@@ -73,5 +74,6 @@ export const itemVisible = (it: NavItem, a: Access) => (!it.modules || it.module
 
 /** İstemciye giden sade menü: yalnız görünen öğeler */
 export function visibleNav(a: Access): NavGroup[] {
-  return NAV.map((g) => ({ ...g, items: g.items.filter((it) => itemVisible(it, a)) })).filter((g) => g.items.length);
+  /* Kopya: istek başına sayı rozeti yazılır, ortak tanım değişmez */
+  return NAV.map((g) => ({ ...g, items: g.items.filter((it) => itemVisible(it, a)).map((it) => ({ ...it })) })).filter((g) => g.items.length);
 }

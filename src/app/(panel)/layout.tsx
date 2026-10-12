@@ -12,7 +12,7 @@ export default function PanelRoot({ children }: { children: React.ReactNode }) {
     <html lang="tr" className={outfit.variable}>
       <body>
         {children}
-        <Toaster position="bottom-center" toastOptions={{ style: { fontFamily: "var(--font-sans)" } }} />
+        <Toaster position="bottom-right" toastOptions={{ style: { fontFamily: "var(--font-sans)" } }} />
       </body>
     </html>
   );

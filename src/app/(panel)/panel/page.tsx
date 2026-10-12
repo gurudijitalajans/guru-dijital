@@ -64,9 +64,9 @@ export default async function PanelHome() {
   /* İlgilenmeniz gerekenler */
   const rows: Row[] = [];
   for (const d of waiting.docs as { id: number; name?: string | null; lastText?: string | null; lastMessageAt?: string | null; updatedAt: string }[])
-    rows.push({ key: `c${d.id}`, title: `${d.name || "Ziyaretçi"} yanıt bekliyor`, detail: d.lastText ?? "", href: `/admin/sohbetler`, tone: "bad", badge: "Yanıt bekliyor", at: d.lastMessageAt ?? d.updatedAt });
+    rows.push({ key: `c${d.id}`, title: `${d.name || "Ziyaretçi"} yanıt bekliyor`, detail: d.lastText ?? "", href: `/panel/gelen?s=s${d.id}`, tone: "bad", badge: "Yanıt bekliyor", at: d.lastMessageAt ?? d.updatedAt });
   for (const d of leads.docs as { id: number; name: string; service?: string | null; subject?: string | null; createdAt: string }[])
-    rows.push({ key: `l${d.id}`, title: `${d.name} talep bıraktı`, detail: [d.service || d.subject, shortFmt.format(new Date(d.createdAt))].filter(Boolean).join(" · "), href: `/admin/collections/leads/${d.id}`, tone: "info", badge: "Yeni talep", at: d.createdAt });
+    rows.push({ key: `l${d.id}`, title: `${d.name} talep bıraktı`, detail: [d.service || d.subject, shortFmt.format(new Date(d.createdAt))].filter(Boolean).join(" · "), href: `/panel/gelen?s=t${d.id}`, tone: "info", badge: "Yeni talep", at: d.createdAt });
   for (const d of late.docs as { id: number; title: string; seq?: number | null; dueDate?: string | null; project?: unknown }[])
     rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/admin/collections/tasks/${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
   for (const d of stale.docs as { id: number; title: string; value?: number | null; updatedAt: string; company?: unknown; contact?: unknown }[]) {
@@ -77,7 +77,7 @@ export default async function PanelHome() {
   /* Bugün */
   const agenda: Today[] = [];
   for (const b of todayBookings.docs as { id: number; name: string; time: string; topic?: string | null; status: string }[])
-    agenda.push({ key: `b${b.id}`, time: b.time, title: `${b.name} ile görüşme`, detail: b.topic ?? "Randevu", href: `/admin/collections/bookings/${b.id}`, tone: b.status === "onaylandi" ? "good" : "warn" });
+    agenda.push({ key: `b${b.id}`, time: b.time, title: `${b.name} ile görüşme`, detail: b.topic ?? "Randevu", href: `/panel/gelen?s=r${b.id}`, tone: b.status === "onaylandi" ? "good" : "warn" });
   for (const a of todayActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
     agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: `/admin/collections/activities/${a.id}`, tone: "info" });
   for (const t of todayTasks.docs as { id: number; title: string; seq?: number | null; project?: unknown }[])
