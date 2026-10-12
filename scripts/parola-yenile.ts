@@ -61,8 +61,20 @@ let email = "";
 let pw = "";
 let again = "";
 if (fromFile) {
+  const raw = readFileSync(FILE, "utf8");
   const f = readFile();
-  if (!/^postgres(ql)?:\/\//.test(f.DATABASE_URL ?? "")) end(1, "Dosyada DATABASE_URL= satırı postgresql:// ile başlamalı.");
+  const url = f.DATABASE_URL ?? "";
+  /* Ne olduğunu içeriği yazmadan söyler */
+  if (!/^postgres(ql)?:\/\//.test(url)) {
+    const why = raw.trimStart().startsWith("{\\rtf")
+      ? "Dosya zengin metin (RTF) olarak kaydedilmiş. TextEdit'te Biçim > Düz Metin Yap seçip kaydedin."
+      : url.startsWith("BURAYA")
+        ? "Dosya değişmemiş görünüyor: adresi yapıştırdıktan sonra Cmd+S ile kaydedin."
+        : !url
+          ? "Dosyada DATABASE_URL= satırı bulunamadı."
+          : `DATABASE_URL değeri postgresql:// ile başlamıyor (ilk ${Math.min(url.length, 4)} karakter farklı; ${url.length} karakter).`;
+    end(1, why);
+  }
   process.env.DATABASE_URL = f.DATABASE_URL;
   email = (f.EMAIL ?? "").toLowerCase();
   pw = again = f.PAROLA ?? "";
