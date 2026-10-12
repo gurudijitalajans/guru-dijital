@@ -36,6 +36,8 @@ export type PanelContext = {
   findByID: <C extends CollectionSlug>(collection: C, id: number | string, depth?: number) => Promise<unknown | null>;
   /** Seçili işletmede yeni kayıt (işletme zorla atanır), kullanıcının yetkisiyle */
   create: (collection: CollectionSlug, data: Record<string, unknown>) => Promise<unknown>;
+  /** Seçili işletmenin ekibi (görev sorumlusu ve ekip yükü için): yalnız ad ve haftalık saat */
+  team: () => Promise<{ id: number; name: string; weeklyHours: number }[]>;
   /** Yalnız seçili işletmenin kaydı güncellenir; değilse null */
   update: (collection: CollectionSlug, id: number | string, data: Record<string, unknown>) => Promise<unknown | null>;
 };
@@ -112,6 +114,20 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
     count: async (collection, where) =>
       (await payload.count({ collection, where: scoped(where), user: u, req, overrideAccess: false })).totalDocs,
     findByID: (collection, id, depth = 1) => own(collection, id, depth),
+    team: cache(async () => {
+      /* Guru Dijital'in ekibinde Guru yöneticileri de var (işletme satırları olmadan her işletmeye erişirler) */
+      const r = await payload.find({
+        collection: "users",
+        where: { or: [{ "tenants.tenant": { equals: tenant.id } }, ...(isGuruTenant ? [{ role: { equals: "admin" } }] : [])] },
+        sort: "name",
+        limit: 300,
+        depth: 0,
+        pagination: false,
+        overrideAccess: true,
+        select: { name: true, weeklyHours: true },
+      });
+      return r.docs.map((x) => ({ id: x.id, name: x.name, weeklyHours: x.weeklyHours ?? 40 }));
+    }),
     create: (collection, data) => payload.create({ collection, data: { ...data, tenant: tenant.id } as never, user: u, req, overrideAccess: false }),
     update: async (collection, id, data) => {
       if (!(await own(collection, id, 0))) return null;

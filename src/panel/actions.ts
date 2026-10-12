@@ -51,7 +51,7 @@ export async function searchPanel(q: string): Promise<SearchHit[]> {
       ctx.find("tasks", { where: like("title"), limit: 5 }).then((r) =>
         r.docs.map((d) => {
           const c = d as { id: number; title: string; seq?: number | null };
-          return { id: `t${c.id}`, label: c.title, detail: c.seq ? `G-${c.seq}` : undefined, group: "Görev", href: `/admin/collections/tasks/${c.id}` };
+          return { id: `t${c.id}`, label: c.title, detail: c.seq ? `G-${c.seq}` : undefined, group: "Görev", href: `/panel/gorevler?gorev=${c.id}` };
         }),
       ),
       ctx.find("projects", { where: like("title"), limit: 4 }).then((r) =>

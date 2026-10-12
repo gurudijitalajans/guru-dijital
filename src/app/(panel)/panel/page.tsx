@@ -68,7 +68,7 @@ export default async function PanelHome() {
   for (const d of leads.docs as { id: number; name: string; service?: string | null; subject?: string | null; createdAt: string }[])
     rows.push({ key: `l${d.id}`, title: `${d.name} talep bıraktı`, detail: [d.service || d.subject, shortFmt.format(new Date(d.createdAt))].filter(Boolean).join(" · "), href: `/panel/gelen?s=t${d.id}`, tone: "info", badge: "Yeni talep", at: d.createdAt });
   for (const d of late.docs as { id: number; title: string; seq?: number | null; dueDate?: string | null; project?: unknown }[])
-    rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/admin/collections/tasks/${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
+    rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
   for (const d of stale.docs as { id: number; title: string; value?: number | null; updatedAt: string; company?: unknown; contact?: unknown }[]) {
     const days = Math.floor((now.getTime() - new Date(d.updatedAt).getTime()) / 86400000);
     rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `/panel/firsatlar?firsat=${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });
@@ -81,7 +81,7 @@ export default async function PanelHome() {
   for (const a of todayActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
     agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: `/admin/collections/activities/${a.id}`, tone: "info" });
   for (const t of todayTasks.docs as { id: number; title: string; seq?: number | null; project?: unknown }[])
-    agenda.push({ key: `t${t.id}`, time: "Teslim", title: `${taskCode(t.seq)} ${t.title}`.trim(), detail: nameOf(t.project) || "Operasyon görevi", href: `/admin/collections/tasks/${t.id}`, tone: "warn" });
+    agenda.push({ key: `t${t.id}`, time: "Teslim", title: `${taskCode(t.seq)} ${t.title}`.trim(), detail: nameOf(t.project) || "Operasyon görevi", href: `/panel/gorevler?gorev=${t.id}`, tone: "warn" });
   agenda.sort((a, b) => a.time.localeCompare(b.time, "tr"));
 
   /* Sayılar: açık modüllere göre en çok dört */

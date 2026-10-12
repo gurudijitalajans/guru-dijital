@@ -44,8 +44,8 @@ export const NAV: NavGroup[] = [
     label: "Operasyon",
     items: [
       { id: "projects", label: "Projeler", href: "/admin/collections/projects", icon: "projects", modules: ["ops"], legacy: true, keywords: "iş" },
-      { id: "tasks", label: "Görevler", href: "/admin/operasyon", icon: "tasks", modules: ["ops"], legacy: true, keywords: "görev panosu" },
-      { id: "load", label: "Ekip yükü", href: "/admin/ekip-plani", icon: "load", modules: ["ops"], legacy: true, keywords: "kapasite plan" },
+      { id: "tasks", label: "Görevler", href: "/panel/gorevler", icon: "tasks", modules: ["ops"], keywords: "görev panosu" },
+      { id: "load", label: "Ekip yükü", href: "/panel/ekip-yuku", icon: "load", modules: ["ops"], keywords: "kapasite plan ekip planı" },
     ],
   },
   {
