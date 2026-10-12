@@ -52,8 +52,8 @@ export const NAV: NavGroup[] = [
     label: "Raporlar",
     items: [
       { id: "exec", label: "Yönetim özeti", href: "/panel/ozet", icon: "report", modules: ["business"], tenantAdmin: true, keywords: "yönetici panosu rapor hedef" },
-      { id: "chatreport", label: "Sohbet raporu", href: "/admin/sohbet-raporu", icon: "chat", modules: ["chat"], legacy: true },
-      { id: "analytics", label: "Ziyaretçi analizi", href: "/admin/analiz", icon: "report", modules: ["site"], legacy: true, keywords: "umami ziyaret" },
+      { id: "chatreport", label: "Sohbet raporu", href: "/panel/sohbet-raporu", icon: "chat", modules: ["chat"], keywords: "asistan konu yanıtlanamayan" },
+      { id: "analytics", label: "Ziyaretçi analizi", href: "/panel/ziyaretci", icon: "report", modules: ["site"], keywords: "umami ziyaret trafik" },
     ],
   },
   {
