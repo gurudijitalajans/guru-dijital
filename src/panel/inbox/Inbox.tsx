@@ -290,7 +290,7 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
               <ul className="m-0 list-none p-0">
                 {thread.deals.map((d) => (
                   <li key={d.id} className="mb-1.5">
-                    <a href={`/admin/collections/deals/${d.id}`} className="block rounded-[8px] border border-line px-3 py-2 no-underline hover:border-accent">
+                    <a href={`/panel/firsatlar?firsat=${d.id}`} className="block rounded-[8px] border border-line px-3 py-2 no-underline hover:border-accent">
                       <span className="block truncate font-medium text-ink">{d.title}</span>
                       <span className="text-[13px] text-muted">
                         {d.stage} · <span className="tabular">{money.format(d.value)}</span>

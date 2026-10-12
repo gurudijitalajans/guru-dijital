@@ -35,7 +35,7 @@ export const NAV: NavGroup[] = [
   {
     label: "Satış",
     items: [
-      { id: "deals", label: "Fırsatlar", href: "/admin/satis-hatti", icon: "deals", modules: ["crm"], legacy: true, keywords: "satış hattı pano" },
+      { id: "deals", label: "Fırsatlar", href: "/panel/firsatlar", icon: "deals", modules: ["crm"], keywords: "satış hattı pano" },
       { id: "people", label: "Kişiler ve firmalar", href: "/panel/kisiler", icon: "people", modules: ["crm"], keywords: "müşteri rehber" },
       { id: "quotes", label: "Teklifler", href: "/admin/collections/quotes", icon: "quotes", modules: ["crm"], legacy: true },
     ],

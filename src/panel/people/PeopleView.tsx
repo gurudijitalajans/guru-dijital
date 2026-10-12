@@ -165,7 +165,7 @@ export function PeopleView({ view, q, page, pages, total, people, companies, sel
                 <ul className="m-0 list-none p-0">
                   {selected.deals.map((d) => (
                     <li key={d.id}>
-                      <a href={`/admin/collections/deals/${d.id}`} className="flex min-h-10 items-center justify-between gap-3 rounded-[8px] px-2 no-underline hover:bg-sunken">
+                      <a href={`/panel/firsatlar?firsat=${d.id}`} className="flex min-h-10 items-center justify-between gap-3 rounded-[8px] px-2 no-underline hover:bg-sunken">
                         <span className="min-w-0 truncate font-medium text-ink">{d.title}</span>
                         <span className="flex shrink-0 items-center gap-2">
                           <Badge>{d.stage}</Badge>

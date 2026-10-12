@@ -71,7 +71,7 @@ export default async function PanelHome() {
     rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/admin/collections/tasks/${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
   for (const d of stale.docs as { id: number; title: string; value?: number | null; updatedAt: string; company?: unknown; contact?: unknown }[]) {
     const days = Math.floor((now.getTime() - new Date(d.updatedAt).getTime()) / 86400000);
-    rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `/admin/collections/deals/${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });
+    rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `/panel/firsatlar?firsat=${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });
   }
 
   /* Bugün */

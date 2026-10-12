@@ -41,7 +41,7 @@ export async function searchPanel(q: string): Promise<SearchHit[]> {
       ctx.find("deals", { where: like("title"), limit: 5 }).then((r) =>
         r.docs.map((d) => {
           const c = d as { id: number; title: string };
-          return { id: `d${c.id}`, label: c.title, group: "Fırsat", href: `/admin/collections/deals/${c.id}` };
+          return { id: `d${c.id}`, label: c.title, group: "Fırsat", href: `/panel/firsatlar?firsat=${c.id}` };
         }),
       ),
     );
