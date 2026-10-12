@@ -7,7 +7,9 @@ import { useState } from "react";
 export type Member = { id: number | string; name: string; email: string; role: string; modules: string[]; pending: boolean; self: boolean };
 type Mod = { value: string; label: string };
 
-export function TeamTool({ members, modules, emailReady, canEditUsers }: { members: Member[]; modules: Mod[]; emailReady: boolean; canEditUsers: boolean }) {
+type Orphan = { id: number | string; name: string; email: string };
+
+export function TeamTool({ members, modules, emailReady, canEditUsers, orphans = [] }: { members: Member[]; modules: Mod[]; emailReady: boolean; canEditUsers: boolean; orphans?: Orphan[] }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -104,6 +106,26 @@ export function TeamTool({ members, modules, emailReady, canEditUsers }: { membe
         ) : null}
       </section>
 
+      {orphans.length ? (
+        <section className="guru-home__panel">
+          <div className="guru-home__panel-head">
+            <h2>İşletmeye Eklenmemiş Kullanıcılar</h2>
+          </div>
+          <p className="guru-home__meta">Bu hesaplar hiçbir işletmede değil; girince hiçbir şey göremezler. Kullanıcıyı açıp İşletmeler bölümüne satır ekleyin ya da Guru yöneticisi yapın.</p>
+          <ul className="guru-home__rows">
+            {orphans.map((o) => (
+              <li key={o.id}>
+                <Link href={`/admin/collections/users/${o.id}`}>
+                  <span className="guru-home__who">{o.name}</span>
+                  <span className="guru-home__meta">{o.email}</span>
+                  <span className="guru-home__pill guru-home__pill--gecikti">İşletmesi yok</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section className="guru-home__panel">
         <div className="guru-home__panel-head">
           <h2>Ekip</h2>
@@ -116,7 +138,7 @@ export function TeamTool({ members, modules, emailReady, canEditUsers }: { membe
                   {m.name} {m.self ? <small>(siz)</small> : null}
                 </span>
                 <span className="guru-home__meta">
-                  {m.email} · {m.role === "yonetici" ? "İşletme yöneticisi" : m.modules.length ? m.modules.map(label).join(", ") : "Modül verilmedi"}
+                  {m.email} · {m.role === "guru" ? "Guru yöneticisi (tüm işletmeler)" : m.role === "yonetici" ? "İşletme yöneticisi" : m.modules.length ? m.modules.map(label).join(", ") : "Modül verilmedi"}
                 </span>
                 <span className="guru-team__actions">
                   {m.pending ? (
@@ -127,7 +149,7 @@ export function TeamTool({ members, modules, emailReady, canEditUsers }: { membe
                       </button>
                     </>
                   ) : null}
-                  {canEditUsers || !m.self ? <Link href={`/admin/collections/users/${m.id}`}>Yetkiyi düzenle</Link> : null}
+                  {(canEditUsers || !m.self) && (m.role !== "guru" || canEditUsers) ? <Link href={`/admin/collections/users/${m.id}`}>Yetkiyi düzenle</Link> : null}
                 </span>
               </div>
             </li>
