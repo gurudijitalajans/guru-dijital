@@ -1883,3 +1883,9 @@ button.guru-plan__nav {
   box-shadow: none;
   text-decoration: underline;
 }
+
+/* Yeni panele geçiş bağlantısı */
+.guru-nav .guru-nav__new {
+  color: var(--guru-brand);
+  font-weight: 600;
+}

@@ -83,6 +83,11 @@ export function PanelNav() {
   return (
     <div className="guru-nav">
       {navCss ? <style>{navCss}</style> : null}
+      {/* Yeni panel: günlük işler oraya taşınıyor */}
+      <a href="/panel" className="guru-nav__main guru-nav__new">
+        <Icon d="M5 12h14M13 6l6 6-6 6" />
+        Yeni panele geç
+      </a>
       <Link href="/admin" className="guru-nav__main" aria-current={isActive("/admin") ? "page" : undefined}>
         <Icon d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z" />
         Pano
