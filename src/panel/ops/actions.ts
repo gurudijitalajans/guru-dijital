@@ -96,3 +96,56 @@ export async function createTask(d: TaskInput): Promise<Result> {
     return fail(e);
   }
 }
+
+export type ProjectInput = { title: string; company?: number | null; contact?: number | null; deal?: number | null; template?: number | null; startDate?: string | null; dueDate?: string | null; owner?: number | null; description?: string | null; status?: string };
+const PROJECT_STATUS = ["aktif", "beklemede", "tamamlandi", "iptal"];
+
+/** Yeni proje: şablon seçilirse adımlar görev olur (koleksiyon kancası); fırsattan açılırsa başlık, kişi ve firma fırsattan */
+export async function createProject(d: ProjectInput): Promise<Result> {
+  try {
+    const ctx = await ops();
+    if (!d.title?.trim() && !d.deal) return { ok: false, error: "Proje adını yazın." };
+    if (!(await validAssignee(ctx, d.owner))) return { ok: false, error: "Sorumlu bu işletmenin ekibinde değil." };
+    for (const [col, v] of [["deals", d.deal], ["companies", d.company], ["contacts", d.contact], ["templates", d.template]] as const) {
+      if (v && !(await ctx.findByID(col, v, 0))) return { ok: false, error: "Bağlı kayıt bulunamadı." };
+    }
+    const doc = (await ctx.create("projects", {
+      title: d.title?.trim().slice(0, 200) || "",
+      company: d.company || undefined,
+      contact: d.contact || undefined,
+      deal: d.deal || undefined,
+      template: d.template || undefined,
+      startDate: day(d.startDate) ?? undefined,
+      dueDate: day(d.dueDate) ?? undefined,
+      owner: d.owner || ctx.user.id,
+      description: d.description?.trim() || undefined,
+      status: "aktif",
+    })) as { id: number };
+    return { ok: true, id: doc.id };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function updateProject(id: number, d: Partial<ProjectInput>): Promise<Result> {
+  try {
+    const ctx = await ops();
+    if (d.owner !== undefined && !(await validAssignee(ctx, d.owner))) return { ok: false, error: "Sorumlu bu işletmenin ekibinde değil." };
+    const data: Record<string, unknown> = {};
+    if (d.title !== undefined) {
+      if (!d.title.trim()) return { ok: false, error: "Proje adı boş olamaz." };
+      data.title = d.title.trim().slice(0, 200);
+    }
+    if (d.dueDate !== undefined) data.dueDate = day(d.dueDate);
+    if (d.startDate !== undefined) data.startDate = day(d.startDate);
+    if (d.owner !== undefined) data.owner = d.owner || null;
+    if (d.description !== undefined) data.description = d.description?.trim() || null;
+    if (d.status !== undefined) {
+      if (!PROJECT_STATUS.includes(d.status)) return { ok: false, error: "Geçersiz durum." };
+      data.status = d.status;
+    }
+    return (await ctx.update("projects", id, data)) ? { ok: true, id } : { ok: false, error: "Proje bulunamadı." };
+  } catch (e) {
+    return fail(e);
+  }
+}

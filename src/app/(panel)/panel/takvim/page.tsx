@@ -72,7 +72,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
       key: `t${t.id}`, day: dayOf(t.dueDate), time: "Teslim", title: `${t.seq ? `G-${t.seq} ` : ""}${t.title}${t.stage === "tamam" ? " (tamam)" : ""}`, detail: [nameOf(t.project), nameOf(t.assignee)].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${t.id}`, kind: "teslim" as const,
     })),
     ...(projects.docs as { id: number; title: string; dueDate: string; company?: unknown }[]).map((p) => ({
-      key: `p${p.id}`, day: dayOf(p.dueDate), time: "Proje", title: p.title, detail: nameOf(p.company) || "Proje teslimi", href: `/admin/collections/projects/${p.id}`, kind: "proje" as const,
+      key: `p${p.id}`, day: dayOf(p.dueDate), time: "Proje", title: p.title, detail: nameOf(p.company) || "Proje teslimi", href: `/panel/projeler?proje=${p.id}`, kind: "proje" as const,
     })),
   ].sort((a, b) => a.time.localeCompare(b.time, "tr"));
 

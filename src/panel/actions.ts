@@ -57,7 +57,7 @@ export async function searchPanel(q: string): Promise<SearchHit[]> {
       ctx.find("projects", { where: like("title"), limit: 4 }).then((r) =>
         r.docs.map((d) => {
           const c = d as { id: number; title: string };
-          return { id: `j${c.id}`, label: c.title, group: "Proje", href: `/admin/collections/projects/${c.id}` };
+          return { id: `j${c.id}`, label: c.title, group: "Proje", href: `/panel/projeler?proje=${c.id}` };
         }),
       ),
     );

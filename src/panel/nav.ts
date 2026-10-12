@@ -37,13 +37,13 @@ export const NAV: NavGroup[] = [
     items: [
       { id: "deals", label: "Fırsatlar", href: "/panel/firsatlar", icon: "deals", modules: ["crm"], keywords: "satış hattı pano" },
       { id: "people", label: "Kişiler ve firmalar", href: "/panel/kisiler", icon: "people", modules: ["crm"], keywords: "müşteri rehber" },
-      { id: "quotes", label: "Teklifler", href: "/admin/collections/quotes", icon: "quotes", modules: ["crm"], legacy: true },
+      { id: "quotes", label: "Teklifler", href: "/panel/teklifler", icon: "quotes", modules: ["crm"], keywords: "teklif fiyat belge pdf" },
     ],
   },
   {
     label: "Operasyon",
     items: [
-      { id: "projects", label: "Projeler", href: "/admin/collections/projects", icon: "projects", modules: ["ops"], legacy: true, keywords: "iş" },
+      { id: "projects", label: "Projeler", href: "/panel/projeler", icon: "projects", modules: ["ops"], keywords: "iş müşteri işi" },
       { id: "tasks", label: "Görevler", href: "/panel/gorevler", icon: "tasks", modules: ["ops"], keywords: "görev panosu" },
       { id: "load", label: "Ekip yükü", href: "/panel/ekip-yuku", icon: "load", modules: ["ops"], keywords: "kapasite plan ekip planı" },
     ],

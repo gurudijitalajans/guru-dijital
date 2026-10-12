@@ -551,11 +551,11 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
               <Phone /> Arama planla
             </Button>
             <Button size="sm" asChild>
-              <a href={`/admin/collections/quotes/create?deal=${detail.id}`}>Teklif hazırla</a>
+              <a href={`/panel/teklifler/yeni?firsat=${detail.id}`}>Teklif hazırla</a>
             </Button>
             {hasOps && detail.stage === "kazanildi" && !detail.projects.length ? (
               <Button size="sm" variant="primary" asChild>
-                <a href={`/admin/collections/deals/${detail.id}`}>Proje aç</a>
+                <a href={`/panel/projeler?yeni=1&firsat=${detail.id}`}>Proje aç</a>
               </Button>
             ) : null}
             {!editing ? (
@@ -626,7 +626,7 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
               <ul className="m-0 list-none p-0">
                 {detail.quotes.map((qt) => (
                   <li key={qt.id}>
-                    <a href={`/api/quotes/${qt.id}/yazdir`} target="_blank" rel="noreferrer" className="flex min-h-10 items-center justify-between gap-3 rounded-[8px] px-2 no-underline hover:bg-sunken">
+                    <a href={`/panel/teklifler/${qt.id}`} className="flex min-h-10 items-center justify-between gap-3 rounded-[8px] px-2 no-underline hover:bg-sunken">
                       <span className="min-w-0 truncate text-ink">
                         <span className="font-mono text-[12px] text-muted">{qt.number}</span> {qt.title}
                       </span>
@@ -644,7 +644,7 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
           {detail.projects.length ? (
             <SheetSection title="Proje">
               {detail.projects.map((p) => (
-                <a key={p.id} href={`/admin/collections/projects/${p.id}`} className="block text-[14px] text-accent">
+                <a key={p.id} href={`/panel/projeler?proje=${p.id}`} className="block text-[14px] text-accent">
                   {p.title}
                 </a>
               ))}
