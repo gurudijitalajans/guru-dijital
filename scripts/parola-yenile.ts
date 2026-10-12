@@ -63,15 +63,16 @@ let again = "";
 if (fromFile) {
   const raw = readFileSync(FILE, "utf8");
   const f = readFile();
-  const url = f.DATABASE_URL ?? "";
+  /* Adres satırın neresinde olursa olsun alınır (örnek metnin yanına yapıştırılmış olabilir) */
+  const url = (f.DATABASE_URL ?? "").match(/postgres(ql)?:\/\/\S+/)?.[0] ?? f.DATABASE_URL ?? "";
+  f.DATABASE_URL = url;
+  f.PAROLA = (f.PAROLA ?? "").replace(/BURAYA_YENI_PAROLANIZI_YAZIN/g, "").trim();
   /* Ne olduğunu içeriği yazmadan söyler */
   if (!/^postgres(ql)?:\/\//.test(url)) {
     const why = raw.trimStart().startsWith("{\\rtf")
       ? "Dosya zengin metin (RTF) olarak kaydedilmiş. TextEdit'te Biçim > Düz Metin Yap seçip kaydedin."
-      : url.startsWith("BURAYA")
-        ? "Dosya değişmemiş görünüyor: adresi yapıştırdıktan sonra Cmd+S ile kaydedin."
-        : !url
-          ? "Dosyada DATABASE_URL= satırı bulunamadı."
+      : !url || url.startsWith("BURAYA")
+        ? "DATABASE_URL= satırında adres yok: adresi satırın sonuna yapıştırıp Cmd+S ile kaydedin."
           : `DATABASE_URL değeri postgresql:// ile başlamıyor (ilk ${Math.min(url.length, 4)} karakter farklı; ${url.length} karakter).`;
     end(1, why);
   }
