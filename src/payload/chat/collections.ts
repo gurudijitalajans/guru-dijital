@@ -34,7 +34,7 @@ export const MSG_ROLES = [
 export const ChatbotSettings: CollectionConfig = {
   slug: "chatbot-config",
   labels: { singular: "Chatbot ayarları", plural: "Chatbot ayarları" },
-  admin: { group: GROUP, useAsTitle: "botName" },
+  admin: { group: "Ayarlar", useAsTitle: "botName" },
   access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
   /* Balon sitenin her sayfasında: ayar değişince sayfalar yenilenir */
   hooks: { afterChange: [() => resetKnowledge(), () => revalidate(["/"], "layout")] },
@@ -127,7 +127,7 @@ export const Knowledge: CollectionConfig = {
   labels: { singular: "Bilgi", plural: "Bilgi tabanı" },
   admin: {
     useAsTitle: "title",
-    group: GROUP,
+    group: "Ayarlar",
     defaultColumns: ["title", "active", "updatedAt"],
     description:
       "Asistan hizmetleri, ürünleri, sık sorulan soruları ve iletişim bilgilerini sitenin kendisinden okur. Sitede olmayan bilgileri (çalışma saatleri, ödeme koşulları, kampanyalar) buraya ekleyin.",

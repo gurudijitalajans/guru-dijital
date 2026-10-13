@@ -28,7 +28,7 @@ export const Templates: CollectionConfig = {
   labels: { singular: "Süreç şablonu", plural: "Süreç şablonları" },
   admin: {
     useAsTitle: "name",
-    group: GROUP,
+    group: "Ayarlar",
     defaultColumns: ["name", "description"],
     description: "Tekrarlayan işlerin adımları. Şablondan iş açınca her adım sorumlusuna ve tarihine göre görev olur.",
   },

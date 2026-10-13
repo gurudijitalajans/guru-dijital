@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
 import { getPanelContext } from "@/panel/context";
 import { PageHeader } from "@/panel/ui/page-header";
+import { Card } from "@/panel/ui/card";
+import { Checklist } from "@/panel/ui/checklist";
+import { DemoBox } from "@/panel/setup/DemoBox";
+import { siteChecklist } from "@/payload/setup/checklists";
+import { cms } from "@/lib/cms";
 
 export const metadata: Metadata = { title: "Ayarlar" };
 export const dynamic = "force-dynamic";
@@ -51,11 +56,27 @@ export default async function SettingsPage() {
     },
   ];
   const visible = groups.map((g) => ({ ...g, items: g.items.filter(Boolean) as Item[] })).filter((g) => g.items.length);
+  /* Guru'ya özel: sitenin eksikleri (Guru Dijital seçiliyken) ve satış sunumu için demo işletmesi */
+  const payload = await cms();
+  const [site, demo] = ctx.isGuruAdmin
+    ? await Promise.all([
+        ctx.isGuruTenant ? siteChecklist(payload, ctx.tenant.id) : Promise.resolve(null),
+        payload.find({ collection: "tenants", where: { slug: { equals: "demo" } }, limit: 1, depth: 0, overrideAccess: true }).then((r) => r.docs[0]?.id ?? null),
+      ])
+    : [null, null];
 
   return (
     <>
       <PageHeader title="Ayarlar" description={`${ctx.tenant.name} için. Ayar ekranları şimdilik mevcut panelde açılır.`} />
       <div className="grid gap-6">
+        {site ? <Checklist title="Siteyi Tamamla" items={site} note="Guru Dijital sitesinin eksikleri; her madde kendiliğinden işaretlenir." /> : null}
+        {ctx.isGuruAdmin ? (
+          <Card className="px-4 py-4">
+            <h2 className="mt-0 mb-1 text-[16px] font-semibold text-ink">Demo İşletmesi</h2>
+            <p className="mt-0 mb-3 text-[14px] text-muted">Satış görüşmesinde paneli gerçek veri göstermeden tanıtmak için: örnek firma, kişi, fırsat, teklif, proje ve sohbetlerle dolu, kurmaca bir işletme. Sunumdan sonra sıfırlayın.</p>
+            <DemoBox demoId={demo} />
+          </Card>
+        ) : null}
         {visible.map((g) => (
           <section key={g.title}>
             <h2 className="mt-0 mb-2.5 text-[13px] font-semibold uppercase tracking-[0.07em] text-muted">{g.title}</h2>

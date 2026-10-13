@@ -16,6 +16,39 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["unpdf"],
   /* Geliştirme simgesi gömülü sohbet çerçevesinde balonun üstüne biniyordu */
   devIndicators: false,
+  /* Günlük işler yeni panelde (/panel): eski ekranlar ve listeler oraya gider.
+     Kişi ve firma düzenleme formu, ayar ve içerik ekranları Payload'da kalır. */
+  async redirects() {
+    const to = (source: string, destination: string) => ({ source, destination, permanent: false });
+    const id = ":id(\\d+)";
+    return [
+      to("/admin/satis-hatti", "/panel/firsatlar"),
+      to("/admin/operasyon", "/panel/gorevler"),
+      to("/admin/ekip-plani", "/panel/ekip-yuku"),
+      to("/admin/sohbetler", "/panel/gelen?f=sohbet"),
+      to("/admin/sohbet-raporu", "/panel/sohbet-raporu"),
+      to("/admin/yonetici", "/panel/ozet"),
+      to("/admin/analiz", "/panel/ziyaretci"),
+      to("/admin/collections/leads", "/panel/gelen?f=talep"),
+      to(`/admin/collections/leads/${id}`, "/panel/gelen?f=tumu&s=t:id"),
+      to("/admin/collections/bookings", "/panel/gelen?f=randevu"),
+      to(`/admin/collections/bookings/${id}`, "/panel/gelen?f=tumu&s=r:id"),
+      to("/admin/collections/conversations", "/panel/gelen?f=sohbet"),
+      to(`/admin/collections/conversations/${id}`, "/panel/gelen?f=tumu&s=s:id"),
+      to("/admin/collections/deals", "/panel/firsatlar"),
+      to(`/admin/collections/deals/${id}`, "/panel/firsatlar?firsat=:id"),
+      to("/admin/collections/contacts", "/panel/kisiler"),
+      to("/admin/collections/companies", "/panel/kisiler?gorunum=firmalar"),
+      to("/admin/collections/quotes", "/panel/teklifler"),
+      to("/admin/collections/quotes/create", "/panel/teklifler/yeni"),
+      to(`/admin/collections/quotes/${id}`, "/panel/teklifler/:id"),
+      to("/admin/collections/projects", "/panel/projeler"),
+      to(`/admin/collections/projects/${id}`, "/panel/projeler?proje=:id"),
+      to("/admin/collections/tasks", "/panel/gorevler"),
+      to(`/admin/collections/tasks/${id}`, "/panel/gorevler?gorev=:id"),
+      to("/admin/collections/activities", "/panel/takvim"),
+    ];
+  },
   webpack: (config) => {
     config.resolve.extensionAlias = {
       ".cjs": [".cts", ".cjs"],

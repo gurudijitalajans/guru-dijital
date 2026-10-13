@@ -7,6 +7,9 @@ import { Badge, type Tone } from "@/panel/ui/badge";
 import { dayKey, daysAgoIso } from "@/payload/utils";
 import { OPEN_STAGES } from "@/payload/crm/stages";
 import { taskCode } from "@/payload/ops/stages";
+import { Checklist } from "@/panel/ui/checklist";
+import { onboardingSteps } from "@/payload/setup/checklists";
+import { cms } from "@/lib/cms";
 
 export const metadata: Metadata = { title: "Ana sayfa" };
 export const dynamic = "force-dynamic";
@@ -94,11 +97,20 @@ export default async function PanelHome() {
   if (ops) stats.push({ label: "Açık görev", value: nf.format(openTasks as number), hint: `${nf.format(late.totalDocs)} tanesi gecikmiş` });
 
   const first = ctx.user.name.split(" ")[0];
+  /* Yeni müşteri işletmesinin kurulum adımları: yalnız işletme yöneticisine, hepsi bitince kalkar */
+  const setup = !ctx.isGuruTenant && ctx.isTenantAdmin ? await onboardingSteps(await cms(), ctx.tenant.id, ctx.has) : [];
+  const setupOpen = setup.some((s) => !s.done);
   const nothingOn = !crm && !chat && !ops;
 
   return (
     <>
       <PageHeader title={`${greeting(now)} ${first}`} description={`${ctx.tenant.name} · ${dayFmt.format(now)}`} />
+
+      {setupOpen ? (
+        <div className="mb-4">
+          <Checklist title="Kuruluma Başlayın" items={setup} note="Her adım kendiliğinden işaretlenir; hepsi bitince bu liste kalkar." />
+        </div>
+      ) : null}
 
       {nothingOn ? (
         <Card>

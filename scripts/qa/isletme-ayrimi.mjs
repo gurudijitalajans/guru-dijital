@@ -75,32 +75,36 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   check("B Guru'nun teklif belgesini açamıyor", pr === 404 || pr === 403, `durum=${pr}`);
   const myq = await p.evalJs(`fetch("/api/quotes/${qB.b.doc.id}/yazdir").then(async r=>r.status+" "+((await r.text()).includes("Deneme Klinik Ltd.")))`);
   check("B kendi teklif belgesinde kendi unvanı", myq === "200 true", myq);
+  /* Günlük ekranlar yeni panelde (/panel); eski adresler oraya yönlenir */
   await p.goto("/admin/satis-hatti", 8000);
-  const cards = await p.evalJs(`[...document.querySelectorAll('.guru-pipe__title')].map(a=>a.textContent)`);
+  check("Eski satış hattı adresi yeni panele yönleniyor", (await p.evalJs("location.pathname")) === "/panel/firsatlar");
+  const cards = await p.evalJs(`[...document.querySelectorAll('main section[aria-label] button[draggable] > span:first-child')].map(a=>a.textContent)`);
   const ownTitles = new Set(((await api("GET", "/api/deals?limit=500&depth=0")).b?.docs ?? []).filter((d) => String(d.tenant) === String(B.id)).map((d) => d.title));
   check("B satış hattında yalnız kendi fırsatları", cards.length >= 1 && cards.every((t) => ownTitles.has(t)), `${cards.length} kart`);
   await p.screenshot(`${OUT}/mt-b-hat.png`);
   await p.goto("/admin", 8000);
-  const home = await p.evalJs(`document.querySelector('.guru-home')?.innerText.slice(0,400)`);
-  check("B panosunda site içeriği yok", !/Siteyi tamamla|Hızlı düzenle|Son değişiklikler/.test(home ?? ""), "");
+  check("Payload ana sayfası yeni panele yönleniyor", (await p.evalJs("location.pathname")) === "/panel");
+  const home = await p.evalJs(`document.querySelector('main')?.innerText.slice(0,1500)`);
+  const navB = await p.evalJs(`[...document.querySelectorAll('nav[aria-label="Ana menü"] a')].map(a=>a.innerText).join(" | ")`);
+  check("B panosunda ve menüsünde site içeriği yok", !/Siteyi Tamamla|Sayfalar ve blog|Ziyaretçi analizi/.test(`${home} ${navB}`), "");
   await p.screenshot(`${OUT}/mt-b-pano.png`);
-  await p.goto("/admin/operasyon", 8000);
-  check("B Operation ekranına giremiyor", (await p.evalJs("location.pathname")) === "/admin");
-  await p.goto("/admin/yonetici", 8000);
-  check("B (Business kapalı) yönetici panosuna giremiyor", (await p.evalJs("location.pathname")) === "/admin");
+  await p.goto("/panel/gorevler", 8000);
+  check("B Operation ekranına giremiyor", (await p.evalJs("location.pathname")) === "/panel");
+  await p.goto("/panel/ozet", 8000);
+  check("B (Business kapalı) yönetim özetine giremiyor", (await p.evalJs("location.pathname")) === "/panel");
   await logout();
 
   // --- Guru yöneticisi: işletme seçimi
   await login(env.SEED_ADMIN_EMAIL, env.SEED_ADMIN_PASSWORD);
   await p.evalJs(`document.cookie = "payload-tenant=${B.id}; path=/"`);
-  await p.goto("/admin/satis-hatti", 8000);
-  const aCards = await p.evalJs(`[...document.querySelectorAll('.guru-pipe__title')].map(a=>a.textContent)`);
+  await p.goto("/panel/firsatlar", 8000);
+  const aCards = await p.evalJs(`[...document.querySelectorAll('main section[aria-label] button[draggable] > span:first-child')].map(a=>a.textContent)`);
   check("Guru yöneticisi B seçince B'nin fırsatlarını görüyor", aCards.some((t) => t.includes("Klinik")) && !aCards.some((t) => t.includes("Deneme Talebi")), j(aCards));
   await p.evalJs(`document.cookie = "payload-tenant=1; path=/"`);
-  await p.goto("/admin/satis-hatti", 8000);
-  const gCards = await p.evalJs(`[...document.querySelectorAll('.guru-pipe__title')].map(a=>a.textContent)`);
+  await p.goto("/panel/firsatlar", 8000);
+  const gCards = await p.evalJs(`[...document.querySelectorAll('main section[aria-label] button[draggable] > span:first-child')].map(a=>a.textContent)`);
   check("Guru seçince Guru'nun fırsatları", !gCards.some((t) => t.includes("Klinik")), j(gCards));
-  await p.goto("/admin", 8000);
+  await p.goto("/panel", 8000);
   await p.screenshot(`${OUT}/mt-admin-pano.png`);
   await logout();
 
