@@ -57,3 +57,28 @@ export async function deleteMedia(id: number): Promise<Result> {
     return fail(e);
   }
 }
+
+/**
+ * Tarayıcıdan Blob'a giden orijinal dosya: Payload görseli webp'ye çevirip
+ * yeni adla yazar, orijinali silmez. Yalnız az önce açılan kaydın klasöründe,
+ * aynı adlı ama farklı uzantılı dosya silinir.
+ */
+export async function discardOriginal(id: number, pathname: string): Promise<Result> {
+  try {
+    const { payload, opts } = await site();
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) return { ok: true };
+    const doc = await payload.findByID({ collection: "media", id, depth: 0, ...opts });
+    const prefix = doc.prefix ?? "";
+    const file = pathname.slice(prefix.length + 1);
+    const stem = (n: string) => n.replace(/\.[^.]+$/, "");
+    const valid =
+      prefix && doc.url && doc.filename && pathname.startsWith(`${prefix}/`) && !file.includes("/") && file !== doc.filename && stem(file) === stem(doc.filename) && Date.now() - new Date(doc.createdAt).getTime() < 10 * 60_000;
+    if (!valid) return { ok: false, error: "Dosya doğrulanamadı." };
+    const { del } = await import("@vercel/blob");
+    await del(new URL(`/${pathname}`, doc.url as string).toString(), { token });
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
