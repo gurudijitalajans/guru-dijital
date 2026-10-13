@@ -1,6 +1,6 @@
 import "server-only";
 import type { Field, Payload, SanitizedPermissions, TypedUser } from "payload";
-import type { CField, Option } from "./types";
+import type { CField, Option, UiKind } from "./types";
 
 /**
  * Payload alan ayarlarından panelin alan tanımı. Yalnız düz veri: etiket,
@@ -20,7 +20,12 @@ const permOf = (perms: Perms, name: string): FieldPerm | undefined => (perms ===
 const childOf = (perm: FieldPerm | undefined, perms: Perms): Perms => (perm === true ? true : perm ? (perm.fields ?? true) : perms);
 
 const SKIP = new Set(["id", "createdAt", "updatedAt", "_status", "tenant", "folder", "deletedAt"]);
-const UI: Record<string, "textHelper" | "pageMap"> = { "/payload/components/TextHelper#TextHelper": "textHelper", "/payload/components/PageMap#PageMap": "pageMap" };
+const UI: Record<string, UiKind> = {
+  "/payload/components/TextHelper#TextHelper": "textHelper",
+  "/payload/components/PageMap#PageMap": "pageMap",
+  "/payload/components/channels/EmbedCode#EmbedCode": "embedCode",
+  "/payload/components/channels/KnowledgeTools#KnowledgeTools": "knowledgeTools",
+};
 
 /** Payload'da etiket metin, dil nesnesi ya da işlev olabilir */
 export function txt(v: unknown): string | undefined {

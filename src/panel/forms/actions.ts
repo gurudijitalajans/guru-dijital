@@ -4,7 +4,7 @@ import type { CollectionSlug, Field, GlobalSlug, PayloadRequest, TypedUser } fro
 import { headers } from "next/headers";
 import { cms } from "@/lib/cms";
 import { getPanelContext } from "../context";
-import { ENTITIES } from "./entities";
+import { canOpen, ENTITIES } from "./entities";
 import { hiddenPaths } from "./schema";
 import type { FieldError } from "./types";
 
@@ -17,10 +17,17 @@ async function access(slug: string) {
   const def = ENTITIES[slug];
   if (!def) throw new Error("Bu içerik panelde düzenlenemiyor.");
   const ctx = await getPanelContext();
-  if (!ctx.has(def.module) || (def.adminOnly && !ctx.isGuruAdmin)) throw new Error("Yetki yok.");
+  if (!canOpen(def, ctx)) throw new Error("Yetki yok.");
   const payload = await cms();
   const req = { headers: await headers(), user: ctx.user } as unknown as Partial<PayloadRequest>;
   return { def, ctx, payload, opts: { user: ctx.user, req, overrideAccess: false } as const };
+}
+
+/** Kayıt seçili işletmenin mi */
+async function ownTenant(payload: Awaited<ReturnType<typeof cms>>, collection: CollectionSlug, id: number, tenantId: number) {
+  const d = (await payload.findByID({ collection, id, depth: 0, overrideAccess: true }).catch(() => null)) as { tenant?: unknown } | null;
+  const t = d?.tenant && typeof d.tenant === "object" ? (d.tenant as { id: number }).id : d?.tenant;
+  return d !== null && String(t) === String(tenantId);
 }
 
 function fieldsOf(payload: Awaited<ReturnType<typeof cms>>, slug: string, type: "global" | "collection"): Field[] {
@@ -31,12 +38,14 @@ export type SaveResult = { ok: boolean; id?: number; error?: string; errors?: Fi
 
 export async function saveDoc(slug: string, id: number | null, data: Record<string, unknown>, mode: "save" | "draft" | "publish"): Promise<SaveResult> {
   try {
-    const { def, payload, opts } = await access(slug);
+    const { def, ctx, payload, opts } = await access(slug);
     if (def.type === "global") {
       const doc = await payload.updateGlobal({ slug: slug as GlobalSlug, data: data as never, depth: 0, ...opts });
       return { ok: true, updatedAt: (doc as { updatedAt?: string }).updatedAt };
     }
+    if (def.readOnly) return { ok: false, error: "Bu kayıtlar yalnız görüntülenir." };
     const collection = slug as CollectionSlug;
+    if (id && def.tenanted && !(await ownTenant(payload, collection, id, ctx.tenant.id))) return { ok: false, error: "Kayıt bulunamadı." };
     const drafts = Boolean(payload.collections[collection]?.config.versions?.drafts);
     const body = drafts ? { ...data, _status: mode === "publish" ? "published" : "draft" } : data;
     const draft = drafts && mode !== "publish";
@@ -96,8 +105,9 @@ export async function countOf(slug: string, source: "references" | "services"): 
 export async function deleteDoc(slug: string, id: number): Promise<SaveResult> {
   try {
     const { def, ctx, payload, opts } = await access(slug);
-    if (def.type !== "collection") return { ok: false, error: "Bu içerik silinemez." };
-    if (!ctx.isGuruAdmin) return { ok: false, error: "Kaydı yalnız yönetici silebilir." };
+    if (def.type !== "collection" || def.singleton || def.readOnly) return { ok: false, error: "Bu içerik silinemez." };
+    if (def.tenanted && !(await ownTenant(payload, slug as CollectionSlug, id, ctx.tenant.id))) return { ok: false, error: "Kayıt bulunamadı." };
+    if (!def.tenanted && !ctx.isGuruAdmin) return { ok: false, error: "Kaydı yalnız yönetici silebilir." };
     await payload.delete({ collection: slug as CollectionSlug, id, ...opts });
     return { ok: true };
   } catch (e) {

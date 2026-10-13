@@ -41,16 +41,17 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   }
   if (contact) {
     const got = await at(`/admin/collections/contacts/${contact.id}`, 8000);
-    check("Kişi düzenleme formu Payload'da kalıyor", got === `/admin/collections/contacts/${contact.id}`, got);
+    check("Kişi düzenleme formu panelde", got === `/panel/duzenle/contacts/${contact.id}`, got);
   }
 
   /* Payload menüsü: içerik ve ayarlar */
-  await at("/admin/collections/knowledge", 8000);
+  /* İçerik ekranında kalan tek sayfa: hesap */
+  await at("/admin/account", 8000);
   const nav = JSON.parse(await p.evalJs(`JSON.stringify({ links: [...document.querySelectorAll('.nav__link')].filter(e=>e.offsetParent).map(e=>e.id), groups: [...document.querySelectorAll('.nav-group')].filter(e=>e.offsetParent).map(e=>e.querySelector('.nav-group__label, button')?.innerText?.trim()), top: [...document.querySelectorAll('.guru-nav a')].map(a=>a.innerText.trim()) })`));
   console.log("  Guru menüsü:", j(nav));
   check("Menüde günlük kayıtlar yok", !["nav-deals", "nav-leads", "nav-tasks", "nav-projects", "nav-quotes", "nav-conversations", "nav-contacts"].some((x) => nav.links.includes(x)));
   check("Guru CRM, Operation, Chatbot grupları yok", !nav.groups.some((g) => /Guru (CRM|Operation|Chatbot)/.test(g ?? "")), j(nav.groups));
-  check("Sohbet ayarları, bilgi tabanı, şablonlar Ayarlar'da", ["nav-chatbot-config", "nav-knowledge", "nav-templates"].every((x) => nav.links.includes(x)));
+  check("Payload menüsünde kayıt kalmadı (hepsi panelde)", nav.links.length === 0, j(nav.links));
   check("Üstte Panele dön ve site sayfaları", nav.top[0] === "Panele dön" && nav.top.includes("Tüm site içeriği"), j(nav.top));
   await p.screenshot(`${OUT}/admin-sade.png`);
 
@@ -65,9 +66,10 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   const me = await api("POST", "/api/users/login", { email: env.QA_B_EMAIL, password: env.QA_B_PASSWORD });
   const tB = me.b.user.tenants[0].tenant;
   await p.evalJs(`document.cookie="payload-tenant=${typeof tB === "object" ? tB.id : tB}; path=/"`);
-  await at("/admin/collections/knowledge", 8000);
+  /* İçerik ekranında kalan tek sayfa: hesap */
+  await at("/admin/account", 8000);
   const navB = JSON.parse(await p.evalJs(`JSON.stringify({ groups: [...document.querySelectorAll('.nav-group')].filter(e=>e.offsetParent).map(e=>e.querySelector('.nav-group__label, button')?.innerText?.trim()), top: [...document.querySelectorAll('.guru-nav a')].map(a=>a.innerText.trim()) })`));
-  check("Klinik menüsü: yalnız Ayarlar ve Panele dön", j(navB.groups) === j(["Ayarlar"]) && j(navB.top) === j(["Panele dön"]), j(navB));
+  check("Klinik menüsü: yalnız Panele dön", navB.groups.length === 0 && j(navB.top) === j(["Panele dön"]), j(navB));
   await at("/panel/ayarlar", 7000);
   const ayB = await p.evalJs(`document.querySelector("main")?.innerText ?? ""`);
   check("Klinik Ayarlar'da Siteyi Tamamla ve Demo yok", !ayB.includes("Siteyi Tamamla") && !ayB.includes("Demo İşletmesi"));

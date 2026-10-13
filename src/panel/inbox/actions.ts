@@ -137,7 +137,7 @@ export async function getThread(key: string): Promise<Thread | null> {
       ],
       fields: [["Hizmet", l.service ?? ""], ["E-posta", l.email], ["Telefon", l.phone ?? ""]],
       ...block,
-      links: [{ label: "Mevcut ekranda aç", href: `/admin/collections/leads/${l.id}` }],
+      links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/leads/${l.id}` }],
       canned: [],
     };
   }
@@ -151,7 +151,7 @@ export async function getThread(key: string): Promise<Thread | null> {
       messages: [{ id: 0, role: "sistem", text: `Randevu talebi · ${dateFmt.format(new Date(b.date))} ${b.time}${b.topic ? ` · ${b.topic}` : ""}`, at: b.createdAt }, ...(b.note ? [{ id: 1, role: "ziyaretci" as const, text: b.note, at: b.createdAt }] : [])],
       fields: [["Tarih", `${dateFmt.format(new Date(b.date))} ${b.time}`], ["Konu", b.topic ?? ""], ["E-posta", b.email], ["Telefon", b.phone ?? ""]],
       ...block,
-      links: [{ label: "Mevcut ekranda aç", href: `/admin/collections/bookings/${b.id}` }],
+      links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/bookings/${b.id}` }],
       canned: [],
     };
   }

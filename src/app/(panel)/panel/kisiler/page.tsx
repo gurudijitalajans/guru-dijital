@@ -74,7 +74,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
           const a = x as { id: number; title: string; type: string; createdAt: string };
           return { id: a.id, title: a.title, detail: `${activityLabel(a.type)} · ${dateFmt.format(new Date(a.createdAt))}` };
         }),
-        editHref: `/admin/collections/contacts/${c.id}`,
+        editHref: `/panel/duzenle/contacts/${c.id}`,
       };
     }
   } else if (sp.firma) {
@@ -107,7 +107,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
           return { id: d.id, title: d.title, stage: stageLabel(d.stage), value: d.value ?? 0 };
         }),
         timeline: [],
-        editHref: `/admin/collections/companies/${c.id}`,
+        editHref: `/panel/duzenle/companies/${c.id}`,
       };
     }
   }
@@ -121,12 +121,12 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
         actions={
           <>
             <Button asChild>
-              <Link href="/admin/veri-aktar" prefetch={false}>
+              <Link href="/panel/ayarlar/veri-aktar" prefetch={false}>
                 Excel&apos;den aktar
               </Link>
             </Button>
             <Button asChild variant="primary">
-              <Link href={view === "kisiler" ? "/admin/collections/contacts/create" : "/admin/collections/companies/create"} prefetch={false}>
+              <Link href={view === "kisiler" ? "/panel/duzenle/contacts" : "/panel/duzenle/companies"} prefetch={false}>
                 {view === "kisiler" ? "Yeni kişi" : "Yeni firma"}
               </Link>
             </Button>

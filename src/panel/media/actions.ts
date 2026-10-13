@@ -23,12 +23,13 @@ async function site() {
   return { ctx, payload, opts: { user: ctx.user, req, overrideAccess: false } as const };
 }
 
-export async function updateMedia(id: number, d: { alt: string; folder: number | null }): Promise<Result> {
+export async function updateMedia(id: number, d: { alt: string; folder: number | null; focalX?: number; focalY?: number }): Promise<Result> {
   try {
     const { payload, opts } = await site();
     const alt = d.alt.trim().slice(0, 300);
     if (!alt) return { ok: false, error: "Alternatif metin boş olamaz." };
-    await payload.update({ collection: "media", id, data: { alt, folder: d.folder || null }, ...opts });
+    const focal = (v?: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(100, Math.max(0, Math.round(v))) : undefined);
+    await payload.update({ collection: "media", id, data: { alt, folder: d.folder || null, ...(focal(d.focalX) !== undefined ? { focalX: focal(d.focalX), focalY: focal(d.focalY) } : {}) }, ...opts });
     return { ok: true };
   } catch (e) {
     return fail(e);

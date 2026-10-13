@@ -130,10 +130,10 @@ function UserFoot({ user }: { user: Props["user"] }) {
       <DropdownMenu.Portal>
         <DropdownMenu.Content side="top" align="start" sideOffset={6} className="z-50 w-[226px] rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
           <DropdownMenu.Item asChild className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-ink no-underline outline-none data-[highlighted]:bg-accent-soft">
-            <Link href="/admin" prefetch={false}>
+            <a href="/" target="_blank" rel="noreferrer">
               <ExternalLink className="size-4 text-muted" aria-hidden />
-              Mevcut panele git
-            </Link>
+              Siteyi aç
+            </a>
           </DropdownMenu.Item>
           <DropdownMenu.Item onSelect={logout} className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-ink outline-none data-[highlighted]:bg-accent-soft">
             <LogOut className="size-4 text-muted" aria-hidden />

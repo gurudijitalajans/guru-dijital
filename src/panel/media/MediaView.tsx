@@ -16,7 +16,7 @@ import { uploadOne } from "./upload";
 import { cn } from "@/lib/utils";
 
 export type MediaItem = { id: number; alt: string; filename: string; thumb: string; width: number; height: number };
-export type MediaDetail = { id: number; alt: string; filename: string; preview: string; url: string; size: number; width: number; height: number; created: string; folder: number | null; uses: MediaUse[] };
+export type MediaDetail = { id: number; alt: string; filename: string; preview: string; url: string; size: number; width: number; height: number; created: string; folder: number | null; focalX: number | null; focalY: number | null; uses: MediaUse[] };
 type Folder = { id: number; name: string };
 
 const kb = (n: number) =>
@@ -205,13 +205,14 @@ function MediaSheet({ m, folders, canDelete, onClose }: { m: MediaDetail; folder
   const router = useRouter();
   const [alt, setAlt] = useState(m.alt);
   const [folder, setFolder] = useState<number | null>(m.folder);
+  const [focal, setFocal] = useState<{ x: number; y: number }>({ x: m.focalX ?? 50, y: m.focalY ?? 50 });
   const [confirm, setConfirm] = useState(false);
   const [pending, start] = useTransition();
-  const dirty = alt.trim() !== m.alt || folder !== m.folder;
+  const dirty = alt.trim() !== m.alt || folder !== m.folder || focal.x !== (m.focalX ?? 50) || focal.y !== (m.focalY ?? 50);
 
   const save = () =>
     start(async () => {
-      const r = await updateMedia(m.id, { alt, folder });
+      const r = await updateMedia(m.id, { alt, folder, focalX: focal.x, focalY: focal.y });
       if (!r.ok) return void toast.error(r.error);
       toast.success("Kaydedildi.");
       router.refresh();
@@ -231,9 +232,24 @@ function MediaSheet({ m, folders, canDelete, onClose }: { m: MediaDetail; folder
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()} title={m.alt || "Görsel"} description={m.filename}>
       {m.preview ? (
-        <div className="mt-4 overflow-hidden rounded-[12px] border border-line bg-sunken">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={m.preview} alt={m.alt} className="mx-auto block max-h-[320px] w-auto max-w-full object-contain" />
+        <div className="mt-4 grid gap-1.5">
+          <div className="overflow-hidden rounded-[12px] border border-line bg-sunken">
+            {/* Odak noktası: görsel kırpılınca bu nokta görünür kalır (sitede object-position) */}
+            <button
+              type="button"
+              aria-label="Odak noktasını seçin"
+              className="relative mx-auto block cursor-crosshair"
+              onClick={(e) => {
+                const b = e.currentTarget.getBoundingClientRect();
+                setFocal({ x: Math.round(((e.clientX - b.left) / b.width) * 100), y: Math.round(((e.clientY - b.top) / b.height) * 100) });
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={m.preview} alt={m.alt} className="block max-h-[320px] w-auto max-w-full object-contain" />
+              <span className="pointer-events-none absolute size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-accent/60 shadow-[0_0_0_2px_rgb(0_0_0/0.35)]" style={{ left: `${focal.x}%`, top: `${focal.y}%` }} aria-hidden="true" />
+            </button>
+          </div>
+          <p className="m-0 text-[12px] text-muted">{`Odak noktası: görselde tıkladığınız yer kırpılınca görünür kalır (${focal.x}%, ${focal.y}%).`}</p>
         </div>
       ) : null}
 
@@ -292,11 +308,11 @@ function MediaSheet({ m, folders, canDelete, onClose }: { m: MediaDetail; folder
             <Button type="submit" variant="primary" disabled={!dirty || pending}>
               Kaydet
             </Button>
-            <Button asChild variant="ghost">
-              <Link href={`/admin/collections/media/${m.id}`} prefetch={false}>
-                Odak noktası ve kırpma
-              </Link>
-            </Button>
+            {focal.x !== 50 || focal.y !== 50 ? (
+              <Button type="button" variant="ghost" onClick={() => setFocal({ x: 50, y: 50 })}>
+                Odağı ortala
+              </Button>
+            ) : null}
           </div>
         </form>
       </SheetSection>

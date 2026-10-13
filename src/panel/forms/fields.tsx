@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, ImageOff, Plus, Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -197,7 +198,10 @@ function FieldView({ f, base }: { f: CField; base: string }) {
     case "array":
       return <ArrayView f={f} path={path} />;
     case "ui":
-      return f.component === "textHelper" ? <TextHelper {...(f.props as HelperProps)} base={base} /> : <PageMap {...(f.props as { page: string; active: string[]; note?: string })} />;
+      if (f.component === "textHelper") return <TextHelper {...(f.props as HelperProps)} base={base} />;
+      if (f.component === "embedCode") return <EmbedCode />;
+      if (f.component === "knowledgeTools") return <KnowledgeTools />;
+      return <PageMap {...(f.props as { page: string; active: string[]; note?: string })} />;
     case "unsupported":
       return (
         <Shell f={f} path={path}>
@@ -579,5 +583,118 @@ function PageMap({ page, active, note }: { page: string; active: string[]; note?
         ))}
       </ol>
     </div>
+  );
+}
+
+/* ---------- Site bağlantısı ve sohbet asistanı araçları ---------- */
+
+function CopyButton({ text }: { text: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <Button
+      type="button"
+      size="sm"
+      onClick={() =>
+        void navigator.clipboard.writeText(text).then(() => {
+          setDone(true);
+          setTimeout(() => setDone(false), 2000);
+        })
+      }
+    >
+      {done ? "Kopyalandı" : "Kopyala"}
+    </Button>
+  );
+}
+
+function CodeLine({ code }: { code: string }) {
+  return (
+    <div className="flex min-w-0 items-center gap-2 rounded-[10px] border border-line bg-sunken p-2 pl-3">
+      <code className="min-w-0 flex-1 overflow-x-auto font-mono text-[12px] whitespace-nowrap text-ink">{code}</code>
+      <CopyButton text={code} />
+    </div>
+  );
+}
+
+/** Sitenize eklenecek kod (site anahtarı kaydedince üretilir) */
+function EmbedCode() {
+  const form = useForm();
+  const key = form.get("siteKey") as string | undefined;
+  const base = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => "",
+  );
+  if (!key) return <p className="m-0 rounded-[10px] bg-sunken px-3 py-2 text-[14px] text-muted">Kaydedince site anahtarı üretilir ve kod burada görünür.</p>;
+  const script = `<script src="${base}/guru-site.js" data-key="${key}" async></script>`;
+  return (
+    <section className="grid gap-2 rounded-[12px] border border-accent/40 bg-accent-soft/40 p-4">
+      <h3 className="m-0 text-[15px] font-semibold text-ink">Sitenize Ekleyin</h3>
+      <p className="m-0 text-[13px] text-muted">
+        1. Bu satırı sitenizin her sayfasına, kapanış <code>&lt;/body&gt;</code> etiketinden önce ekleyin. Sohbet asistanı açıksa sağ altta balon çıkar.
+      </p>
+      <CodeLine code={script} />
+      <p className="m-0 text-[13px] text-muted">2. Talep formunun görüneceği yere bu kutuyu koyun. Gelen talepler kişi, fırsat ve ilk dönüş göreviyle düşer.</p>
+      <CodeLine code="<div data-guru-form></div>" />
+      <p className="m-0 text-[13px] text-muted">
+        Aşağıya sitenizin adresini eklemeyi unutmayın: balon ve form yalnız oradan açılır.{" "}
+        <a href={`/gomulu/onizleme?k=${encodeURIComponent(key)}`} target="_blank" rel="noopener noreferrer" className="text-accent">
+          Deneme sayfasında önizleyin
+        </a>
+      </p>
+    </section>
+  );
+}
+
+type KResult = { ok: boolean; error?: string; pages?: number; added?: number; updated?: number; empty?: number; parts?: number };
+
+/** Bilgi tabanını siteden ve belgeden doldurma */
+function KnowledgeTools() {
+  const [busy, setBusy] = useState<"" | "site" | "belge">("");
+  const [msg, setMsg] = useState("");
+  const crawl = async () => {
+    setBusy("site");
+    setMsg("Site taranıyor; birkaç dakika sürebilir…");
+    const r = await fetch("/api/knowledge/site-tara", { method: "POST", credentials: "same-origin" }).catch(() => null);
+    const j = (await r?.json().catch(() => null)) as KResult | null;
+    setMsg(j?.ok ? `${j.pages} sayfa okundu: ${j.added} yeni, ${j.updated} güncellendi${j.empty ? `, ${j.empty} sayfada metin yoktu` : ""}.` : (j?.error ?? "Tarama yapılamadı."));
+    setBusy("");
+  };
+  const upload = async (file: File) => {
+    setBusy("belge");
+    setMsg(`${file.name} okunuyor…`);
+    const fd = new FormData();
+    fd.append("file", file);
+    const r = await fetch("/api/knowledge/belge", { method: "POST", credentials: "same-origin", body: fd }).catch(() => null);
+    const j = (await r?.json().catch(() => null)) as KResult | null;
+    setMsg(j?.ok ? `${file.name}: ${j.parts} bilgi kaydı eklendi.` : (j?.error ?? "Belge okunamadı."));
+    setBusy("");
+  };
+  return (
+    <section className="grid gap-2.5 rounded-[12px] border border-line bg-sunken p-4">
+      <h3 className="m-0 text-[15px] font-semibold text-ink">Bilgi Tabanını Doldurun</h3>
+      <p className="m-0 text-[13px] text-muted">Asistan yalnız bilgi tabanındakini bilir. Sitenizi tarayın ya da broşür, fiyat listesi gibi belgeleri yükleyin.</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="button" size="sm" variant="primary" onClick={crawl} disabled={Boolean(busy)}>
+          {busy === "site" ? "Taranıyor…" : "Siteyi tara"}
+        </Button>
+        <label className={cn("inline-flex min-h-8 cursor-pointer items-center rounded-[9px] border border-line bg-surface px-2.5 text-[13px] font-medium text-ink hover:border-accent", busy && "pointer-events-none opacity-50")}>
+          Belge yükle
+          <input type="file" className="sr-only" accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" disabled={Boolean(busy)} onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) void upload(f);
+            e.target.value = "";
+          }} />
+        </label>
+        <Link href="/panel/kayitlar/knowledge" className="text-[13px] text-accent">
+          Bilgi tabanını aç
+        </Link>
+      </div>
+      <p className="m-0 text-[12px] text-muted">PDF, TXT ya da MD; en çok 4 MB.</p>
+      {msg ? (
+        <p className="m-0 text-[13px] text-ink" role="status">
+          {msg}
+        </p>
+      ) : null}
+    </section>
   );
 }

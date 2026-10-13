@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { createLocalReq, getAccessResults, type CollectionSlug, type Field, type GlobalSlug, type TypedUser } from "payload";
-import { requireModule } from "@/panel/context";
+import { getPanelContext } from "@/panel/context";
 import { Editor } from "@/panel/forms/Editor";
-import { ENTITIES } from "@/panel/forms/entities";
+import { canOpen, editorHref, ENTITIES } from "@/panel/forms/entities";
 import { defaultsFor, fieldPerms, hasConditions, hiddenPaths, toClientFields, txt } from "@/panel/forms/schema";
 import { cms } from "@/lib/cms";
 
@@ -25,8 +25,8 @@ export default async function EditPage({ params }: { params: Params }) {
   const { slug, id: idParts } = await params;
   const def = ENTITIES[slug];
   if (!def) notFound();
-  const ctx = await requireModule(def.module);
-  if (def.adminOnly && !ctx.isGuruAdmin) redirect("/panel");
+  const ctx = await getPanelContext();
+  if (!canOpen(def, ctx)) redirect("/panel");
   const payload = await cms();
   const user = ctx.user as unknown as TypedUser;
   const req = await createLocalReq({ user }, payload);
@@ -37,7 +37,12 @@ export default async function EditPage({ params }: { params: Params }) {
   let doc: Record<string, unknown> | null;
   let label = def.label;
   let drafts = false;
-  const id = idParts?.[0] ? Number(idParts[0]) : null;
+  let id = idParts?.[0] ? Number(idParts[0]) : null;
+  /* İşletme başına tek kayıt: seçili işletmenin kaydı */
+  if (def.singleton && !id) {
+    const one = await payload.find({ collection: slug as CollectionSlug, where: { tenant: { equals: ctx.tenant.id } }, limit: 1, depth: 0, overrideAccess: true });
+    if (one.docs[0]) id = one.docs[0].id as number;
+  }
   if (def.type === "global") {
     const g = payload.config.globals.find((x) => x.slug === slug);
     if (!g) notFound();
@@ -51,11 +56,17 @@ export default async function EditPage({ params }: { params: Params }) {
     label = txt(c.labels?.singular) ?? def.label;
     doc = id ? ((await payload.findByID({ collection: slug as CollectionSlug, id, depth: 0, draft: drafts, ...opts }).catch(() => null)) as Record<string, unknown> | null) : null;
     if (id && !doc) notFound();
+    /* Başka işletmenin kaydı açılmaz (seçili işletme değiştiyse listeye) */
+    if (doc && def.tenanted) {
+      const t = doc.tenant && typeof doc.tenant === "object" ? (doc.tenant as { id: number }).id : doc.tenant;
+      if (String(t) !== String(ctx.tenant.id)) redirect(def.singleton ? editorHref(slug) : def.back);
+    }
+    if (!id && def.readOnly) redirect(def.back);
     if (!id && !access.canCreate) redirect(def.back);
   }
   const data = doc ?? (await defaultsFor(fields, user, payload));
   const operation = def.type === "global" || id ? "update" : "create";
-  const title = def.type === "global" ? def.label : doc ? String(doc[def.titleField ?? "id"] ?? label) : `Yeni ${label.toLocaleLowerCase("tr-TR")}`;
+  const title = def.type === "global" || def.singleton ? def.label : doc ? String(doc[def.titleField ?? "id"] ?? label) : `Yeni ${label.toLocaleLowerCase("tr-TR")}`;
   const published = drafts && doc ? await isPublished(payload, slug as CollectionSlug, id!) : null;
 
   return (
@@ -64,14 +75,14 @@ export default async function EditPage({ params }: { params: Params }) {
       id={id}
       title={title}
       back={def.back}
-      fields={toClientFields(fields, access.perms, access.canEdit)}
+      fields={toClientFields(fields, access.perms, access.canEdit && !def.readOnly)}
       initial={data}
       hidden={hiddenPaths(fields, data, data, user, operation)}
       operation={operation}
       drafts={drafts}
       published={published}
-      canEdit={access.canEdit}
-      canDelete={Boolean(id) && ctx.isGuruAdmin && access.canDelete}
+      canEdit={access.canEdit && !def.readOnly}
+      canDelete={Boolean(id) && !def.singleton && !def.readOnly && access.canDelete && (def.tenanted || ctx.isGuruAdmin)}
       previewPath={def.preview?.(data) ?? null}
       clientUpload={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
       updatedAt={(doc?.updatedAt as string | undefined) ?? null}

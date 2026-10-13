@@ -82,7 +82,7 @@ export default async function PanelHome() {
   for (const b of todayBookings.docs as { id: number; name: string; time: string; topic?: string | null; status: string }[])
     agenda.push({ key: `b${b.id}`, time: b.time, title: `${b.name} ile görüşme`, detail: b.topic ?? "Randevu", href: `/panel/gelen?s=r${b.id}`, tone: b.status === "onaylandi" ? "good" : "warn" });
   for (const a of todayActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
-    agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: `/admin/collections/activities/${a.id}`, tone: "info" });
+    agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: `/panel/duzenle/activities/${a.id}`, tone: "info" });
   for (const t of todayTasks.docs as { id: number; title: string; seq?: number | null; project?: unknown }[])
     agenda.push({ key: `t${t.id}`, time: "Teslim", title: `${taskCode(t.seq)} ${t.title}`.trim(), detail: nameOf(t.project) || "Operasyon görevi", href: `/panel/gorevler?gorev=${t.id}`, tone: "warn" });
   agenda.sort((a, b) => a.time.localeCompare(b.time, "tr"));

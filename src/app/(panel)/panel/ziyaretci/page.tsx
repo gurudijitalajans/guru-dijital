@@ -102,7 +102,7 @@ export default async function VisitorsPage({ searchParams }: { searchParams: Pro
             <li>Guru adına bir Umami hesabı açın: Umami Cloud (ücretsiz başlangıç planı) ya da kendi sunucunuza kurulu Umami.</li>
             <li>
               Umami&apos;de siteyi ekleyin; Website ID değerini{" "}
-              <Link href="/admin/globals/site-settings" prefetch={false} className="text-accent">
+              <Link href="/panel/duzenle/site-settings" prefetch={false} className="text-accent">
                 Site ayarları &gt; Ziyaretçi analizi
               </Link>{" "}
               alanına yapıştırıp sayımı açın.{websiteId ? " (Site kimliği girilmiş.)" : ""}

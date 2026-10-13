@@ -57,6 +57,8 @@ export default async function MediaPage({ searchParams }: { searchParams: SP }) 
         height: m.height ?? 0,
         created: dateFmt.format(new Date(m.createdAt)),
         folder: idOf(m.folder),
+        focalX: m.focalX ?? null,
+        focalY: m.focalY ?? null,
         uses,
       };
     }

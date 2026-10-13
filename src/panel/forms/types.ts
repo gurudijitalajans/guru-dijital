@@ -4,6 +4,7 @@
  * doğrulama ve yetki sunucuda Payload'un kendi kurallarıyla çalışır.
  */
 export type Option = { label: string; value: string };
+export type UiKind = "textHelper" | "pageMap" | "embedCode" | "knowledgeTools";
 
 type Base = { key: string; label: string; description?: string; readOnly?: boolean; sidebar?: boolean; width?: string };
 
@@ -20,7 +21,7 @@ export type CField =
   | (Base & { kind: "row" | "collapsible"; fields: CField[]; collapsed?: boolean })
   | (Base & { kind: "tabs"; tabs: { label: string; name?: string; description?: string; fields: CField[] }[] })
   | (Base & { kind: "array"; name: string; fields: CField[]; singular: string; minRows?: number; maxRows?: number; required?: boolean })
-  | (Base & { kind: "ui"; component: "textHelper" | "pageMap"; props: Record<string, unknown> })
+  | (Base & { kind: "ui"; component: UiKind; props: Record<string, unknown> })
   | (Base & { kind: "unsupported"; name: string });
 
 export type FieldError = { path: string; message: string };

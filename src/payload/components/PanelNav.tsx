@@ -27,7 +27,7 @@ const SLUG_MODULE: Record<string, Module> = {
 };
 type TenantInfo = { id: string; slug: string; modules: string[] };
 /* Günlük kayıtlar yeni panelde (/panel): Payload'un menüsünde gösterilmez, eski adresleri panele yönlenir (next.config.ts) */
-const IN_PANEL = new Set(["categories", "global-site-settings", "media", "payload-folders", "services", "products", "posts", "team", "references", "testimonials", "case-studies", "leads", "bookings", "deals", "contacts", "companies", "quotes", "activities", "projects", "tasks", "conversations"]);
+const IN_PANEL = new Set(["templates", "knowledge", "chatbot-config", "users", "tenants", "business-config", "site-connection", "usage", "audit-log", "categories", "global-site-settings", "media", "payload-folders", "services", "products", "posts", "team", "references", "testimonials", "case-studies", "leads", "bookings", "deals", "contacts", "companies", "quotes", "activities", "projects", "tasks", "conversations"]);
 
 const Icon = ({ d }: { d: string }) => (
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -66,8 +66,7 @@ export function PanelNav() {
     if (key === "users") return tenantAdmin;
     return true;
   };
-  const hiddenIds = Object.keys(SLUG_MODULE)
-    .concat(["business-config", "site-connection", "users"])
+  const hiddenIds = [...new Set([...Object.keys(SLUG_MODULE), "business-config", "site-connection", "users", ...IN_PANEL])]
     .filter((k) => !visible(k) || IN_PANEL.has(k))
     .map((k) => `#nav-${k}`);
   const navCss = hiddenIds.length

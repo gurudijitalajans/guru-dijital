@@ -138,7 +138,7 @@ export default async function ExecPage({ searchParams }: { searchParams: Promise
       ) : (
         <p className="mb-4 text-[14px] text-muted">
           Aylık hedef girilmedi.{" "}
-          <Link href="/admin/collections/business-config" prefetch={false} className="text-accent">
+          <Link href="/panel/duzenle/business-config" prefetch={false} className="text-accent">
             Yönetim özeti ayarlarından
           </Link>{" "}
           ekleyince ilerleme burada görünür.

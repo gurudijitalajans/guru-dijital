@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   /* Geliştirme simgesi gömülü sohbet çerçevesinde balonun üstüne biniyordu */
   devIndicators: false,
   /* Günlük işler yeni panelde (/panel): eski ekranlar ve listeler oraya gider.
-     Kişi ve firma düzenleme formu, ayar ve içerik ekranları Payload'da kalır. */
+     Hesap ve giriş ekranları şimdilik Payload'da. */
   async redirects() {
     const to = (source: string, destination: string) => ({ source, destination, permanent: false });
     const id = ":id(\\d+)";
@@ -47,6 +47,18 @@ const nextConfig: NextConfig = {
       to("/admin/collections/tasks", "/panel/gorevler"),
       to(`/admin/collections/tasks/${id}`, "/panel/gorevler?gorev=:id"),
       to("/admin/collections/activities", "/panel/takvim"),
+      to(`/admin/collections/activities/${id}`, "/panel/duzenle/activities/:id"),
+      to("/admin/ekip", "/panel/ayarlar/ekip"),
+      to("/admin/veri-aktar", "/panel/ayarlar/veri-aktar"),
+      to(`/admin/collections/media/${id}`, "/panel/medya?gorsel=:id"),
+      ...(["contacts", "companies"] as const).flatMap((slug) => [to(`/admin/collections/${slug}/create`, `/panel/duzenle/${slug}`), to(`/admin/collections/${slug}/${id}`, `/panel/duzenle/${slug}/:id`)]),
+      ...(["knowledge", "templates", "tenants", "users", "usage", "audit-log"] as const).flatMap((slug) => [
+        to(`/admin/collections/${slug}`, `/panel/kayitlar/${slug}`),
+        to(`/admin/collections/${slug}/create`, `/panel/duzenle/${slug}`),
+        to(`/admin/collections/${slug}/${id}`, `/panel/duzenle/${slug}/:id`),
+      ]),
+      /* İşletme başına tek kayıt: panel seçili işletmenin kaydını açar */
+      ...(["chatbot-config", "business-config", "site-connection"] as const).flatMap((slug) => [to(`/admin/collections/${slug}`, `/panel/duzenle/${slug}`), to(`/admin/collections/${slug}/:path*`, `/panel/duzenle/${slug}`)]),
       to("/admin/collections/media", "/panel/medya"),
       to("/admin/globals/home-page", "/panel/duzenle/home-page"),
       to("/admin/globals/about-page", "/panel/duzenle/about-page"),

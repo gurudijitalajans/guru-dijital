@@ -65,7 +65,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
     })),
     ...(acts.docs as { id: number; type: string; title: string; dueAt: string; done?: boolean | null; deal?: unknown; contact?: unknown }[]).map((a) => ({
       key: `a${a.id}`, day: istDay(a.dueAt), time: hm.format(new Date(a.dueAt)), title: a.title, detail: [activityLabel(a.type), nameOf(a.deal) || nameOf(a.contact)].filter(Boolean).join(" · "),
-      href: idOf(a.deal) ? `/panel/firsatlar?firsat=${idOf(a.deal)}` : idOf(a.contact) ? `/panel/kisiler?kisi=${idOf(a.contact)}` : `/admin/collections/activities/${a.id}`,
+      href: idOf(a.deal) ? `/panel/firsatlar?firsat=${idOf(a.deal)}` : idOf(a.contact) ? `/panel/kisiler?kisi=${idOf(a.contact)}` : `/panel/duzenle/activities/${a.id}`,
       kind: "crm" as const, activity: { id: a.id, done: Boolean(a.done) },
     })),
     ...(tasks.docs as { id: number; seq?: number | null; title: string; dueDate: string; stage: string; project?: unknown; assignee?: unknown }[]).map((t) => ({

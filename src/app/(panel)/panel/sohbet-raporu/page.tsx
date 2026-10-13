@@ -91,7 +91,7 @@ export default async function ChatReportPage({ searchParams }: { searchParams: P
           <BarList rows={topicRows} empty="Bu dönemde sohbet yok." note={(r) => r.note} />
         </Card>
         <Card>
-          <CardHeader title="Asistanın Yanıtlayamadıkları" action={<Link href="/admin/collections/knowledge/create" prefetch={false} className="text-[14px] text-accent">Bilgi ekle</Link>} />
+          <CardHeader title="Asistanın Yanıtlayamadıkları" action={<Link href="/panel/duzenle/knowledge" prefetch={false} className="text-[14px] text-accent">Bilgi ekle</Link>} />
           {unanswered.docs.length ? (
             <ul className="m-0 list-none p-0">
               {(unanswered.docs as { id: number; text: string; createdAt: string; conversation: unknown }[]).map((m) => (
