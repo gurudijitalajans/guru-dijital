@@ -71,6 +71,7 @@ export default async function EditPage({ params }: { params: Params }) {
       drafts={drafts}
       published={published}
       canEdit={access.canEdit}
+      canDelete={Boolean(id) && ctx.isGuruAdmin && access.canDelete}
       previewPath={def.preview?.(data) ?? null}
       clientUpload={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}
       updatedAt={(doc?.updatedAt as string | undefined) ?? null}

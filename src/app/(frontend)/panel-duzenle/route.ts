@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     const payload = await cms();
     const res = await payload.find({ collection, where: { slug: { equals: slug } }, limit: 1, depth: 0, draft: true });
     const doc = res.docs[0];
-    redirect(doc ? `/admin/collections/${collection}/${doc.id}` : `/panel/icerik?tur=${section}`);
+    redirect(doc ? `/panel/duzenle/${collection}/${doc.id}` : `/panel/icerik?tur=${section}`);
   }
   redirect("/panel");
 }

@@ -26,10 +26,17 @@ export async function withPage({ width = 1440, height = 900, mobile = false } = 
     await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
     let id = 0;
     const pending = new Map();
-    ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } };
+    let session = null;
+    ws.onmessage = (ev) => {
+      const m = JSON.parse(ev.data);
+      if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
+      /* "Sayfadan ayrıl?" ve benzeri pencereler testi kilitlemesin: kabul et */
+      if (m.method === "Page.javascriptDialogOpening" && session) ws.send(JSON.stringify({ id: ++id, method: "Page.handleJavaScriptDialog", params: { accept: true }, sessionId: session }));
+    };
     const send = (method, params = {}, sessionId) => new Promise((res) => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params, sessionId })); });
     const { result: { targetId } } = await send("Target.createTarget", { url: "about:blank" });
     const { result: { sessionId } } = await send("Target.attachToTarget", { targetId, flatten: true });
+    session = sessionId;
     const s = (m, p) => send(m, p, sessionId);
     await s("Page.enable");
     await s("Runtime.enable");

@@ -7,8 +7,17 @@ import type { CField, Option } from "./types";
  * açıklama, seçenekler, sınırlar. Gizli ve sistem alanları atlanır; yetkisi
  * olmayan alan salt okunur (okuma yetkisi yoksa hiç gösterilmez).
  */
-type FieldPerm = { read?: { permission?: boolean }; update?: { permission?: boolean }; create?: { permission?: boolean }; fields?: Record<string, FieldPerm>; blocks?: unknown };
-type Perms = Record<string, FieldPerm> | undefined;
+/*
+ * Payload yetki tablosunu sadeleştirir: izin verilen işlem `true` (ya da
+ * { permission: true, where }), verilmeyen işlem hiç yer almaz; her şeyi
+ * serbest olan alan ya da alan grubu tek başına `true` olur.
+ */
+type OpPerm = true | { permission?: boolean; where?: unknown };
+type FieldPerm = true | { read?: OpPerm; update?: OpPerm; create?: OpPerm; fields?: Perms; blocks?: unknown };
+type Perms = true | Record<string, FieldPerm> | undefined;
+const allowed = (p: unknown, op: string): boolean => p === true || Boolean( (p && typeof p === "object" && ((p as Record<string, unknown>)[op] === true || ((p as Record<string, { permission?: boolean }>)[op]?.permission ?? false) === true)));
+const permOf = (perms: Perms, name: string): FieldPerm | undefined => (perms === true ? true : perms?.[name]);
+const childOf = (perm: FieldPerm | undefined, perms: Perms): Perms => (perm === true ? true : perm ? (perm.fields ?? true) : perms);
 
 const SKIP = new Set(["id", "createdAt", "updatedAt", "_status", "tenant", "folder", "deletedAt"]);
 const UI: Record<string, "textHelper" | "pageMap"> = { "/payload/components/TextHelper#TextHelper": "textHelper", "/payload/components/PageMap#PageMap": "pageMap" };
@@ -42,9 +51,9 @@ export function toClientFields(fields: Field[], perms: Perms, canEdit: boolean, 
     const admin = (f.admin ?? {}) as Record<string, unknown> & { components?: { Field?: unknown }; hidden?: boolean; disabled?: boolean };
     if (f.hidden || admin.hidden || admin.disabled) return;
     if ("name" in f && f.name && SKIP.has(f.name)) return;
-    const perm = "name" in f && f.name ? perms?.[f.name] : undefined;
-    if (perm?.read?.permission === false) return;
-    const readOnly = Boolean(admin.readOnly) || !canEdit || perm?.update?.permission === false;
+    const perm = "name" in f && f.name ? permOf(perms, f.name) : undefined;
+    if (perm !== undefined && !allowed(perm, "read")) return;
+    const readOnly = Boolean(admin.readOnly) || !canEdit || (perm !== undefined && !allowed(perm, "update"));
     const key = `${prefix}${"name" in f && f.name ? f.name : `_${i}`}`;
     const base = {
       key,
@@ -54,7 +63,7 @@ export function toClientFields(fields: Field[], perms: Perms, canEdit: boolean, 
       sidebar: admin.position === "sidebar" || undefined,
       width: typeof admin.width === "string" ? admin.width : undefined,
     };
-    const childPerms = perm?.fields ?? perms;
+    const childPerms = childOf(perm, perms);
     switch (f.type) {
       case "text":
       case "textarea":
@@ -115,12 +124,12 @@ export function toClientFields(fields: Field[], perms: Perms, canEdit: boolean, 
           ...base,
           kind: "tabs",
           tabs: t.tabs.map((tab) => {
-            const tp = tab.name ? perms?.[tab.name] : undefined;
+            const tp = tab.name ? permOf(perms, tab.name) : undefined;
             return {
               label: txt(tab.label) ?? (tab.name ? human(tab.name) : ""),
               name: tab.name,
               description: txt(tab.description),
-              fields: tab.name ? toClientFields(tab.fields, tp?.fields ?? perms, canEdit && tp?.update?.permission !== false, `${prefix}${tab.name}.`) : toClientFields(tab.fields, perms, canEdit, prefix),
+              fields: tab.name ? toClientFields(tab.fields, childOf(tp, perms), canEdit && (tp === undefined || allowed(tp, "update")), `${prefix}${tab.name}.`) : toClientFields(tab.fields, perms, canEdit, prefix),
             };
           }),
         });
@@ -217,10 +226,8 @@ export function hiddenPaths(fields: Field[], data: Record<string, unknown>, sibl
 
 /** Yetki ağacından bu varlığın alan izinleri */
 export function fieldPerms(perms: SanitizedPermissions, type: "global" | "collection", slug: string): { perms: Perms; canEdit: boolean; canCreate: boolean; canDelete: boolean } {
-  const p = (type === "global" ? perms.globals?.[slug as never] : perms.collections?.[slug as never]) as
-    | { fields?: Perms; update?: { permission?: boolean }; create?: { permission?: boolean }; delete?: { permission?: boolean } }
-    | undefined;
-  return { perms: p?.fields, canEdit: p?.update?.permission !== false, canCreate: p?.create?.permission !== false, canDelete: p?.delete?.permission === true };
+  const p = (type === "global" ? perms.globals?.[slug as never] : perms.collections?.[slug as never]) as true | { fields?: Perms } | undefined;
+  return { perms: p === true ? true : p?.fields, canEdit: allowed(p, "update"), canCreate: allowed(p, "create"), canDelete: allowed(p, "delete") };
 }
 
 /** Alanlardan birinde admin.condition var mı */

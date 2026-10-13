@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ExternalLink, Monitor, PanelRightClose, PanelRightOpen, Smartphone, Tablet } from "lucide-react";
+import { ArrowLeft, ExternalLink, Monitor, PanelRightClose, PanelRightOpen, Smartphone, Tablet, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { FieldList } from "./fields";
-import { conditions, saveDoc } from "./actions";
+import { conditions, deleteDoc, saveDoc, unpublishDoc } from "./actions";
 import { editorHref } from "./entities";
 import { FormCtx, getAt, setAt, type FormApi } from "./state";
 import type { CField } from "./types";
@@ -33,6 +33,7 @@ type Props = {
   drafts: boolean;
   published: boolean | null;
   canEdit: boolean;
+  canDelete: boolean;
   previewPath: string | null;
   clientUpload: boolean;
   updatedAt: string | null;
@@ -56,6 +57,7 @@ export function Editor(p: Props) {
   const [preview, setPreview] = useState(Boolean(p.previewPath));
   const [device, setDevice] = useState<(typeof DEVICES)[number]["key"]>("masaustu");
   const [pending, start] = useTransition();
+  const [confirm, setConfirm] = useState(false);
   const frame = useRef<HTMLIFrameElement>(null);
   const dirty = JSON.stringify(values) !== saved;
 
@@ -105,6 +107,27 @@ export function Editor(p: Props) {
       }),
     [p.slug, p.id, values, router],
   );
+
+  const remove = () =>
+    start(async () => {
+      const r = await deleteDoc(p.slug, p.id!);
+      if (!r.ok) {
+        setConfirm(false);
+        return void toast.error(r.error);
+      }
+      setSaved(JSON.stringify(values));
+      toast.success("Silindi.");
+      router.push(p.back);
+    });
+  const unpublish = () =>
+    start(async () => {
+      const r = await unpublishDoc(p.slug, p.id!);
+      if (!r.ok) return void toast.error(r.error);
+      setPublished(false);
+      toast.success("Yayından kaldırıldı; sitede görünmüyor.");
+      frame.current?.contentWindow?.postMessage({ type: "payload-document-event" }, window.location.origin);
+      router.refresh();
+    });
 
   /* Cmd/Ctrl+S */
   useEffect(() => {
@@ -195,6 +218,33 @@ export function Editor(p: Props) {
           <section className="min-w-0 rounded-[14px] border border-line bg-surface p-4 sm:p-5">
             <FieldList fields={main} />
           </section>
+          {p.id && p.canEdit && (published || p.canDelete) ? (
+            <section className="flex flex-wrap items-center gap-2 rounded-[14px] border border-line bg-surface p-4">
+              {published ? (
+                <Button type="button" onClick={unpublish} disabled={pending}>
+                  Yayından kaldır
+                </Button>
+              ) : null}
+              {p.canDelete ? (
+                confirm ? (
+                  <>
+                    <span className="text-[14px] text-ink">Kayıt kalıcı olarak silinsin mi?</span>
+                    <Button type="button" variant="danger" onClick={remove} disabled={pending}>
+                      Evet, sil
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => setConfirm(false)}>
+                      Vazgeç
+                    </Button>
+                  </>
+                ) : (
+                  <Button type="button" variant="danger" onClick={() => setConfirm(true)}>
+                    <Trash2 />
+                    Sil
+                  </Button>
+                )
+              ) : null}
+            </section>
+          ) : null}
         </form>
 
         {preview && p.previewPath ? (

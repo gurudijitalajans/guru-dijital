@@ -23,7 +23,7 @@ const run = async (size, fn) => withPage(size, async (p) => {
   await fn({ p, api, at, text, click });
 });
 
-const login = async ({ api, p }, email, password) => {
+const login = async ({ api }, email, password) => {
   const me = await api("POST", "/api/users/login", { email, password });
   const t = me.b?.user?.tenants?.[0]?.tenant;
   return { me, t: typeof t === "object" ? t?.id : t };

@@ -42,7 +42,7 @@ await run({ width: 1440, height: 900 }, async ({ p, api, at, text, click, fill, 
   const post0 = (await api("GET", "/api/posts?limit=1&depth=0&where[_status][equals]=published")).b.docs[0];
   if (post0) {
     const got = await at(`/admin/collections/posts/${post0.id}`, 9000);
-    check("Blog yazısı editörü içerik ekranında kalıyor", got === `/admin/collections/posts/${post0.id}`, got);
+    check("Eski blog yazısı adresi panelin düzenleyicisine", got === `/panel/duzenle/posts/${post0.id}`, got);
   }
 
   /* Sayfalar */

@@ -51,6 +51,10 @@ const nextConfig: NextConfig = {
       to("/admin/globals/home-page", "/panel/duzenle/home-page"),
       to("/admin/globals/about-page", "/panel/duzenle/about-page"),
       to("/admin/globals/site-settings", "/panel/duzenle/site-settings"),
+      ...(["services", "products", "posts"] as const).flatMap((slug) => [
+        to(`/admin/collections/${slug}/create`, `/panel/duzenle/${slug}`),
+        to(`/admin/collections/${slug}/${id}`, `/panel/duzenle/${slug}/:id`),
+      ]),
       to("/admin/collections/services", "/panel/icerik?tur=hizmetler"),
       to("/admin/collections/products", "/panel/icerik?tur=urunler"),
       to("/admin/collections/posts", "/panel/icerik?tur=blog"),
@@ -60,6 +64,7 @@ const nextConfig: NextConfig = {
           ["references", "referanslar"],
           ["testimonials", "yorumlar"],
           ["case-studies", "vakalar"],
+          ["categories", "kategoriler"],
         ] as const
       ).flatMap(([slug, tur]) => [
         to(`/admin/collections/${slug}`, `/panel/icerik?tur=${tur}`),

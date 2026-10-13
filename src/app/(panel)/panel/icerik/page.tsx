@@ -71,7 +71,7 @@ export default async function ContentPage({ searchParams }: { searchParams: SP }
         updated: dateFmt.format(new Date(l.updatedAt)),
         order: typeof d.order === "number" ? d.order : null,
         view: published && d.slug ? `${k.base}/${d.slug}` : null,
-        edit: `/admin/collections/${k.collection}/${d.id}`,
+        edit: `/panel/duzenle/${k.collection}/${d.id}`,
       };
     });
   } else {

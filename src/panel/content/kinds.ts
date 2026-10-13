@@ -13,7 +13,7 @@ export type FieldDef =
   | { name: string; label: string; type: "stats"; hint?: string };
 
 export type SimpleKind = {
-  collection: "team" | "references" | "testimonials" | "case-studies";
+  collection: "team" | "references" | "testimonials" | "case-studies" | "categories";
   label: string;
   singular: string;
   titleField: string;
@@ -27,7 +27,7 @@ export type SimpleKind = {
 
 const order: FieldDef = { name: "order", label: "Sıra", type: "number", hint: "Küçük sayı önce gelir." };
 
-export const SIMPLE: Record<"ekip" | "referanslar" | "yorumlar" | "vakalar", SimpleKind> = {
+export const SIMPLE: Record<"ekip" | "referanslar" | "yorumlar" | "vakalar" | "kategoriler", SimpleKind> = {
   ekip: {
     collection: "team",
     label: "Ekip",
@@ -95,6 +95,14 @@ export const SIMPLE: Record<"ekip" | "referanslar" | "yorumlar" | "vakalar", Sim
       order,
       { name: "showOnHome", label: "Ana sayfada göster", type: "checkbox", defaultValue: true },
     ],
+  },
+  kategoriler: {
+    collection: "categories",
+    label: "Blog kategorileri",
+    singular: "Blog kategorisi",
+    titleField: "title",
+    note: "Blog yazıları bu kategorilere göre süzülür. Adres (slug) addan kendiliğinden üretilir.",
+    fields: [{ name: "title", label: "Kategori adı", type: "text", required: true, max: 80 }],
   },
 };
 

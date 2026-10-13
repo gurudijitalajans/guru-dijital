@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, ImageOff, Plus, Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
@@ -14,6 +15,9 @@ import { cn } from "@/lib/utils";
  * Alan çizicisi: Payload alan türlerinin panel karşılıkları. Değerler nokta
  * yollu tek bir nesnede durur; hata ve gizli alan bilgisi sunucudan gelir.
  */
+/* Metin editörü yalnız gerektiğinde yüklenir */
+const RichTextField = dynamic(() => import("./richtext/RichText").then((m) => m.RichTextField), { ssr: false, loading: () => <div className="min-h-[360px] animate-pulse rounded-[12px] border border-line bg-sunken" /> });
+
 const fieldCls = "rounded-[9px] border border-line bg-surface px-3 text-[14px] text-ink focus:border-accent focus:outline-none disabled:bg-sunken disabled:text-muted";
 const pathOf = (base: string, f: CField) => `${base}${f.key}`;
 const domId = (path: string) => `f-${path.replace(/\./g, "__")}`;
@@ -157,7 +161,7 @@ function FieldView({ f, base }: { f: CField; base: string }) {
     case "richText":
       return (
         <Shell f={f} path={path}>
-          <p className="m-0 rounded-[9px] border border-dashed border-line px-3 py-2.5 text-[14px] text-muted">Bu metin bir sonraki aşamada panelin editörüne taşınacak.</p>
+          <RichTextField id={domId(path)} value={value} onChange={set} readOnly={Boolean(ro)} invalid={invalid} />
         </Shell>
       );
     case "group":

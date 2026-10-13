@@ -150,7 +150,7 @@ function PublishList({ kind, rows }: { kind: PublishKey; rows: PublishRow[] }) {
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <SearchBox value={q} onChange={setQ} placeholder={`${k.singular} ara`} />
         <Button asChild variant="primary">
-          <Link href={`/admin/collections/${k.collection}/create`} prefetch={false}>
+          <Link href={`/panel/duzenle/${k.collection}`}>
             <Plus />
             {`Yeni ${k.singular.toLocaleLowerCase("tr-TR")}`}
           </Link>

@@ -92,3 +92,30 @@ export async function countOf(slug: string, source: "references" | "services"): 
   const { payload, opts } = await access(slug);
   return (await payload.count({ collection: source, ...opts })).totalDocs;
 }
+
+export async function deleteDoc(slug: string, id: number): Promise<SaveResult> {
+  try {
+    const { def, ctx, payload, opts } = await access(slug);
+    if (def.type !== "collection") return { ok: false, error: "Bu içerik silinemez." };
+    if (!ctx.isGuruAdmin) return { ok: false, error: "Kaydı yalnız yönetici silebilir." };
+    await payload.delete({ collection: slug as CollectionSlug, id, ...opts });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error && e.message ? e.message : "Silinemedi." };
+  }
+}
+
+/** Taslağı bırakıp kaydın yayındaki hâline dön (yalnız taslaklı koleksiyon) */
+export async function unpublishDoc(slug: string, id: number): Promise<SaveResult> {
+  try {
+    const { def, payload, opts } = await access(slug);
+    if (def.type !== "collection") return { ok: false, error: "Geçersiz işlem." };
+    const collection = slug as CollectionSlug;
+    const latest = (await payload.findByID({ collection, id, depth: 0, draft: true, ...opts })) as unknown as Record<string, unknown>;
+    const rest = Object.fromEntries(Object.entries(latest).filter(([k]) => !["id", "createdAt", "updatedAt", "_status"].includes(k)));
+    await payload.update({ collection, id, data: { ...rest, _status: "draft" } as never, draft: false, depth: 0, ...opts });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error && e.message ? e.message : "Yayından kaldırılamadı." };
+  }
+}
