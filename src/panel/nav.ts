@@ -1,9 +1,9 @@
 import type { Module } from "@/payload/business/roles";
 
 /**
- * Yeni panelin menüsü: işe göre gruplar, en çok iki seviye. Henüz yeni panele
- * taşınmamış ekranlar mevcut ekrana (/admin) gider ve menüde "mevcut ekran"
- * işaretiyle görünür; taşındıkça href /panel altına alınır.
+ * Yeni panelin menüsü: işe göre gruplar, en çok iki seviye. Site içeriği
+ * (sayfalar, blog) canlı önizlemeli içerik ekranında (/admin) düzenlenir;
+ * o öğe menüde küçük bir ok işaretiyle görünür.
  */
 export type NavIcon = "home" | "inbox" | "calendar" | "deals" | "people" | "quotes" | "projects" | "tasks" | "load" | "report" | "chat" | "web" | "media" | "settings";
 export type NavItem = {
@@ -15,6 +15,7 @@ export type NavItem = {
   modules?: Module[];
   /** Yalnız işletme yöneticisi (Guru yöneticisi dahil) */
   tenantAdmin?: boolean;
+  /** İçerik ekranında (/admin) açılır */
   legacy?: boolean;
   /** Komut paletinde aranacak ek kelimeler */
   keywords?: string;
@@ -60,7 +61,7 @@ export const NAV: NavGroup[] = [
     label: "Web sitesi",
     items: [
       { id: "pages", label: "Sayfalar ve blog", href: "/admin/globals/home-page", icon: "web", modules: ["site"], legacy: true, keywords: "içerik ana sayfa hizmet ürün blog" },
-      { id: "media", label: "Medya", href: "/admin/collections/media", icon: "media", modules: ["site"], legacy: true, keywords: "görsel resim" },
+      { id: "media", label: "Medya", href: "/panel/medya", icon: "media", modules: ["site"], keywords: "görsel resim fotoğraf logo klasör yükle" },
     ],
   },
   {

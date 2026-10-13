@@ -74,7 +74,7 @@ export function CommandMenu({ open, onOpenChange, nav }: { open: boolean; onOpen
                     <Command.Item key={p.id} value={`sayfa-${p.id}`} onSelect={() => go(p.href)} className="flex min-h-10 cursor-pointer items-center gap-2.5 rounded-[8px] px-3 py-2 data-[selected=true]:bg-accent-soft">
                       <NavGlyph name={p.icon} className="size-4 text-muted" />
                       <span className="flex-1 text-ink">{p.label}</span>
-                      {p.legacy ? <span className="text-[12px] text-muted">mevcut ekran</span> : null}
+                      {p.legacy ? <span className="text-[12px] text-muted">içerik ekranı</span> : null}
                     </Command.Item>
                   ))}
               </Command.Group>

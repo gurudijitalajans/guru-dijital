@@ -47,6 +47,7 @@ const nextConfig: NextConfig = {
       to("/admin/collections/tasks", "/panel/gorevler"),
       to(`/admin/collections/tasks/${id}`, "/panel/gorevler?gorev=:id"),
       to("/admin/collections/activities", "/panel/takvim"),
+      to("/admin/collections/media", "/panel/medya"),
     ];
   },
   webpack: (config) => {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Dialog, DropdownMenu } from "radix-ui";
-import { Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, X } from "lucide-react";
+import { ArrowUpRight, Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { NavGroup } from "../nav";
@@ -86,7 +86,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
                 onClick={onNavigate}
                 prefetch={it.legacy ? false : undefined}
                 aria-current={active ? "page" : undefined}
-                title={it.legacy ? "Mevcut ekranda açılır; yeni panele taşınacak" : undefined}
+                title={it.legacy ? "İçerik ekranında, canlı önizlemeyle açılır" : undefined}
                 className={cn(
                   "flex min-h-10 items-center gap-2.5 rounded-[8px] px-2.5 text-nav-text no-underline hover:bg-nav-hover hover:text-nav-strong",
                   active && "bg-nav-hover text-nav-strong shadow-[inset_3px_0_0_var(--accent)]",
@@ -99,7 +99,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
                     {it.count > 99 ? "99+" : it.count}
                   </span>
                 ) : null}
-                {it.legacy ? <span className="shrink-0 text-[11px] text-nav-label">mevcut ekran</span> : null}
+                {it.legacy ? <ArrowUpRight className="size-3.5 shrink-0 text-nav-label" aria-label="İçerik ekranında açılır" /> : null}
               </Link>
             );
           })}
