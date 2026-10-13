@@ -69,14 +69,16 @@ export async function discardOriginal(id: number, pathname: string): Promise<Res
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (!token) return { ok: true };
     const doc = await payload.findByID({ collection: "media", id, depth: 0, ...opts });
-    const prefix = doc.prefix ?? "";
-    const file = pathname.slice(prefix.length + 1);
+    if (!doc.url || !doc.filename) return { ok: false, error: "Dosya doğrulanamadı." };
+    /* Blob'da her yükleme kendi klasöründe: "<klasör>/<ad>.webp" */
+    const own = new URL(doc.url).pathname.slice(1);
+    const dir = own.slice(0, own.lastIndexOf("/"));
+    const file = pathname.slice(dir.length + 1);
     const stem = (n: string) => n.replace(/\.[^.]+$/, "");
-    const valid =
-      prefix && doc.url && doc.filename && pathname.startsWith(`${prefix}/`) && !file.includes("/") && file !== doc.filename && stem(file) === stem(doc.filename) && Date.now() - new Date(doc.createdAt).getTime() < 10 * 60_000;
+    const valid = dir && pathname.startsWith(`${dir}/`) && !file.includes("/") && file !== doc.filename && stem(file) === stem(doc.filename) && Date.now() - new Date(doc.createdAt).getTime() < 10 * 60_000;
     if (!valid) return { ok: false, error: "Dosya doğrulanamadı." };
     const { del } = await import("@vercel/blob");
-    await del(new URL(`/${pathname}`, doc.url as string).toString(), { token });
+    await del(new URL(`/${pathname}`, doc.url).toString(), { token });
     return { ok: true };
   } catch (e) {
     return fail(e);
