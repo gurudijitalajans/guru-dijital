@@ -138,7 +138,7 @@ export async function handoff(req: PayloadRequest, conv: Conversation, settings:
         ["Son mesaj", conv.lastText],
         ["Sayfa", conv.page],
       ],
-      adminPath: `/sohbetler?id=${conv.id}`,
+      path: `/panel/gelen?f=tumu&s=s:${conv.id}`,
       tenant: idOf(conv.tenant),
     });
   }

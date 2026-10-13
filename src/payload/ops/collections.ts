@@ -250,7 +250,7 @@ export const Tasks: CollectionConfig = {
       async ({ doc, previousDoc, operation, req, context }) => {
         if (context[CRM_SKIP]) return;
         const me = req.user?.id;
-        const path = `/collections/tasks/${doc.id}`;
+        const path = `/panel/gorevler?gorev=${doc.id}`;
         const code = taskCode(doc.seq);
         const assignee = idOf(doc.assignee);
         if (assignee && assignee !== me && (operation === "create" || idOf(previousDoc?.assignee) !== assignee)) {
@@ -260,7 +260,7 @@ export const Tasks: CollectionConfig = {
               subject: `Size görev atandı: ${code} ${doc.title}`,
               intro: `${req.user?.name ?? "Guru Panel"} size bir görev atadı.`,
               rows: [["Görev", `${code} ${doc.title}`], ["Teslim", doc.dueDate ? new Date(doc.dueDate).toLocaleDateString("tr-TR", { timeZone: "Europe/Istanbul" }) : null]],
-              adminPath: path,
+              path,
             });
           }
         }
@@ -273,7 +273,7 @@ export const Tasks: CollectionConfig = {
               subject: `Onay bekliyor: ${code} ${doc.title}`,
               intro: "Bir görev Kontrol aşamasına geldi; onaylayınca Tamam'a alabilirsiniz.",
               rows: [["Görev", `${code} ${doc.title}`], ["İş", project?.title]],
-              adminPath: path,
+              path,
             });
           }
         }

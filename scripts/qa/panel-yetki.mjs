@@ -29,7 +29,7 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
       await logout();
       await p.goto("/panel", 6000);
       const s0 = await state();
-      check("Oturum yoksa giriş ekranına yönlendirir", s0.path === "/admin/login", s0.path + s0.search);
+      check("Oturum yoksa giriş ekranına yönlendirir", s0.path === "/giris", s0.path + s0.search);
     }
 
     /* Guru yöneticisi */

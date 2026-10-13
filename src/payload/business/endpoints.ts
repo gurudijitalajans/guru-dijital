@@ -129,7 +129,7 @@ export async function sendMorningSummary(req: PayloadRequest, tenant: number | s
       subject: `Günaydın: ${s.newLeads + s.waitingChats} bekleyen, ${s.lateTasks} geciken`,
       intro: `${brand.name} sabah özeti (Guru Business).`,
       rows,
-      adminPath: "/yonetici",
+      path: "/panel/ozet",
     });
   }
   return { sent: to.size };

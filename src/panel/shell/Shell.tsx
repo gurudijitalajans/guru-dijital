@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Dialog, DropdownMenu } from "radix-ui";
-import { ArrowUpRight, Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, X } from "lucide-react";
+import { ArrowUpRight, Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { NavGroup } from "../nav";
@@ -113,7 +113,7 @@ function UserFoot({ user }: { user: Props["user"] }) {
   const router = useRouter();
   const logout = async () => {
     await fetch("/api/users/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
-    router.replace("/admin/login");
+    router.replace("/giris");
   };
   return (
     <DropdownMenu.Root>
@@ -129,6 +129,12 @@ function UserFoot({ user }: { user: Props["user"] }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content side="top" align="start" sideOffset={6} className="z-50 w-[226px] rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
+          <DropdownMenu.Item asChild className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-ink no-underline outline-none data-[highlighted]:bg-accent-soft">
+            <Link href="/panel/hesap">
+              <UserRound className="size-4 text-muted" aria-hidden />
+              Hesabım
+            </Link>
+          </DropdownMenu.Item>
           <DropdownMenu.Item asChild className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-ink no-underline outline-none data-[highlighted]:bg-accent-soft">
             <a href="/" target="_blank" rel="noreferrer">
               <ExternalLink className="size-4 text-muted" aria-hidden />

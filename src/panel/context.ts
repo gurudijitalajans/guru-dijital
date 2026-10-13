@@ -20,6 +20,9 @@ import { can as canIn, isAdminUser, isTenantAdmin, tenantRow, type Module } from
 
 export const TENANT_COOKIE = "payload-tenant";
 
+/** Giriş ekranı; girişten sonra dönülecek panel adresiyle (yalnız /panel altı) */
+export const loginHref = (path?: string | null) => (path && path.startsWith("/panel") && path !== "/panel" ? `/giris?sonra=${encodeURIComponent(path)}` : "/giris");
+
 export type TenantOption = { id: number; name: string; slug: string; modules: string[] };
 
 export type PanelContext = {
@@ -49,7 +52,7 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
   const payload = await cms();
   const h = await headers();
   const { user } = await payload.auth({ headers: h });
-  if (!user || user.collection !== "users") redirect("/admin/login?redirect=%2Fpanel");
+  if (!user || user.collection !== "users") redirect(loginHref(h.get("x-panel-path")));
   const u = user as unknown as User;
   const guruAdmin = isAdminUser(u);
 

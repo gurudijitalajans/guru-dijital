@@ -32,7 +32,7 @@ async function recipient(req: PayloadRequest, tenant?: number | string): Promise
   }
 }
 
-type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; adminPath: string; tenant?: number | string };
+type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; /** Panelde açılacak yol (ör. /panel/gelen?...) */ path: string; tenant?: number | string };
 
 export async function notifyTeam(req: PayloadRequest, opts: Notice) {
   const to = await recipient(req, opts.tenant);
@@ -44,7 +44,7 @@ export async function notifyTeam(req: PayloadRequest, opts: Notice) {
 export async function sendNotice(req: PayloadRequest, to: string, opts: Notice) {
   const rows = opts.rows.filter((r): r is [string, string] => Boolean(r[1]?.trim()));
   const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
-  const link = `${base}/admin${opts.adminPath}`;
+  const link = `${base}${opts.path}`;
 
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#111">
 <p>${esc(opts.intro)}</p>

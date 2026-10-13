@@ -34,7 +34,7 @@ export const resetEmailSubject = ({ req }: { req?: PayloadRequest } = {}) => {
 };
 export const resetEmailHTML = ({ req, token, user }: { req?: PayloadRequest; token?: string; user?: { name?: string } } = {}) => {
   const d = (req?.context as Ctx | undefined)?.davet;
-  const link = `${panelOrigin(req)}/admin/reset/${token}`;
+  const link = `${panelOrigin(req)}/parola/${token}`;
   const hello = `Merhaba${user?.name ? ` ${esc(user.name)}` : ""},`;
   const intro = d
     ? `${esc(d.by)}, sizi ${esc(d.tenant)} ekibine Guru Panel'de ekledi. Aşağıdaki bağlantıdan parolanızı belirleyip giriş yapabilirsiniz. Bağlantı 3 gün geçerlidir.`
@@ -100,7 +100,7 @@ export const inviteUser: PayloadHandler = async (req) => {
     id: user.id,
     emailSent: emailReady(),
     /* E-posta servisi yoksa bağlantı davet edene gösterilir (yalnız yeni, hiç giriş yapmamış hesap) */
-    ...(emailReady() || !token ? {} : { link: `${panelOrigin(req)}/admin/reset/${token}` }),
+    ...(emailReady() || !token ? {} : { link: `${panelOrigin(req)}/parola/${token}` }),
   });
 };
 
@@ -115,5 +115,5 @@ export const resendInvite: PayloadHandler = async (req) => {
   const token = await sendInvite(req, u.email, t.name);
   /* Payload aynı hesaba 15 saniyede bir sıfırlama bağlantısı üretir */
   if (!token) return json({ ok: false, error: "Davet az önce gönderildi. Birkaç saniye sonra tekrar deneyin." }, 429);
-  return json({ ok: true, emailSent: emailReady(), ...(emailReady() ? {} : { link: `${panelOrigin(req)}/admin/reset/${token}` }) });
+  return json({ ok: true, emailSent: emailReady(), ...(emailReady() ? {} : { link: `${panelOrigin(req)}/parola/${token}` }) });
 };

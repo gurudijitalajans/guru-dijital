@@ -19,7 +19,9 @@ const nextConfig: NextConfig = {
   /* Günlük işler yeni panelde (/panel): eski ekranlar ve listeler oraya gider.
      Hesap ve giriş ekranları şimdilik Payload'da. */
   async redirects() {
-    const to = (source: string, destination: string) => ({ source, destination, permanent: false });
+    /* Acil durum: Guru yöneticisi /klasik ile "guru-klasik" çerezini alırsa o tarayıcıda /admin eskisi gibi açılır */
+    const klasik = [{ type: "cookie" as const, key: "guru-klasik" }];
+    const to = (source: string, destination: string) => ({ source, destination, permanent: false, ...(source.startsWith("/admin") ? { missing: klasik } : {}) });
     const id = ":id(\\d+)";
     return [
       to("/admin/satis-hatti", "/panel/firsatlar"),
@@ -83,6 +85,15 @@ const nextConfig: NextConfig = {
         to(`/admin/collections/${slug}/create`, `/panel/icerik?tur=${tur}&kayit=yeni`),
         to(`/admin/collections/${slug}/${id}`, `/panel/icerik?tur=${tur}&kayit=:id`),
       ]),
+      /* Giriş ve hesap ekranları panelde */
+      to("/admin/login", "/giris"),
+      to("/admin/forgot", "/parola-sifirla"),
+      to("/admin/reset/:token", "/parola/:token"),
+      to("/admin/account", "/panel/hesap"),
+      to("/admin/logout", "/giris?cikis=1"),
+      /* Geri kalan her şey panelde; ilk kullanıcıyı açma ekranı (boş veritabanı) hariç */
+      to("/admin", "/panel"),
+      to("/admin/:path((?!create-first-user).*)", "/panel"),
     ];
   },
   webpack: (config) => {

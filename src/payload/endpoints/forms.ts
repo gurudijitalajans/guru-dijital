@@ -63,7 +63,7 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
       ["Geldiği sayfa", data.source],
     ],
     replyTo: data.email,
-    adminPath: `/collections/leads/${lead.id}`,
+    path: `/panel/gelen?f=tumu&s=t:${lead.id}`,
     tenant,
   });
   return { ok: true, id: lead.id };
@@ -122,7 +122,7 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
       ["Geldiği sayfa", data.source],
     ],
     replyTo: data.email,
-    adminPath: `/collections/bookings/${bookingId}`,
+    path: `/panel/gelen?f=tumu&s=r:${bookingId}`,
     tenant,
   });
   return { ok: true, id: bookingId };
