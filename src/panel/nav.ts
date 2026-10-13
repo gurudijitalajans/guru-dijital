@@ -1,9 +1,9 @@
 import type { Module } from "@/payload/business/roles";
 
 /**
- * Yeni panelin menüsü: işe göre gruplar, en çok iki seviye. Site içeriği
- * (sayfalar, blog) canlı önizlemeli içerik ekranında (/admin) düzenlenir;
- * o öğe menüde küçük bir ok işaretiyle görünür.
+ * Yeni panelin menüsü: işe göre gruplar, en çok iki seviye. İçerik
+ * ekranında (/admin) açılan bir öğe olursa `legacy` ile küçük bir ok
+ * işaretiyle görünür.
  */
 export type NavIcon = "home" | "inbox" | "calendar" | "deals" | "people" | "quotes" | "projects" | "tasks" | "load" | "report" | "chat" | "web" | "media" | "settings";
 export type NavItem = {
@@ -60,7 +60,7 @@ export const NAV: NavGroup[] = [
   {
     label: "Web sitesi",
     items: [
-      { id: "pages", label: "Sayfalar ve blog", href: "/admin/globals/home-page", icon: "web", modules: ["site"], legacy: true, keywords: "içerik ana sayfa hizmet ürün blog" },
+      { id: "content", label: "Site içeriği", href: "/panel/icerik", icon: "web", modules: ["site"], keywords: "sayfalar ana sayfa hakkımızda hizmet ürün blog yazı ekip referans yorum vaka" },
       { id: "media", label: "Medya", href: "/panel/medya", icon: "media", modules: ["site"], keywords: "görsel resim fotoğraf logo klasör yükle" },
     ],
   },

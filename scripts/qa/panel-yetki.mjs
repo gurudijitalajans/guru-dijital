@@ -42,14 +42,14 @@ for (const [w, h] of [[1440, 900], [390, 844]]) {
     await p.goto("/panel", 7000);
     let s = await state();
     check(`[${tag}] Guru: ana sayfa açılıyor`, s.path === "/panel" && /Günaydın|İyi günler|İyi akşamlar/.test(s.h1 ?? ""), s.h1);
-    if (!mobile) check("Guru: menüde Operasyon ve Web sitesi var", s.nav.includes("Görevler") && s.nav.includes("Sayfalar ve blog"), j(s.nav));
+    if (!mobile) check("Guru: menüde Operasyon ve Web sitesi var", s.nav.includes("Görevler") && s.nav.includes("Site içeriği"), j(s.nav));
     check(`[${tag}] Sayfa yatay kaymıyor`, !s.overflow);
     await p.screenshot(`${OUT}/panel-ana-${tag}.png`);
 
     await cookie(klinik.id);
     await p.goto("/panel", 6000);
     s = await state();
-    if (!mobile) check("Guru, Klinik seçince menü Klinik'in modülleriyle (Operasyon ve site yok)", !s.nav.includes("Görevler") && !s.nav.includes("Sayfalar ve blog") && s.nav.includes("Kişiler ve firmalar"), j(s.nav));
+    if (!mobile) check("Guru, Klinik seçince menü Klinik'in modülleriyle (Operasyon ve site yok)", !s.nav.includes("Görevler") && !s.nav.includes("Site içeriği") && s.nav.includes("Kişiler ve firmalar"), j(s.nav));
 
     if (!mobile) {
       /* Arama (Cmd+K) */

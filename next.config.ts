@@ -48,6 +48,21 @@ const nextConfig: NextConfig = {
       to(`/admin/collections/tasks/${id}`, "/panel/gorevler?gorev=:id"),
       to("/admin/collections/activities", "/panel/takvim"),
       to("/admin/collections/media", "/panel/medya"),
+      to("/admin/collections/services", "/panel/icerik?tur=hizmetler"),
+      to("/admin/collections/products", "/panel/icerik?tur=urunler"),
+      to("/admin/collections/posts", "/panel/icerik?tur=blog"),
+      ...(
+        [
+          ["team", "ekip"],
+          ["references", "referanslar"],
+          ["testimonials", "yorumlar"],
+          ["case-studies", "vakalar"],
+        ] as const
+      ).flatMap(([slug, tur]) => [
+        to(`/admin/collections/${slug}`, `/panel/icerik?tur=${tur}`),
+        to(`/admin/collections/${slug}/create`, `/panel/icerik?tur=${tur}&kayit=yeni`),
+        to(`/admin/collections/${slug}/${id}`, `/panel/icerik?tur=${tur}&kayit=:id`),
+      ]),
     ];
   },
   webpack: (config) => {

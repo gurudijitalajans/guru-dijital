@@ -45,7 +45,7 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   }
 
   /* Payload menüsü: içerik ve ayarlar */
-  await at("/admin/collections/team", 8000);
+  await at("/admin/collections/categories", 8000);
   const nav = JSON.parse(await p.evalJs(`JSON.stringify({ links: [...document.querySelectorAll('.nav__link')].filter(e=>e.offsetParent).map(e=>e.id), groups: [...document.querySelectorAll('.nav-group')].filter(e=>e.offsetParent).map(e=>e.querySelector('.nav-group__label, button')?.innerText?.trim()), top: [...document.querySelectorAll('.guru-nav a')].map(a=>a.innerText.trim()) })`));
   console.log("  Guru menüsü:", j(nav));
   check("Menüde günlük kayıtlar yok", !["nav-deals", "nav-leads", "nav-tasks", "nav-projects", "nav-quotes", "nav-conversations", "nav-contacts"].some((x) => nav.links.includes(x)));
