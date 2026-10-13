@@ -49,9 +49,9 @@ export default async function ContentPage({ searchParams }: { searchParams: SP }
     ]);
     const upd = (g: { updatedAt?: string | null }) => (g.updatedAt ? dateFmt.format(new Date(g.updatedAt)) : "Henüz kaydedilmedi");
     pages = [
-      { title: "Ana Sayfa", detail: "Bölüm başlıkları, açıklamalar, hangi bölümün görüneceği", updated: upd(home), edit: "/admin/globals/home-page", view: "/" },
-      { title: "Hakkımızda", detail: "Hikâye, değerler, ödüller", updated: upd(about), edit: "/admin/globals/about-page", view: "/hakkimizda" },
-      ...(ctx.isGuruAdmin ? [{ title: "Site Ayarları", detail: "İletişim bilgileri, sosyal hesaplar, duyuru bandı, analiz", updated: "", edit: "/admin/globals/site-settings", view: null }] : []),
+      { title: "Ana Sayfa", detail: "Bölüm başlıkları, açıklamalar, hangi bölümün görüneceği", updated: upd(home), edit: "/panel/duzenle/home-page", view: "/" },
+      { title: "Hakkımızda", detail: "Hikâye, değerler, ödüller", updated: upd(about), edit: "/panel/duzenle/about-page", view: "/hakkimizda" },
+      ...(ctx.isGuruAdmin ? [{ title: "Site Ayarları", detail: "İletişim bilgileri, sosyal hesaplar, duyuru bandı, analiz", updated: "", edit: "/panel/duzenle/site-settings", view: null }] : []),
     ];
   } else if (tab in PUBLISHABLE) {
     const k = PUBLISHABLE[tab as PublishKey];

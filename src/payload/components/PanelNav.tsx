@@ -13,9 +13,7 @@ import { can as canIn, isAdminUser, isTenantAdmin, type Module } from "../busine
  * görünmez (admin.group: false); kalan gruplar altta durur.
  */
 const PAGES = [
-  { href: "/admin/globals/home-page", label: "Ana Sayfa" },
-  { href: "/admin/globals/about-page", label: "Hakkımızda" },
-  /* Hizmet, ürün, blog, ekip, referans listeleri yeni panelde */
+  /* Sayfalar, hizmet, ürün, blog, ekip, referans listeleri yeni panelde */
   { href: "/panel/icerik", label: "Tüm site içeriği" },
 ];
 
@@ -29,7 +27,7 @@ const SLUG_MODULE: Record<string, Module> = {
 };
 type TenantInfo = { id: string; slug: string; modules: string[] };
 /* Günlük kayıtlar yeni panelde (/panel): Payload'un menüsünde gösterilmez, eski adresleri panele yönlenir (next.config.ts) */
-const IN_PANEL = new Set(["media", "payload-folders", "services", "products", "posts", "team", "references", "testimonials", "case-studies", "leads", "bookings", "deals", "contacts", "companies", "quotes", "activities", "projects", "tasks", "conversations"]);
+const IN_PANEL = new Set(["global-site-settings", "media", "payload-folders", "services", "products", "posts", "team", "references", "testimonials", "case-studies", "leads", "bookings", "deals", "contacts", "companies", "quotes", "activities", "projects", "tasks", "conversations"]);
 
 const Icon = ({ d }: { d: string }) => (
   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">

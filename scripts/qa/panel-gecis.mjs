@@ -51,7 +51,7 @@ await withPage({ width: 1440, height: 900 }, async (p) => {
   check("Menüde günlük kayıtlar yok", !["nav-deals", "nav-leads", "nav-tasks", "nav-projects", "nav-quotes", "nav-conversations", "nav-contacts"].some((x) => nav.links.includes(x)));
   check("Guru CRM, Operation, Chatbot grupları yok", !nav.groups.some((g) => /Guru (CRM|Operation|Chatbot)/.test(g ?? "")), j(nav.groups));
   check("Sohbet ayarları, bilgi tabanı, şablonlar Ayarlar'da", ["nav-chatbot-config", "nav-knowledge", "nav-templates"].every((x) => nav.links.includes(x)));
-  check("Üstte Panele dön ve site sayfaları", nav.top[0] === "Panele dön" && nav.top.includes("Ana Sayfa"), j(nav.top));
+  check("Üstte Panele dön ve site sayfaları", nav.top[0] === "Panele dön" && nav.top.includes("Tüm site içeriği"), j(nav.top));
   await p.screenshot(`${OUT}/admin-sade.png`);
 
   /* Panel: sitenin eksikleri ve demo Ayarlar'da */

@@ -2,17 +2,16 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Dialog } from "radix-ui";
+import { createContext, useCallback, useContext, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { ArrowUpRight, ExternalLink, ImageOff, ImageUp, Plus, Search, Trash2, X } from "lucide-react";
+import { ArrowUpRight, ExternalLink, ImageOff, Plus, Search, Trash2, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Badge, type Tone } from "../ui/badge";
 import { Card, Empty } from "../ui/card";
 import { Sheet } from "../ui/sheet";
-import { uploadOne } from "../media/upload";
-import { deleteItem, listMedia, saveItem, setPublished, type MediaPick } from "./actions";
+import { MediaPicker } from "../media/MediaPicker";
+import { deleteItem, saveItem, setPublished } from "./actions";
 import { PUBLISHABLE, SIMPLE, type FieldDef, type PublishKey, type SimpleKey, type Stat } from "./kinds";
 import { cn } from "@/lib/utils";
 
@@ -73,11 +72,13 @@ export function ContentView({ tab, counts, pages, publish, simple, open, canDele
 }
 
 function EditLink({ href, children = "Düzenle" }: { href: string; children?: React.ReactNode }) {
+  /* İçerik ekranında açılanlar ok işaretli; panelin kendi düzenleyicisi işaretsiz */
+  const outside = href.startsWith("/admin");
   return (
     <Button asChild size="sm">
-      <Link href={href} prefetch={false} title="Canlı önizlemeli editörde açılır">
+      <Link href={href} prefetch={false} title={outside ? "İçerik ekranında açılır" : undefined}>
         {children}
-        <ArrowUpRight />
+        {outside ? <ArrowUpRight /> : null}
       </Link>
     </Button>
   );
@@ -390,6 +391,7 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
 
 function MediaField({ label, hint, value, onChange }: { label: string; hint?: string; value: MediaValue; onChange: (v: MediaValue) => void }) {
   const [open, setOpen] = useState(false);
+  const clientUpload = useContext(ClientUpload);
   return (
     <div className={labelCls}>
       <span className="text-muted">{label}</span>
@@ -412,6 +414,7 @@ function MediaField({ label, hint, value, onChange }: { label: string; hint?: st
       {hint ? <span className={hintCls}>{hint}</span> : null}
       {open ? (
         <MediaPicker
+          clientUpload={clientUpload}
           onClose={() => setOpen(false)}
           onPick={(m) => {
             onChange(m);
@@ -420,81 +423,6 @@ function MediaField({ label, hint, value, onChange }: { label: string; hint?: st
         />
       ) : null}
     </div>
-  );
-}
-
-function MediaPicker({ onClose, onPick }: { onClose: () => void; onPick: (m: MediaPick) => void }) {
-  const [q, setQ] = useState("");
-  const [items, setItems] = useState<MediaPick[] | null>(null);
-  const [busy, setBusy] = useState(false);
-  const clientUpload = useContext(ClientUpload);
-  const input = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    let live = true;
-    const t = setTimeout(() => void listMedia(q).then((r) => live && setItems(r)), q ? 250 : 0);
-    return () => {
-      live = false;
-      clearTimeout(t);
-    };
-  }, [q]);
-
-  const send = async (file: File) => {
-    if (!file.type.startsWith("image/")) return void toast.error("Yalnız görsel dosyaları yüklenebilir.");
-    setBusy(true);
-    try {
-      const id = await uploadOne(file, null, clientUpload);
-      const fresh = await listMedia("");
-      const m = fresh.find((x) => x.id === id);
-      if (m) onPick(m);
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Görsel yüklenemedi.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <Dialog.Root open onOpenChange={(o) => !o && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[60] bg-overlay" />
-        <Dialog.Content className="fixed inset-x-3 top-[6vh] z-[70] mx-auto flex max-h-[88vh] max-w-[760px] flex-col rounded-[14px] bg-surface shadow-pop focus:outline-none">
-          <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
-            <Dialog.Title className="m-0 text-[18px] font-semibold text-ink">Görsel seçin</Dialog.Title>
-            <Dialog.Description className="sr-only">Medyadan bir görsel seçin ya da yenisini yükleyin</Dialog.Description>
-            <Dialog.Close className="grid size-10 place-items-center rounded-[9px] text-muted hover:bg-sunken hover:text-ink" aria-label="Kapat">
-              <X className="size-5" />
-            </Dialog.Close>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 px-4 pt-3">
-            <SearchBox value={q} onChange={setQ} placeholder="Görsel ara" />
-            <input ref={input} type="file" accept="image/*" className="sr-only" tabIndex={-1} onChange={(e) => e.target.files?.[0] && void send(e.target.files[0])} />
-            <Button type="button" onClick={() => input.current?.click()} disabled={busy}>
-              <ImageUp />
-              {busy ? "Yükleniyor" : "Yeni yükle"}
-            </Button>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            {items === null ? (
-              <p className="m-0 text-[14px] text-muted">Görseller yükleniyor…</p>
-            ) : items.length ? (
-              <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 p-0">
-                {items.map((m) => (
-                  <li key={m.id}>
-                    <button type="button" onClick={() => onPick(m)} className="block w-full overflow-hidden rounded-[10px] border border-line text-left hover:border-accent" title={m.alt}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={m.thumb} alt="" loading="lazy" className="block aspect-[4/3] w-full bg-sunken object-cover" />
-                      <span className="block truncate px-2 py-1.5 text-[12px] text-ink">{m.alt}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="m-0 text-[14px] text-muted">Bu aramaya uyan görsel yok.</p>
-            )}
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
   );
 }
 

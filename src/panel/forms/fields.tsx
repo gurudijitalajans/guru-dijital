@@ -1,0 +1,579 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ChevronDown, ImageOff, Plus, Trash2 } from "lucide-react";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { MediaPicker } from "../media/MediaPicker";
+import { countOf, mediaThumbs, relationLabels, relationOptions, type RelOption, type Thumb } from "./actions";
+import { rowId, useForm } from "./state";
+import type { CField } from "./types";
+import { cn } from "@/lib/utils";
+
+/**
+ * Alan çizicisi: Payload alan türlerinin panel karşılıkları. Değerler nokta
+ * yollu tek bir nesnede durur; hata ve gizli alan bilgisi sunucudan gelir.
+ */
+const fieldCls = "rounded-[9px] border border-line bg-surface px-3 text-[14px] text-ink focus:border-accent focus:outline-none disabled:bg-sunken disabled:text-muted";
+const pathOf = (base: string, f: CField) => `${base}${f.key}`;
+const domId = (path: string) => `f-${path.replace(/\./g, "__")}`;
+
+export function FieldList({ fields, base = "" }: { fields: CField[]; base?: string }) {
+  return (
+    <div className="grid gap-4">
+      {fields.map((f) => (
+        <FieldView key={f.key} f={f} base={base} />
+      ))}
+    </div>
+  );
+}
+
+function Shell({ f, path, children, inline }: { f: CField; path: string; children: React.ReactNode; inline?: boolean }) {
+  const { errors } = useForm();
+  const err = errors[path];
+  const required = "required" in f && f.required;
+  if (inline) return <div>{children}{err ? <p className="mt-1 mb-0 text-[13px] text-bad">{err}</p> : null}</div>;
+  return (
+    <div className="grid min-w-0 gap-1">
+      {f.label ? (
+        <label htmlFor={domId(path)} className="text-[14px] text-muted">
+          {f.label}
+          {required ? <span className="text-bad" aria-hidden="true"> *</span> : null}
+        </label>
+      ) : null}
+      {children}
+      {err ? (
+        <p className="m-0 text-[13px] text-bad" role="alert">
+          {err}
+        </p>
+      ) : f.description ? (
+        <p className="m-0 text-[12px] text-muted">{f.description}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function FieldView({ f, base }: { f: CField; base: string }) {
+  const form = useForm();
+  const path = pathOf(base, f);
+  if (form.hidden.has(path)) return null;
+  const ro = form.readOnly || f.readOnly;
+  const value = "name" in f ? form.get(path) : undefined;
+  const set = (v: unknown) => form.set(path, v);
+  const invalid = form.errors[path] ? true : undefined;
+
+  switch (f.kind) {
+    case "text":
+    case "email":
+    case "code":
+    case "json":
+      return (
+        <Shell f={f} path={path}>
+          <Input id={domId(path)} type={f.kind === "email" ? "email" : "text"} value={typeof value === "string" ? value : value == null ? "" : JSON.stringify(value)} onChange={(e) => set(e.target.value)} maxLength={f.maxLength} placeholder={f.placeholder} disabled={ro} aria-invalid={invalid} className={cn(invalid && "border-bad")} />
+          {f.maxLength && typeof value === "string" && value.length > f.maxLength * 0.8 ? <span className="tabular text-right text-[12px] text-muted">{`${value.length}/${f.maxLength}`}</span> : null}
+        </Shell>
+      );
+    case "textarea":
+      return (
+        <Shell f={f} path={path}>
+          <textarea id={domId(path)} value={String(value ?? "")} onChange={(e) => set(e.target.value)} maxLength={f.maxLength} rows={3} disabled={ro} aria-invalid={invalid} className={cn(fieldCls, "min-h-20 py-2 leading-relaxed", invalid && "border-bad")} />
+          {f.maxLength && String(value ?? "").length > f.maxLength * 0.8 ? <span className="tabular text-right text-[12px] text-muted">{`${String(value ?? "").length}/${f.maxLength}`}</span> : null}
+        </Shell>
+      );
+    case "number":
+      return (
+        <Shell f={f} path={path}>
+          <Input id={domId(path)} type="number" inputMode="decimal" value={value === null || value === undefined ? "" : String(value)} min={f.min} max={f.max} onChange={(e) => set(e.target.value === "" ? null : Number(e.target.value))} disabled={ro} aria-invalid={invalid} className={cn(invalid && "border-bad")} />
+        </Shell>
+      );
+    case "checkbox":
+      return (
+        <Shell f={f} path={path} inline>
+          <label className="flex min-h-10 items-start gap-2.5 text-[14px]">
+            <input id={domId(path)} type="checkbox" checked={Boolean(value)} onChange={(e) => set(e.target.checked)} disabled={ro} className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]" />
+            <span>
+              <span className="text-ink">{f.label}</span>
+              {f.description ? <span className="block text-[12px] text-muted">{f.description}</span> : null}
+            </span>
+          </label>
+        </Shell>
+      );
+    case "date":
+      return (
+        <Shell f={f} path={path}>
+          <Input
+            id={domId(path)}
+            type={f.time ? "datetime-local" : "date"}
+            value={toLocalInput(value, Boolean(f.time))}
+            onChange={(e) => set(e.target.value ? new Date(f.time ? e.target.value : `${e.target.value}T12:00:00`).toISOString() : null)}
+            disabled={ro}
+          />
+        </Shell>
+      );
+    case "select":
+    case "radio":
+      if (f.hasMany) {
+        const arr = Array.isArray(value) ? (value as string[]) : [];
+        return (
+          <Shell f={f} path={path}>
+            <div className="flex flex-wrap gap-2" id={domId(path)}>
+              {f.options.map((o) => {
+                const on = arr.includes(o.value);
+                return (
+                  <label key={o.value} className={cn("inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border px-3 text-[14px]", on ? "border-accent bg-accent-soft text-ink" : "border-line text-muted")}>
+                    <input type="checkbox" className="sr-only" checked={on} disabled={ro} onChange={() => set(on ? arr.filter((x) => x !== o.value) : [...arr, o.value])} />
+                    {o.label}
+                  </label>
+                );
+              })}
+            </div>
+          </Shell>
+        );
+      }
+      return (
+        <Shell f={f} path={path}>
+          <select id={domId(path)} value={String(value ?? "")} onChange={(e) => set(e.target.value || null)} disabled={ro} className={cn(fieldCls, "min-h-10")}>
+            {!f.required || !value ? <option value="">Seçin</option> : null}
+            {f.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </Shell>
+      );
+    case "upload":
+      return (
+        <Shell f={f} path={path}>
+          <UploadInput path={path} value={value} hasMany={Boolean(f.hasMany)} readOnly={Boolean(ro)} />
+        </Shell>
+      );
+    case "relationship":
+      return (
+        <Shell f={f} path={path}>
+          <RelationInput path={path} value={value} relationTo={f.relationTo} hasMany={Boolean(f.hasMany)} readOnly={Boolean(ro)} />
+        </Shell>
+      );
+    case "richText":
+      return (
+        <Shell f={f} path={path}>
+          <p className="m-0 rounded-[9px] border border-dashed border-line px-3 py-2.5 text-[14px] text-muted">Bu metin bir sonraki aşamada panelin editörüne taşınacak.</p>
+        </Shell>
+      );
+    case "group":
+      return (
+        <fieldset className="m-0 grid min-w-0 gap-3 rounded-[12px] border border-line p-4">
+          <legend className="px-1 text-[15px] font-semibold text-ink">{f.label}</legend>
+          {f.description ? <p className="-mt-1 mb-0 text-[13px] text-muted">{f.description}</p> : null}
+          <FieldList fields={f.fields} base={base} />
+        </fieldset>
+      );
+    case "row":
+      return (
+        <div className="grid min-w-0 gap-4 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+          {f.fields.map((c) => (
+            <FieldView key={c.key} f={c} base={base} />
+          ))}
+        </div>
+      );
+    case "collapsible":
+      return (
+        <details open={!f.collapsed} className="group rounded-[12px] border border-line">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 text-[15px] font-semibold text-ink">
+            {f.label}
+            <ChevronDown className="size-4 text-muted transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-line p-4">
+            <FieldList fields={f.fields} base={base} />
+          </div>
+        </details>
+      );
+    case "tabs":
+      return <TabsView f={f} base={base} />;
+    case "array":
+      return <ArrayView f={f} path={path} />;
+    case "ui":
+      return f.component === "textHelper" ? <TextHelper {...(f.props as HelperProps)} base={base} /> : <PageMap {...(f.props as { page: string; active: string[]; note?: string })} />;
+    case "unsupported":
+      return (
+        <Shell f={f} path={path}>
+          <p className="m-0 text-[13px] text-muted">Bu alan şimdilik panelde düzenlenemiyor.</p>
+        </Shell>
+      );
+  }
+}
+
+function toLocalInput(v: unknown, time: boolean) {
+  if (typeof v !== "string" || !v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return "";
+  const p = (n: number) => String(n).padStart(2, "0");
+  const day = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  return time ? `${day}T${p(d.getHours())}:${p(d.getMinutes())}` : day;
+}
+
+/** Bir alan listesinin içindeki veri yolları (sekmede hata işareti için) */
+function dataPaths(fields: CField[], base: string): string[] {
+  return fields.flatMap((f) => {
+    if (f.kind === "row" || f.kind === "collapsible" || f.kind === "group") return [...("name" in f ? [`${base}${f.key}`] : []), ...dataPaths(f.fields, base)];
+    if (f.kind === "tabs") return f.tabs.flatMap((t) => dataPaths(t.fields, base));
+    return "name" in f ? [`${base}${f.key}`] : [];
+  });
+}
+
+function TabsView({ f, base }: { f: Extract<CField, { kind: "tabs" }>; base: string }) {
+  const { errors } = useForm();
+  const [active, setActive] = useState(0);
+  const errPaths = Object.keys(errors);
+  const flagged = f.tabs.map((t) => {
+    const paths = dataPaths(t.fields, base);
+    return errPaths.some((e) => paths.some((p) => e === p || e.startsWith(`${p}.`)));
+  });
+  const tab = f.tabs[Math.min(active, f.tabs.length - 1)];
+  return (
+    <div className="min-w-0">
+      <div role="tablist" className="-mx-1 mb-4 flex gap-1 overflow-x-auto border-b border-line px-1">
+        {f.tabs.map((t, i) => (
+          <button
+            key={t.label}
+            type="button"
+            role="tab"
+            aria-selected={i === active}
+            onClick={() => setActive(i)}
+            className={cn("relative -mb-px inline-flex min-h-11 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[14px] font-medium", i === active ? "border-accent text-ink" : "border-transparent text-muted hover:text-ink")}
+          >
+            {t.label}
+            {flagged[i] ? <span className="size-2 rounded-full bg-bad" aria-label="hatalı alan var" /> : null}
+          </button>
+        ))}
+      </div>
+      {tab.description ? <p className="mt-0 mb-3 text-[13px] text-muted">{tab.description}</p> : null}
+      <div role="tabpanel">
+        <FieldList fields={tab.fields} base={base} />
+      </div>
+    </div>
+  );
+}
+
+function rowSummary(fields: CField[], row: Record<string, unknown>): string {
+  for (const f of fields) {
+    if ((f.kind === "text" || f.kind === "textarea") && typeof row[f.name] === "string" && row[f.name]) return String(row[f.name]).slice(0, 80);
+    if (f.kind === "row") {
+      const s = rowSummary(f.fields, row);
+      if (s) return s;
+    }
+  }
+  return "";
+}
+
+function ArrayView({ f, path }: { f: Extract<CField, { kind: "array" }>; path: string }) {
+  const form = useForm();
+  const rows = (Array.isArray(form.get(path)) ? form.get(path) : []) as Record<string, unknown>[];
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const ro = form.readOnly || f.readOnly;
+  const keyOf = (r: Record<string, unknown>, i: number) => String(r.id ?? i);
+  const isOpen = (r: Record<string, unknown>, i: number) => open[keyOf(r, i)] ?? rows.length <= 3;
+  const move = (i: number, d: number) => {
+    const next = [...rows];
+    const [x] = next.splice(i, 1);
+    next.splice(i + d, 0, x);
+    form.set(path, next);
+  };
+  const err = form.errors[path];
+  return (
+    <div className="grid min-w-0 gap-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-[15px] font-semibold text-ink">{f.label}</span>
+        <span className="tabular text-[12px] text-muted">{rows.length}</span>
+      </div>
+      {f.description ? <p className="-mt-1 mb-0 text-[12px] text-muted">{f.description}</p> : null}
+      {err ? <p className="m-0 text-[13px] text-bad">{err}</p> : null}
+      {rows.map((r, i) => {
+        const k = keyOf(r, i);
+        const summary = rowSummary(f.fields, r);
+        const rowErr = Object.keys(form.errors).some((e) => e.startsWith(`${path}.${i}.`));
+        return (
+          <div key={k} className={cn("min-w-0 rounded-[12px] border bg-surface", rowErr ? "border-bad" : "border-line")}>
+            <div className="flex items-center gap-1 pr-1.5">
+              <button type="button" onClick={() => setOpen((o) => ({ ...o, [k]: !isOpen(r, i) }))} aria-expanded={isOpen(r, i)} className="flex min-h-11 min-w-0 flex-1 items-center gap-2 px-3 text-left">
+                <ChevronDown className={cn("size-4 shrink-0 text-muted transition-transform", isOpen(r, i) && "rotate-180")} />
+                <span className="tabular shrink-0 text-[13px] text-muted">{`${f.singular} ${i + 1}`}</span>
+                <span className="min-w-0 truncate text-[14px] text-ink">{summary}</span>
+              </button>
+              {!ro ? (
+                <>
+                  <Button type="button" size="icon" variant="ghost" aria-label="Yukarı taşı" disabled={i === 0} onClick={() => move(i, -1)}>
+                    <ArrowUp />
+                  </Button>
+                  <Button type="button" size="icon" variant="ghost" aria-label="Aşağı taşı" disabled={i === rows.length - 1} onClick={() => move(i, 1)}>
+                    <ArrowDown />
+                  </Button>
+                  <Button type="button" size="icon" variant="ghost" aria-label={`${f.singular} ${i + 1} sil`} disabled={f.minRows !== undefined && rows.length <= f.minRows} onClick={() => form.set(path, rows.filter((_, j) => j !== i))}>
+                    <Trash2 />
+                  </Button>
+                </>
+              ) : null}
+            </div>
+            {isOpen(r, i) ? (
+              <div className="border-t border-line p-3.5">
+                <FieldList fields={f.fields} base={`${path}.${i}.`} />
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+      {!ro && (f.maxRows === undefined || rows.length < f.maxRows) ? (
+        <Button
+          type="button"
+          size="sm"
+          className="justify-self-start"
+          onClick={() => {
+            const id = rowId();
+            form.set(path, [...rows, { id }]);
+            setOpen((o) => ({ ...o, [id]: true }));
+          }}
+        >
+          <Plus />
+          {`${f.singular} ekle`}
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+/* ---------- Görsel ---------- */
+
+const thumbCache = new Map<number, Thumb>();
+
+function useThumbs(slug: string, ids: number[]) {
+  const key = ids.join(",");
+  const [, bump] = useState(0);
+  useEffect(() => {
+    const missing = key ? key.split(",").map(Number).filter((id) => !thumbCache.has(id)) : [];
+    if (!missing.length) return;
+    let live = true;
+    void mediaThumbs(slug, missing).then((r) => {
+      r.forEach((t) => thumbCache.set(t.id, t));
+      if (live) bump((n) => n + 1);
+    });
+    return () => {
+      live = false;
+    };
+  }, [slug, key]);
+  return ids.map((id) => thumbCache.get(id) ?? null);
+}
+
+const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id: number }).id : typeof v === "number" ? v : Number(v) || null);
+
+function UploadInput({ path, value, hasMany, readOnly }: { path: string; value: unknown; hasMany: boolean; readOnly: boolean }) {
+  const form = useForm();
+  const [picking, setPicking] = useState(false);
+  const ids = (hasMany ? (Array.isArray(value) ? value : []) : value ? [value] : []).map(idOf).filter((x): x is number => Boolean(x));
+  const thumbs = useThumbs(form.slug, ids);
+  return (
+    <div className="flex flex-wrap items-center gap-3" id={domId(path)}>
+      {ids.length ? (
+        ids.map((id, i) => (
+          <div key={id} className="relative">
+            <span className="grid size-24 place-items-center overflow-hidden rounded-[10px] border border-line bg-sunken">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {thumbs[i]?.thumb ? <img src={thumbs[i]!.thumb} alt={thumbs[i]!.alt} className="size-full object-cover" /> : <ImageOff className="size-5 text-muted" />}
+            </span>
+            {thumbs[i]?.width ? <span className="tabular mt-1 block text-center text-[11px] text-muted">{`${thumbs[i]!.width}×${thumbs[i]!.height}`}</span> : null}
+            {!readOnly ? (
+              <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="absolute -top-2 -right-2 grid size-7 place-items-center rounded-full border border-line bg-surface text-muted hover:text-bad" aria-label="Görseli kaldır">
+                ×
+              </button>
+            ) : null}
+          </div>
+        ))
+      ) : (
+        <span className="grid size-24 place-items-center rounded-[10px] border border-dashed border-line text-[12px] text-muted">Görsel yok</span>
+      )}
+      {!readOnly ? (
+        <Button type="button" size="sm" onClick={() => setPicking(true)}>
+          {hasMany ? "Görsel ekle" : ids.length ? "Değiştir" : "Görsel seç"}
+        </Button>
+      ) : null}
+      {picking ? (
+        <MediaPicker
+          clientUpload={form.clientUpload}
+          onClose={() => setPicking(false)}
+          onPick={(m) => {
+            form.set(path, hasMany ? [...ids, m.id] : m.id);
+            setPicking(false);
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/* ---------- İlişki ---------- */
+
+function RelationInput({ path, value, relationTo, hasMany, readOnly }: { path: string; value: unknown; relationTo: string; hasMany: boolean; readOnly: boolean }) {
+  const form = useForm();
+  const ids = useMemo(() => (hasMany ? (Array.isArray(value) ? value : []) : value ? [value] : []).map(idOf).filter((x): x is number => Boolean(x)), [value, hasMany]);
+  const [opts, setOpts] = useState<RelOption[]>([]);
+  const [known, setKnown] = useState<Record<number, string>>({});
+  useEffect(() => {
+    let live = true;
+    void relationOptions(form.slug, relationTo, "").then((r) => live && setOpts(r));
+    return () => {
+      live = false;
+    };
+  }, [form.slug, relationTo]);
+  const idsKey = ids.join(",");
+  useEffect(() => {
+    if (!idsKey) return;
+    let live = true;
+    void relationLabels(form.slug, relationTo, idsKey.split(",").map(Number)).then((r) => live && setKnown((k) => ({ ...k, ...Object.fromEntries(r.map((o) => [o.value, o.label])) })));
+    return () => {
+      live = false;
+    };
+  }, [form.slug, relationTo, idsKey]);
+  const label = (id: number) => known[id] ?? opts.find((o) => o.value === id)?.label ?? `#${id}`;
+  const choices = opts.filter((o) => !ids.includes(o.value));
+
+  if (!hasMany)
+    return (
+      <select id={domId(path)} value={ids[0] ?? ""} disabled={readOnly} onChange={(e) => form.set(path, Number(e.target.value) || null)} className={cn(fieldCls, "min-h-10")}>
+        <option value="">Seçin</option>
+        {ids[0] && !opts.some((o) => o.value === ids[0]) ? <option value={ids[0]}>{label(ids[0])}</option> : null}
+        {opts.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    );
+  return (
+    <div className="grid gap-2" id={domId(path)}>
+      <div className="flex flex-wrap gap-2">
+        {ids.map((id) => (
+          <span key={id} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-sunken pr-1 pl-3 text-[14px] text-ink">
+            {label(id)}
+            {!readOnly ? (
+              <button type="button" onClick={() => form.set(path, ids.filter((x) => x !== id))} className="grid size-7 place-items-center rounded-full text-muted hover:text-bad" aria-label={`${label(id)} kaldır`}>
+                ×
+              </button>
+            ) : null}
+          </span>
+        ))}
+      </div>
+      {!readOnly && choices.length ? (
+        <select value="" onChange={(e) => e.target.value && form.set(path, [...ids, Number(e.target.value)])} className={cn(fieldCls, "min-h-10")} aria-label="Ekle">
+          <option value="">Ekle…</option>
+          {choices.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      ) : null}
+    </div>
+  );
+}
+
+/* ---------- Yardımcılar (veri tutmayan alanlar) ---------- */
+
+type HelperProps = { target: string; mode: "accent" | "count"; source?: "references" | "services"; words?: boolean };
+const TR_COUNT = ["sıfır", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz", "on"];
+
+/** Metin alanının altında "sitede böyle görünür" ve kalın/sayı düğmeleri */
+function TextHelper({ target, mode, source, words }: HelperProps & { base: string }) {
+  const form = useForm();
+  /* Hedef, belgenin kökünden tam yol (Payload'daki gibi) */
+  const path = target;
+  const text = String(form.get(path) ?? "");
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    if (mode !== "count" || !source) return;
+    let live = true;
+    void countOf(form.slug, source).then((n) => live && setCount(n));
+    return () => {
+      live = false;
+    };
+  }, [mode, source, form.slug]);
+  if (form.readOnly) return null;
+  const el = () => document.getElementById(domId(path)) as HTMLInputElement | HTMLTextAreaElement | null;
+
+  const makeBold = () => {
+    const e = el();
+    let s = e?.selectionStart ?? text.length;
+    let end = e?.selectionEnd ?? text.length;
+    if (s === end) {
+      while (s > 0 && !/\s/.test(text[s - 1])) s--;
+      while (end < text.length && !/\s/.test(text[end])) end++;
+    }
+    const plain = text.replace(/\*/g, "");
+    const off = (i: number) => text.slice(0, i).split("*").length - 1;
+    const ps = s - off(s);
+    const pe = end - off(end);
+    if (pe <= ps) return;
+    form.set(path, `${plain.slice(0, ps)}*${plain.slice(ps, pe)}*${plain.slice(pe)}`);
+    e?.focus();
+  };
+  const insertCount = () => {
+    const e = el();
+    const s = e?.selectionStart ?? text.length;
+    const end = e?.selectionEnd ?? text.length;
+    form.set(path, `${text.slice(0, s)}{sayı}${text.slice(end)}`);
+    e?.focus();
+  };
+  const shown = count === null ? "…" : words ? (TR_COUNT[count] ?? String(count)) : String(count);
+  const preview =
+    mode === "accent"
+      ? text.split(/(\*[^*]+\*)/g).filter(Boolean).map((p, i) => (p.startsWith("*") && p.endsWith("*") ? <b key={i}>{p.slice(1, -1)}</b> : <span key={i}>{p}</span>))
+      : text.split("{sayı}").flatMap((p, i, all) => (i < all.length - 1 ? [<span key={i}>{p}</span>, <b key={`n${i}`}>{shown}</b>] : [<span key={i}>{p}</span>]));
+
+  return (
+    <div className="-mt-2 grid gap-2">
+      <div className="flex flex-wrap gap-2">
+        {mode === "accent" ? (
+          <>
+            <Button type="button" size="sm" onMouseDown={(e) => e.preventDefault()} onClick={makeBold}>
+              Seçili kelimeyi kalın yap
+            </Button>
+            {text.includes("*") ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => form.set(path, text.replace(/\*/g, ""))}>
+                Kalınlığı kaldır
+              </Button>
+            ) : null}
+          </>
+        ) : (
+          <Button type="button" size="sm" onMouseDown={(e) => e.preventDefault()} onClick={insertCount}>
+            {source === "services" ? "Hizmet sayısını ekle" : "Referans sayısını ekle"}
+          </Button>
+        )}
+      </div>
+      {text ? (
+        <p className="m-0 rounded-[9px] bg-sunken px-3 py-2 text-[14px] text-ink">
+          <span className="mr-2 text-[12px] text-muted">Sitede:</span>
+          {preview}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+const PAGES: Record<string, string[]> = {
+  urun: ["Giriş", "Ürün turu videosu", "Öne çıkan ekranlar", "Ve daha fazlası", "Pakete dahil ürünler", "Bugün / Guru ile", "Nasıl çalışır", "Kullanım senaryoları", "Sayılar bandı", "Neler dahil", "Entegrasyonlar", "Sık sorulan sorular", "Demo talebi"],
+  "urun-dis": ["Ana sayfa ürün kartı", "Ürünler sayfası kartı", "Sosyal medya paylaşımı", "Arama sonucu"],
+};
+
+/** Sekmenin başında "sayfada nerede" krokisi */
+function PageMap({ page, active, note }: { page: string; active: string[]; note?: string }) {
+  return (
+    <div className="rounded-[12px] border border-line bg-sunken p-3">
+      <p className="mt-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">{note ?? "Sayfada nerede"}</p>
+      <ol className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+        {(PAGES[page] ?? []).map((r) => (
+          <li key={r} className={cn("rounded-full px-2.5 py-1 text-[12px]", active.includes(r) ? "bg-accent text-white" : "bg-surface text-muted")}>
+            {r}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
