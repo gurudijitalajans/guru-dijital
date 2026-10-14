@@ -157,9 +157,11 @@ const mailtoHref = ({ subject, body }: MeetingRequest) =>
 export type MeetingSchedulerProps = {
   /** Görüşme konusu (örn. "Guru CRM Demo"); e-posta konusuna ve gövdesine eklenir. */
   topic?: string;
+  /** Tam genişlikte (iletişim sayfası) iki sütun; dar kartta tek sütun kalır */
+  wide?: boolean;
 };
 
-export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
+export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps = {}) {
   const days = useBusinessDays();
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
@@ -419,7 +421,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
               transition={{ duration: 0.45, ease: EASE }}
             >
               {/* Geniş ekranda iki sütun: solda gün ve saat, sağda bilgiler */}
-              <div className="grid flex-1 gap-x-10 lg:grid-cols-2">
+              <div className={cn("grid flex-1 gap-x-10", wide && "lg:grid-cols-2")}>
                 <div className="min-w-0">
                   {/* Adım 1: gün seçimi */}
                   <div className="space-y-2.5">
@@ -538,7 +540,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                 </div>
                 <div className="flex min-w-0 flex-col">
                   {/* Adım 3: iletişim bilgileri */}
-                  <div className="mt-6 space-y-3 lg:mt-0">
+                  <div className={cn("mt-6 space-y-3", wide && "lg:mt-0")}>
                     <StepLabel n={3}>Bilgileriniz</StepLabel>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div className="space-y-2">

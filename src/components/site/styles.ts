@@ -12,7 +12,7 @@
  */
 
 /** Standart bölüm dikey boşluğu */
-export const sectionY = "py-14 md:py-[72px]";
+export const sectionY = "py-10 md:py-12";
 
 /** Beyaz kart: 16px köşe, ince halka */
 export const cardCls = "rounded-2xl bg-white shadow-[0_0_0_1px_rgb(1_20_65/0.08)]";

@@ -163,7 +163,7 @@ export default async function IletisimPage() {
             />
           </Reveal>
           <Reveal delay={0.05} className="mt-10 min-w-0">
-            <MeetingScheduler />
+            <MeetingScheduler wide />
           </Reveal>
         </div>
       </section>

@@ -396,10 +396,10 @@ export type NavGroup = { label: string; href: string; items?: NavItem[]; footer?
 export const announcement = "Strateji, tasarım ve teknoloji tek çatıda.";
 /** Duyuru bandında sırayla dönen diğer cümleler (15 saniyede bir) */
 export const announcementMore = [
-  "2026'da da Google Partner'ız: reklam bütçeniz sertifikalı ellerde.",
+  "2026'da da Google Partner'ız: bütçeniz emin ellerde.",
   "Web sitesinden mobil uygulamaya, fikirden yayına tek ekip.",
   "SEO ile reklama bağımlı kalmadan büyüyen organik trafik.",
-  "Marka tescilinden sosyal medyaya, markanızın her adımında yanınızdayız.",
+  "Marka tescilinden sosyal medyaya her adımda yanınızdayız.",
 ];
 
 /** Üst menü: hizmet ve ürün grupları panelden gelen listeyle kurulur */

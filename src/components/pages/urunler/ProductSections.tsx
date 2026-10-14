@@ -35,7 +35,7 @@ export function renderHeadline(text: string) {
 export function ProductHero({ product, hasTour }: { product: ProductView; hasTour: boolean }) {
   /* Alt boşluk görsel gölgesinin (~50px) tamamını içerir: yapışkan alt menünün beyaz zemini gölgeyi düz çizgiyle kesmez */
   return (
-    <section id="genel-bakis" className={cn(anchorCls, "pb-14 pt-10 md:pb-16 md:pt-14")}>
+    <section id="genel-bakis" className={cn(anchorCls, "pb-10 pt-8 md:pb-12 md:pt-10")}>
       <div className="container-g grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-14">
         <Reveal>
           <p className="inline-flex items-center gap-2.5 rounded-full bg-chip py-1.5 pl-1.5 pr-4 text-[14px] font-medium text-heading">
@@ -92,7 +92,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
 export function ShowcaseRows({ product }: { product: ProductView }) {
   if (product.showcase.length === 0) return null;
   return (
-    <div className="grid gap-16 md:gap-24">
+    <div className="grid gap-12 md:gap-16">
       {product.showcase.map((s, i) => {
         const flip = i % 2 === 1;
         return (

@@ -168,13 +168,13 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                   </>
                 }
               />
-              <div className="mt-12 md:mt-16">
+              <div className="mt-10 md:mt-12">
                 <ShowcaseRows product={product} />
               </div>
             </>
           )}
           {product.features.length > 0 && (
-            <div className={cn(product.showcase.length > 0 && "mt-20 md:mt-28")}>
+            <div className={cn(product.showcase.length > 0 && "mt-14 md:mt-20")}>
               <SectionHead title={product.showcase.length > 0 ? "Ve Daha Fazlası" : "Özellikler"} lead="Ekibinizin işini kolaylaştıran diğer yetenekler." />
               <div className="mt-10">
                 <FeatureGrid product={product} />
@@ -269,7 +269,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
 
       {/* 9. Sayılar: yalnız ürün ve kurulum ifadeleri; kaynaksız performans yüzdesi yok */}
       {product.stats.length > 0 && (
-        <section className="pb-16 md:pb-[72px]">
+        <section className="pb-10 md:pb-12">
           <div className="container-g">
             <Reveal>
               <div className="relative isolate overflow-hidden rounded-[28px] bg-navy px-6 py-10 sm:px-10 md:px-12 md:py-14">

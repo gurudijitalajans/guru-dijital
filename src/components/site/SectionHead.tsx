@@ -21,8 +21,8 @@ export type SectionHeadProps = {
 export function SectionHead({ title, lead, action, center, as = "h2", className }: SectionHeadProps) {
   const H = as;
   const head = (
-    <div className={cn(center && "mx-auto text-center", "max-w-3xl")}>
-      <H className="text-balance text-[27px] font-medium leading-[1.15] tracking-[-0.025em] text-heading sm:text-[32px]">
+    <div className={cn(center ? "mx-auto max-w-3xl text-center" : "max-w-none")}>
+      <H className="max-w-4xl text-balance text-[27px] font-medium leading-[1.15] tracking-[-0.025em] text-heading sm:text-[32px]">
         {title}
       </H>
       {lead && <p className={cn("mt-3 text-pretty text-[15.5px] leading-relaxed text-muted", center && "mx-auto")}>{lead}</p>}

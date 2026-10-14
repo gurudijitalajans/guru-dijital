@@ -7,7 +7,7 @@ type MeetCtaProps = { title: string; text: string; buttonLabel: string; buttonHr
 
 export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) {
   return (
-    <section className="pb-4 pt-14 text-center md:pb-6 md:pt-[72px]">
+    <section className="pb-4 pt-12 text-center md:pb-6 md:pt-14">
       <div className="container-g">
         <Reveal>
           <div className="mx-auto grid size-[124px] place-items-center rounded-full bg-[radial-gradient(circle,#ffffff_58%,rgb(42_106_202/0.12)_59%)]">
@@ -16,7 +16,7 @@ export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) 
             </div>
           </div>
           <h2 className="mt-5 text-balance text-[32px] font-medium leading-[1.15] tracking-[-0.025em] text-heading md:text-[36px]">{title}</h2>
-          <p className="mx-auto mt-3 max-w-[560px] text-balance text-[15.5px] leading-relaxed text-muted">
+          <p className="mx-auto mt-3 max-w-2xl text-balance text-[15.5px] leading-relaxed text-muted">
             {text}
           </p>
           <div className="mt-7 flex justify-center">

@@ -26,7 +26,7 @@ export function AnnounceBar({ messages }: { messages: string[] }) {
   if (!list.length) return null;
   return (
     <div
-      className="relative bg-navy px-4 py-2.5 text-center text-[13px] leading-snug tracking-[0.01em] text-white/90 sm:text-[14px]"
+      className="relative bg-navy px-3 py-2.5 text-center text-[12px] leading-snug text-white/90 min-[400px]:text-[12.5px] sm:px-4 sm:text-[14px] sm:tracking-[0.01em]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >

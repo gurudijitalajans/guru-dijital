@@ -43,7 +43,7 @@ export async function Hero({ hero }: { hero: HomeContent["hero"]; referenceCount
   const services = hero.showServiceLinks ? await getServices() : [];
   /* Bölüm yalnız yatayda kırpılır: alttaki kanıt rozetinin gölgesi bölümün dışına yumuşakça taşabilsin */
   return (
-    <section className="relative overflow-x-clip pt-12 text-center md:pt-16">
+    <section className="relative overflow-x-clip pt-8 text-center md:pt-10">
       <div className="container-g">
         <div>
           <h1 className="hero-sweep mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
@@ -57,7 +57,7 @@ export async function Hero({ hero }: { hero: HomeContent["hero"]; referenceCount
               )
             )}
           </h1>
-          <p className="mx-auto mt-5 max-w-[680px] text-[16px] leading-relaxed text-muted md:text-[16.5px]">{hero.sub}</p>
+          <p className="mx-auto mt-5 max-w-4xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{hero.sub}</p>
           {/* Hizmetler yalnız boşlukla ayrılır: kırılan satır ayraçla başlamaz */}
           {services.length > 0 && (
           <ul className="mx-auto mt-4 flex max-w-[900px] flex-wrap justify-center gap-x-6 text-[13.5px] text-muted lg:mt-5 lg:gap-x-5">

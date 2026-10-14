@@ -37,7 +37,7 @@ export function LogoWall({ title, lead, references }: LogoWallProps) {
   /* Logo başına ~7 sn: sakin, okunur akış */
   const speed = (n: number) => Math.max(70, Math.round(n * 7));
   return (
-    <section id="referanslar" className="overflow-x-clip pb-12 pt-16 md:pb-16 md:pt-20">
+    <section id="referanslar" className="overflow-x-clip pb-12 pt-12 md:pb-14 md:pt-14">
       <div className="container-g">
         <Reveal>
           <SectionHead title={title} lead={lead} action={{ href: "/referanslar", label: "Tüm Referanslar" }} />

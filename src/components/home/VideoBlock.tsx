@@ -8,7 +8,7 @@ export const VIDEO_POSTER = "/video/guru-tanitim-poster.jpg";
 /** "Bizi Tanıyın": Remotion ile üretilen ajans tanıtım videosu (oynatıcı: VideoPlayer). */
 export function VideoBlock({ hasVideo, title, lead }: { hasVideo: boolean; title: string; lead: string }) {
   return (
-    <section className="py-16 md:py-[72px]">
+    <section className="py-12 md:py-14">
       <div className="container-g">
         <SectionHead center title={title} lead={lead} />
         <Reveal className="mt-10">

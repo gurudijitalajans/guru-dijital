@@ -20,7 +20,7 @@ export type PageIntroProps = {
  */
 export function PageIntro({ eyebrow, title, lead, children, visual, className }: PageIntroProps) {
   return (
-    <section className={cn("pb-10 pt-12 text-center md:pb-14 md:pt-16", className)}>
+    <section className={cn("pb-10 pt-8 text-center md:pb-12 md:pt-10", className)}>
       <div className="container-g">
         <Reveal>
           {eyebrow && (
@@ -29,15 +29,15 @@ export function PageIntro({ eyebrow, title, lead, children, visual, className }:
               {eyebrow}
             </p>
           )}
-          <h1 className="mx-auto max-w-4xl text-balance text-[34px] font-normal leading-[1.12] tracking-[-0.035em] text-heading sm:text-[44px] lg:text-[52px]">
+          <h1 className="mx-auto max-w-5xl text-balance text-[34px] font-normal leading-[1.12] tracking-[-0.035em] text-heading sm:text-[44px] lg:text-[52px]">
             {title}
           </h1>
           {lead && (
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{lead}</p>
+            <p className="mx-auto mt-5 max-w-4xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{lead}</p>
           )}
           {children && <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>}
         </Reveal>
-        {visual && <div className="mt-12 md:mt-14">{visual}</div>}
+        {visual && <div className="mt-10 md:mt-12">{visual}</div>}
       </div>
     </section>
   );

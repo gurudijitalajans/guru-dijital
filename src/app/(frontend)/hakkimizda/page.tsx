@@ -155,7 +155,7 @@ export default async function HakkimizdaPage() {
           </div>
 
           {/* İlkeler */}
-          <div className="mt-16 md:mt-20">
+          <div className="mt-12 md:mt-14">
             <Reveal>
               <SectionHead title={story.valuesLabel} />
             </Reveal>
