@@ -12,6 +12,7 @@ import * as migration_20261014_014257_buyuk_guncelleme_sema from './20261014_014
 import * as migration_20261014_020000_buyuk_guncelleme_veri from './20261014_020000_buyuk_guncelleme_veri';
 import * as migration_20261014_084626_ikinci_tur_sema from './20261014_084626_ikinci_tur_sema';
 import * as migration_20261014_090000_ikinci_tur_veri from './20261014_090000_ikinci_tur_veri';
+import * as migration_20261014_150000_ucuncu_tur_veri from './20261014_150000_ucuncu_tur_veri';
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20261014_090000_ikinci_tur_veri.up,
     down: migration_20261014_090000_ikinci_tur_veri.down,
     name: '20261014_090000_ikinci_tur_veri',
+  },
+  {
+    up: migration_20261014_150000_ucuncu_tur_veri.up,
+    down: migration_20261014_150000_ucuncu_tur_veri.down,
+    name: '20261014_150000_ucuncu_tur_veri',
   },
 ];

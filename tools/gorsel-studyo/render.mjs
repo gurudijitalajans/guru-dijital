@@ -8,6 +8,7 @@ import { SCENES } from "./scenes.mjs";
 import { HIZMET_SCENES } from "./scenes-hizmet.mjs"; SCENES.push(...HIZMET_SCENES);
 import { ICERIK_SCENES } from "./scenes-icerik.mjs"; SCENES.push(...ICERIK_SCENES);
 import { HIZMET2_SCENES } from "./scenes-hizmet2.mjs"; SCENES.push(...HIZMET2_SCENES);
+import { HIZMET3_SCENES } from "./scenes-hizmet3.mjs"; SCENES.push(...HIZMET3_SCENES);
 
 const OUT = fileURLToPath(new URL("./out/", import.meta.url));
 mkdirSync(OUT, { recursive: true });

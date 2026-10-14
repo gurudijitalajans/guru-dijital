@@ -7,6 +7,7 @@ import { Btn } from "@/components/site/Btn";
 import { SectionHead } from "@/components/site/SectionHead";
 import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { zoomCls, zoomProps } from "@/components/ui/zoom";
 import { cn } from "@/lib/utils";
 
 /* Ürün sayfası bölümleri. Hepsi sunucu bileşeni; içerik getProducts() ile gelir. */
@@ -71,7 +72,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
           )}
         </Reveal>
         {/* LCP görseli: Reveal'e sarılmaz, preload edilir */}
-        <div className="overflow-hidden rounded-[24px] shadow-[0_28px_56px_-34px_rgb(1_20_65/0.6)] sm:rounded-[28px]">
+        <div {...zoomProps(product.heroVisual)} className={cn(zoomCls, "overflow-hidden rounded-[24px] shadow-[0_28px_56px_-34px_rgb(1_20_65/0.6)] sm:rounded-[28px]")}>
           <Image
             src={product.heroVisual.src}
             alt={product.heroVisual.alt}
@@ -97,7 +98,7 @@ export function ShowcaseRows({ product }: { product: ProductView }) {
         return (
           <div key={s.title} className="grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
             <Reveal className={cn("lg:col-span-7", flip && "lg:order-2")}>
-              <div className="overflow-hidden rounded-[22px] shadow-[0_0_0_1px_rgb(1_20_65/0.06),0_30px_60px_-44px_rgb(1_20_65/0.6)]">
+              <div {...zoomProps(s.image)} className={cn(zoomCls, "overflow-hidden rounded-[22px] shadow-[0_0_0_1px_rgb(1_20_65/0.06),0_30px_60px_-44px_rgb(1_20_65/0.6)]")}>
                 <Image
                   src={s.image.src}
                   alt={s.image.alt}

@@ -39,7 +39,7 @@ export default async function Home() {
   const homeCases = cases.filter((c) => c.showOnHome);
   const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
   /* Tanıtım videosu public/video altında varsa oynatıcı açılır (statik sayfada derleme anında bakılır). */
-  const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim.mp4"));
+  const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim-v2.mp4"));
   const faqItems = home.faq.show ? home.faq.items : [];
   /* Aynı zeminli iki bölüm üst üste gelince aradaki boşluk iki kat olmasın: alttakinin üst boşluğu kalkar */
   const showRefs = home.references.show && references.length > 0;

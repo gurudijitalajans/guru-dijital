@@ -20,7 +20,10 @@ export const FONT_CSS = Object.entries(FONT_FILES)
 const iconCache = new Map();
 function iconNode(name) {
   if (iconCache.has(name)) return iconCache.get(name);
-  const src = readFileSync(`${ROOT}/node_modules/lucide-react/dist/esm/icons/${name}.mjs`, "utf8");
+  let src = readFileSync(`${ROOT}/node_modules/lucide-react/dist/esm/icons/${name}.mjs`, "utf8");
+  /* Takma adlar başka dosyayı dışa aktarır (ör. smile → face-slightly-smiling) */
+  const alias = src.match(/export \{ default \} from '\.\/([\w-]+)\.mjs'/);
+  if (alias) return iconNode(alias[1]);
   const m = src.match(/const __iconNode = (\[[\s\S]*?\]);\nconst /);
   if (!m) throw new Error(`ikon okunamadı: ${name}`);
   const node = Function(`return ${m[1]}`)();

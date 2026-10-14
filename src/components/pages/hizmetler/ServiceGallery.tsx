@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
+import { zoomCls, zoomProps } from "@/components/ui/zoom";
 import { cn } from "@/lib/utils";
 import type { WorkImage } from "./service-showcase";
 
@@ -44,8 +45,10 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
         ) : (
           main && (
             <div
+              {...zoomProps(main)}
               className={cn(
                 frameCls,
+                zoomCls,
                 "col-span-2 aspect-[4/3]",
                 wide ? "md:col-span-12 md:aspect-[21/9]" : "md:col-span-8 md:row-span-2",
                 /* Tek yan görselde (16:10 kart + 4:5 afiş) 8/12 ile 4/12 aynı boya gelir: ikisi de kırpılmaz */
@@ -67,8 +70,10 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
         {sides.map((img) => (
           <div
             key={img.src}
+            {...zoomProps(img)}
             className={cn(
               frameCls,
+              zoomCls,
               "aspect-[4/3] md:col-span-4 md:aspect-auto",
               sides.length === 1 && "col-span-2 md:row-span-2"
             )}
@@ -89,14 +94,14 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
       {tiles.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {tiles.map((img) => (
-            <div key={img.src} className={cn(frameCls, "sm:[&:last-child:nth-child(odd)]:col-span-2 lg:[&:last-child:nth-child(odd)]:col-span-1")} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
+            <div key={img.src} {...zoomProps(img)} className={cn(frameCls, zoomCls, "sm:[&:last-child:nth-child(odd)]:col-span-2 lg:[&:last-child:nth-child(odd)]:col-span-1")} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
               <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
             </div>
           ))}
         </div>
       )}
       {extras.map((img) => (
-        <div key={img.src} className={frameCls} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
+        <div key={img.src} {...zoomProps(img)} className={cn(frameCls, zoomCls)} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
           <Image
             src={img.src}
             alt={img.alt}

@@ -40,7 +40,8 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         <div className="container-g">
           {posts.length > 0 ? (
             <>
-              <StaggerGroup className="fill-odd-sm grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+              {/* key: sayfa değişince kartlar yeniden belirir (yoksa görünmez kalıyordu) */}
+              <StaggerGroup key={page} className="fill-odd-sm grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
                 {posts.map((p, i) => (
                   <StaggerItem key={p.slug} className="h-full">
                     <PostCard post={p} priority={i === 0} eager={i < 3} layout="card" />

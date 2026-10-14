@@ -22,6 +22,7 @@ import {
   ShowcaseRows,
   anchorCls,
 } from "@/components/pages/urunler/ProductSections";
+import { LightboxRoot } from "@/components/ui/Lightbox";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
@@ -120,7 +121,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
   ];
 
   return (
-    <>
+    <LightboxRoot>
       <script
         type="application/ld+json"
         // "<" kaçışı: JSON içinde olası "</script>" dizisinin etiketi kapatmasını önler.
@@ -382,6 +383,6 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           </div>
         </div>
       </section>
-    </>
+    </LightboxRoot>
   );
 }

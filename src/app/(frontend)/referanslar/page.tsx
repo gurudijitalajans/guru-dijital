@@ -41,8 +41,8 @@ export default async function ReferanslarPage() {
   const works = services
     .map((s) => ({
       service: s,
-      image: existsSync(join(process.cwd(), "public", "services", "v2", `${s.slug}-kart.webp`))
-        ? { src: `/services/v2/${s.slug}-kart.webp`, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
+      image: existsSync(join(process.cwd(), "public", "services", "v3", `${s.slug}-kart.webp`))
+        ? { src: `/services/v3/${s.slug}-kart.webp`, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
         : (s.gallery[0] ?? s.card),
     }))
     .filter((w): w is { service: (typeof services)[number]; image: NonNullable<(typeof services)[number]["card"]> } => Boolean(w.image));

@@ -1,0 +1,2065 @@
+[
+  {
+    "slug": "google-ads-arama-terimleri-raporu-negatif-anahtar-kelimeler",
+    "title": "Google Ads’te arama terimleri raporu ve negatif anahtar kelimeler",
+    "excerpt": "Arama terimleri raporunu nasıl okuyacağınızı, negatif anahtar kelimeleri hangi eşleme türüyle ve hangi düzeyde ekleyeceğinizi, listeleri nasıl düzenli tutacağınızı anlattık.",
+    "category": "Dijital Pazarlama",
+    "publishedAt": "2026-01-13T09:00:00.000Z",
+    "seoDescription": "Google Ads arama terimleri raporu nasıl okunur? Negatif anahtar kelime eşleme türleri, paylaşılan listeler, Performance Max ve haftalık kontrol rutini.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert zeminde, satırları ince mavi çizgilerle ayrılmış bir arama terimleri tablosu; bazı satırların yanında eksi işaretli küçük etiketler, sağda bu etiketlerin toplandığı yarı saydam bir negatif liste paneli.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Google Ads’te arama ağı kampanyası yönetirken bütçenin bir kısmı, işinizle doğrudan ilgisi olmayan aramalara gidebilir. Bunun nedeni çoğu zaman kötü bir anahtar kelime seçimi değil, anahtar kelimelerin ne tür aramalarla eşleştiğinin düzenli olarak kontrol edilmemesidir. Bu kontrolün aracı arama terimleri raporu, düzeltmenin aracı ise negatif anahtar kelimelerdir."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda arama terimleri raporunu nasıl okuyacağınızı, negatif anahtar kelimelerin eşleme türlerine göre nasıl çalıştığını, onları hangi düzeyde eklemeniz gerektiğini ve hesabı düzenli tutmak için izleyebileceğiniz bir kontrol rutinini anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "Anahtar kelime ile arama terimi aynı şey değil"
+      },
+      {
+        "type": "p",
+        "text": "Anahtar kelime, kampanyanıza sizin eklediğiniz ifadedir. Arama terimi ise kullanıcının Google’a gerçekten yazdığı sorgudur. Reklamınız, bir arama terimi anahtar kelimelerinizden biriyle eşleştiğinde gösterilir. Bu eşleşmenin ne kadar geniş olacağını anahtar kelimenin eşleme türü belirler:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Geniş eşleme:** Anahtar kelimenizle ilgili aramalarda reklam gösterilebilir. Google bu eşleşmede kullanıcının önceki aramaları, açılış sayfanız ve reklam grubundaki diğer anahtar kelimeler gibi sinyalleri de kullanır.",
+          "**Sıralı eşleme:** Anahtar kelimenizin anlamını içeren aramalarda reklam gösterilebilir. Kapsamı geniş eşlemeden dar, tam eşlemeden geniştir.",
+          "**Tam eşleme:** Anahtar kelimenizle aynı anlamı ya da amacı taşıyan aramalarda reklam gösterilebilir. En dar kapsamlı seçenektir."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Örneğin kombi bakım hizmeti veren bir işletme geniş eşlemeli “kombi bakımı” anahtar kelimesini kullandığında reklamı “kombi bakımı nasıl yapılır” ya da “kombi bakım kursu” gibi, hizmet almak istemeyen kişilerin aramalarında da görünebilir. Bu aramalar tıklama getirebilir ama müşteri getirmez."
+      },
+      {
+        "type": "h2",
+        "text": "Arama terimleri raporunu okumak"
+      },
+      {
+        "type": "p",
+        "text": "Arama terimleri raporu, reklamlarınızın hangi aramalarda gösterildiğini ve bu aramaların performansını listeler. Rapora Google Ads’te kampanya ya da reklam grubu düzeyinde, Analizler ve raporlar bölümünden ulaşabilirsiniz. Menü adları arayüz güncellemeleriyle değişebildiği için bulamazsanız arama çubuğuna “arama terimleri” yazmak en hızlı yoldur."
+      },
+      {
+        "type": "p",
+        "text": "Bilinmesi gereken önemli bir sınır var: Google’a göre rapor, anlamlı sayıda kişinin kullandığı arama terimlerini gösterir. Yeterli arama hacmi olmayan bazı terimler gizlilik nedeniyle rapora girmez. Yani rapor, harcamanızın tamamını değil, görünür kısmını gösterir. Yine de hangi tür aramalara yöneldiğinizi anlamak için yeterli bir örneklemdir."
+      },
+      {
+        "type": "h3",
+        "text": "Dikkat edilecek sütunlar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Arama terimi:** Kullanıcının yazdığı sorgu.",
+          "**Eşleme türü:** Arama teriminin anahtar kelimenizle hangi eşleme türü üzerinden eşleştiği.",
+          "**Anahtar kelime:** Bu aramayı hangi anahtar kelimenizin tetiklediği. Bu sütun varsayılan olarak gizli olabilir; sütunlar menüsünden ekleyin.",
+          "**Eklendi / hariç tutuldu:** Terimin zaten anahtar kelime ya da negatif olarak eklenip eklenmediği.",
+          "**Maliyet, tıklama, dönüşüm ve dönüşüm başına maliyet:** Kararı verecek asıl veriler."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Her terim için üç olası karar"
+      },
+      {
+        "type": "p",
+        "text": "Raporu maliyete göre büyükten küçüğe sıralayıp en üstten başlamak, en çok bütçe tüketen terimleri önce ele almanızı sağlar. Her terim için şu sorulardan birine cevap verin:"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "**Ekle:** Terim alakalı ve dönüşüm getiriyor. Kendi anahtar kelimesi olarak eklemek, teklif ve reklam metni üzerinde daha fazla kontrol sağlar.",
+          "**Hariç tut:** Terim sattığınız ürün ya da hizmetle ilgili değil. Negatif anahtar kelime olarak ekleyin.",
+          "**İzle:** Terim alakalı ama henüz yeterli veri yok ya da dönüşüm getirmiyor. Sorun aramada değil, açılış sayfasında veya teklifte olabilir; bir süre daha izleyin."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Bu üçüncü grup sık atlanır. Alakalı bir aramayı yalnızca dönüşüm getirmediği için hariç tutmak, aslında açılış sayfasındaki bir sorunu gizleyebilir. Hariç tutma kararını ilgisizlik üzerine verin, performans tek başına yeterli gerekçe değildir."
+      },
+      {
+        "type": "h2",
+        "text": "Negatif anahtar kelimeler nasıl çalışır?"
+      },
+      {
+        "type": "p",
+        "text": "Negatif anahtar kelimelerin de eşleme türü vardır, ama normal anahtar kelimelerden farklı çalışırlar. Google Ads Yardım’daki açıklamaya göre arama ağı kampanyalarında:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Negatif geniş eşleme:** Arama, negatif ifadedeki tüm kelimeleri herhangi bir sırada içeriyorsa reklam gösterilmez. Kelimelerin yalnızca bir kısmı geçiyorsa reklam gösterilebilir.",
+          "**Negatif sıralı eşleme:** Arama, negatif ifadedeki kelimeleri aynı sırayla içeriyorsa reklam gösterilmez. Öncesinde ya da sonrasında başka kelimeler olabilir.",
+          "**Negatif tam eşleme:** Yalnızca arama, negatif ifadeyle birebir aynıysa ve ek kelime içermiyorsa reklam gösterilmez."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Yakın varyantlar negatiflerde kapsanmaz"
+      },
+      {
+        "type": "p",
+        "text": "Normal anahtar kelimeler tekil ve çoğul hâller, eş anlamlılar gibi yakın varyantlarla da eşleşebilir. Negatif anahtar kelimelerde ise bu genişleme yoktur. Google bunu açıkça belirtir: tekil ve çoğul biçimleri, eş anlamlıları kendiniz eklemelisiniz."
+      },
+      {
+        "type": "p",
+        "text": "Türkçe için bu kural daha da önemlidir, çünkü ekler kelimenin biçimini değiştirir. “Kurs” negatifi tek başına “kursu”, “kursları” ya da “kursunda” gibi biçimleri garanti olarak kapsamaz. “Ücretsiz” negatifi “bedava” aramalarını engellemez. Bu nedenle negatif listeyi hazırlarken kelimenin yaygın çekimlerini ve eş anlamlılarını da düşünün."
+      },
+      {
+        "type": "h2",
+        "text": "Sık kullanılan negatif kelime grupları"
+      },
+      {
+        "type": "p",
+        "text": "Her işletmenin negatif listesi farklıdır, ama başlangıçta şu grupları kendi işinize göre gözden geçirmek zaman kazandırır:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**İş ve kariyer aramaları:** “iş ilanı”, “maaş”, “staj”, “eleman”. Hizmet ya da ürün satıyorsanız bu aramalar çoğunlukla aday arayan kişilerden gelir.",
+          "**Bilgi ve eğitim aramaları:** “nasıl yapılır”, “kurs”, “eğitimi”, “pdf”. Dikkat: Bazı işletmeler için “nasıl” içeren aramalar da müşteri getirebilir.",
+          "**Ücretsiz arayanlar:** “ücretsiz”, “bedava”. Ücretsiz keşif ya da deneme sunuyorsanız bu kelimeler sizin için alakalı olabilir.",
+          "**İkinci el ve yedek parça:** Yalnızca sıfır ürün ya da yalnızca hizmet satıyorsanız.",
+          "**Hizmet vermediğiniz bölgeler:** Konum hedeflemesine ek olarak, aramaya yazılan şehir ve ilçe adları."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Bu grupları hazır bir liste gibi kopyalamak yerine her kelimeyi arama terimleri raporundaki gerçek verilerle karşılaştırın. Başka bir hesap için doğru olan bir negatif, sizin hesabınızda değerli trafiği kesebilir."
+      },
+      {
+        "type": "h2",
+        "text": "Negatifleri hangi düzeyde eklemeli?"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Reklam grubu düzeyi:** Trafiği gruplar arasında yönlendirmek için kullanılır. Örneğin “kombi bakımı” grubunda “arıza” içeren aramaları hariç tutup bu aramaların “kombi tamiri” grubuna düşmesini sağlayabilirsiniz.",
+          "**Kampanya düzeyi:** Kampanyanın tamamı için ilgisiz olan aramalar.",
+          "**Paylaşılan negatif anahtar kelime listeleri:** Birden fazla kampanyaya aynı anda uygulanır. “İş ve kariyer” ya da “bölge dışı” gibi tekrar kullanılan gruplar için uygundur; bir kez güncellediğinizde bağlı tüm kampanyalara yansır.",
+          "**Hesap düzeyi:** Hesaptaki arama ve alışveriş envanterinin tamamına uygulanır. Hiçbir koşulda görünmek istemediğiniz aramalar için kullanın."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Performance Max kampanyalarında"
+      },
+      {
+        "type": "p",
+        "text": "Google Ads Yardım’a göre Performance Max kampanyalarına da kampanya düzeyinde negatif anahtar kelime eklenebilir. Bu negatifler yalnızca arama ve alışveriş envanterinde geçerlidir; görüntülü reklam ya da YouTube yerleşimlerini etkilemez. Hesap düzeyindeki negatifler de Performance Max kampanyalarını kapsar. Google, bu kampanya türünün performans gösteren aramaları otomatik olarak bulmak üzere tasarlandığını ve negatiflere her zaman ihtiyaç olmayabileceğini de not eder. Bu yüzden Performance Max’te negatifleri, açıkça ilgisiz aramalarla sınırlı tutmak daha dengeli bir yaklaşımdır."
+      },
+      {
+        "type": "h2",
+        "text": "Aşırı negatif eklemenin riski"
+      },
+      {
+        "type": "p",
+        "text": "Negatif liste büyüdükçe kontrol arttığını düşünmek kolaydır. Google ise çok fazla negatif anahtar kelime kullanıldığında reklamların daha az kişiye ulaşabileceği konusunda uyarır. Yeni bir negatif eklemeden önce şunları kontrol edin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Bu kelime, geçmişte dönüşüm getirmiş bir arama teriminin içinde geçiyor mu?",
+          "Bu negatif, aktif anahtar kelimelerinizden birini engelliyor mu? Örneğin “ücretsiz kargo” anahtar kelimeniz varken “ücretsiz” negatifini geniş eşlemeyle eklemek onu da durdurur.",
+          "Tek kelimelik geniş eşleme negatif yerine sıralı ya da tam eşleme daha doğru olabilir mi?"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Haftalık ve aylık kontrol rutini"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Yeni açılan kampanyalarda ilk haftalarda raporu daha sık, oturmuş kampanyalarda haftada bir inceleyin.",
+          "Raporu son 30 günün maliyetine göre sıralayın ve en üstteki terimlerden başlayın.",
+          "Alakasız terimleri uygun eşleme türüyle negatif olarak ekleyin; tekrar eden grupları paylaşılan listelere taşıyın.",
+          "Dönüşüm getiren yeni terimleri anahtar kelime olarak ekleyin.",
+          "Yaptığınız değişiklikleri tarih ve gerekçesiyle not alın; performans değiştiğinde neyin etkili olduğunu görmek kolaylaşır.",
+          "Ayda bir paylaşılan listeleri gözden geçirin ve artık geçerli olmayan negatifleri kaldırın. Örneğin yeni bir şehirde hizmet vermeye başladıysanız o şehrin adını listeden çıkarın."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Bu rutinin anlamlı olması için dönüşüm takibinin doğru kurulmuş olması gerekir. Dönüşüm verisi eksik ya da hatalıysa, hangi terimin işe yaradığına dair karar da yanlış veriye dayanır."
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Arama terimleri raporuna yalnızca kampanya kurulurken bakmak.",
+          "Negatifleri yalnızca geniş eşlemeyle eklemek ve beklenmedik aramaları da kesmek.",
+          "Türkçe ekleri ve eş anlamlıları hesaba katmamak.",
+          "Aynı negatif kelimeyi her kampanyaya tek tek eklemek; paylaşılan liste kullanmamak.",
+          "Alakalı ama henüz dönüşüm getirmeyen aramaları hemen hariç tutmak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Google Ads hesabınızdaki arama terimlerini ve negatif listelerinizi birlikte gözden geçirmek isterseniz Guru Dijital ekibi mevcut kampanyalarınızı inceleyip öncelikli düzenlemeleri raporlayabilir."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[About keyword matching options (Google Ads Yardım)](https://support.google.com/google-ads/answer/7478529)",
+          "[About the search terms report (Google Ads Yardım)](https://support.google.com/google-ads/answer/2472708)",
+          "[About negative keywords (Google Ads Yardım)](https://support.google.com/google-ads/answer/2453972)",
+          "[About negative keyword lists (Google Ads Yardım)](https://support.google.com/google-ads/answer/2453983)",
+          "[Get negative keyword ideas using the search terms report (Google Ads Yardım)](https://support.google.com/google-ads/answer/7102466)",
+          "[Negative keywords in Performance Max campaigns (Google Ads Yardım)](https://support.google.com/google-ads/answer/15726455)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "ozel-yazilim-projesi-ihtiyac-analizi-ve-kapsam",
+    "title": "Özel yazılım projesine başlamadan önce: ihtiyaç analizi ve kapsam",
+    "excerpt": "Hazır yazılımla özel yazılım arasındaki seçimi, ihtiyaç analizini, ilk sürümün kapsamını, entegrasyonları, KVKK’yı ve kaynak kodu sahipliğini proje başlamadan nasıl netleştireceğinizi anlattık.",
+    "category": "Web ve Teknoloji",
+    "publishedAt": "2026-01-27T09:00:00.000Z",
+    "seoDescription": "Özel yazılım projesi öncesi ihtiyaç analizi: süreç tanımı, kullanıcı rolleri, ilk sürüm kapsamı, entegrasyonlar, KVKK, kaynak kodu sahipliği ve bakım.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert-mavi ışık gradyanı üzerinde yan yana duran bir akış şeması, kullanıcı rollerini gösteren küçük kartlar ve onay kutulu bir kapsam dokümanı; arka planda soluk bir yönetim paneli ekranı.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Özel yazılım projelerinde sorunların büyük kısmı kod yazılırken değil, kod yazılmaya başlamadan önce ortaya çıkar. Ne yapılacağı yeterince net değilse, geliştirme sürecinde her hafta yeni bir istek eklenir, teslim tarihi kayar ve bütçe öngörülemez hâle gelir. İhtiyaç analizi ve yazılı bir kapsam, bu belirsizliği proje başında azaltmanın en etkili yoludur."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda bir özel yazılım projesine başlamadan önce netleştirmeniz gereken konuları sırayla ele alıyoruz: hazır yazılım seçeneği, iş süreçleri, kullanıcı rolleri, ilk sürümün kapsamı, entegrasyonlar, veri güvenliği, sahiplik ve bakım."
+      },
+      {
+        "type": "h2",
+        "text": "Önce şunu sorun: hazır bir yazılım işi görür mü?"
+      },
+      {
+        "type": "p",
+        "text": "Ön muhasebe, CRM, randevu ya da stok takibi gibi yaygın ihtiyaçlar için çok sayıda hazır yazılım vardır. Bunlar hızlı başlar, bakımı sağlayıcıya aittir ve aylık ya da yıllık lisansla kullanılır. Özel yazılım ise şu durumlarda daha anlamlı hâle gelir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "İş süreciniz sektörünüze ya da işletmenize özgü ve hazır ürünler bu süreci karşılamıyor.",
+          "Birden fazla hazır aracı birbirine bağlamak için çalışanlar aynı veriyi tekrar tekrar elle giriyor.",
+          "Kullanıcı sayısı arttıkça lisans maliyeti sizin için sürdürülemez hâle geliyor.",
+          "Yazılımın kendisi, müşterilerinize sunduğunuz hizmetin ya da ürünün bir parçası olacak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Bu soruya dürüst bir cevap vermek, gereksiz bir geliştirme bütçesini önleyebilir. Bazen doğru çözüm, hazır bir ürünü kullanıp yalnızca eksik kalan kısmı özel olarak geliştirmektir."
+      },
+      {
+        "type": "h2",
+        "text": "1. Sorunu süreç üzerinden tanımlayın"
+      },
+      {
+        "type": "p",
+        "text": "“Bize bir panel lazım” bir ihtiyaç tanımı değildir. Bunun yerine bugün işin nasıl yürüdüğünü adım adım yazın: talep nereden geliyor, kim kaydediyor, kim onaylıyor, bilgi kime iletiliyor, iş nasıl kapanıyor? Bugün bu adımlar Excel tabloları, WhatsApp grupları ya da kâğıt formlarla yürüyorsa, bunları da olduğu gibi not edin."
+      },
+      {
+        "type": "p",
+        "text": "Ardından her adımda yaşanan sorunu yazın: bilginin kaybolması, aynı verinin iki kez girilmesi, onayın gecikmesi, raporun elle hazırlanması. Yazılımın neyi çözeceği bu listeden çıkar ve proje sonunda başarıyı ölçmek için de bu liste kullanılır."
+      },
+      {
+        "type": "h2",
+        "text": "2. Kullanıcıları ve rolleri listeleyin"
+      },
+      {
+        "type": "p",
+        "text": "Yazılımı kimlerin kullanacağını ve her birinin neyi görüp neyi değiştirebileceğini baştan belirlemek, hem arayüz tasarımını hem de yetkilendirme yapısını şekillendirir. Basit bir tablo yeterlidir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Yönetici:** Tüm kayıtları görür, kullanıcı ekler, raporları alır.",
+          "**Operasyon çalışanı:** Kendisine atanan işleri görür ve günceller.",
+          "**Muhasebe:** Faturalama ve tahsilat ekranlarına erişir, operasyon kayıtlarını yalnızca okur.",
+          "**Müşteri ya da bayi:** Yalnızca kendi kayıtlarını ve taleplerini görür."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Rol sayısı arttıkça yazılımın karmaşıklığı da artar. İlk sürümde gerçekten gerekli olan rollerle başlamak, geliştirme süresini kısaltır."
+      },
+      {
+        "type": "h2",
+        "text": "3. İlk sürümün kapsamını daraltın"
+      },
+      {
+        "type": "p",
+        "text": "Her şeyi ilk sürüme sığdırmaya çalışmak, projenin en sık rastlanan gecikme nedenlerinden biridir. İstek listesini üç gruba ayırın: ilk sürümde mutlaka olması gerekenler, ilk sürümden sonra eklenebilecekler ve şimdilik yalnızca fikir olarak kalanlar. İlk sürüm, en kritik iş akışını uçtan uca çalıştıracak kadar küçük olmalıdır. Gerçek kullanıcıların geri bildirimi geldikçe sonraki sürümlerin önceliği de netleşir."
+      },
+      {
+        "type": "h3",
+        "text": "Kullanıcı hikâyesi ve kabul kriteri"
+      },
+      {
+        "type": "p",
+        "text": "Her özelliği kısa bir kullanıcı hikâyesiyle ve ölçülebilir bir kabul kriteriyle yazmak, “bitti” tanımı konusundaki tartışmaları azaltır. Örnek:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Hikâye:** Operasyon çalışanı olarak, bana atanan servis taleplerini tarihe göre sıralı görmek istiyorum; böylece günümü planlayabilirim.",
+          "**Kabul kriteri 1:** Liste yalnızca giriş yapan kullanıcıya atanan talepleri gösterir.",
+          "**Kabul kriteri 2:** Talepler randevu tarihine göre sıralanır ve duruma göre filtrelenebilir.",
+          "**Kabul kriteri 3:** Talep durumu değiştirildiğinde yöneticiye bildirim gider."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Ekranları kodlamadan önce görün"
+      },
+      {
+        "type": "p",
+        "text": "Kapsam yazıyla netleştikten sonra temel ekranların tel kafes çizimleri ya da tıklanabilir bir prototipi hazırlanabilir. Prototip üzerinde yapılan bir değişiklik, kodlanmış bir ekranı değiştirmekten çok daha az emek ister. Prototipi yazılımı her gün kullanacak çalışanlara da gösterin; bir alanın eksik olduğunu ya da bir adımın gereksiz olduğunu çoğu zaman onlar fark eder."
+      },
+      {
+        "type": "h2",
+        "text": "4. Entegrasyonları baştan belirleyin"
+      },
+      {
+        "type": "p",
+        "text": "Özel yazılım nadiren tek başına çalışır. Hangi sistemlerle veri alışverişi yapacağını proje başında bilmek, hem süre hem maliyet tahminini doğrudan etkiler. Türkiye’deki projelerde sık karşılaşılan entegrasyonlar şunlardır:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**E-fatura ve e-arşiv fatura:** Faturaların Gelir İdaresi Başkanlığı’nın sistemine iletilmesi için genellikle bir özel entegratörün servisleri kullanılır.",
+          "**Ön muhasebe ve ERP yazılımları:** Cari hesap, stok ve tahsilat verilerinin aktarımı.",
+          "**Ödeme kuruluşları ve sanal POS:** Online tahsilat ve iade işlemleri.",
+          "**Kargo firmaları ve pazaryerleri:** Gönderi oluşturma, takip numarası alma, sipariş ve stok senkronizasyonu.",
+          "**SMS, e-posta ve bildirim servisleri:** Doğrulama kodları ve bilgilendirme mesajları."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Her entegrasyon için karşı tarafın bir API dokümantasyonu ve test ortamı sunup sunmadığını, kullanım ücreti olup olmadığını ve sözleşme gerektirip gerektirmediğini önceden öğrenin. Test ortamı olmayan bir entegrasyon, geliştirme süresini belirgin biçimde uzatabilir."
+      },
+      {
+        "type": "h2",
+        "text": "5. Veri, güvenlik ve KVKK"
+      },
+      {
+        "type": "p",
+        "text": "Yazılım müşteri, çalışan ya da tedarikçi bilgisi işleyecekse 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamındaki yükümlülükler de tasarımın bir parçasıdır. Bu yükümlülükler çoğunlukla yazılımı kullanan işletmeye, yani veri sorumlusuna aittir; ama yazılım bunları yerine getirmeyi kolaylaştırmalıdır:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Yalnızca amaç için gerekli verinin toplanması ve formlarda gereksiz alan bulunmaması.",
+          "Rol bazlı erişim: her kullanıcının yalnızca işi için gereken veriyi görmesi.",
+          "Kritik işlemlerin kim tarafından ne zaman yapıldığını gösteren işlem kayıtları.",
+          "Düzenli yedekleme ve yedekten geri dönüşün test edilmesi.",
+          "Saklama süresi dolan verilerin silinebilmesi ya da anonim hâle getirilebilmesi."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Sunucunun ya da kullanılan bulut hizmetinin hangi ülkede olduğu da önemlidir. Kişisel verilerin yurt dışına aktarımı KVKK’nın 9. maddesinde düzenlenir ve bu madde 2024’te kapsamlı biçimde değiştirildi. Barındırma kararını verirken bu konuyu hukuk danışmanınızla birlikte değerlendirin. Uygulama güvenliği tarafında ise OWASP Top 10 listesi, web uygulamalarında en sık görülen güvenlik risklerini anlamak için yaygın kabul gören bir başlangıç noktasıdır."
+      },
+      {
+        "type": "h2",
+        "text": "6. Kaynak kodu ve hesaplar kimin olacak?"
+      },
+      {
+        "type": "p",
+        "text": "5846 sayılı Fikir ve Sanat Eserleri Kanunu, bilgisayar programlarını eser olarak korur. Kanunun 52. maddesine göre mali haklara ilişkin sözleşmelerin yazılı yapılması ve devredilen hakların tek tek gösterilmesi gerekir. Bu nedenle sözleşmede şu konuların açıkça yazılı olması önemlidir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Kaynak kodunun ve mali hakların devredilip devredilmediği ya da yalnızca kullanım lisansı verilip verilmediği.",
+          "Kodun hangi depoda tutulacağı ve işletmenin bu depoya erişimi olup olmayacağı.",
+          "Alan adı, sunucu, bulut, uygulama mağazası ve üçüncü taraf servis hesaplarının işletme adına açılması.",
+          "Projede kullanılan açık kaynak kütüphanelerin lisans koşulları."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Sözleşme hazırlığında bir avukattan destek almanızı öneririz; bu yazı genel bilgilendirme amaçlıdır."
+      },
+      {
+        "type": "h2",
+        "text": "7. Yayından sonrasını da planlayın"
+      },
+      {
+        "type": "p",
+        "text": "Yazılım teslim edildiğinde iş bitmez. İşletim sistemleri, tarayıcılar, kütüphaneler ve entegre olunan servisler güncellendikçe yazılımın da güncellenmesi gerekir. Teklif aşamasında şu soruların cevabını alın: Hata bildirimleri nasıl iletilecek? Kritik bir hata ne kadar sürede ele alınacak? Küçük geliştirme talepleri nasıl ücretlendirilecek? Bakım hizmeti hangi kapsamda ve hangi süreyle verilecek?"
+      },
+      {
+        "type": "h2",
+        "text": "Kapsam dokümanında olması gerekenler"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Projenin amacı ve çözülecek sorunlar",
+          "Mevcut süreç ve hedeflenen süreç akışı",
+          "Kullanıcı rolleri ve yetkileri",
+          "İlk sürüme giren özellikler, kullanıcı hikâyeleri ve kabul kriterleri",
+          "İlk sürüm dışında bırakılan özellikler",
+          "Entegrasyonlar ve her biri için sorumlu taraf",
+          "Veri güvenliği, yedekleme ve barındırma tercihi",
+          "Teslim aşamaları, test ve kabul süreci",
+          "Kaynak kodu, hesaplar ve fikri haklar",
+          "Bakım ve destek koşulları"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Yazılımı kullanacak çalışanları analiz sürecine dâhil etmemek.",
+          "Ekran tasarımlarını görmeden geliştirmeye başlamak.",
+          "Kapsam dışı istekleri yazılı bir değişiklik süreci olmadan projeye eklemek.",
+          "Test ve kabul için zaman ayırmamak; testi yayın gününe bırakmak.",
+          "Hesapları ve kodu yalnızca yazılım firmasının erişebileceği yerlerde tutmak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, özel yazılım projelerine ihtiyaç analizi ve kapsam dokümanıyla başlıyor. Aklınızdaki projeyi bu başlıklar üzerinden birlikte netleştirmek isterseniz bir ön görüşme planlayabiliriz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[6698 sayılı Kişisel Verilerin Korunması Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6698.pdf)",
+          "[5846 sayılı Fikir ve Sanat Eserleri Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.3.5846.pdf)",
+          "[Kişisel Verileri Koruma Kurumu](https://www.kvkk.gov.tr)",
+          "[OWASP Top 10 (OWASP Foundation)](https://owasp.org/www-project-top-ten/)",
+          "[OWASP Application Security Verification Standard (OWASP Foundation)](https://owasp.org/www-project-application-security-verification-standard/)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "sosyal-medyada-topluluk-yonetimi-yorum-ve-mesajlar",
+    "title": "Sosyal medyada topluluk yönetimi: yorumlar, mesajlar ve şikâyetler",
+    "excerpt": "Yorum ve mesajları türlerine ayırmayı, hazır yanıt hazırlamayı, şikâyetleri herkese açık alanda karşılamayı, neyin gizlenip neyin silineceğini ve kriz anında kimin karar vereceğini anlattık.",
+    "category": "Sosyal Medya",
+    "publishedAt": "2026-02-10T09:00:00.000Z",
+    "seoDescription": "Sosyal medyada topluluk yönetimi: yorum ve DM’leri sınıflandırma, hazır yanıtlar, şikâyet yönetimi, yorum filtreleri, KVKK ve kriz anında eskalasyon.",
+    "readMinutes": 7,
+    "coverConcept": "Buz mavisi zeminde bir telefon ekranında açık duran birleşik gelen kutusu; yorum ve mesaj balonları soru, şikâyet ve teşekkür etiketleriyle renk kodlu sütunlara ayrılmış, kenarlarda ince lacivert ışık çizgileri.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Sosyal medya yönetimi denince çoğu zaman yalnızca paylaşım planı akla gelir. Oysa bir hesabın nasıl algılandığını, paylaşımlar kadar yorumlara ve mesajlara verilen cevaplar da belirler. Cevapsız kalan bir fiyat sorusu kaybedilen bir satış olabilir; herkese açık bir şikâyete verilen sakin ve çözüm odaklı bir yanıt ise o şikâyeti okuyan diğer kişiler için güven işaretidir."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda yorum ve mesajları düzenli biçimde yönetmek için izleyebileceğiniz adımları, hazır yanıtların nasıl kullanılacağını, şikâyetlerin ve uygunsuz içeriklerin nasıl ele alınacağını ve kriz anında kimin karar vereceğini anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "Topluluk yönetimi neleri kapsar?"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Organik paylaşımlara gelen yorumlar",
+          "Reklamların altına gelen yorumlar; bunlar genellikle gözden kaçar ama reklamı gören herkes tarafından okunur",
+          "Doğrudan mesajlar ve mesaj istekleri",
+          "Markanın etiketlendiği ya da adının geçtiği paylaşımlar ve hikâyeler",
+          "Canlı yayın sırasında gelen sorular"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "1. Gelen mesajları türlerine ayırın"
+      },
+      {
+        "type": "p",
+        "text": "Her yorum ve mesaj aynı aciliyette değildir. Ekip içinde ortak bir sınıflandırma kullanmak, neye önce bakılacağını ve kimin yanıt vereceğini netleştirir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Soru:** Fiyat, stok, teslimat, çalışma saatleri, adres.",
+          "**Talep:** Sipariş, randevu, teklif ya da iade isteği.",
+          "**Şikâyet:** Ürün, hizmet, teslimat ya da çalışan davranışıyla ilgili olumsuz deneyim.",
+          "**Olumlu geri bildirim:** Teşekkür, öneri, kullanıcı içeriği.",
+          "**Spam ve hakaret:** Alakasız bağlantılar, sahte kampanya duyuruları, kişisel saldırılar.",
+          "**Kriz sinyali:** Ürün güvenliği, sağlık, veri güvenliği ya da hukuki bir iddia içeren mesajlar."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Reklam yorumlarını ayrıca takip edin"
+      },
+      {
+        "type": "p",
+        "text": "Bir reklam, organik paylaşımlarınızdan çok daha fazla kişiye ve sizi takip etmeyen kişilere gösterilir. Altına yazılan bir şikâyet ya da cevapsız bir fiyat sorusu, reklam yayında kaldığı sürece binlerce kişi tarafından görülebilir. Aynı reklam birden fazla reklam setinde ya da farklı yerleşimlerde yayınlanıyorsa yorumlar farklı gönderilerde toplanabilir; bu yüzden reklam yorumlarını gelen kutusunda ayrı bir filtreyle izlemek ve reklam yayına girdikten sonraki ilk günlerde daha sık kontrol etmek faydalıdır."
+      },
+      {
+        "type": "h2",
+        "text": "2. Yanıt süresi hedefi belirleyin"
+      },
+      {
+        "type": "p",
+        "text": "Kullanıcılar ne kadar sürede cevap alacaklarını bildiklerinde beklemeye daha kolay razı olur. Ekibinizin kapasitesine göre gerçekçi bir iç hedef belirleyin: örneğin mesai saatlerinde soruların aynı gün içinde, şikâyetlerin ise ilk birkaç saat içinde ilk yanıtı alması gibi. Mesai dışında gelen mesajlar için, ne zaman dönüş yapılacağını söyleyen kısa bir otomatik yanıt bekleme süresini daha anlaşılır kılar."
+      },
+      {
+        "type": "p",
+        "text": "Hafta sonu ve bayram tatilleri için de plan yapın. Yoğun kampanya dönemlerinde mesaj sayısı artacağı için o günlerde kimin gelen kutusuna bakacağını önceden belirleyin."
+      },
+      {
+        "type": "h2",
+        "text": "3. Hazır yanıtları hazırlayın, ama kişiselleştirin"
+      },
+      {
+        "type": "p",
+        "text": "Meta Business Suite’in gelen kutusu, Facebook ve Instagram’dan gelen mesajları ve yorumları tek ekranda toplar. Burada sık sorulan sorular için kayıtlı yanıtlar oluşturabilir, ilk mesaja anında yanıt ya da mesai dışı mesajı gibi otomatik yanıtlar tanımlayabilirsiniz. Menü adları ve otomasyon seçenekleri zaman içinde değişebildiği için kurulumu yaparken güncel arayüzü esas alın."
+      },
+      {
+        "type": "p",
+        "text": "Hazır yanıtlar hız kazandırır, ama aynı metnin her yoruma kopyalanması kullanıcıya ilgisizlik hissi verir. Şablonu bir iskelet olarak kullanıp kişinin adını, sorusunun ayrıntısını ve gerekiyorsa bir sonraki adımı ekleyin."
+      },
+      {
+        "type": "h3",
+        "text": "Örnek yanıt iskeletleri"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Fiyat sorusu:** “Merhaba [ad], ilginiz için teşekkürler. Ürünün güncel fiyatını ve seçenekleri size özel mesajla iletiyoruz.”",
+          "**Teslimat gecikmesi:** “Merhaba [ad], yaşadığınız gecikme için üzgünüz. Siparişinizi kontrol edebilmemiz için bize özel mesajla sipariş numaranızı iletebilir misiniz?”",
+          "**Olumlu yorum:** “Güzel yorumunuz için çok teşekkür ederiz [ad]. [Ürün ya da hizmet] ile ilgili deneyiminizi paylaşmanız bizi mutlu etti.”",
+          "**Mesai dışı otomatik yanıt:** “Mesajınız bize ulaştı. Hafta içi 09.00 ile 18.00 arasında yanıt veriyoruz; en kısa sürede size dönüş yapacağız.”"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "4. Şikâyetleri herkese açık alanda karşılamak"
+      },
+      {
+        "type": "p",
+        "text": "Herkese açık bir şikâyete verilen yanıtı yalnızca şikâyet sahibi değil, o yorumu gören herkes okur. Bu yüzden amaç tartışmayı kazanmak değil, sorunu çözme isteğinizi göstermektir. Pratik bir sıra şöyle olabilir:"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Yorumu fark ettiğinizi gösterin ve yaşanan deneyim için üzüntünüzü belirtin. Bu, kusuru kabul etmek anlamına gelmek zorunda değildir.",
+          "Ayrıntıları konuşmak için görüşmeyi özel mesaja ya da telefona taşıyın.",
+          "Sorunu çözdükten sonra, kullanıcı uygun görürse herkese açık alana kısa bir kapanış notu yazın.",
+          "Aynı konuda birden fazla şikâyet geliyorsa, tek tek yanıt vermenin yanında ortak bir açıklama yapmayı değerlendirin."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Kişisel veriyi yorumlarda istemeyin"
+      },
+      {
+        "type": "p",
+        "text": "Telefon numarası, adres, sipariş numarası ya da kimlik bilgisi gibi bilgileri herkese açık yorum alanında istemeyin; bunları özel mesaj ya da güvenli bir form üzerinden alın. Kullanıcı bu bilgileri kendisi yorumda paylaşırsa, yorumu gizlemeyi ve kendisini özel mesajla bilgilendirmeyi değerlendirin. 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamındaki yükümlülükler sosyal medya kanalları için de geçerlidir; mesajlarla gelen kişisel verileri kimlerin görebileceğini ve ne kadar süre saklanacağını ekip içinde netleştirin."
+      },
+      {
+        "type": "h2",
+        "text": "5. Neyi gizlemeli, neyi silmeli?"
+      },
+      {
+        "type": "p",
+        "text": "Olumsuz ama saygılı bir eleştiriyi silmek, çoğu zaman eleştirinin kendisinden daha fazla tepki çeker. Silme ya da gizleme kararını içeriğin olumsuz olmasına değil, türüne göre verin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Yanıtlanmalı:** Eleştiri, şikâyet, olumsuz deneyim.",
+          "**Gizlenebilir:** Hakaret, küfür, kişisel veri içeren yorumlar, sürekli tekrar eden spam.",
+          "**Bildirilmeli:** Dolandırıcılık bağlantıları, markanızı taklit eden sahte hesaplar, platformun topluluk kurallarını ihlal eden içerikler."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Instagram, saldırgan ifadeler içeren yorumları ve mesaj isteklerini filtrelemek için gizlilik ayarlarında, İngilizce arayüzde Hidden Words olarak geçen bir bölüm sunar. Bu ayarda hazır filtrelerin yanında kendi kelime, ifade ve emoji listenizi de oluşturabilirsiniz. Filtreler yeni yazım biçimlerini ya da farklı dillerde yazılmış ifadeleri kaçırabileceği için gizlenen içerikleri de belirli aralıklarla kontrol edin."
+      },
+      {
+        "type": "h3",
+        "text": "Sahte hesaplara karşı uyanık olun"
+      },
+      {
+        "type": "p",
+        "text": "Kampanya ya da çekiliş dönemlerinde markanın adını ve logosunu kullanan sahte hesaplar, yorum yapan kullanıcılara “kazandınız” mesajı gönderip kişisel ya da ödeme bilgisi isteyebilir. Böyle bir durumu fark ettiğinizde hesabı platforma bildirin ve takipçilerinizi resmî hesabınızın hangisi olduğu konusunda bir paylaşımla uyarın. Çekiliş duyurularınıza, kazananlarla yalnızca resmî hesaptan iletişim kurulacağını yazmak da bu riski azaltır."
+      },
+      {
+        "type": "h2",
+        "text": "6. Kriz anında kimin karar vereceğini önceden belirleyin"
+      },
+      {
+        "type": "p",
+        "text": "Aynı şikâyetin kısa sürede çoğalması, ürün güvenliğiyle ilgili bir iddia, bir çalışanın davranışını gösteren bir video ya da bir veri güvenliği iddiası, gelen kutusunu yöneten kişinin tek başına yanıtlayacağı konular değildir. Bu durumlar için basit bir eskalasyon planı hazırlayın:"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Hangi durumların kriz sayılacağını örneklerle yazın.",
+          "Bu durumlarda kime, hangi kanaldan ve ne kadar sürede haber verileceğini belirleyin.",
+          "Yetkili kişi yanıt metnini onaylayana kadar yalnızca “konuyu inceliyoruz” düzeyinde kısa bir ilk yanıt verin.",
+          "Planlanmış paylaşımları ve reklamları gözden geçirin; o anda uygunsuz kaçabilecek içerikleri durdurun.",
+          "Süreç kapandıktan sonra ne olduğunu ve neyin daha iyi yapılabileceğini not alın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "7. Gelen kutusundan öğrenin"
+      },
+      {
+        "type": "p",
+        "text": "Yorum ve mesajlar, müşterilerinizin ne sorduğunu ve nerede zorlandığını gösteren değerli bir veri kaynağıdır. Haftalık kısa bir özet hazırlayın: en sık gelen sorular, şikâyetlerin konuları ve olumlu geri bildirimler. Sık gelen sorular web sitenizdeki sık sorulan sorular sayfasına, ürün açıklamalarına ya da yeni bir içerik fikrine dönüşebilir. Tekrarlayan şikâyetler ise sosyal medya ekibinin değil, operasyonun çözmesi gereken konulara işaret eder."
+      },
+      {
+        "type": "h2",
+        "text": "Topluluk yönetimi kılavuzu için kısa şablon"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Takip edilen hesaplar ve kanallar",
+          "Mesaj türleri ve her biri için yanıt süresi hedefi",
+          "Ses tonu: hitap biçimi, emoji kullanımı, kaçınılacak ifadeler",
+          "Onaylı yanıt iskeletleri",
+          "Gizleme, silme ve bildirme kuralları",
+          "Kişisel veri içeren mesajların nasıl ele alınacağı",
+          "Eskalasyon planı ve iletişim listesi",
+          "Haftalık özet ve raporlama düzeni"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Reklam yorumlarını takip etmemek.",
+          "Fiyat sorularını yalnızca “DM” yazarak geçiştirmek ve ardından mesaj göndermemek.",
+          "Eleştirel yorumları silmek ya da kullanıcıyla herkese açık alanda tartışmaya girmek.",
+          "Gelen kutusunu tek bir kişiye bırakmak ve izin dönemlerini planlamamak.",
+          "Kriz anında yetkili onayı beklemeden uzun açıklamalar yapmak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, sosyal medya yönetimi hizmetinde içerik planının yanında topluluk yönetimini de üstleniyor. Hesaplarınız için bir yanıt kılavuzu ve eskalasyon planı hazırlamak isterseniz ekibimizle birlikte çalışabilirsiniz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[New Tools to Protect Instagram Community from Abuse (About Instagram)](https://about.instagram.com/blog/announcements/introducing-new-tools-to-protect-our-community-from-abuse)",
+          "[Tackling Abuse & Hate Speech (About Instagram)](https://about.instagram.com/blog/announcements/an-update-on-our-work-to-tackle-abuse-on-instagram)",
+          "[Community Standards (Meta Transparency Center)](https://transparency.meta.com/policies/community-standards/)",
+          "[6698 sayılı Kişisel Verilerin Korunması Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6698.pdf)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "yerel-seo-google-isletme-profili-rehberi",
+    "title": "Yerel SEO: Google İşletme Profili ile haritalarda görünmek",
+    "excerpt": "Google’ın yerel sıralamada baktığı üç ölçütü, İşletme Profili’ni doğru doldurmayı, yorum yönetimini, hizmet bölgesi ayarlarını ve web sitenizdeki yerel sayfaları nasıl kurgulayacağınızı anlattık.",
+    "category": "SEO",
+    "publishedAt": "2026-02-24T09:00:00.000Z",
+    "seoDescription": "Yerel SEO rehberi: Google İşletme Profili kurulumu, kategori seçimi, yorum yönetimi, hizmet bölgesi, yerel sayfalar ve LocalBusiness verisi.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert zeminde mavi tonlu bir harita arayüzü; konum iğnelerinden birinin üzerinde açılmış işletme kartı, yıldızlı yorum satırları ve çalışma saatleri, kartın altında ince çizgilerle bağlanmış bir yol tarifi düğmesi.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "“Yakınımdaki diş kliniği”, “Kadıköy kombi servisi” ya da yalnızca “eczane” gibi aramalarda Google, sonuçların üst kısmında çoğu zaman bir harita ve birkaç işletme kartı gösterir. Bu kartlar Google İşletme Profili’nden beslenir. Fiziksel bir mekânı olan ya da belirli bir bölgede hizmet veren işletmeler için bu alan, web sitesinin organik sıralamasından bile daha fazla müşteri getirebilir."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda Google’ın yerel sonuçları nasıl sıraladığını kendi açıklamalarına dayanarak özetliyor, İşletme Profili’ni doğru kurmak, yorumları yönetmek ve web sitenizi yerel aramalara hazırlamak için izleyebileceğiniz adımları anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "Google yerel sonuçları nasıl sıralar?"
+      },
+      {
+        "type": "p",
+        "text": "Google İşletme Profili Yardım’a göre yerel sonuçlar temel olarak üç ölçüte göre belirlenir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Alaka düzeyi:** Profilin, kullanıcının aradığı şeyle ne kadar örtüştüğü. Eksiksiz ve ayrıntılı işletme bilgisi, Google’ın profili doğru aramalarla eşleştirmesine yardımcı olur.",
+          "**Mesafe:** İşletmenin arama yapan kişiye ya da aramada belirtilen konuma uzaklığı.",
+          "**Öne çıkma:** İşletmenin ne kadar tanındığı. Google bunu internetteki bilgiler, bağlantılar, makaleler ve yorumlar gibi sinyallerle değerlendirir; yorum sayısı ve puanlar da bu ölçüte katkı verir."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Google aynı sayfada, yerel sıralamada daha üst sıraya çıkmak için başvuru yapmanın ya da ödeme yapmanın bir yolu olmadığını da açıkça belirtir. Reklamlar ayrı bir alandır; organik yerel sıralamayı satın almak mümkün değildir. Mesafe sizin kontrolünüzde olmadığı için çalışmanın büyük kısmı alaka ve öne çıkma üzerinedir."
+      },
+      {
+        "type": "h2",
+        "text": "1. Profili sahiplenin ve doğrulayın"
+      },
+      {
+        "type": "p",
+        "text": "İşletmeniz Google Haritalar’da zaten görünüyor olabilir; kullanıcılar ya da Google, işletmeler için profil oluşturabilir. İlk adım bu profili sahiplenmek ya da yoksa yenisini oluşturmak, ardından doğrulamaktır. Doğrulama yöntemi işletmenin türüne ve bölgesine göre değişir; Google sizden telefon, e-posta ya da işletmenizi gösteren bir video kaydı gibi yöntemlerden birini isteyebilir. Doğrulanmamış bir profilde yaptığınız düzenlemeler yayına çıkmayabilir."
+      },
+      {
+        "type": "p",
+        "text": "Profilin sahipliğini bir çalışanın kişisel hesabına değil, işletmenin kontrol ettiği bir hesaba bağlayın; ajans ya da çalışanlar için ayrı yönetici erişimi tanımlayın. Çalışan ayrıldığında profile erişimin kaybolması sık karşılaşılan bir sorundur."
+      },
+      {
+        "type": "h2",
+        "text": "2. Temel bilgileri eksiksiz ve doğru girin"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**İşletme adı:** Tabelada, faturada ve gerçek hayatta kullandığınız ad. Google’ın yönergeleri, ada anahtar kelime ya da bölge adı eklemeyi yasaklar; “Ayşe Kuaför” yerine “Ayşe Kuaför Kadıköy En İyi Saç Kesimi” yazmak profilin askıya alınmasına yol açabilir.",
+          "**Birincil kategori:** İşletmenizi en iyi tanımlayan tek kategori. Bu seçim, hangi aramalarda görüneceğinizi doğrudan etkiler. Ek kategorileri yalnızca gerçekten sunduğunuz hizmetler için ekleyin.",
+          "**Adres ya da hizmet bölgesi:** Müşterilerin geldiği bir mekânınız varsa adresi, müşteriye giden bir işletmeyseniz hizmet bölgesini girin.",
+          "**Telefon ve web sitesi:** Doğrudan işletmeye ulaşan numara ve ilgili sayfanın adresi. Birden fazla şubeniz varsa her profil o şubenin sayfasına bağlanmalı.",
+          "**Çalışma saatleri ve özel saatler:** Bayramlar, resmî tatiller ve geçici kapanışlar için özel saatleri önceden girin.",
+          "**Özellikler:** Engelli erişimi, otopark, randevu ile hizmet gibi işletmenizle ilgili seçenekler."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Hizmet bölgesi olan işletmeler"
+      },
+      {
+        "type": "p",
+        "text": "Tesisatçı, temizlik firması ya da evde hizmet veren bir sağlık profesyoneli gibi müşterinin adresine giden işletmeler, müşteri kabul etmedikleri bir adresi profilde göstermemelidir. Google bu işletmelerin adreslerini gizleyip hizmet verdikleri şehir ya da ilçeleri belirtmesini ister. Hem müşteri kabul eden bir mekânınız hem de adrese giden hizmetiniz varsa, adresi gösterip hizmet bölgesini de ekleyebilirsiniz."
+      },
+      {
+        "type": "h3",
+        "text": "Birden fazla şubeniz varsa"
+      },
+      {
+        "type": "p",
+        "text": "Müşteri kabul eden her şube için ayrı bir İşletme Profili oluşturulur. Profillerde işletme adı aynı kalmalı; şubeleri birbirinden ayıran bilgi adres, telefon ve çalışma saatleri olmalıdır. Çok sayıda şubeyi tek tek yönetmek yerine profilleri bir işletme grubu altında toplamak, yetkileri ve toplu güncellemeleri kolaylaştırır. Her şubenin profili, web sitenizdeki o şubeye ait sayfaya bağlanmalıdır."
+      },
+      {
+        "type": "h2",
+        "text": "3. Fotoğraf, ürün ve hizmet bilgilerini ekleyin"
+      },
+      {
+        "type": "p",
+        "text": "Kullanıcılar bir işletmeyi aramadan önce dışarıdan nasıl göründüğüne, içerisinin nasıl olduğuna ve ne sunduğuna bakar. Tabelayı ve girişi gösteren dış mekân fotoğrafları, iç mekân ve ekip fotoğrafları, ürün ya da yapılmış iş örnekleri profili daha anlaşılır hâle getirir. Hizmetler ve ürünler bölümüne sunduklarınızı kısa açıklamalarla ekleyin; açıklamaları anahtar kelimeyle doldurmak yerine müşterinin soracağı soruya cevap verecek biçimde yazın."
+      },
+      {
+        "type": "p",
+        "text": "Profil gönderileri de kampanya, yeni hizmet ya da etkinlik duyurmak için kullanılabilir. Düzenli ama gerçek bilgi içeren güncellemeler, profilin aktif bir işletmeye ait olduğunu gösterir."
+      },
+      {
+        "type": "h2",
+        "text": "4. Yorumları isteyin ve yanıtlayın"
+      },
+      {
+        "type": "p",
+        "text": "Yorumlar hem öne çıkma ölçütünü hem de kullanıcının kararını etkiler. İşletme Profili, müşterilerinizle paylaşabileceğiniz bir yorum bağlantısı sunar. Bu bağlantıyı hizmet sonrası mesajlara, faturaya eklenen bir karta ya da kasadaki bir QR koda yerleştirebilirsiniz."
+      },
+      {
+        "type": "p",
+        "text": "Google’ın kullanıcı katkıları politikası bazı uygulamaları açıkça yasaklar. Bunlara dikkat edin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Yorum karşılığında indirim, hediye ya da para teklif etmek.",
+          "Yalnızca memnun olduğunu düşündüğünüz müşterilerden seçerek yorum istemek.",
+          "Çalışanların, yakınların ya da işletme sahibinin kendi işletmesine yorum yazması.",
+          "Rakip işletmelere olumsuz yorum yazmak ya da yazdırmak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Gelen yorumlara, olumlu ya da olumsuz, kısa ve kişisel yanıtlar verin. Olumsuz bir yoruma verilen sakin ve çözüm öneren bir yanıt, sonradan o yorumu okuyan kişiler için de bir mesajdır. Yorumda müşterinin kişisel bilgilerini ya da sipariş ayrıntılarını tekrar etmekten kaçının. Politikaya aykırı olduğunu düşündüğünüz yorumları profil yönetim ekranından bildirebilirsiniz; ancak yalnızca olumsuz olduğu için bir yorumun kaldırılmasını beklemeyin."
+      },
+      {
+        "type": "h2",
+        "text": "5. Bilgileri her yerde tutarlı tutun"
+      },
+      {
+        "type": "p",
+        "text": "İşletme adı, adres ve telefon numarası web sitenizde, sosyal medya hesaplarınızda, sektör rehberlerinde ve diğer harita servislerinde aynı olmalıdır. Türkiye’de Google Haritalar’ın yanında Yandex Haritalar ve Apple Haritalar da kullanılır; Apple tarafında işletme bilgileri Apple Business Connect üzerinden yönetilir. Taşındıysanız ya da telefon numaranız değiştiyse, eski bilgilerin kaldığı yerleri tek tek güncelleyin."
+      },
+      {
+        "type": "h2",
+        "text": "6. Web sitenizi yerel aramalara hazırlayın"
+      },
+      {
+        "type": "p",
+        "text": "İşletme Profili’ndeki web sitesi bağlantısı ve sitenin kendisi, yerel aramalarda alaka düzeyini destekler. Sitede şu noktalara dikkat edin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "İletişim sayfasında açık adres, telefon, çalışma saatleri ve gömülü bir harita bulunsun.",
+          "Birden fazla şubeniz varsa her şube için ayrı ve özgün içerikli bir sayfa hazırlayın: adres, ekip, o şubeye özel hizmetler, ulaşım bilgisi.",
+          "Hizmet verdiğiniz her ilçe için yalnızca ilçe adı değiştirilmiş birbirinin kopyası sayfalar üretmeyin. Google’ın spam politikaları, kullanıcıyı aynı yere yönlendirmek için farklı şehir ya da bölgeleri hedefleyen sayfaları “doorway” yani kapı sayfası olarak tanımlar.",
+          "Sayfalara LocalBusiness yapılandırılmış verisi ekleyerek işletme adı, adres, telefon ve çalışma saatlerini Google’ın anlayabileceği biçimde işaretleyin. Bu veri sayfada görünen bilgilerle aynı olmalıdır."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Aylık bakım listesi"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Çalışma saatlerini, özellikle yaklaşan tatiller için kontrol edin.",
+          "Yeni yorumları yanıtlayın; yanıtsız yorum bırakmayın.",
+          "Kullanıcıların ya da Google’ın profilde önerdiği değişiklikleri gözden geçirin; yanlış bir düzenleme önerisi onaylanmadan önce düzeltin.",
+          "Yeni fotoğraf ekleyin; eskimiş ya da artık geçerli olmayan görselleri kaldırın.",
+          "Profilin performans verilerinde arama ve harita görüntülenmelerinin, telefon aramalarının ve yol tarifi taleplerinin nasıl değiştiğine bakın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "İşletme adına anahtar kelime ve semt adı eklemek.",
+          "Müşteri kabul edilmeyen bir ev ya da sanal ofis adresini profilde göstermek.",
+          "Aynı işletme için birden fazla profil açmak.",
+          "Toplu yorum kampanyaları yapıp ardından aylarca yorum istememek; doğal ve düzenli bir akış daha güvenilirdir.",
+          "Profili kurup bir daha güncellememek."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital’in SEO ekibi, İşletme Profili kurulumundan yerel açılış sayfalarına kadar yerel arama görünürlüğünüzü birlikte planlayabilir. Bir veya birden fazla şubeniz için mevcut durumu incelemek isterseniz bize yazabilirsiniz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[Tips to improve your local ranking on Google (Google İşletme Profili Yardım)](https://support.google.com/business/answer/7091)",
+          "[Guidelines for representing your business on Google (Google İşletme Profili Yardım)](https://support.google.com/business/answer/3038177)",
+          "[Manage your service areas for service-area & hybrid businesses (Google İşletme Profili Yardım)](https://support.google.com/business/answer/9157481)",
+          "[Tips to get more reviews (Google İşletme Profili Yardım)](https://support.google.com/business/answer/3474122)",
+          "[Manage customer reviews (Google İşletme Profili Yardım)](https://support.google.com/business/answer/3474050)",
+          "[Prohibited & restricted content (Maps User Generated Content Policy)](https://support.google.com/contributionpolicy/answer/7400114)",
+          "[Spam Policies for Google Web Search (Google Search Central)](https://developers.google.com/search/docs/essentials/spam-policies)",
+          "[Local Business (LocalBusiness) Structured Data (Google Search Central)](https://developers.google.com/search/docs/appearance/structured-data/local-business)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "baskiya-hazir-dosya-nasil-hazirlanir",
+    "title": "Baskıya hazır dosya nasıl hazırlanır? Renk, çözünürlük ve taşma payı",
+    "excerpt": "Kartvizitten ambalaja kadar basılı işlerde CMYK ve spot renk, görsel çözünürlüğü, taşma payı, yazı tipleri, bıçak izi ve PDF/X ile dışa aktarma konularını matbaaya gitmeden önce kontrol etmeniz için anlattık.",
+    "category": "Marka ve Tasarım",
+    "publishedAt": "2026-03-10T09:00:00.000Z",
+    "seoDescription": "Baskıya hazır dosya rehberi: CMYK ve Pantone, 300 ppi çözünürlük, taşma payı ve güvenli alan, yazı tipleri, ambalaj bıçak izi, PDF/X ve prova kontrolü.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert-mavi ışık gradyanı üzerinde açılmış bir ambalaj kutusu şablonu; kesim ve katlama çizgileri ince mavi hatlarla, kenarlarda taşma payı alanı ve köşelerde kesim işaretleri, yanında CMYK renk şeridi ve bir broşür provası.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Ekranda kusursuz görünen bir tasarım, baskıdan çıktığında renkleri soluk, kenarlarında beyaz şeritler ya da yazıları bulanık olabilir. Bunun nedeni çoğu zaman tasarımın kendisi değil, dosyanın baskıya uygun hazırlanmamasıdır. Kartvizit, broşür, katalog, ambalaj ya da büyük boy afiş fark etmeksizin, matbaaya gitmeden önce kontrol edilmesi gereken teknik konular büyük ölçüde aynıdır."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda renk modu, çözünürlük, taşma payı, yazı tipleri, ambalaj gibi özel kesimli işler ve PDF olarak dışa aktarma konularını sırayla ele alıyoruz. Matbaaların teknik istekleri farklılık gösterebildiği için buradaki değerleri genel bir başlangıç noktası olarak düşünün."
+      },
+      {
+        "type": "h2",
+        "text": "İşe matbaayla konuşarak başlayın"
+      },
+      {
+        "type": "p",
+        "text": "Dosyayı hazırlamadan önce matbaadan teknik şartnamesini isteyin. Aşağıdaki soruların cevabı, sonradan yapılacak düzeltmelerin çoğunu önler:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Baskı ofset mi, dijital mi? Büyük format ya da özel bir teknik mi kullanılacak?",
+          "Ne kadar taşma payı isteniyor?",
+          "Hangi renk profili ve hangi PDF standardı tercih ediliyor?",
+          "Hangi kâğıt ya da malzeme kullanılacak? Kuşe, mat kuşe, birinci hamur ya da karton gibi seçenekler rengin görünümünü değiştirir.",
+          "Lak, yaldız, gofre ya da özel kesim gibi ek işlemler için dosya nasıl hazırlanmalı?"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "1. Renk modu: RGB değil, CMYK"
+      },
+      {
+        "type": "p",
+        "text": "Ekranlar rengi ışıkla, kırmızı, yeşil ve mavinin karışımıyla (RGB) üretir. Baskı ise camgöbeği, macenta, sarı ve siyah mürekkeplerle (CMYK) yapılır. RGB’nin üretebildiği bazı canlı mavi, yeşil ve turuncu tonlar CMYK’da birebir karşılanamaz ve baskıda daha donuk görünür. Basılacak işleri baştan CMYK’da hazırlamak ya da RGB görselleri, matbaanın önerdiği renk profiliyle kontrollü biçimde dönüştürmek bu sürprizi azaltır."
+      },
+      {
+        "type": "h3",
+        "text": "Kurumsal renk için spot renk"
+      },
+      {
+        "type": "p",
+        "text": "Logonuzun rengi her baskıda aynı çıkmalıysa, Pantone gibi bir spot renk sisteminden kod belirlemek işinizi kolaylaştırır. Spot renk, CMYK karışımıyla değil, önceden karıştırılmış özel bir mürekkeple basılır. Bunun ek bir kalıp ve maliyet anlamına gelebileceğini unutmayın. Aynı Pantone kodunun kaplamalı ve kaplamasız kâğıtta farklı göründüğünü de hesaba katın; renk kılavuzunuzda her iki karşılığı da yazmak iyi bir uygulamadır."
+      },
+      {
+        "type": "h3",
+        "text": "Siyah her zaman aynı siyah değil"
+      },
+      {
+        "type": "p",
+        "text": "Yalnızca siyah mürekkeple basılan geniş alanlar baskıda koyu gri gibi görünebilir. Geniş siyah zeminlerde, siyaha diğer renklerden belirli oranlar eklenen “zengin siyah” kullanılır; oranı matbaanıza sorun. Küçük puntolu metinlerde ise tersi geçerlidir: metni yalnızca yüzde yüz siyahla basın. Dört renkten oluşan siyah, kalıplar arasındaki küçük kaymalarda ince harflerin kenarlarında renkli gölgeler oluşturabilir."
+      },
+      {
+        "type": "h2",
+        "text": "2. Çözünürlük: basılacağı boyutta yeterli piksel"
+      },
+      {
+        "type": "p",
+        "text": "Yakından bakılan basılı işlerde, fotoğrafların basılacakları boyutta yaklaşık 300 ppi çözünürlükte olması yaygın kabul gören bir ölçüdür. Uzaktan bakılan afiş, branda ve tabela gibi büyük formatlı işlerde daha düşük değerler yeterli olabilir; doğru değeri matbaanız söyler."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Web sitesinden ya da sosyal medyadan indirilen bir görseli büyütmek, kaliteyi artırmaz; yalnızca pikselleri büyütür.",
+          "Görselin çözünürlüğünü tasarım programında, sayfadaki gerçek boyutuyla birlikte kontrol edin. Küçük kullanılan bir görsel yeterli olsa da aynı görseli tam sayfa kullandığınızda yetersiz kalabilir.",
+          "Logo, ikon ve çizimleri vektörel formatta kullanın. Vektörel dosyalar boyutları ne olursa olsun keskin basılır.",
+          "Ekran görüntüsü ve küçük önizleme görsellerini baskı dosyasında kullanmayın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "3. Taşma payı ve güvenli alan"
+      },
+      {
+        "type": "p",
+        "text": "Baskı, işin son ölçüsünden daha büyük bir kâğıda yapılır ve ardından kesilir. Kesim makinesi her seferinde milimetrik olarak aynı yerden kesmeyebilir. Kenara kadar uzanan renk, fotoğraf ya da desenler son ölçünün dışına taşırılmazsa, kesimde kâğıdın beyaz kenarı görünebilir. Bu dışarı taşırılan alana taşma payı denir. Adobe’nin InDesign belgelerinde sektörde yaygın taşma payının 3 mm olduğu belirtilir, ancak matbaanızın isteğini doğrulamanız önerilir."
+      },
+      {
+        "type": "p",
+        "text": "Kesim toleransı içe doğru da geçerlidir. Metin, logo, telefon numarası ve barkod gibi önemli öğeleri kesim çizgisine yaslamayın; kenardan içeride bir güvenli alan bırakın. Güvenli alanın genişliği işin boyutuna ve matbaaya göre değişir; kartvizit gibi küçük işlerde bu birkaç milimetrelik payın özellikle önemli olduğunu unutmayın."
+      },
+      {
+        "type": "h2",
+        "text": "4. Yazı tipleri"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "PDF’e aktarırken yazı tiplerinin dosyaya gömülü olduğundan emin olun. Açık dosya teslim ediyorsanız yazı tiplerini de iletin ya da metinleri matbaanın isteğine göre dış hatlara çevirin.",
+          "Kullandığınız yazı tipinin lisansının basılı ticari kullanıma izin verdiğini kontrol edin.",
+          "Çok küçük puntolu ve ince yazı tiplerini, özellikle koyu zemin üzerine açık renkli metinde kullanmaktan kaçının; mürekkep yayılması harflerin içini doldurabilir.",
+          "Metinleri dış hatlara çevirdiyseniz, düzenlenebilir orijinal dosyanın bir kopyasını mutlaka saklayın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "5. Ambalaj ve özel kesimli işler"
+      },
+      {
+        "type": "p",
+        "text": "Kutu, etiket ya da özel şekilli broşür gibi işlerde kesim ve katlama çizgilerini gösteren bir bıçak izi bulunur. Bıçak izi genellikle matbaa ya da ambalaj üreticisi tarafından verilir. Dosyayı bu şablon üzerine kurarken şunlara dikkat edin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Bıçak izini ayrı bir katmanda ve matbaanın istediği adla tanımlanmış bir spot renkle tutun; bu katman basılmamalıdır.",
+          "Lak, yaldız ya da gofre uygulanacak alanları da ayrı katmanlarda ve ayrı spot renklerle belirtin.",
+          "Katlama yönlerini ve hangi yüzün dışta kalacağını kontrol edin; ön yüzün ters dönmesi sık yapılan bir hatadır.",
+          "Barkodu yeterli boyutta, koyu renkte ve açık bir zemin üzerinde konumlandırın; katlama çizgisine ya da kesim kenarına yaklaştırmayın. Ürün barkod numaraları Türkiye’de GS1 Türkiye üzerinden alınır.",
+          "Ürünle ilgili zorunlu bilgilerin ve uyarıların kapakların altında ya da yapıştırma kanadında kalmadığından emin olun."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Ambalaj işlerinde düz bir PDF’e bakarak karar vermek zordur. Basılmış ve katlanmış bir örnek ya da en azından ofis yazıcısından alınmış bir çıktıyla elle katlanmış bir maket, yerleşim hatalarını erken gösterir."
+      },
+      {
+        "type": "h2",
+        "text": "6. PDF olarak dışa aktarma"
+      },
+      {
+        "type": "p",
+        "text": "Matbaalar çoğunlukla baskı için PDF dosyası ister. PDF/X, baskı için dosya alışverişinde kullanılan ve ISO tarafından tanımlanmış bir standartlar ailesidir. En sık karşılaşılan iki sürüm şöyle özetlenebilir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**PDF/X-1a:** Yalnızca CMYK ve spot renklere izin verir, yazı tiplerinin gömülmesini zorunlu kılar ve saydamlıkları düzleştirir. Uzun süredir kullanılan, matbaaların büyük kısmının tanıdığı bir seçenektir.",
+          "**PDF/X-4:** Saydamlıkları ve renk yönetimini korur. Saydamlık ve gölge efekti çok olan tasarımlarda tercih edilebilir."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "InDesign ve Illustrator gibi programlar bu standartlar için hazır PDF ayarları sunar. Matbaanız kendi ayar dosyasını veriyorsa, bu dosyayı programa yükleyip onu kullanmak en güvenli yoldur. Dışa aktarma sırasında taşma payının ve gerekiyorsa kesim işaretlerinin dosyaya dâhil edildiğini kontrol edin."
+      },
+      {
+        "type": "h3",
+        "text": "Dosyayı düzenli teslim edin"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Dosya adına işin adını, ölçüsünü ve sürüm numarasını yazın; “son”, “son2”, “kesin son” gibi adlar karışıklığa yol açar.",
+          "Matbaa açık dosya da istiyorsa, InDesign’ın paketleme özelliğiyle belgeyi bağlantılı görseller ve yazı tipleriyle birlikte tek klasörde toplayın.",
+          "PDF’i göndermeden önce Acrobat’ın çıktı önizleme aracıyla renk ayrımlarını kontrol edin; yanlışlıkla RGB kalmış ya da istenmeyen bir spot renge dönüşmüş öğeler burada görünür.",
+          "Ön ve arka yüz ya da farklı sayfalar ayrı dosyalarsa, hangisinin hangi yüz olduğunu dosya adında belirtin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "7. Prova: onaydan önce son bakış"
+      },
+      {
+        "type": "p",
+        "text": "Kalibre edilmemiş bir ekranda gördüğünüz renk, baskıdaki rengi tam olarak göstermez. Renk kritik işlerde matbaadan prova isteyin ve provayı gün ışığına yakın bir ışıkta inceleyin. Prova, yazım hatalarını yakalamak için de son fırsattır: telefon numarası, web adresi, fiyat ve ürün bilgileri gibi satırları bir kişi daha okusun."
+      },
+      {
+        "type": "h2",
+        "text": "Teslimden önce kontrol listesi"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Belge, son ölçüde ve doğru sayfa sayısında mı?",
+          "Renk modu CMYK mı, spot renkler doğru tanımlanmış mı?",
+          "Görseller basılacakları boyutta yeterli çözünürlükte mi?",
+          "Taşma payı eklendi mi, önemli öğeler güvenli alanın içinde mi?",
+          "Küçük metinler yalnızca siyah mürekkeple mi basılacak?",
+          "Yazı tipleri gömülü ya da dış hatlara çevrilmiş mi?",
+          "Bıçak izi ve ek işlem katmanları ayrı ve basılmayacak şekilde mi?",
+          "PDF, matbaanın istediği standart ve ayarlarla mı aktarıldı?",
+          "Metinler son kez okundu mu?"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Logoyu web sitesinden kopyalanmış küçük bir PNG dosyasından kullanmak.",
+          "Taşma payı olmadan kenara dayalı arka plan kullanmak.",
+          "Ekran renklerine güvenip prova istememek.",
+          "Kâğıt cinsini en son seçmek; aynı dosya kuşe ve birinci hamur kâğıtta farklı görünür.",
+          "Son değişiklikleri PDF üzerinde yapıp açık dosyayı güncellememek."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital’in grafik tasarım ekibi, kurumsal basılı malzemelerinizi ve ambalaj tasarımlarınızı baskı sürecini de gözeterek hazırlıyor. Bir sonraki baskı işinizden önce dosyalarınızı birlikte gözden geçirebiliriz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[Print bleed and slug areas (Adobe InDesign Yardım)](https://helpx.adobe.com/indesign/desktop/print/page-set-up-and-printer-marks/print-bleed-and-slug-areas.html)",
+          "[Manage PDF presets (Adobe InDesign Yardım)](https://helpx.adobe.com/indesign/desktop/save-export-and-publish/save-and-export/manage-pdf-presets.html)",
+          "[Choosing the Right PDF Preset (CreativePro)](https://creativepro.com/choosing-the-right-pdf-preset/)",
+          "[GS1 Türkiye](https://gs1tr.org)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "mobil-uygulamada-gizlilik-izinler-ve-kvkk",
+    "title": "Mobil uygulamada gizlilik: izinler, mağaza beyanları ve KVKK",
+    "excerpt": "Mobil uygulamalarda izinlerin doğru zamanda istenmesini, App Store ve Google Play gizlilik beyanlarını, takip izni ve hesap silme zorunluluğunu, KVKK kapsamındaki aydınlatma ve açık rıza adımlarını anlattık.",
+    "category": "Web ve Teknoloji",
+    "publishedAt": "2026-03-24T09:00:00.000Z",
+    "seoDescription": "Mobil uygulamada gizlilik: iOS ve Android izinleri, App Store gizlilik etiketleri, Google Play veri güvenliği formu, hesap silme, takip izni ve KVKK.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert zeminde yan yana duran iki telefon ekranı; birinde konum ve bildirim izni isteyen sistem penceresi, diğerinde veri türlerini simgelerle listeleyen bir gizlilik kartı; arkada mavi ışıkla çizilmiş ince bir kilit simgesi.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Mobil uygulamalarda gizlilik, yayından sonra eklenecek bir metin değil, uygulamanın mağazaya kabul edilmesini ve kullanıcıların izin vermeye ikna olmasını doğrudan etkileyen bir tasarım konusudur. Apple ve Google, uygulamaların hangi veriyi topladığını mağaza sayfasında açıkça beyan etmesini istiyor; Türkiye’de ise 6698 sayılı Kişisel Verilerin Korunması Kanunu, veri toplanırken kullanıcının bilgilendirilmesini zorunlu tutuyor."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda bir mobil uygulama projesinde gizlilikle ilgili hangi kararların, hangi aşamada verilmesi gerektiğini anlatıyoruz: veri envanteri, izinler, takip izni, mağaza beyanları, hesap silme ve KVKK adımları. Yazı genel bilgilendirme amaçlıdır; hukuki değerlendirme için uzman desteği almanızı öneririz."
+      },
+      {
+        "type": "h2",
+        "text": "1. Önce veri envanterini çıkarın"
+      },
+      {
+        "type": "p",
+        "text": "Uygulamanın topladığı her veriyi, neden topladığınızı ve nerede sakladığınızı bir tabloda listeleyin. Bu tablo hem mağaza beyanlarının hem de aydınlatma metninin temelidir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Hesap bilgileri:** Ad, e-posta, telefon numarası.",
+          "**Konum:** Hassas mı, yaklaşık mı; yalnızca uygulama açıkken mi, arka planda da mı?",
+          "**Cihaz erişimleri:** Kamera, fotoğraflar, mikrofon, kişiler, takvim.",
+          "**Teknik veriler:** Cihaz kimlikleri, çökme kayıtları, uygulama içi kullanım verileri.",
+          "**Ödeme ve sipariş verileri:** Kart bilgisi uygulamada mı işleniyor, yoksa ödeme kuruluşuna mı yönlendiriliyor?"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Envantere uygulamaya eklediğiniz üçüncü taraf yazılım geliştirme kitlerini (SDK) de dâhil edin. Analitik, reklam, çökme raporlama, sohbet ya da ödeme SDK’ları kendi başlarına veri toplayabilir. Mağaza beyanlarında bu veriler de sizin sorumluluğunuzdadır."
+      },
+      {
+        "type": "h2",
+        "text": "2. İzinleri doğru anda isteyin"
+      },
+      {
+        "type": "p",
+        "text": "iOS’ta kamera, konum, fotoğraflar, mikrofon ve bildirim gibi erişimler kullanıcıya sistem penceresiyle sorulur ve uygulamanın bu erişimi neden istediğini açıklayan bir metin tanımlaması gerekir. Android’de de konum, kamera ve mikrofon gibi hassas izinler uygulama çalışırken istenir; Android 13’ten itibaren bildirim göndermek de kullanıcının iznine bağlıdır."
+      },
+      {
+        "type": "p",
+        "text": "Kullanıcı bir izni reddettiğinde, aynı sistem penceresini tekrar göstermek her zaman mümkün değildir. Bu yüzden ne zaman ve nasıl sorduğunuz önemlidir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Uygulama ilk açıldığında tüm izinleri art arda istemeyin. İzni, kullanıcı o özelliği kullanmak istediği anda isteyin; örneğin kamera iznini profil fotoğrafı ekle düğmesine basıldığında.",
+          "Sistem penceresinden önce, iznin neden gerektiğini anlatan kısa bir uygulama içi ekran gösterin.",
+          "En az yetkiyle yetinin. Yaklaşık konum yetiyorsa hassas konum, sistemin fotoğraf seçicisi yetiyorsa tüm galeri erişimi istemeyin.",
+          "İzin reddedildiğinde uygulama çalışmaya devam etsin; ilgili özelliğin neden kullanılamadığını ve ayarlardan nasıl açılacağını gösterin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "3. Takip izni: App Tracking Transparency"
+      },
+      {
+        "type": "p",
+        "text": "Apple, bir uygulamanın kullanıcı verisini başka şirketlere ait uygulama ve web sitelerinden toplanan verilerle ilişkilendirmesini, örneğin hedefli reklam ya da reklam ölçümü için, “takip” olarak tanımlar. iOS’ta takip yapmak isteyen uygulamalar, AppTrackingTransparency çerçevesiyle kullanıcıdan izin istemek zorundadır. Kullanıcı izin vermezse cihazın reklam kimliğine erişilemez ve diğer yöntemlerle de takip yapılmaması gerekir."
+      },
+      {
+        "type": "p",
+        "text": "Bu, reklam ve ölçüm stratejisini doğrudan etkiler. Uygulamanızda reklam ya da kampanya ölçümü yapan SDK’lar varsa, izin vermeyen kullanıcılar için ölçümün nasıl yapılacağını pazarlama ekibiyle birlikte proje başında planlayın."
+      },
+      {
+        "type": "h2",
+        "text": "4. Mağaza gizlilik beyanları"
+      },
+      {
+        "type": "h3",
+        "text": "App Store: gizlilik ayrıntıları ve gizlilik bildirimi dosyası"
+      },
+      {
+        "type": "p",
+        "text": "App Store Connect’te her uygulama için hangi veri türlerinin toplandığı, bu verilerin kullanıcının kimliğine bağlanıp bağlanmadığı ve takip için kullanılıp kullanılmadığı beyan edilir. Bu bilgiler mağaza sayfasında kullanıcılara gösterilir. Apple ayrıca uygulamaların ve yaygın kullanılan bazı üçüncü taraf SDK’ların, topladıkları verileri ve belirli sistem arayüzlerini neden kullandıklarını açıklayan bir gizlilik bildirimi dosyası (privacy manifest) içermesini istiyor."
+      },
+      {
+        "type": "h3",
+        "text": "Google Play: veri güvenliği bölümü"
+      },
+      {
+        "type": "p",
+        "text": "Google Play’de yayımlanan uygulamalar, hiç veri toplamasalar bile Play Console’daki veri güvenliği formunu doldurmak zorundadır. Formda toplanan ve paylaşılan veri türleri, verinin aktarım sırasında şifrelenip şifrelenmediği ve kullanıcıların verilerinin silinmesini isteyip isteyemeyeceği gibi bilgiler yer alır. Her iki mağazada da erişilebilir bir gizlilik politikası bağlantısı gerekir."
+      },
+      {
+        "type": "p",
+        "text": "Beyanlar uygulamanın gerçek davranışıyla tutarlı olmalıdır. Yeni bir SDK eklediğinizde ya da bir özelliğin topladığı veri değiştiğinde, beyanları da güncellemeniz gerekir. Tutarsız beyanlar, güncellemelerin reddedilmesine ya da uygulamaya yaptırım uygulanmasına yol açabilir."
+      },
+      {
+        "type": "h2",
+        "text": "5. Hesap silme zorunluluğu"
+      },
+      {
+        "type": "p",
+        "text": "Uygulama içinde hesap oluşturmaya izin veriyorsanız, iki mağaza da hesabın silinebilmesini istiyor:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**App Store:** İnceleme yönergelerinin 5.1.1(v) maddesine göre hesap oluşturulabilen uygulamalar, kullanıcının hesabını uygulama içinden silmeyi başlatabilmesine imkân vermelidir. Hesabı yalnızca devre dışı bırakmak yeterli değildir.",
+          "**Google Play:** Kullanıcı hesabın silinmesini uygulama içinden isteyebilmeli; ayrıca uygulamayı yeniden yüklemeden kullanılabilecek bir web bağlantısı da sunulmalıdır. Bu bağlantı veri güvenliği formunda belirtilir."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Yasal saklama yükümlülükleri nedeniyle bazı verileri, örneğin fatura kayıtlarını, belirli bir süre saklamanız gerekebilir. Bu durumda hangi verilerin neden ve ne kadar süre saklanacağını kullanıcıya açıkça belirtin."
+      },
+      {
+        "type": "h2",
+        "text": "6. KVKK açısından yapılması gerekenler"
+      },
+      {
+        "type": "p",
+        "text": "KVKK’nın 10. maddesine göre veri sorumlusu, kişisel veriler elde edilirken ilgili kişiyi bilgilendirmekle yükümlüdür. Mobil uygulamada bu, kayıt ya da ilk kullanım akışında aydınlatma metnine kolay erişilebilmesi anlamına gelir. Uygulamada dikkat edilmesi gereken başlıca konular:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Aydınlatma metni:** Hangi verinin, hangi amaçla, hangi hukuki sebebe dayanarak işlendiğini, kimlere aktarıldığını ve kullanıcının haklarını anlatmalı.",
+          "**Açık rıza:** Kanundaki diğer işleme şartlarından biri yoksa, açık rıza belirli bir konuya ilişkin, bilgilendirmeye dayalı ve özgür iradeyle verilmelidir. Açık rızayı hizmet şartlarının kabulüne bağlamayın ve aydınlatma metniyle aynı onay kutusunda istemeyin.",
+          "**Yurt dışına aktarım:** Sunucunuz, bulut hizmetiniz ya da kullandığınız analitik ve bildirim servisleri yurt dışındaysa KVKK’nın 9. maddesi devreye girer. Bu madde 2024’te değiştirildi; güncel aktarım mekanizmalarını hukuk danışmanınızla değerlendirin.",
+          "**Pazarlama iletileri:** Kampanya amaçlı SMS ve e-posta gönderecekseniz, 6563 sayılı Elektronik Ticaretin Düzenlenmesi Hakkında Kanun kapsamındaki onay kurallarını ve İleti Yönetim Sistemi (İYS) kaydını ayrıca ele alın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Geliştirme sürecine nasıl yerleştirilir?"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Kapsam aşamasında veri envanterini çıkarın ve her verinin gerçekten gerekli olup olmadığını sorgulayın.",
+          "Tasarım aşamasında izin isteme anlarını ve izin öncesi açıklama ekranlarını ekran akışına ekleyin.",
+          "SDK seçerken her birinin topladığı veriyi ve gizlilik belgelerini inceleyin.",
+          "Yayından önce mağaza beyanlarını, gizlilik politikasını ve aydınlatma metnini veri envanteriyle karşılaştırın.",
+          "Hesap silme akışını hem uygulama içinden hem web bağlantısından test edin.",
+          "Her yeni sürümde, eklenen özellik ve SDK’lar için beyanları yeniden gözden geçirin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Uygulamanın ilk açılışında konum, bildirim ve kamera izinlerini art arda istemek.",
+          "Üçüncü taraf SDK’ların topladığı verileri mağaza beyanlarına eklememek.",
+          "İzin reddedildiğinde uygulamanın çalışmayı durdurması.",
+          "Hesap silmeyi yalnızca e-posta ile talep edilebilir hâle getirmek.",
+          "Aydınlatma metnini ve açık rızayı tek bir “kabul ediyorum” kutusunda birleştirmek."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, mobil uygulama projelerinde gizlilik gereksinimlerini kapsam ve tasarım aşamasında ele alıyor. Mevcut uygulamanızın izin akışlarını ve mağaza beyanlarını birlikte gözden geçirmek isterseniz ekibimizle iletişime geçebilirsiniz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[App Review Guidelines (Apple Developer)](https://developer.apple.com/app-store/review/guidelines/)",
+          "[App Privacy Details on the App Store (Apple Developer)](https://developer.apple.com/app-store/app-privacy-details/)",
+          "[User Privacy and Data Use (Apple Developer)](https://developer.apple.com/app-store/user-privacy-and-data-use/)",
+          "[Privacy manifest files (Apple Developer Documentation)](https://developer.apple.com/documentation/bundleresources/privacy-manifest-files)",
+          "[Offering account deletion in your app (Apple Developer)](https://developer.apple.com/support/offering-account-deletion-in-your-app/)",
+          "[Provide information for Google Play’s Data safety section (Play Console Yardım)](https://support.google.com/googleplay/android-developer/answer/10787469)",
+          "[Understanding Google Play’s app account deletion requirements (Play Console Yardım)](https://support.google.com/googleplay/android-developer/answer/13327111)",
+          "[Permissions on Android (Android Developers)](https://developer.android.com/guide/topics/permissions/overview)",
+          "[Notification runtime permission (Android Developers)](https://developer.android.com/develop/ui/views/notifications/notification-permission)",
+          "[6698 sayılı Kişisel Verilerin Korunması Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6698.pdf)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "e-ticarette-urun-sayfasi-nasil-hazirlanir",
+    "title": "E-ticarette ürün sayfası nasıl hazırlanır? Başlık, görsel ve açıklama",
+    "excerpt": "Pazaryeri mağazanız ve kendi e-ticaret siteniz için ürün başlığı, görseller, açıklama, varyantlar, barkod, fiyat ve iade bilgisi ile yapılandırılmış veriyi nasıl hazırlayacağınızı anlattık.",
+    "category": "E-Ticaret",
+    "publishedAt": "2026-04-07T09:00:00.000Z",
+    "seoDescription": "E-ticaret ürün sayfası rehberi: ürün başlığı yapısı, görsel kuralları, açıklama ve teknik özellikler, varyant ve barkod, ön bilgilendirme ve Product verisi.",
+    "readMinutes": 7,
+    "coverConcept": "Buz mavisi zeminde bir ürün sayfası arayüzü: solda farklı açılardan ürün görselleri küçük kartlar hâlinde, sağda başlık, varyant seçim düğmeleri, fiyat ve sepete ekle alanı; altta özellik tablosu satırları ince lacivert çizgilerle.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "E-ticarette müşteri ürüne dokunamaz, deneyemez, satıcıya soru soramaz. Bütün bu eksikliği ürün sayfası kapatmak zorundadır. Başlık ürünü doğru aramalarda gösterir, görseller ürünü tanıtır, açıklama soruları cevaplar, fiyat ve teslimat bilgisi de kararı kolaylaştırır. Bu parçalardan biri eksik kaldığında ziyaretçi ya başka bir satıcıya gider ya da ürünü satın alıp beklentisini karşılamadığı için iade eder."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda Trendyol, Hepsiburada gibi pazaryerlerindeki mağazanız ve kendi e-ticaret siteniz için geçerli olan ürün sayfası ilkelerini, iki kanal arasındaki farklarla birlikte anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "Ürün sayfasının iki okuru var"
+      },
+      {
+        "type": "p",
+        "text": "Ürün sayfasını önce sistemler okur: pazaryerinin kendi arama motoru, Google ve Google Alışveriş gibi ürün listeleme yüzeyleri. Bu sistemler ürünü başlık, kategori, özellik alanları ve tanımlayıcılar üzerinden anlar. Ardından insanlar okur ve onlar da “bu ürün benim ihtiyacımı karşılıyor mu?” sorusuna cevap arar. İyi bir ürün sayfası her iki okura da aynı anda hizmet eder: bilgiler hem yapılandırılmış alanlarda eksiksiz, hem de metinde anlaşılır olmalıdır."
+      },
+      {
+        "type": "h2",
+        "text": "1. Başlık: ne olduğunu ilk bakışta söyleyin"
+      },
+      {
+        "type": "p",
+        "text": "Ürün başlığı için çoğu kategoride işe yarayan bir yapı şudur: marka, ürün türü ve ürünü benzerlerinden ayıran temel özellikler. Bu özellikler kategoriye göre model, malzeme, renk, beden, kapasite ya da adet olabilir."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Zayıf:** “Harika Kahve Makinesi Süper Fiyat”",
+          "**Daha iyi:** “[Marka] Filtre Kahve Makinesi, 1,2 L, Zaman Ayarlı, Siyah”"
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Başlığa “indirim”, “en ucuz” ya da “ücretsiz kargo” gibi tanıtım ifadeleri eklemeyin. Google Merchant Center’ın ürün verisi şartnamesi başlıklarda tanıtım metnine izin vermez; pazaryerlerinin çoğu da benzer kurallar uygular. Aynı anahtar kelimeyi başlıkta tekrar etmek de ürünü daha görünür yapmaz, yalnızca okunmasını zorlaştırır. Her pazaryerinin başlık uzunluğu ve biçimiyle ilgili kendi kuralları vardır; satıcı panelindeki güncel kılavuzu esas alın."
+      },
+      {
+        "type": "h2",
+        "text": "2. Görseller: ürünün kendisini gösterin"
+      },
+      {
+        "type": "p",
+        "text": "Ana görsel, liste sayfasında ve arama sonuçlarında ürünün nasıl görüneceğini belirler. Sade bir zemin üzerinde, ürünün tamamını ve gerçek rengini gösteren net bir fotoğraf kullanın. Merchant Center, ana görselde tanıtım yazısı, filigran ve kenarlık bulunmamasını ister. Pazaryerleri de zemin rengi, ürünün kadrajdaki oranı ve görsel boyutu gibi konularda kategoriye özel kurallar uygular."
+      },
+      {
+        "type": "p",
+        "text": "Ek görseller, müşterinin mağazada ürünü elinde çevirerek yapacağı incelemenin yerini tutmalıdır:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Farklı açılar: ön, arka, yan ve üstten görünüm.",
+          "Detay çekimleri: kumaş dokusu, dikiş, bağlantı noktaları, düğmeler.",
+          "Ölçü gösteren bir görsel ya da elde veya bir nesneyle karşılaştırmalı çekim.",
+          "Kullanım anını gösteren bir görsel.",
+          "Kutu içeriği ve ambalaj.",
+          "Her renk ya da desen varyantı için ayrı görsel seti."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Kendi sitenizde görselleri sıkıştırarak ve uygun boyutta sunmak sayfa hızını korur. Görsellere ürünü kısaca tanımlayan alternatif metin eklemek ise hem erişilebilirlik hem de görsel aramalar için faydalıdır."
+      },
+      {
+        "type": "h2",
+        "text": "3. Açıklama: soruları cevaplayın"
+      },
+      {
+        "type": "p",
+        "text": "Müşteri hizmetlerine ya da pazaryeri soru alanına sık gelen soruları listeleyin; iyi bir ürün açıklaması bu soruları sorulmadan cevaplar. Açıklamayı şu sırayla kurgulamak okumayı kolaylaştırır:"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "**Kısa giriş:** Ürünün kime ve hangi ihtiyaca yönelik olduğu, bir ya da iki cümleyle.",
+          "**Öne çıkan özellikler:** Her biri bir faydayla birlikte, madde işaretleriyle.",
+          "**Teknik özellikler:** Ölçüler, ağırlık, malzeme, güç, kapasite, uyumluluk.",
+          "**Kullanım ve bakım:** Yıkama talimatı, kurulum, saklama koşulları.",
+          "**Kutu içeriği ve garanti:** Pakette neler olduğu, garanti süresi ve garantinin kim tarafından verildiği."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Üreticinin hazır açıklamasını olduğu gibi kopyalamak, aynı ürünü satan diğer satıcılarla birebir aynı sayfayı oluşturmanız demektir. Üretici bilgisini temel alın, ama kendi müşterinizin sorularına göre yeniden düzenleyin. Ürünün sahip olmadığı bir özelliği ima eden ya da doğrulayamayacağınız iddialar içeren ifadelerden kaçının; bunlar hem iade hem de hukuki risk doğurur."
+      },
+      {
+        "type": "h2",
+        "text": "4. Varyantlar, kategori ve tanımlayıcılar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Varyantlar:** Aynı ürünün beden ve renk seçeneklerini ayrı ürünler olarak değil, tek bir ürünün varyantları olarak tanımlayın. Böylece yorumlar ve satış geçmişi tek sayfada toplanır.",
+          "**Kategori ve özellik alanları:** Pazaryerlerinde ürünün doğru kategoride ve kategoriye ait özellik alanları eksiksiz doldurulmuş olması, filtrelerde görünmesini sağlar. Kullanıcı “pamuk” ya da “su geçirmez” filtresi seçtiğinde ilgili alan boşsa ürününüz listede yer almaz.",
+          "**Barkod (GTIN):** Kendi markanızla ürün üretiyorsanız barkod numaralarını Türkiye’de GS1 Türkiye’den alabilirsiniz. Pazaryerleri ve Google, aynı ürünü farklı satıcılarda eşleştirmek için bu numaraları kullanır.",
+          "**Marka ve model kodu:** Barkodu olmayan ürünlerde marka ve üretici parça numarası ürünün tanınmasına yardım eder."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "5. Fiyat, teslimat ve iade bilgisi"
+      },
+      {
+        "type": "p",
+        "text": "Mesafeli Sözleşmeler Yönetmeliği, tüketicinin sözleşmeden önce bilgilendirilmesini zorunlu tutar. Ticaret Bakanlığı’nın açıklamasına göre bu ön bilgilendirme; malın temel nitelikleri, satıcının kimlik ve iletişim bilgileri, vergiler dâhil toplam fiyat, varsa teslimat masrafları, ödeme ve teslimat bilgileri ile cayma hakkının kullanılmasına ilişkin bilgileri kapsar. Pazaryerlerinde bu metinlerin önemli bir kısmı platform tarafından sağlanır; kendi sitenizde ise sizin sorumluluğunuzdadır."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Kargo ücretini ve ücretsiz kargo koşulunu sepet aşamasına bırakmadan ürün sayfasında gösterin.",
+          "Tahmini teslim süresini gerçekçi yazın; stoğu olmayan ve tedarikçiden gelecek ürünlerde bunu açıkça belirtin.",
+          "İade koşullarını ve sürecin nasıl işlediğini kısa bir özetle ve ayrıntılı sayfaya bağlantıyla verin.",
+          "İndirimli fiyat gösteriyorsanız, indirimden önceki fiyatın nasıl belirleneceğine ilişkin kurallar Ticari Reklam ve Haksız Ticari Uygulamalar Yönetmeliği’nde düzenlenir. Bu kurallar zaman içinde değişebildiği için kampanya öncesinde yürürlükteki metni kontrol edin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "6. Güven veren ayrıntılar"
+      },
+      {
+        "type": "p",
+        "text": "Ürün yorumları, soru ve cevaplar, müşterilerin yüklediği fotoğraflar ve kolay bulunan iletişim bilgileri karar anında belirleyicidir. Yorum istemek için teslimattan sonra kısa bir hatırlatma gönderebilirsiniz; ancak yorumları seçerek yayımlamak ya da gerçek olmayan yorumlar eklemek güveni zedeler ve hukuki sorun yaratabilir. Olumsuz yorumlara verilen açık ve çözüm odaklı yanıtlar, ürün sayfasının en ikna edici bölümlerinden biri olabilir."
+      },
+      {
+        "type": "h2",
+        "text": "7. Kendi sitenizde teknik ayrıntılar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Yapılandırılmış veri:** Ürün sayfalarına Product yapılandırılmış verisi eklemek; fiyat, stok durumu ve yorum puanı gibi bilgilerin Google arama sonuçlarında ve alışveriş yüzeylerinde gösterilmesine yardımcı olabilir. İşaretlenen bilgiler sayfada görünen bilgilerle aynı olmalıdır.",
+          "**Stokta olmayan ürünler:** Geçici olarak tükenen ürünlerin sayfasını kaldırmak yerine stok durumunu güncelleyin ve gerekiyorsa “gelince haber ver” seçeneği sunun. Kalıcı olarak satıştan kalkan ürünlerde kullanıcıyı en yakın alternatif ürüne ya da kategoriye yönlendirin.",
+          "**Hız ve mobil görünüm:** Ziyaretçilerin önemli bir kısmı telefondan gelir. Görsel galerisinin, varyant seçiminin ve sepete ekle düğmesinin küçük ekranda rahat kullanıldığını test edin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Pazaryeri ve kendi site arasındaki farklar"
+      },
+      {
+        "type": "p",
+        "text": "Pazaryerinde sayfa şablonu platforma aittir; siz alanları doldurursunuz ve platformun içerik kurallarına uymak zorundasınız. Kendi sitenizde ise sayfa yapısı, anlatım ve teknik altyapı tamamen sizin kontrolünüzdedir. Bu, kendi sitenizde daha zengin açıklamalar, karşılaştırma tabloları, kullanım videoları ve marka hikâyesi gibi içerikler kullanabileceğiniz anlamına gelir. İki kanalda da aynı ürünü satıyorsanız temel bilgileri tek bir ürün bilgi kaynağında tutup her kanala uygun biçimde aktarmak, bilgilerin zamanla birbirinden farklılaşmasını önler."
+      },
+      {
+        "type": "h2",
+        "text": "Ürün sayfası kontrol listesi"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Başlık marka, ürün türü ve temel özellikleri içeriyor, tanıtım ifadesi içermiyor.",
+          "Ana görsel sade zeminde ve kurallara uygun; ek görseller ürünün tüm yönlerini gösteriyor.",
+          "Açıklama sık sorulan soruları cevaplıyor; teknik özellikler eksiksiz.",
+          "Varyantlar tek ürün altında, kategori ve özellik alanları dolu.",
+          "Barkod, marka ve model bilgisi doğru.",
+          "Fiyat, kargo ücreti, teslim süresi ve iade koşulları açık.",
+          "Kendi sitenizde yapılandırılmış veri ve stok durumu güncel.",
+          "Sayfa mobilde test edildi."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, e-ticaret yönetimi hizmetinde pazaryeri mağazalarının ve e-ticaret sitelerinin ürün içeriklerini birlikte düzenliyor. Ürün kataloğunuzu bu başlıklar üzerinden gözden geçirmek isterseniz ekibimize ulaşabilirsiniz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[Mesafeli Sözleşmeler Hakkında Bilgilendirme (Ticaret Bakanlığı Tüketici Rehberi)](https://tuketici.ticaret.gov.tr/yayinlar/tuketici-bilgi-rehberi/mesafeli-sozlesmeler-hakkinda-bilgilendirme)",
+          "[Product data specification (Google Merchant Center Yardım)](https://support.google.com/merchants/answer/7052112)",
+          "[Image link (Google Merchant Center Yardım)](https://support.google.com/merchants/answer/6324350)",
+          "[Intro to Product Structured Data on Google (Google Search Central)](https://developers.google.com/search/docs/appearance/structured-data/product)",
+          "[GS1 Türkiye](https://gs1tr.org)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "marka-ticaret-unvani-ve-alan-adi-farki",
+    "title": "Marka, ticaret unvanı ve alan adı: farkları ve korunma yolları",
+    "excerpt": "Şirket kurarken tescil edilen ticaret unvanının, TÜRKPATENT’te tescil edilen markanın, alan adının ve logo üzerindeki telif hakkının neyi koruduğunu ve neyi korumadığını, yeni bir ad seçerken izlenecek sırayla anlattık.",
+    "category": "Marka ve Tasarım",
+    "publishedAt": "2026-04-21T09:00:00.000Z",
+    "seoDescription": "Marka, ticaret unvanı ve alan adı farkı: TTK’ya göre unvan tescili, SMK’ya göre marka, TRABİS ile .tr alan adı, logo telif hakkı ve tasarım tescili.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert-mavi ışık gradyanı üzerinde yan yana dizilmiş dört belge kartı: ® simgeli bir marka tescil belgesi, ticaret sicili gazetesi sayfası, tarayıcı adres çubuğunda bir .com.tr alan adı ve vektör çizgileriyle bir logo eskizi; kartları ince mavi çizgiler birbirine bağlıyor.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Yeni bir işletme kurulduğunda sık duyulan bir düşünce şudur: “Şirketi bu adla kurduk, alan adını da aldık; ad artık bizim.” Oysa şirketin ticaret unvanı, ürün ya da hizmetlerde kullanılan marka, web sitesinin alan adı ve logonun tasarımı, her biri farklı kanunlara ve farklı kayıt sistemlerine bağlı ayrı haklardır. Birinin tescil edilmiş olması, diğerlerini otomatik olarak korumaz."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda bu dört kavramın farkını, her birinin nerede ve nasıl kayıt altına alındığını ve yeni bir ad seçerken hangi sırayla ilerlemenin mantıklı olduğunu anlatıyoruz. Yazı genel bilgilendirme amaçlıdır; somut durumlar için bir marka vekili ya da avukattan destek almanızı öneririz."
+      },
+      {
+        "type": "h2",
+        "text": "Kısaca dört farklı kayıt"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Ticaret unvanı:** Tacirin ticari işlemlerini yaptığı ad. Ticaret siciline tescil edilir.",
+          "**Marka:** Mal ve hizmetleri başkalarınınkinden ayıran işaret. Türk Patent ve Marka Kurumu’na (TÜRKPATENT) yapılan başvuruyla tescil edilir.",
+          "**Alan adı:** İnternetteki adresiniz. .tr uzantılılar TRABİS üzerinden, .com gibi genel uzantılar ise uluslararası kayıt kuruluşları aracılığıyla kaydedilir.",
+          "**Logo ve görsel tasarım:** Özgün bir logo, telif hakkıyla korunabilir; ayrıca marka olarak tescil edilebilir. Ürün ve ambalaj görünümü için tasarım tescili de bir seçenektir."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Ticaret unvanı: şirketin resmî adı"
+      },
+      {
+        "type": "p",
+        "text": "6102 sayılı Türk Ticaret Kanunu’na göre her tacir, ticari işletmesine ilişkin işlemleri ticaret unvanıyla yapmak ve unvanını işletmenin bulunduğu yerin ticaret siciline tescil ve ilan ettirmek zorundadır. Tescil edilen unvanlar Türkiye Ticaret Sicili Gazetesi’nde yayımlanır. Şirket kuruluşu Ticaret Bakanlığı’nın MERSİS sistemi üzerinden yapılırken önerilen unvan da kontrol edilir."
+      },
+      {
+        "type": "p",
+        "text": "Unvanın biçimi şirket türüne göre kanunla belirlenmiştir. Örneğin bir anonim şirketin unvanında şirketin türünü gösteren ibare bulunur. Unvan tescili, o unvanın ticari işlemlerde kullanılmasına ilişkin bir haktır; ancak aynı adın belirli mal ve hizmetler için marka olarak kullanılmasını başkalarına karşı tek başına korumaz. Örneğin unvanınız “Deniz Gıda Sanayi ve Ticaret A.Ş.” olsa bile, “Deniz” adını ürün ambalajlarınızda marka olarak kullanıyorsanız bu kullanımın koruması marka tesciline bağlıdır."
+      },
+      {
+        "type": "h2",
+        "text": "Marka: mal ve hizmetler için ayırt edici işaret"
+      },
+      {
+        "type": "p",
+        "text": "Marka hakkı, 6769 sayılı Sınai Mülkiyet Kanunu (SMK) kapsamında tescille elde edilir ve başvuruda seçilen mal ve hizmet sınıfları için geçerlidir. Tescilli markanın koruma süresi başvuru tarihinden itibaren on yıldır ve onar yıllık dönemlerle yenilenebilir. Ticaret unvanınızın ayırt edici kısmı ile ürün ya da hizmet markanız aynı olabileceği gibi tamamen farklı da olabilir; bir şirketin birden fazla ürün markası olması da yaygındır."
+      },
+      {
+        "type": "h3",
+        "text": "Unvan ile marka çatıştığında"
+      },
+      {
+        "type": "p",
+        "text": "SMK’nın 6. maddesi, ticaret hayatında daha önce kullanılan ayırt edici işaretlerin sahiplerine belirli koşullarla, sonradan yapılan benzer bir marka başvurusuna itiraz etme imkânı tanır. Ticaret unvanı da bu tür işaretlerden biri olabilir. İtirazlar, başvurunun Resmî Marka Bülteni’nde yayımlanmasından itibaren iki ay içinde yapılır. Bu nedenle sektörünüzdeki marka başvurularını bültenden takip etmek, unvanınızı korumanın da bir parçasıdır. Bu tür uyuşmazlıklar somut koşullara göre değerlendirildiği için mutlaka uzman desteği alın."
+      },
+      {
+        "type": "h2",
+        "text": "Alan adı: internetteki adresiniz"
+      },
+      {
+        "type": "p",
+        "text": ".tr uzantılı alan adları, Bilgi Teknolojileri ve İletişim Kurumu bünyesindeki TRABİS (.tr Ağ Bilgi Sistemi) tarafından yönetilir. TRABİS 14 Eylül 2022’de faaliyete geçti ve alan adı başvuruları artık yetkili kayıt kuruluşları aracılığıyla yapılıyor. Bu geçişle birlikte .com.tr, .net.tr ve .org.tr gibi uzantılarda belge istenmeden, ilk başvurana tahsis edilen bir sistem uygulanmaya başladı. Bazı uzantılar ise hâlâ belgeye dayalı olarak tahsis ediliyor."
+      },
+      {
+        "type": "p",
+        "text": "Bu durum, adınızla ilgili bir .com.tr alan adının başkası tarafından sizden önce alınabileceği anlamına gelir. Alan adı kaydı, o ad üzerinde marka hakkı da sağlamaz; tersine, tescilli bir markanız varsa ve biri bu markayı kötü niyetle alan adı olarak kaydettiyse, .tr alan adları için İnternet Alan Adları Yönetmeliği kapsamındaki uyuşmazlık çözüm sistemine, .com gibi genel uzantılar için ise WIPO Tahkim ve Arabuluculuk Merkezi gibi kuruluşların yürüttüğü uyuşmazlık çözüm süreçlerine başvurulabilir."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Alan adını bir çalışanın ya da ajansın adına değil, işletme adına kaydedin.",
+          "Kayıt kuruluşu hesabının şifresini ve yönetici e-postasını işletmenin kontrol ettiği bir adreste tutun.",
+          "Yenileme tarihini takvime yazın ve mümkünse otomatik yenilemeyi açın.",
+          "Ana alan adınızın yaygın yazım hatalarını ve farklı uzantılarını da kaydetmeyi değerlendirin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sosyal medya kullanıcı adları"
+      },
+      {
+        "type": "p",
+        "text": "Instagram, TikTok ya da LinkedIn’deki kullanıcı adları hukuki bir tescil değildir; platformların kendi kurallarına göre ilk alan kişiye verilir. Yine de tescilli bir markanız varsa, markanızı taklit eden ya da yanıltıcı biçimde kullanan hesapları platformların fikri mülkiyet bildirim formları üzerinden şikâyet etmek çok daha kolaydır. Yeni bir ad seçerken kullanıcı adlarının uygunluğunu da kontrol etmek, sonradan farklı platformlarda farklı adlar kullanmak zorunda kalmayı önler."
+      },
+      {
+        "type": "h2",
+        "text": "Logo: telif hakkı ve tasarım tescili"
+      },
+      {
+        "type": "p",
+        "text": "Özgün bir logo, 5846 sayılı Fikir ve Sanat Eserleri Kanunu kapsamında eser olarak korunabilir. Bu korumanın sahibi, aksi kararlaştırılmadıkça logoyu yaratan tasarımcıdır. Kanunun 52. maddesine göre mali haklara ilişkin sözleşmelerin yazılı olması ve devredilen hakların tek tek gösterilmesi gerekir. Logoyu bir ajansa ya da serbest çalışan bir tasarımcıya yaptırıyorsanız, hak devrini yazılı bir sözleşmeyle güvence altına alın; özellikle logoyu marka olarak tescil ettirmeden önce bu konuyu netleştirin."
+      },
+      {
+        "type": "p",
+        "text": "Ürünün kendisinin ya da ambalajın görünümü için SMK kapsamında tasarım tescili de mümkündür. Tasarımın yeni olması ve ayırt edici niteliğe sahip olması gerekir. Tescilli tasarımın koruma süresi başvuru tarihinden itibaren beş yıldır ve beşer yıllık dönemlerle yenilenerek toplam yirmi beş yıla kadar uzatılabilir."
+      },
+      {
+        "type": "h2",
+        "text": "Adınızı değiştiriyorsanız"
+      },
+      {
+        "type": "p",
+        "text": "Yeniden markalama ya da şirket adı değişikliği yaparken bu dört kaydın her biri ayrı ayrı güncellenmelidir. Birini değiştirip diğerlerini unutmak, müşterilerin ve resmî kayıtların farklı adları göstermesine neden olur:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Ticaret unvanı değişikliği için şirket türünüze göre gerekli kararı alıp ticaret siciline tescil ettirin; değişiklik Türkiye Ticaret Sicili Gazetesi’nde ilan edilir.",
+          "Yeni ad için marka araştırması ve başvurusunu, değişikliği duyurmadan önce yapın. Eski markanızın tescilini, kullanmaya devam edip etmeyeceğinize göre değerlendirin.",
+          "Eski alan adını hemen bırakmayın; eski adresleri kalıcı yönlendirmeyle yeni alan adına bağlayın ve eski alan adının yenilemesini bir süre daha sürdürün.",
+          "Fatura, e-fatura ve sözleşme şablonlarındaki unvanı, sosyal medya hesaplarının adlarını ve Google İşletme Profili bilgilerini aynı dönemde güncelleyin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Yeni bir ad seçerken izlenecek sıra"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Aday adları için TÜRKPATENT’in marka araştırma imkânıyla ilgili sınıflarda benzer marka olup olmadığına bakın.",
+          "Ticaret unvanı olarak kullanılıp kullanılmadığını ticaret sicili kayıtlarından kontrol edin.",
+          "Alan adı uygunluğunu .com.tr ve .com gibi uzantılarda kontrol edin.",
+          "Kullanacağınız sosyal medya platformlarında kullanıcı adının boş olup olmadığına bakın.",
+          "Ad netleştikten sonra alan adlarını hemen kaydedin; bu adım düşük maliyetlidir ve gecikme riski yüksektir.",
+          "Marka başvurusunu, ad kesinleştiği anda yapın.",
+          "Logo tasarımını yaptırın ve hak devrini yazılı sözleşmeyle alın.",
+          "Logo hazır olduğunda, gerekiyorsa şekil unsurunu içeren marka başvurusunu da değerlendirin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Ticaret unvanı tescilini marka tescili sanmak.",
+          "Alan adını aldıktan sonra marka başvurusunu ertelemek.",
+          "Logoyu tasarımcıyla yazılı bir hak devri sözleşmesi yapmadan kullanmaya başlamak.",
+          "Alan adını ve sosyal medya hesaplarını kişisel hesaplara bağlamak.",
+          "Marka bültenini hiç takip etmemek."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, marka tescil sürecinde ön araştırma ve başvuru takibinin yanında logo tasarımı, alan adı ve sosyal medya hesaplarının kurulumunda da işletmelere destek veriyor. Yeni bir ad üzerinde çalışıyorsanız bu adımları birlikte planlayabiliriz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[6102 sayılı Türk Ticaret Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6102.pdf)",
+          "[6769 sayılı Sınai Mülkiyet Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6769.pdf)",
+          "[5846 sayılı Fikir ve Sanat Eserleri Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.3.5846.pdf)",
+          "[Marka Bilgilendirme (TÜRKPATENT)](https://www.turkpatent.gov.tr/marka)",
+          "[Tasarım Bilgilendirme (TÜRKPATENT)](https://www.turkpatent.gov.tr/tasarim)",
+          "[TRABİS: .tr Ağ Bilgi Sistemi (BTK)](https://www.trabis.gov.tr)",
+          "[Türkiye Ticaret Sicili Gazetesi (TOBB)](https://www.ticaretsicil.gov.tr)",
+          "[Domain Name Disputes (WIPO)](https://www.wipo.int/amc/en/domains/)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "web-sitesi-erisilebilirligi-wcag-temel-kontroller",
+    "title": "Web sitesi erişilebilirliği: WCAG 2.2 ile temel kontroller",
+    "excerpt": "WCAG 2.2’nin ne olduğunu, AB Erişilebilirlik Yasası’nın ihracat yapan işletmeler için neden önemli olduğunu ve görseller, kontrast, klavye, formlar ve dokunma hedefleri için temel kontrolleri anlattık.",
+    "category": "Web ve Teknoloji",
+    "publishedAt": "2026-05-05T09:00:00.000Z",
+    "seoDescription": "Web erişilebilirliği rehberi: WCAG 2.2 ilkeleri, AB Erişilebilirlik Yasası, alternatif metin, kontrast, klavye erişimi, formlar, dokunma hedefi ve test.",
+    "readMinutes": 7,
+    "coverConcept": "Buz mavisi zeminde bir web sayfası arayüzü; klavye odağını gösteren kalın mavi çerçeveli bir düğme, yanında kontrast oranını gösteren iki renk örneği ve alternatif metin etiketi taşıyan bir görsel kartı, hepsi ince lacivert çizgilerle işaretlenmiş.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Web erişilebilirliği, sitenizin görme, işitme, hareket ya da bilişsel engeli olan kişiler dâhil herkes tarafından kullanılabilmesi demektir. Ekran okuyucuyla gezinen bir kullanıcı, fareyi kullanamayıp yalnızca klavyeyle ilerleyen biri, küçük yazıları okumakta zorlanan yaşlı bir müşteri ya da güneş altında telefonuna bakan herhangi biri, erişilebilir tasarımdan doğrudan fayda görür."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda erişilebilirlik için uluslararası referans kabul edilen WCAG 2.2 yönergelerini kısaca tanıtıyor, yeni bir site yaptırırken ya da mevcut sitenizi gözden geçirirken kontrol edebileceğiniz temel konuları ve basit test yöntemlerini anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "WCAG nedir?"
+      },
+      {
+        "type": "p",
+        "text": "Web İçeriği Erişilebilirlik Yönergeleri (WCAG), World Wide Web Consortium (W3C) tarafından yayımlanır. Güncel sürüm olan WCAG 2.2, Ekim 2023’te W3C önerisi olarak yayımlandı. Yönergeler dört ilke etrafında düzenlenir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Algılanabilir:** Bilgi, kullanıcının algılayabileceği biçimde sunulmalı; örneğin görsellerin metin karşılığı olmalı.",
+          "**İşletilebilir:** Arayüz bileşenleri ve gezinme herkes tarafından kullanılabilmeli; örneğin her işlev klavyeyle yapılabilmeli.",
+          "**Anlaşılabilir:** İçerik ve arayüzün işleyişi anlaşılır olmalı.",
+          "**Sağlam:** İçerik, yardımcı teknolojiler dâhil farklı tarayıcı ve araçlarla güvenilir biçimde çalışmalı."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Her başarı ölçütü A, AA ya da AAA düzeyindedir. Yasal düzenlemelerin ve kurumsal hedeflerin büyük kısmı AA düzeyini esas alır; bu yazıdaki kontroller de bu düzeye odaklanır."
+      },
+      {
+        "type": "h2",
+        "text": "İhracat yapan işletmeler için: AB Erişilebilirlik Yasası"
+      },
+      {
+        "type": "p",
+        "text": "Avrupa Birliği’nin 2019/882 sayılı Direktifi, yani Avrupa Erişilebilirlik Yasası, 28 Haziran 2025’ten itibaren uygulanıyor. Yasa, AB’deki tüketicilere sunulan e-ticaret hizmetleri dâhil belirli ürün ve hizmetler için erişilebilirlik şartları getiriyor. Hizmet sağlayan mikro işletmeler bu yükümlülüklerden muaf tutuluyor. AB pazarındaki tüketicilere doğrudan online satış yapan bir Türk işletmesiyseniz, yasanın sizin için geçerli olup olmadığını değerlendirmeniz gerekir."
+      },
+      {
+        "type": "h2",
+        "text": "1. Görseller için metin alternatifi"
+      },
+      {
+        "type": "p",
+        "text": "Ekran okuyucular görselleri, onlara eklenen alternatif metin (alt metni) üzerinden kullanıcıya aktarır. Bilgi taşıyan her görselin, o bilgiyi kısaca anlatan bir alternatif metni olmalıdır. Yalnızca süs amaçlı görsellerde ise alternatif metin boş bırakılarak ekran okuyucunun bu görseli atlaması sağlanır. W3C’nin alternatif metin karar ağacı, bir görselin hangi gruba girdiğine karar vermek için pratik bir araçtır."
+      },
+      {
+        "type": "p",
+        "text": "Yalnızca simgeden oluşan düğmeler de unutulmamalıdır. Bir büyüteç simgesi görsel olarak “ara” anlamına gelse de ekran okuyucu kullanıcısı için bu düğmenin erişilebilir bir adı olmalıdır."
+      },
+      {
+        "type": "h2",
+        "text": "2. Renk ve kontrast"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Metin kontrastı:** WCAG’nin 1.4.3 ölçütüne göre normal metin ile arka planı arasında en az 4,5:1, büyük metinde en az 3:1 kontrast oranı olmalıdır.",
+          "**Arayüz bileşenleri:** Form alanlarının kenarlıkları, düğmeler ve odak göstergeleri gibi öğeler de çevreleriyle en az 3:1 kontrast oluşturmalıdır.",
+          "**Yalnızca renge dayanmayın:** Bir form hatasını yalnızca kırmızı çerçeveyle, bir bağlantıyı yalnızca renk farkıyla göstermek, renk ayırt etmekte zorlanan kullanıcılar için yeterli değildir. Renge ek olarak metin, simge ya da alt çizgi kullanın."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Kurumsal renk paletiniz açık tonlardan oluşuyorsa, bu renkleri metin rengi olarak değil vurgu ve arka plan rengi olarak kullanmak çoğu zaman kontrast sorununu çözer."
+      },
+      {
+        "type": "h2",
+        "text": "3. Klavye ile kullanım"
+      },
+      {
+        "type": "p",
+        "text": "Sitedeki her işlev, fare olmadan yalnızca klavyeyle de kullanılabilmelidir. Tab tuşuyla ilerlerken hangi öğenin seçili olduğu görünür olmalı; tarayıcının varsayılan odak çerçevesini tasarım gerekçesiyle kaldırmak sık yapılan bir hatadır. Kontrol edilmesi gerekenler:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Menüler, açılır pencereler, sekmeler ve kaydırmalı alanlar klavyeyle açılıp kapanabiliyor mu?",
+          "Bir açılır pencereye girildiğinde Escape ile çıkılabiliyor mu, yoksa kullanıcı içinde sıkışıp kalıyor mu?",
+          "Odak sırası sayfanın görsel sırasıyla uyumlu mu?",
+          "WCAG 2.2 ile eklenen ölçüte göre, odaklanan öğe sabit bir başlık, çerez bandı ya da sohbet balonu tarafından tamamen kapatılıyor mu?",
+          "Sayfanın başında, menüyü atlayıp doğrudan ana içeriğe geçmeyi sağlayan bir bağlantı var mı?"
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "4. Formlar"
+      },
+      {
+        "type": "p",
+        "text": "İletişim, teklif ve ödeme formları genellikle sitenin dönüşüm getiren bölümleridir; erişilebilirlik sorunları burada doğrudan müşteri kaybına dönüşür."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Her alanın görünür ve alana programatik olarak bağlı bir etiketi olsun. Yalnızca alanın içindeki yer tutucu metin, yazmaya başlandığında kaybolduğu için yeterli değildir.",
+          "Hata mesajları hangi alanda neyin yanlış olduğunu metinle açıklasın ve mümkünse nasıl düzeltileceğini söylesin.",
+          "WCAG 2.2’ye göre, aynı işlem içinde kullanıcının daha önce girdiği bilgiyi tekrar yazması istenmemeli; bilgi otomatik doldurulmalı ya da seçilebilir olmalıdır.",
+          "Giriş ekranlarında şifre yöneticilerinin çalışmasına ve şifrenin yapıştırılmasına izin verin. WCAG 2.2, kimlik doğrulamanın yalnızca hatırlama ya da bulmaca çözme gibi bilişsel bir teste dayanmamasını ister."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "5. Dokunma hedefleri ve sürükleme"
+      },
+      {
+        "type": "p",
+        "text": "WCAG 2.2’de eklenen 2.5.8 ölçütüne göre tıklanabilir hedefler, bazı istisnalar dışında en az 24 x 24 CSS pikseli boyutunda olmalı ya da çevrelerinde yeterli boşluk bulunmalıdır. Mobilde birbirine çok yakın yerleştirilmiş küçük bağlantılar, yanlış öğeye dokunulmasına yol açar. Aynı sürümle gelen bir başka ölçüt de sürükleme gerektiren işlevlere, örneğin fiyat aralığı kaydırıcısına, tek bir dokunuşla ya da tıklamayla kullanılabilen bir alternatif sunulmasını ister."
+      },
+      {
+        "type": "h2",
+        "text": "6. Yapı, dil ve bağlantılar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Başlıkları görsel boyutlarına göre değil, içerik hiyerarşisine göre kullanın. Ekran okuyucu kullanıcıları sayfada çoğunlukla başlıklar arasında gezinir.",
+          "Sayfanın dilini HTML’de doğru belirtin. Türkçe bir sayfada dil bilgisi eksikse ekran okuyucu metni yanlış telaffuzla okuyabilir.",
+          "Her sayfanın içeriğini anlatan benzersiz bir başlığı olsun.",
+          "Bağlantı metinleri, bağlam olmadan okunduğunda da anlamlı olsun. “Buraya tıklayın” yerine “Fiyat listesini indirin” gibi ifadeler kullanın.",
+          "Metin, tarayıcıda yüzde iki yüze kadar büyütüldüğünde içerik ve işlevler kaybolmamalıdır."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "7. Video ve ses"
+      },
+      {
+        "type": "p",
+        "text": "Konuşma içeren tanıtım videolarına altyazı ekleyin. Otomatik oynayan ve birkaç saniyeden uzun süren ses ya da hareketli içerikler için durdurma imkânı sunun. Arka planda otomatik oynayan videolar hem dikkat dağıtabilir hem de bazı kullanıcılar için rahatsız edici olabilir."
+      },
+      {
+        "type": "h2",
+        "text": "Nasıl test edilir?"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "**Klavye testi:** Fareyi bir kenara bırakıp ana sayfadan iletişim formunu göndermeye kadar her adımı yalnızca Tab, Enter, boşluk ve ok tuşlarıyla deneyin.",
+          "**Yakınlaştırma testi:** Tarayıcıda sayfayı yüzde iki yüze kadar büyütün ve içeriğin okunabilir kaldığını kontrol edin.",
+          "**Ekran okuyucu testi:** macOS ve iOS’ta VoiceOver, Android’de TalkBack, Windows’ta NVDA ile birkaç temel sayfayı dinleyin.",
+          "**Otomatik araçlar:** Lighthouse ya da axe gibi araçlar kontrast ve eksik etiket gibi sorunları hızlıca bulur. Ancak bu araçlar sorunların yalnızca bir kısmını yakalayabilir; elle yapılan testlerin yerini tutmaz.",
+          "**W3C hızlı kontrolleri:** W3C’nin Easy Checks sayfası, uzman olmayan biri için başlangıç adımlarını sırayla anlatır."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Odak çerçevesini tasarım gerekçesiyle tamamen kaldırmak.",
+          "Açık gri metni beyaz zemin üzerinde kullanmak.",
+          "Form alanlarında etiket yerine yalnızca yer tutucu metin kullanmak.",
+          "Erişilebilirliği tek bir eklentiyle çözmeye çalışmak; sorunların çoğu sitenin kendi kodunda ve içeriğinde düzeltilmelidir.",
+          "Erişilebilirliği yayından sonraya bırakmak; tasarım aşamasında ele almak çok daha az maliyetlidir."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, web tasarım projelerinde erişilebilirliği renk paleti ve bileşen tasarımından itibaren ele alıyor. Mevcut sitenizin temel erişilebilirlik kontrollerinden geçmesini isterseniz ekibimiz bir ön inceleme yapıp öncelikli düzeltmeleri listeleyebilir."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[WCAG 2 Overview (W3C WAI)](https://www.w3.org/WAI/standards-guidelines/wcag/)",
+          "[Web Content Accessibility Guidelines (WCAG) 2.2 (W3C)](https://www.w3.org/TR/WCAG22/)",
+          "[Understanding Success Criterion 1.4.3: Contrast (Minimum) (W3C WAI)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)",
+          "[Understanding Success Criterion 2.4.7: Focus Visible (W3C WAI)](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html)",
+          "[Understanding Success Criterion 2.5.8: Target Size (Minimum) (W3C WAI)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)",
+          "[An alt Decision Tree (W3C WAI)](https://www.w3.org/WAI/tutorials/images/decision-tree/)",
+          "[Easy Checks: A First Review of Web Accessibility (W3C WAI)](https://www.w3.org/WAI/test-evaluate/preliminary/)",
+          "[European Accessibility Act (Avrupa Komisyonu)](https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/disability/union-equality-strategy-rights-persons-disabilities-2021-2030/european-accessibility-act_en)",
+          "[Directive (EU) 2019/882 (EUR-Lex)](https://eur-lex.europa.eu/eli/dir/2019/882/oj)"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "reels-ve-tiktok-icin-kisa-video-rehberi",
+    "title": "Reels ve TikTok için kısa video: planlama, çekim ve kurgu",
+    "excerpt": "Markalar için kısa dikey videoda ilk saniyeleri, senaryo yapısını, telefonla çekimi, güvenli alanı, altyazı ve kurguyu, müzik lisansını ve hangi metriklere bakılacağını adım adım anlattık.",
+    "category": "Sosyal Medya",
+    "publishedAt": "2026-05-19T09:00:00.000Z",
+    "seoDescription": "Reels ve TikTok için kısa video rehberi: açılış saniyeleri, senaryo, dikey çekim, güvenli alan, altyazı, müzik lisansı, filigran ve ölçüm metrikleri.",
+    "readMinutes": 7,
+    "coverConcept": "Lacivert-mavi ışık gradyanı üzerinde dikey bir telefon ekranında oynayan kısa video karesi; ekranın altında altyazı şeridi ve güvenli alanı gösteren kesikli çerçeve, yanda kurgu programını andıran yatay bir zaman çizelgesi ve klip parçaları.",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Kısa dikey video, Instagram Reels, TikTok ve YouTube Shorts ile markaların sosyal medyada en sık kullandığı biçimlerden biri hâline geldi. İyi haber şu ki etkili bir kısa video için büyük bir prodüksiyon ekibi gerekmiyor; çoğu zaman bir telefon, iyi bir ışık kaynağı ve net bir plan yeterli. Zor olan kısım, izleyiciyi ilk saniyelerde yakalamak ve bunu her hafta sürdürülebilir biçimde tekrarlamak."
+      },
+      {
+        "type": "p",
+        "text": "Bu yazıda bir markanın kısa videolarını planlarken, çekerken ve kurgularken izleyebileceği adımları, müzik kullanımıyla ilgili dikkat edilmesi gereken noktaları ve yayından sonra hangi verilere bakılacağını anlatıyoruz."
+      },
+      {
+        "type": "h2",
+        "text": "Her videonun tek bir işi olsun"
+      },
+      {
+        "type": "p",
+        "text": "Kısa videoda birden fazla mesaj vermeye çalışmak, hiçbirinin akılda kalmamasına yol açar. Çekime başlamadan önce videonun amacını tek cümleyle yazın. Markalar için sık kullanılan kısa video türleri şunlardır:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Sık sorulan bir soruya cevap:** “Kombinin bakımı yılda kaç kez yapılmalı?”",
+          "**Ürün gösterimi:** Ürünün kullanımı, ölçüsü, içinden çıkanlar.",
+          "**Önce ve sonra:** Bir hizmetin ya da işin sonucunu gösteren karşılaştırma.",
+          "**Sahne arkası:** Üretim, paketleme ya da ekibin bir günü.",
+          "**Kısa ipucu:** İzleyicinin hemen uygulayabileceği tek bir pratik bilgi."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Platformlar neye bakıyor?"
+      },
+      {
+        "type": "p",
+        "text": "Instagram, Reels önerilerinde en önemli tahminlerin bir kullanıcının videoyu paylaşma, sonuna kadar izleme, beğenme ve ses sayfasına gitme olasılığı olduğunu açıklıyor. Aynı açıklamaya göre düşük çözünürlüklü, filigranlı, sessiz, çerçeveli, ağırlıklı olarak metinden oluşan ya da daha önce Instagram’da paylaşılmış videolar daha az görünür hâle getirilebiliyor."
+      },
+      {
+        "type": "p",
+        "text": "Bu açıklamadan çıkan pratik sonuç şu: Bir videoyu TikTok’tan indirip filigranıyla birlikte Instagram’a yüklemek yerine, kurgu programından filigransız ana dosyayı ayrı ayrı dışa aktarın. Videoyu, izleyicinin sonuna kadar izlemek ve birine göndermek isteyeceği şekilde kurgulamak da hedefiniz olsun."
+      },
+      {
+        "type": "h2",
+        "text": "1. İlk saniyeler: neden izlemeli?"
+      },
+      {
+        "type": "p",
+        "text": "Kısa video akışında izleyici kaydırmaya hazırdır. Videonun ilk anı, izleyiciye neden durması gerektiğini söylemelidir:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Sonucu ya da en çarpıcı görüntüyü başa alın; açıklamayı sonra yapın.",
+          "Ekranda konuyu özetleyen kısa bir başlık metni kullanın.",
+          "Videoya logo animasyonu, uzun bir selamlama ya da “merhaba, bugün size...” gibi bir girişle başlamayın.",
+          "İlk kareyi kapak görseli kadar özenle seçin; profil ızgarasında videonuz bu kareyle ya da seçtiğiniz kapakla görünür."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "2. Basit bir senaryo yapısı"
+      },
+      {
+        "type": "p",
+        "text": "Doğaçlama çekim, kurguda saatler kaybettirebilir. Birkaç satırlık bir senaryo bile çekimi hızlandırır. Çoğu kısa video için üç bölümlü bir yapı işe yarar:"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "**Kanca:** Soruyu, sorunu ya da sonucu gösteren açılış.",
+          "**Gelişme:** İki ya da üç kısa adımda açıklama veya gösterim.",
+          "**Kapanış:** Net bir sonuç ve gerekiyorsa tek bir çağrı: kaydet, profili ziyaret et, randevu al."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Örneğin bir kafe için: Açılışta köpüklü bir kahvenin bardağa dökülme anı ve ekranda “Evde kafe köpüğü için tek ipucu” yazısı; ardından sütün sıcaklığını ve köpürtme hareketini gösteren iki kısa çekim; kapanışta sonuç ve “denemek için kaydedin” notu."
+      },
+      {
+        "type": "h2",
+        "text": "3. Telefonla çekim"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Dikey çekin:** 9:16 en boy oranında çekim yapın ve telefonun genellikle daha kaliteli olan arka kamerasını kullanın.",
+          "**Işığı önemseyin:** Pencereye dönük durarak gün ışığından faydalanın; arkanızda güçlü bir ışık kaynağı bırakmayın.",
+          "**Sesi ayrıca düşünün:** Konuşmalı videolarda telefonun mikrofonu yerine basit bir yaka mikrofonu, sesi belirgin biçimde iyileştirir. Ortam gürültüsünü azaltmak için sessiz bir alan seçin.",
+          "**Sabitleyin:** Bir tripod ya da sabit bir yüzey, titrek görüntüyü önler.",
+          "**Kısa parçalar hâlinde çekin:** Her adımı ayrı bir çekim olarak alın; kurguda birleştirmek kolaylaşır.",
+          "**Ek görüntü çekin:** Ürün detayları, eller, ortam gibi kısa ara görüntüler kurguda boşlukları doldurur."
+        ]
+      },
+      {
+        "type": "h3",
+        "text": "Güvenli alanı hesaba katın"
+      },
+      {
+        "type": "p",
+        "text": "Platformlar videonun alt kısmına açıklama metnini, sağ kenarına da beğeni, yorum ve paylaşım düğmelerini yerleştirir. Ekrandaki yazıları, ürün etiketlerini ve yüzleri bu alanlara denk getirmeyin. Kurgu sırasında platformun arayüzünü gösteren bir şablon katmanı kullanmak, önemli öğelerin kapanmasını önler."
+      },
+      {
+        "type": "h2",
+        "text": "4. Kurgu"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**Tempoyu koruyun:** Cümle aralarındaki duraksamaları ve tekrarları kesin.",
+          "**Altyazı ekleyin:** Videoyu sesi kapalı izleyenler ve işitme engelli kullanıcılar için konuşmaları altyazıyla verin. Otomatik altyazıları yayından önce mutlaka okuyun; Türkçe karakter ve özel ad hataları sık görülür.",
+          "**Görsel tutarlılık:** Ekran yazılarında marka renklerinizi ve yazı tiplerinizi kullanın; serideki videolar birbirine benzesin.",
+          "**Metni kısa tutun:** Ekran yazısı, izleyicinin videoyu durdurmadan okuyabileceği uzunlukta olmalı.",
+          "**Kapak seçin:** Profil ızgarasında düzenli görünecek ve konuyu anlatan bir kapak hazırlayın."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "5. Müzik, ses ve izinler"
+      },
+      {
+        "type": "p",
+        "text": "Müzik kullanımı, işletme hesapları için kişisel hesaplardan farklı kurallara tabidir. TikTok, işletmelerin genel müzik kütüphanesini ticari amaçlarla kullanamayacağını ve bunun yerine ticari kullanım için lisanslanmış parçalardan oluşan Ticari Müzik Kütüphanesi’ni (Commercial Music Library) kullanması gerektiğini belirtir. Instagram’da da işletme hesapları için müzik seçenekleri sınırlı olabilir."
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Bir platformdaki müzik lisansının, aynı videoyu başka bir platformda paylaştığınızda geçerli olacağını varsaymayın.",
+          "Lisanslı müzik kütüphanelerinden alınan parçalarda lisansın hangi platformları ve reklam kullanımını kapsadığını kontrol edin.",
+          "Seslendirme, ortam sesi ya da kendi ürettiğiniz ses kayıtları, telif riskini azaltan seçeneklerdir.",
+          "Videoda görünen müşterilerden ve çalışanlardan izin alın. Bir kişinin görüntüsü ve sesi kişisel veridir; 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamındaki yükümlülükleri bu çekimler için de değerlendirin."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "6. Paylaşım ve ölçüm"
+      },
+      {
+        "type": "p",
+        "text": "Açıklamanın ilk satırını videonun konusunu tamamlayacak şekilde yazın; çoğu kullanıcı yalnızca bu satırı görür. Yayından sonra platformun profesyonel panelindeki ya da analiz ekranındaki verilere bakın:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "**İzlenme ve erişim:** Videonun kaç kişiye ulaştığı.",
+          "**İzlenme süresi:** Ortalama izlenme süresi ve izleyicilerin videoyu hangi saniyede bıraktığı. Erken bırakılan videolarda sorun genellikle açılıştadır.",
+          "**Paylaşım ve kaydetme:** İçeriğin değerli bulunduğunu gösteren güçlü sinyaller.",
+          "**Profil ziyareti ve bağlantı tıklamaları:** Videonun işletmeye ne kadar trafik getirdiği."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Sonuçları başka markaların videolarıyla değil, kendi videolarınızla karşılaştırın. Aynı konunun iki farklı açılışla çekilmiş versiyonlarını farklı zamanlarda paylaşmak, hangi yaklaşımın sizin kitlenizde daha iyi çalıştığını gösterebilir."
+      },
+      {
+        "type": "h2",
+        "text": "Videoyu reklamda kullanacaksanız"
+      },
+      {
+        "type": "p",
+        "text": "Organik olarak iyi sonuç veren bir kısa video, reklam kreatifi olarak da kullanılabilir. Bu durumda birkaç ek noktaya dikkat edin:"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Marka adını ya da ürünü ilk saniyelerde gösterin; reklamı izleyen kişilerin büyük kısmı sizi henüz tanımıyor olabilir.",
+          "Aynı videonun farklı açılışlarla birkaç versiyonunu hazırlayın; reklam platformlarının test araçlarıyla hangisinin daha iyi çalıştığını karşılaştırabilirsiniz.",
+          "Kullandığınız müziğin ve görüntülerin lisansının reklam kullanımını da kapsadığını kontrol edin. Organik paylaşım için uygun olan bir ses, reklamda kullanılamayabilir.",
+          "Videoda görünen kişilerden alınan iznin reklam kullanımını da kapsadığından emin olun."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "7. Üretimi sürdürülebilir kılın"
+      },
+      {
+        "type": "p",
+        "text": "Her video için ayrı bir çekim günü planlamak kısa sürede yorucu hâle gelir. Ayda bir ya da iki kez toplu çekim günü yapmak, birkaç haftalık içeriği tek seferde hazırlamanızı sağlar. Tekrar eden seri formatlar, örneğin “haftanın sorusu” ya da “bir dakikada ürün”, hem planlamayı kolaylaştırır hem de izleyicinin ne bekleyeceğini bilmesini sağlar. Aynı çekimden farklı uzunlukta ve farklı açılışlı birden fazla video kurgulamak da üretim verimini artırır."
+      },
+      {
+        "type": "h2",
+        "text": "Çekim günü kontrol listesi"
+      },
+      {
+        "type": "ol",
+        "items": [
+          "Her video için tek cümlelik amaç ve kısa senaryo hazır.",
+          "Telefonun depolama alanı ve şarjı yeterli, lens temiz.",
+          "Işık kaynağı ve çekim alanı belirlendi; arka plan düzenli.",
+          "Mikrofon ve tripod denendi.",
+          "Ürünler, aksesuarlar ve ekran yazıları için metinler hazır.",
+          "Videoda görünecek kişilerin izinleri alındı.",
+          "Her video için ek görüntüler çekildi."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Sık yapılan hatalar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "Videoya uzun bir girişle başlamak.",
+          "Başka bir platformun filigranını taşıyan videoyu yeniden yüklemek.",
+          "Ekran yazılarını platform arayüzünün altında bırakmak.",
+          "Kişisel hesapta kullanılabilen popüler bir şarkıyı işletme hesabında lisans kontrolü yapmadan kullanmak.",
+          "Tek bir videonun sonucuna bakıp formatı tamamen bırakmak."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Guru Dijital, sosyal medya yönetimi kapsamında kısa video planlaması, çekim yönlendirmesi ve kurguda markalara destek veriyor. Kısa video üretiminizi düzenli bir akışa oturtmak isterseniz ekibimizle birlikte bir seri formatı tasarlayabiliriz."
+      },
+      {
+        "type": "h2",
+        "text": "Kaynaklar"
+      },
+      {
+        "type": "ul",
+        "items": [
+          "[Instagram Ranking Explained (Instagram)](https://about.instagram.com/blog/announcements/instagram-ranking-explained)",
+          "[About the Commercial Music Library (TikTok Ads Manager Yardım)](https://ads.tiktok.com/help/article/commercial-music-library)",
+          "[Get started creating YouTube Shorts (YouTube Yardım)](https://support.google.com/youtube/answer/10059070)",
+          "[6698 sayılı Kişisel Verilerin Korunması Kanunu (Mevzuat Bilgi Sistemi)](https://www.mevzuat.gov.tr/mevzuatmetin/1.5.6698.pdf)"
+        ]
+      }
+    ]
+  }
+]

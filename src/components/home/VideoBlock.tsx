@@ -2,7 +2,7 @@ import { SectionHead } from "@/components/site/SectionHead";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/ui/Reveal";
 
-export const VIDEO_SRC = "/video/guru-tanitim.mp4";
+export const VIDEO_SRC = "/video/guru-tanitim-v2.mp4";
 export const VIDEO_POSTER = "/video/guru-tanitim-poster.jpg";
 
 /** "Bizi Tanıyın": Remotion ile üretilen ajans tanıtım videosu (oynatıcı: VideoPlayer). */
