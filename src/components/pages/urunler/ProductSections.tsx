@@ -172,8 +172,9 @@ export function FeatureGrid({ product }: { product: ProductView }) {
 export function ComparisonBlock({ product }: { product: ProductView }) {
   const { before, after } = product.comparison;
   if (before.length === 0 && after.length === 0) return null;
+  /* Özellikler bölümünün (beyaz) devamı: üst boşluk tekrarlanmaz */
   return (
-    <section className={sectionY}>
+    <section className={cn(sectionY, "pt-0 md:pt-0")}>
       <div className="container-g">
         <SectionHead
           center

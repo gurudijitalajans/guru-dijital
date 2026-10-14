@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,9 +37,14 @@ export default async function ReferanslarPage() {
     getCases(),
     getTestimonials(),
   ]);
-  /* Her hizmetin ilk galeri görseli: işin hangi hizmetten geldiği kartta yazar */
+  /* Her hizmetin 4:3 için tasarlanmış kart görseli (yoksa ilk galeri görseli): kartta kırpılmaz */
   const works = services
-    .map((s) => ({ service: s, image: s.gallery[0] ?? s.card }))
+    .map((s) => ({
+      service: s,
+      image: existsSync(join(process.cwd(), "public", "services", "v2", `${s.slug}-kart.webp`))
+        ? { src: `/services/v2/${s.slug}-kart.webp`, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
+        : (s.gallery[0] ?? s.card),
+    }))
     .filter((w): w is { service: (typeof services)[number]; image: NonNullable<(typeof services)[number]["card"]> } => Boolean(w.image));
   const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
 
@@ -150,7 +157,7 @@ export default async function ReferanslarPage() {
       {/* Yorumlar: yalnız yayın izni olan ve metni girilmiş olanlar */}
       {quotes.length > 0 && <QuotesBlock title="Markalar Ne Diyor" lead="Birlikte çalıştığımız markaların deneyimleri." items={quotes} />}
 
-      <ClosingCta title="Markanızı Bu Listeye Ekleyelim" lead="Hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz." />
+      <ClosingCta after="white" title="Markanızı Bu Listeye Ekleyelim" lead="Hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz." />
     </>
   );
 }

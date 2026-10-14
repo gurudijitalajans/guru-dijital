@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Btn } from "@/components/site/Btn";
-import { sectionY } from "@/components/site/styles";
+import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 
 type CtaLink = { href: string; label: string };
@@ -10,6 +10,8 @@ export type ClosingCtaProps = {
   lead: string;
   primary?: CtaLink;
   secondary?: CtaLink;
+  /** Önceki bölümün zemini: beyazsa üst boşluk tekrarlanmaz, griyse kısa tutulur */
+  after?: "white" | "soft";
 };
 
 /**
@@ -23,11 +25,12 @@ export function ClosingCta({
   lead,
   primary = { href: "/iletisim", label: "Teklif Al" },
   secondary = { href: "/iletisim#toplanti", label: "Toplantı Planla" },
+  after = "soft",
 }: ClosingCtaProps) {
   return (
-    <section className={sectionY} data-hide-cta-bar>
+    <section className={cn(after === "white" ? "pt-0" : "pt-10 md:pt-14", "pb-10 md:pb-14")} data-hide-cta-bar>
       <div className="container-g">
-        <Reveal>
+        <Reveal y={12} margin="0px 0px -4% 0px">
           <div className="relative isolate overflow-hidden rounded-[28px] bg-navy px-6 py-14 text-center sm:px-10 md:py-20">
             <div
               aria-hidden

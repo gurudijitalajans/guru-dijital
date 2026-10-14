@@ -7,7 +7,7 @@ type MeetCtaProps = { title: string; text: string; buttonLabel: string; buttonHr
 
 export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) {
   return (
-    <section className="py-20 text-center md:py-24">
+    <section className="pb-4 pt-14 text-center md:pb-6 md:pt-[72px]">
       <div className="container-g">
         <Reveal>
           <div className="mx-auto grid size-[124px] place-items-center rounded-full bg-[radial-gradient(circle,#ffffff_58%,rgb(42_106_202/0.12)_59%)]">

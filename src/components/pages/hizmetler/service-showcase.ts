@@ -42,8 +42,8 @@ export type ServiceVisual = {
 
 export const serviceVisuals: Record<string, ServiceVisual> = Object.fromEntries(
   (["dijital-reklam-yonetimi", "web-tasarim", "seo", "ozel-yazilim", "mobil-uygulama", "marka-tescil", "e-ticaret-yonetimi", "grafik-tasarim", "sosyal-medya-yonetimi"] as const).map((slug) => {
-    const card: WorkImage = { src: `/services/${slug}.webp`, alt: "Guru Dijital hizmet görseli", w: 1600, h: 1000 };
-    const poster: WorkImage = { src: `/services/${slug}-poster.webp`, alt: "Guru Dijital hizmet afişi", w: 1200, h: 1500 };
-    return [slug, { card, gallery: [card, poster] }];
+    const v = (name: string, w: number, h: number): WorkImage => ({ src: `/services/v2/${slug}-${name}.webp`, alt: "Guru Dijital hizmet görseli", w, h });
+    const card = v("hero", 1600, 1000);
+    return [slug, { card, gallery: [card, v("kapak", 1200, 1500), v("1", 1200, 900), v("2", 1200, 900), v("3", 1200, 900)] }];
   })
 );

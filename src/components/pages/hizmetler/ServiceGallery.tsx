@@ -20,10 +20,12 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
   if (images.length === 0 && !video) return null;
   const main = video ? null : (images[0] ?? null);
   const rest = video ? images : images.slice(1);
-  const sides = rest.slice(0, 2);
-  /* Altta tam genişlik yalnız bant biçimli görsellere (en az 2:1, ör. logo şeridi):
-     4:3 bir görsel tam genişlikte girişi ekran boyu uzatır */
-  const extras = rest.slice(2).filter((img) => img.w / img.h >= 2);
+  /* Dikey ilk yan görsel (kapak) tek başına sağda; değilse iki yan görsel */
+  const sides = rest[0] && rest[0].h > rest[0].w ? rest.slice(0, 1) : rest.slice(0, 2);
+  const after = rest.slice(sides.length);
+  /* Altta: bant biçimliler (en az 2:1) tam genişlikte, diğerleri üç sütunlu ızgarada (öne çıkan ekranlar) */
+  const extras = after.filter((img) => img.w / img.h >= 2);
+  const tiles = after.filter((img) => img.w / img.h < 2);
   const wide = sides.length === 0;
 
   return (
@@ -84,6 +86,15 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
           </div>
         ))}
       </div>
+      {tiles.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          {tiles.map((img) => (
+            <div key={img.src} className={cn(frameCls, "sm:[&:last-child:nth-child(odd)]:col-span-2 lg:[&:last-child:nth-child(odd)]:col-span-1")} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+            </div>
+          ))}
+        </div>
+      )}
       {extras.map((img) => (
         <div key={img.src} className={frameCls} style={{ aspectRatio: `${img.w} / ${img.h}` }}>
           <Image

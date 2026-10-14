@@ -169,7 +169,7 @@ export default async function BlogPostPage({ params }: Props) {
       </article>
 
       {others.length > 0 && (
-        <section className={`bg-soft ${sectionY} mt-12`}>
+        <section className={`bg-soft ${sectionY} mt-8 md:mt-10`}>
           <div className="container-g">
             <SectionHead title="Diğer Yazılar" action={{ href: "/blog", label: "Tüm yazılar" }} />
             {/* Tek yazı yatay kartla, ikisi iki sütunda: üç sütunlu ızgarada boş sütun kalmaz */}

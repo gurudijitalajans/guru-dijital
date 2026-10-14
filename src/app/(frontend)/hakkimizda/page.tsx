@@ -295,7 +295,7 @@ export default async function HakkimizdaPage() {
       )}
 
       {/* Kapanış */}
-      <ClosingCta title={closing.title} lead={closing.lead} primary={{ href: "/iletisim", label: closing.primaryLabel }} />
+      <ClosingCta after="white" title={closing.title} lead={closing.lead} primary={{ href: "/iletisim", label: closing.primaryLabel }} />
     </>
   );
 }

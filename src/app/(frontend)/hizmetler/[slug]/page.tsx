@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { existsSync } from "fs";
 import { join } from "path";
 import type { Metadata } from "next";
@@ -25,7 +26,7 @@ import {
 } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { ServiceGallery, type GalleryVideo } from "@/components/pages/hizmetler/ServiceGallery";
-import { VIDEO_POSTER, VIDEO_SRC } from "@/components/home/VideoBlock";
+import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { ClosingCta } from "@/components/site/ClosingCta";
 
 type Params = Promise<{ slug: string }>;
@@ -44,6 +45,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: service.title,
     description: service.seoDescription ?? service.short,
     path: `/hizmetler/${service.slug}`,
+    ...(existsSync(join(process.cwd(), "public", "services", "v2", `${service.slug}-og.jpg`))
+      ? { image: { url: `/services/v2/${service.slug}-og.jpg`, width: 1200, height: 630, alt: service.title } }
+      : {}),
   });
 }
 
@@ -53,12 +57,16 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
   const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
 
-  const { gallery, faq } = service;
-  /* Sosyal Medya Yönetimi sayfasında galerinin ana karesi ajansın kendi tanıtım videosu */
-  const video: GalleryVideo | undefined =
-    service.slug === "sosyal-medya-yonetimi" && existsSync(join(process.cwd(), "public", VIDEO_SRC))
-      ? { src: VIDEO_SRC, poster: VIDEO_POSTER, label: "Guru Dijital tanıtım videosunu oynat", trackName: "hizmet-sosyal-medya" }
-      : undefined;
+  const { gallery: allImages, faq } = service;
+  /* Girişte ana kare + dikey kapak; öne çıkan ekranlar kendi bölümünde */
+  const gallery = allImages.slice(0, allImages[1] && allImages[1].h > allImages[1].w ? 2 : 3);
+  const features = allImages.slice(gallery.length);
+  /* Hizmet turu videosu (1 dk, sesli): public/video/services/<slug>.mp4 */
+  const tourSrc = `/video/services/${service.slug}.mp4`;
+  const tour = existsSync(join(process.cwd(), "public", tourSrc))
+    ? { src: tourSrc, poster: `/video/services/${service.slug}.jpg`, label: `${service.title} hizmet turunu oynat`, trackName: `hizmet-${service.slug}` }
+    : null;
+  const video: GalleryVideo | undefined = undefined;
   /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */
   /* Yalnız bu hizmetin vakaları; Google ödülleri reklam hizmetinde */
   const [allCases, about] = await Promise.all([getCases(), service.slug === "dijital-reklam-yonetimi" ? getAbout() : Promise.resolve(null)]);
@@ -163,6 +171,29 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
           </StaggerGroup>
         </div>
       </section>
+
+      {/* 2b. Hizmet turu videosu ve öne çıkan ekranlar */}
+      {(tour || features.length > 0) && (
+        <section className={cn(sectionY, "bg-soft pt-0 md:pt-0")}>
+          <div className="container-g">
+            <SectionHead title="Nasıl Çalışıyoruz" lead={`${service.title} sürecinde size sunduğumuz ekranlar ve raporlar.`} />
+            {tour ? (
+              <div className="mt-10">
+                <VideoPlayer src={tour.src} poster={tour.poster} label={tour.label} trackName={tour.trackName} />
+              </div>
+            ) : null}
+            {features.length > 0 ? (
+              <div className="fill-odd-sm mt-5 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+                {features.map((img) => (
+                  <div key={img.src} className="relative overflow-hidden rounded-2xl bg-white md:rounded-[20px]" style={{ aspectRatio: `${img.w} / ${img.h}` }}>
+                    <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      )}
 
       {/* 3a. Bu hizmetin ölçülmüş vaka sonuçları (ve reklamda Google ödülleri) */}
       {showCases && (

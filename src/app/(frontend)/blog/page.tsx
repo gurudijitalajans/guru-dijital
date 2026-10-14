@@ -36,7 +36,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         lead="Sosyal medyadan web sitelerine, reklamdan yazılıma: markaların her gün karşılaştığı sorulara kısa ve uygulanabilir cevaplar."
       />
 
-      <section className="pb-16 md:pb-[72px]">
+      <section className="pb-14 md:pb-16">
         <div className="container-g">
           {posts.length > 0 ? (
             <>
@@ -78,7 +78,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         </div>
       </section>
 
-      <ClosingCta
+      <ClosingCta after="white"
         title="Markanızı Birlikte Planlayalım"
         lead="Okuduklarınızı markanıza nasıl uygulayacağınızı konuşalım; ilk görüşme ücretsiz."
       />

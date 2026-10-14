@@ -16,19 +16,22 @@ export function Reveal({
   delay = 0,
   y = 28,
   once = true,
+  margin = "0px 0px -6% 0px",
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   y?: number;
   once?: boolean;
+  /** Görünüm sınırı: varsayılan yalnız alttan %6 (en dipteki öğe boş alan bırakmasın) */
+  margin?: string;
 }) {
   return (
     <motion.div
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: "-10% 0px" }}
+      viewport={{ once, margin: margin as never }}
       transition={{ duration: 0.7, delay, ease: EASE }}
     >
       {children}
@@ -52,7 +55,7 @@ export function StaggerGroup({
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px" }}
+      viewport={{ once: true, margin: "0px 0px -6% 0px" }}
       transition={{ staggerChildren: stagger, delayChildren: delay }}
     >
       {children}

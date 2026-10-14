@@ -54,7 +54,7 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
   const doc = docOf(slug);
   if (!doc) notFound();
   return (
-    <article className="pb-16 pt-12 md:pb-20 md:pt-16">
+    <article className="pb-12 pt-12 md:pb-14 md:pt-16">
       <div className="container-g">
         <header className="max-w-[820px] border-b border-[rgb(1_20_65/0.08)] pb-6">
           <p className="text-[13px] font-medium text-muted">Yasal</p>

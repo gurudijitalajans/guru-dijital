@@ -28,7 +28,7 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-soft pb-8 pt-14 md:pt-16">
+    <footer className="bg-soft pb-8 pt-12 md:pt-14">
       <div className="container-g">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_1.1fr_1fr_1fr]">
           <div className="col-span-2 lg:col-span-1">

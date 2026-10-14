@@ -12,7 +12,7 @@ const QUICK = [
 /** 404 içeriği: hem site içindeki notFound() hem de eşleşmeyen adresler (global 404) kullanır. */
 export function NotFoundContent() {
   return (
-    <section className="flex min-h-[56svh] items-center py-14 text-center md:min-h-[64svh] md:py-28">
+    <section className="flex min-h-[56svh] items-center py-12 text-center md:min-h-[64svh] md:py-16">
       <div className="container-g">
         <p
           aria-hidden
