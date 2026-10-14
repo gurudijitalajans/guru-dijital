@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Send } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 /**
  * Sağ kenarda dikey "Teklif Alın" sekmesi: iletişim sayfasına gider. WhatsApp
@@ -39,11 +39,9 @@ export function ContactTab() {
         <span className="mt-1 block text-[13px] leading-relaxed text-muted">Projenizi anlatın, size özel planı birlikte çıkaralım.</span>
       </span>
       {/* Sekme */}
-      <span className="flex flex-col items-center gap-3 rounded-l-2xl bg-[linear-gradient(180deg,#2a6aca,#12419b_55%,#011441)] px-2.5 pb-4 pt-3 text-white shadow-[inset_1px_0_0_rgb(255_255_255/0.18),0_18px_40px_-14px_rgb(18_65_155/0.75)] transition-[padding] duration-300 group-hover:pl-3.5 group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-brand">
-        <span className="grid size-8 place-items-center rounded-full bg-white/15 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.2)]">
-          <Send aria-hidden className="size-[15px] -translate-x-px translate-y-px" strokeWidth={2.2} />
-        </span>
+      <span className="flex flex-col items-center gap-3 rounded-l-2xl bg-[linear-gradient(180deg,#2a6aca,#12419b_55%,#011441)] px-2.5 py-4 text-white shadow-[inset_1px_0_0_rgb(255_255_255/0.18),0_18px_40px_-14px_rgb(18_65_155/0.75)] transition-[padding] duration-300 group-hover:pl-3.5 group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-brand">
         <span className="rotate-180 text-[13.5px] font-semibold leading-none tracking-[0.04em] [writing-mode:vertical-rl]">Teklif Alın</span>
+        <ArrowLeft aria-hidden className="size-3.5 opacity-70 transition-transform duration-300 group-hover:-translate-x-0.5" strokeWidth={2.4} />
       </span>
     </Link>
   );
