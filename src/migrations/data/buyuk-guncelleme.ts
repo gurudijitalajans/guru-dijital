@@ -157,7 +157,7 @@ async function serviceRecords(ctx: Ctx) {
       showCases: s.slug === 'dijital-reklam-yonetimi' || s.slug === 'seo',
       showWebProjects: s.slug === 'web-tasarim',
       ...(card ? { cardImage: card } : {}),
-      ...(card || poster ? { gallery: [poster, card].filter(Boolean).map((image) => ({ image })) } : {}),
+      ...(card || poster ? { gallery: [card, poster].filter(Boolean).map((image) => ({ image })) } : {}),
       _status: 'published',
     }
     if (existing) await ctx.payload.update({ collection: 'services', id: existing.id, data: data as never, req: ctx.req, ...ok })

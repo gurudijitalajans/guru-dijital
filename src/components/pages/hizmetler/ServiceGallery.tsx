@@ -45,7 +45,9 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
               className={cn(
                 frameCls,
                 "col-span-2 aspect-[4/3]",
-                wide ? "md:col-span-12 md:aspect-[21/9]" : "md:col-span-8 md:row-span-2"
+                wide ? "md:col-span-12 md:aspect-[21/9]" : "md:col-span-8 md:row-span-2",
+                /* Tek yan görselde (16:10 kart + 4:5 afiş) 8/12 ile 4/12 aynı boya gelir: ikisi de kırpılmaz */
+                sides.length === 1 && "md:aspect-[16/10]"
               )}
             >
               <Image
