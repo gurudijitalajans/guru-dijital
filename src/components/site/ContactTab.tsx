@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Send } from "lucide-react";
+import { Send } from "lucide-react";
 
 /**
  * Sağ kenarda dikey "Teklif Alın" sekmesi: iletişim sayfasına gider. WhatsApp
@@ -44,7 +44,6 @@ export function ContactTab() {
           <Send aria-hidden className="size-[15px] -translate-x-px translate-y-px" strokeWidth={2.2} />
         </span>
         <span className="rotate-180 text-[13.5px] font-semibold leading-none tracking-[0.04em] [writing-mode:vertical-rl]">Teklif Alın</span>
-        <ArrowLeft aria-hidden className="size-3.5 opacity-70 transition-transform duration-300 group-hover:-translate-x-0.5" strokeWidth={2.4} />
       </span>
     </Link>
   );
