@@ -286,7 +286,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       <section className={cn(sectionY, "bg-soft")}>
         <div className="container-g">
           <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
-          <StaggerGroup className="mt-10 grid auto-rows-fr gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          <StaggerGroup className="fill-odd-sm mt-10 grid auto-rows-fr gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {others.map((s) => {
               const Icon = iconFor(s.icon);
               return (

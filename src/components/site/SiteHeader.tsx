@@ -138,7 +138,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
                   </span>
                   <span className="min-w-0">
                     <span className="block text-[14.5px] font-medium leading-snug text-heading">{it.label}</span>
-                    <span className="mt-0.5 block truncate text-[13px] leading-snug text-muted">{it.desc}</span>
+                    <span className="mt-0.5 block line-clamp-2 text-[13px] leading-snug text-muted">{it.desc}</span>
                   </span>
                 </Link>
               </li>
@@ -323,7 +323,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
                             </span>
                             <span className="min-w-0">
                               <span className="block text-[16px] font-medium leading-snug text-heading">{it.label}</span>
-                              <span className="mt-0.5 block truncate text-[13.5px] leading-snug text-muted">{it.desc}</span>
+                              <span className="mt-0.5 block line-clamp-2 text-[13.5px] leading-snug text-muted">{it.desc}</span>
                             </span>
                           </Link>
                         </li>

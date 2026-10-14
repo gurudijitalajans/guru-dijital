@@ -42,14 +42,14 @@ const personCols: ColumnDef<PersonRow, unknown>[] = [
     ),
   },
   { accessorKey: "company", header: "Firma", cell: ({ getValue }) => (getValue() as string) || <span className="text-muted">Firma yok</span> },
-  { accessorKey: "email", header: "E-posta", cell: ({ getValue }) => <span className="break-all">{getValue() as string}</span> },
+  { accessorKey: "email", header: "E-posta", cell: ({ getValue }) => <span className="[overflow-wrap:anywhere]">{getValue() as string}</span> },
   { accessorKey: "phone", header: "Telefon", cell: ({ getValue }) => <span className="tabular whitespace-nowrap">{getValue() as string}</span> },
   { accessorKey: "source", header: "Kaynak", cell: ({ getValue }) => (getValue() ? <Badge>{getValue() as string}</Badge> : null) },
 ];
 const companyCols: ColumnDef<CompanyRow, unknown>[] = [
   { accessorKey: "name", header: "Firma", cell: ({ getValue }) => <span className="font-medium text-ink">{getValue() as string}</span> },
   { accessorKey: "sector", header: "Sektör" },
-  { accessorKey: "email", header: "E-posta", cell: ({ getValue }) => <span className="break-all">{getValue() as string}</span> },
+  { accessorKey: "email", header: "E-posta", cell: ({ getValue }) => <span className="[overflow-wrap:anywhere]">{getValue() as string}</span> },
   { accessorKey: "phone", header: "Telefon", cell: ({ getValue }) => <span className="tabular whitespace-nowrap">{getValue() as string}</span> },
 ];
 
@@ -92,7 +92,7 @@ export function PeopleView({ view, q, page, pages, total, people, companies, sel
               type="button"
               aria-pressed={view === v}
               onClick={() => set({ gorunum: v === "kisiler" ? null : v, sayfa: null, kisi: null, firma: null })}
-              className={cn("min-h-8.5 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}
+              className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}
             >
               {v === "kisiler" ? "Kişiler" : "Firmalar"}
             </button>

@@ -113,12 +113,13 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
           </span>
         ))}
       </div>
-      <div className="grid gap-2.5 lg:grid-cols-7">
+      {/* 7 sütun yalnız geniş ekranda; tablette günler yatay kaydırılan şeritte (sütun en az 190px) */}
+      <div className="grid gap-2.5 md:snap-x md:auto-cols-[minmax(190px,1fr)] md:grid-flow-col md:overflow-x-auto md:pb-2 xl:auto-cols-auto xl:grid-flow-row xl:grid-cols-7 xl:overflow-visible xl:pb-0">
         {days.map((d) => {
           const list = byDay.get(d) ?? [];
           const weekend = noon(d).getUTCDay() % 6 === 0;
           return (
-            <section key={d} aria-label={long.format(noon(d))} className={cn("min-w-0 rounded-card border border-line bg-surface lg:min-h-[260px]", weekend && "bg-sunken", d === today && "border-accent")}>
+            <section key={d} aria-label={long.format(noon(d))} className={cn("min-w-0 snap-start rounded-card border border-line bg-surface md:min-h-[260px]", weekend && "bg-sunken", d === today && "border-accent")}>
               <header className={cn("flex items-baseline justify-between gap-2 border-b border-line px-3 py-2", d === today ? "text-accent" : "text-ink")}>
                 <span className="font-semibold capitalize">{wd.format(noon(d))}</span>
                 <span className="tabular text-[13px] text-muted">{d === today ? "Bugün" : dm.format(noon(d))}</span>
@@ -129,7 +130,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
                     {e.activity ? <DoneToggle id={e.activity.id} done={e.activity.done} label={e.title} /> : null}
                     <a href={e.href} className="min-w-0 flex-1 no-underline">
                       <span className="tabular block text-[11px] text-muted">{e.time}</span>
-                      <span className={cn("block font-medium [overflow-wrap:anywhere] text-ink", e.activity?.done && "line-through")}>{e.title}</span>
+                      <span className={cn("block font-medium break-words hyphens-auto text-ink", e.activity?.done && "line-through")}>{e.title}</span>
                       {e.detail ? <span className="block truncate text-muted">{e.detail}</span> : null}
                     </a>
                   </li>

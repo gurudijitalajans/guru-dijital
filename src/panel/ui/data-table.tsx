@@ -52,7 +52,7 @@ export function DataTable<T>({ columns, data, onRowClick, rowLabel, empty, minWi
                 return (
                   <th key={h.id} scope="col" className="border-b border-line bg-sunken px-4 py-2.5 text-left text-[12px] font-medium uppercase tracking-[0.05em] text-muted">
                     {h.column.getCanSort() ? (
-                      <button type="button" onClick={h.column.getToggleSortingHandler()} className="inline-flex items-center gap-1 uppercase hover:text-ink">
+                      <button type="button" onClick={h.column.getToggleSortingHandler()} className="inline-flex items-center gap-1 uppercase hover:text-ink pointer-coarse:min-h-11">
                         {flexRender(h.column.columnDef.header, h.getContext())}
                         {sort === "asc" ? <ArrowUp className="size-3" aria-label="artan" /> : sort === "desc" ? <ArrowDown className="size-3" aria-label="azalan" /> : null}
                       </button>

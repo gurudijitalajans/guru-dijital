@@ -29,7 +29,7 @@ export function DoneToggle({ id, done, label }: { id: number; done: boolean; lab
           router.refresh();
         });
       }}
-      className="mt-0.5 size-4 shrink-0 accent-[var(--accent)]"
+      className="mt-0.5 size-4 shrink-0 accent-[var(--accent)] pointer-coarse:size-6"
     />
   );
 }

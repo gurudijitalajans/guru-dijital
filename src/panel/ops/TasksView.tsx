@@ -122,7 +122,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, initialV
     { accessorKey: "due", header: "Teslim", cell: ({ row }) => (row.original.late ? <Badge tone="bad">{fmtDay(row.original.due)}</Badge> : <span className="tabular">{fmtDay(row.original.due) || "Yok"}</span>) },
   ];
 
-  const chip = (on: boolean) => cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", on ? "border-accent bg-accent-soft text-accent" : "hover:border-accent");
+  const chip = (on: boolean) => cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", on ? "border-accent bg-accent-soft text-accent" : "hover:border-accent");
   const openCount = visible.filter((t) => t.stage !== "tamam").length;
 
   return (
@@ -130,7 +130,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, initialV
       <div className="mb-3.5 flex flex-wrap items-center gap-2">
         <div className="inline-flex rounded-[9px] border border-line bg-sunken p-[3px]" role="group" aria-label="Görünüm">
           {(["pano", "liste"] as const).map((v) => (
-            <button key={v} type="button" aria-pressed={view === v} onClick={() => pickView(v)} className={cn("min-h-8.5 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}>
+            <button key={v} type="button" aria-pressed={view === v} onClick={() => pickView(v)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}>
               {v === "pano" ? "Pano" : "Liste"}
             </button>
           ))}
@@ -143,7 +143,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, initialV
         <label className="sr-only" htmlFor="gorev-proje">
           Proje
         </label>
-        <select id="gorev-proje" value={project} onChange={(e) => setProject(e.target.value)} className="min-h-8.5 max-w-[220px] rounded-full border border-line bg-surface px-3 text-[13px]">
+        <select id="gorev-proje" value={project} onChange={(e) => setProject(e.target.value)} className="min-h-8.5 pointer-coarse:min-h-11 max-w-[220px] rounded-full border border-line bg-surface px-3 text-[13px]">
           <option value="">Tüm projeler</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
@@ -166,7 +166,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, initialV
       </div>
 
       {view === "pano" ? (
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" aria-busy={pending}>
+        <div className="grid gap-3 md:snap-x md:auto-cols-[minmax(270px,1fr)] md:grid-flow-col md:overflow-x-auto md:pb-2 xl:auto-cols-auto xl:grid-flow-row xl:grid-cols-4 xl:overflow-visible xl:pb-0" aria-busy={pending}>
           {STAGES.map((s) => {
             const col = visible.filter((t) => t.stage === s.id).sort(byOrder);
             return (

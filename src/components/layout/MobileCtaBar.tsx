@@ -78,6 +78,7 @@ export function MobileCtaBar() {
     <AnimatePresence>
       {show && (
         <motion.div
+          data-float=""
           key="mobile-cta-bar"
           initial={{ y: "110%" }}
           animate={{ y: 0 }}

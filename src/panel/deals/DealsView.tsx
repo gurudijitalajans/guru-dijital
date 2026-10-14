@@ -159,7 +159,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, initialView }: {
       <div className="mb-3.5 flex flex-wrap items-center gap-2">
         <div className="inline-flex rounded-[9px] border border-line bg-sunken p-[3px]" role="group" aria-label="Görünüm">
           {(["pano", "liste"] as const).map((v) => (
-            <button key={v} type="button" aria-pressed={view === v} onClick={() => pickView(v)} className={cn("min-h-8.5 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}>
+            <button key={v} type="button" aria-pressed={view === v} onClick={() => pickView(v)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-[7px] px-3 font-medium text-muted", view === v && "bg-surface text-ink shadow-sm")}>
               {v === "pano" ? "Pano" : "Liste"}
             </button>
           ))}
@@ -169,10 +169,10 @@ export function DealsView({ deals: initial, detail, me, hasOps, initialView }: {
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input id="firsat-ara" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Fırsat ya da firma ara" className="w-full pl-9" />
         </label>
-        <button type="button" aria-pressed={mine} onClick={() => setMine((m) => !m)} className={cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", mine ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
+        <button type="button" aria-pressed={mine} onClick={() => setMine((m) => !m)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", mine ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
           Benim
         </button>
-        <button type="button" aria-pressed={staleOnly} onClick={() => setStaleOnly((m) => !m)} className={cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", staleOnly ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
+        <button type="button" aria-pressed={staleOnly} onClick={() => setStaleOnly((m) => !m)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", staleOnly ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
           {STALE_DAYS} günden uzun bekleyen
         </button>
         <span className="text-[13px] text-muted">

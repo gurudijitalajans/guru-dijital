@@ -6,7 +6,7 @@ export function PeriodLinks({ base, options, current }: { base: string; options:
   return (
     <div className="inline-flex rounded-[9px] border border-line bg-sunken p-[3px]" role="group" aria-label="Dönem">
       {options.map((d) => (
-        <Link key={d} href={`${base}?gun=${d}`} aria-current={current === d ? "page" : undefined} className={cn("grid min-h-8.5 place-items-center rounded-[7px] px-3 font-medium text-muted no-underline", current === d && "bg-surface text-ink shadow-sm")}>
+        <Link key={d} href={`${base}?gun=${d}`} aria-current={current === d ? "page" : undefined} className={cn("grid min-h-8.5 pointer-coarse:min-h-11 place-items-center rounded-[7px] px-3 font-medium text-muted no-underline", current === d && "bg-surface text-ink shadow-sm")}>
           {d} gün
         </Link>
       ))}

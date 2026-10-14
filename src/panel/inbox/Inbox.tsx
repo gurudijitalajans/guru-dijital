@@ -96,7 +96,7 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
       <aside className={cn("flex min-h-0 flex-col border-line md:border-r", key && "hidden md:flex")} aria-label="Gelen kutusu">
         <div className="flex flex-wrap gap-1.5 border-b border-line p-3" role="group" aria-label="Süzgeç">
           {filters.map((f) => (
-            <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => pickFilter(f.key)} className={cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", filter === f.key ? "border-accent bg-accent-soft text-accent" : "text-text hover:border-accent")}>
+            <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => pickFilter(f.key)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", filter === f.key ? "border-accent bg-accent-soft text-accent" : "text-text hover:border-accent")}>
               {f.label}
             </button>
           ))}

@@ -84,6 +84,11 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
     if (embed && window.parent !== window) window.parent.postMessage({ guru: "sohbet", open }, "*");
   };
   const [open, setOpen] = useState(false);
+  /* Sohbet açıkken sağ alttaki diğer sabit öğeler (WhatsApp, alt çubuk, yan sekme) gizlenir */
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-chat-open", open);
+    return () => document.documentElement.removeAttribute("data-chat-open");
+  }, [open]);
   const [token, setToken] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [status, setStatus] = useState("bot");

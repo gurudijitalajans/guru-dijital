@@ -81,7 +81,7 @@ export default async function ReferanslarPage() {
             <Reveal>
               <SectionHead title="Seçili İşler" lead="Markalarımız için hazırladığımız tasarım, web ve reklam işlerinden örnekler." />
             </Reveal>
-            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+            <StaggerGroup className="fill-odd-sm mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {works.map(({ service, image }) => (
                 <StaggerItem key={service.slug} className="h-full">
                   <Link href={`/hizmetler/${service.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>

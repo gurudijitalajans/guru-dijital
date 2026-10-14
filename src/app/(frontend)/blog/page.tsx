@@ -37,7 +37,7 @@ export default async function BlogPage() {
             <div className="grid gap-5 md:gap-6">
               <PostCard post={lead} priority eager layout="wide" />
               {rest.length > 0 && (
-                <StaggerGroup className={cn("grid gap-5 md:gap-6", rest.length === 1 ? "" : "sm:grid-cols-2 lg:grid-cols-3")}>
+                <StaggerGroup className={cn("grid gap-5 md:gap-6", rest.length === 1 ? "" : "fill-odd-sm sm:grid-cols-2 lg:grid-cols-3")}>
                   {rest.map((p, i) => (
                     <StaggerItem key={p.slug} className="h-full">
                       <PostCard post={p} eager={i < 3} layout={rest.length === 1 ? "wide" : "card"} />

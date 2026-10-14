@@ -14,7 +14,7 @@ export function CasesBlock({ title, lead, cases }: { title: string; lead: string
           lead={lead}
           action={{ href: "/iletisim", label: "Benzer Bir Hedefiniz mi Var?" }}
         />
-        <StaggerGroup className="mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">
+        <StaggerGroup className="fill-odd-2 mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">
           {cases.map((c) => (
             <StaggerItem key={c.id} className="h-full">
               <article className={cn(cardCls, "flex h-full flex-col p-6 md:p-8")}>

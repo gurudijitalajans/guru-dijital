@@ -102,7 +102,7 @@ export default async function ExecPage({ searchParams }: { searchParams: Promise
           <>
             <div className="inline-flex rounded-[9px] border border-line bg-sunken p-[3px]" role="group" aria-label="Dönem">
               {PERIODS.map((p) => (
-                <Link key={p.key} href={p.key === "bu-ay" ? "/panel/ozet" : `/panel/ozet?donem=${p.key}`} aria-current={key === p.key ? "page" : undefined} className={cn("grid min-h-8.5 place-items-center rounded-[7px] px-3 font-medium text-muted no-underline", key === p.key && "bg-surface text-ink shadow-sm")}>
+                <Link key={p.key} href={p.key === "bu-ay" ? "/panel/ozet" : `/panel/ozet?donem=${p.key}`} aria-current={key === p.key ? "page" : undefined} className={cn("grid min-h-8.5 pointer-coarse:min-h-11 place-items-center rounded-[7px] px-3 font-medium text-muted no-underline", key === p.key && "bg-surface text-ink shadow-sm")}>
                   {p.label}
                 </Link>
               ))}

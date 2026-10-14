@@ -140,7 +140,7 @@ export default async function BlogPostPage({ params }: Props) {
             <PostBody data={post.content} className="prose-guru max-w-[720px]" />
           </div>
           <aside className="hidden min-w-0 lg:block">
-            <div className="grid gap-4 lg:sticky lg:top-28">
+            <div className="grid gap-4 lg:sticky lg:top-28 lg:max-h-[calc(100dvh-19rem)] lg:overflow-y-auto lg:overscroll-contain">
               {headings.length > 2 && (
                 <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-muted">İçindekiler</p>
@@ -173,7 +173,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="container-g">
             <SectionHead title="Diğer Yazılar" action={{ href: "/blog", label: "Tüm yazılar" }} />
             {/* Tek yazı yatay kartla, ikisi iki sütunda: üç sütunlu ızgarada boş sütun kalmaz */}
-            <div className={cn("mt-10 grid gap-5 md:gap-6", others.length === 2 ? "sm:grid-cols-2" : others.length > 2 && "sm:grid-cols-2 lg:grid-cols-3")}>
+            <div className={cn("fill-odd-sm mt-10 grid gap-5 md:gap-6", others.length === 2 ? "sm:grid-cols-2" : others.length > 2 && "sm:grid-cols-2 lg:grid-cols-3")}>
               {others.map((p) => (
                 <PostCard key={p.slug} post={p} as="h3" layout={others.length === 1 ? "wide" : "card"} />
               ))}

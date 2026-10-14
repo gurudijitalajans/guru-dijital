@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /** WhatsApp'ın resmi balon simgesi (tek renk) */
@@ -20,6 +21,23 @@ function WaIcon({ className }: { className?: string }) {
 export function WhatsAppButton({ number, chat }: { number: string; chat: boolean }) {
   const pathname = usePathname();
   const wa = number.replace(/\D/g, "");
+  /* 1280px altında form ekrandayken düğme çekilir: tarih seçici gibi alanların üstüne binmesin */
+  const [overForm, setOverForm] = useState(false);
+  useEffect(() => {
+    const seen = new Set<Element>();
+    const io = new IntersectionObserver((es) => {
+      for (const e of es) {
+        if (e.isIntersecting) seen.add(e.target);
+        else seen.delete(e.target);
+      }
+      setOverForm(seen.size > 0 && window.innerWidth < 1280);
+    });
+    const t = window.setTimeout(() => document.querySelectorAll("main form, [data-hide-floats]").forEach((el) => io.observe(el)), 300);
+    return () => {
+      window.clearTimeout(t);
+      io.disconnect();
+    };
+  }, [pathname]);
   if (!wa) return null;
   const text = `Merhaba Guru Dijital, ${pathname === "/" ? "web sitenizden" : `sitenizdeki ${pathname} sayfasından`} yazıyorum.`;
   return (
@@ -30,8 +48,10 @@ export function WhatsAppButton({ number, chat }: { number: string; chat: boolean
       aria-label="WhatsApp'tan yazın"
       data-umami-event="whatsapp"
       data-umami-event-konum="balon"
+      data-float=""
       className={cn(
-        "group fixed right-4 z-[45] inline-flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-[0_14px_32px_-12px_rgb(18_140_74/0.7)] transition-[background-color,transform] duration-200 hover:bg-[#1ebe5b] active:scale-95 lg:right-6",
+        "group fixed right-4 z-[45] inline-flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-[0_14px_32px_-12px_rgb(18_140_74/0.7)] transition-[background-color,transform,opacity] duration-300 hover:bg-[#1ebe5b] active:scale-95 lg:right-6",
+        overForm && "pointer-events-none translate-x-24 opacity-0",
         chat ? "bottom-[160px] lg:bottom-[96px]" : "bottom-[88px] lg:bottom-6"
       )}
     >

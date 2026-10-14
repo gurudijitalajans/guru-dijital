@@ -66,7 +66,7 @@ export function ProjectsView({ rows, detail, team, templates, deals, me, startNe
           <Input id="proje-ara" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Proje ya da firma ara" className="w-full pl-9" />
         </label>
         {[...Object.entries(STATUS).map(([k, [, l]]) => [k, `${l} (${count(k)})`]), ["", `Tümü (${rows.length})`]].map(([k, l]) => (
-          <button key={k || "tumu"} type="button" aria-pressed={status === k} onClick={() => setStatus(k)} className={cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", status === k ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
+          <button key={k || "tumu"} type="button" aria-pressed={status === k} onClick={() => setStatus(k)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", status === k ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
             {l}
           </button>
         ))}

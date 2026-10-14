@@ -5,12 +5,6 @@ import {
   Briefcase,
   Users,
   Workflow,
-  Share2,
-  Palette,
-  PenLine,
-  MonitorSmartphone,
-  BarChart3,
-  Clapperboard,
   type LucideIcon,
 } from "lucide-react";
 import type { IconName } from "@/lib/icon-names";

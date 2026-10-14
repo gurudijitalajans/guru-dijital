@@ -202,7 +202,7 @@ export function MediaView({ items, total, page, pages, q, folder, folders, selec
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 p-0">
           {items.map((m) => (
             <li key={m.id} className="group/tile relative min-w-0">
-              <label className={cn("absolute top-2 left-2 z-[1] grid size-8 place-items-center rounded-[8px] border bg-surface/95 shadow-sm transition-opacity", picked.size || picked.has(m.id) ? "opacity-100" : "opacity-0 group-hover/tile:opacity-100 focus-within:opacity-100 max-lg:opacity-100", picked.has(m.id) ? "border-accent" : "border-line")}>
+              <label className={cn("absolute top-2 left-2 z-[1] grid size-8 place-items-center rounded-[8px] border bg-surface/95 shadow-sm transition-opacity", picked.size || picked.has(m.id) ? "opacity-100" : "opacity-0 group-hover/tile:opacity-100 focus-within:opacity-100 pointer-coarse:opacity-100", picked.has(m.id) ? "border-accent" : "border-line")}>
                 <input type="checkbox" checked={picked.has(m.id)} onChange={() => toggle(m.id)} aria-label={`${m.alt} seç`} className="size-4 accent-[var(--accent)]" />
               </label>
               <button

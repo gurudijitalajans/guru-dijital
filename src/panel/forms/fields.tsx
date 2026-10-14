@@ -449,7 +449,7 @@ function UploadInput({ path, value, hasMany, readOnly }: { path: string; value: 
             </span>
             {thumbs[i]?.width ? <span className="tabular mt-1 block text-center text-[11px] text-muted">{`${thumbs[i]!.width}×${thumbs[i]!.height}`}</span> : null}
             {!readOnly ? (
-              <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="absolute -top-2 -right-2 grid size-7 place-items-center rounded-full border border-line bg-surface text-muted hover:text-bad" aria-label="Görseli kaldır">
+              <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="absolute -top-2 -right-2 grid size-7 pointer-coarse:size-10 place-items-center rounded-full border border-line bg-surface text-muted hover:text-bad" aria-label="Görseli kaldır">
                 ×
               </button>
             ) : null}
@@ -533,7 +533,7 @@ function RelationInput({ path, value, relationTo, hasMany, readOnly }: { path: s
             <span key={id} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-sunken pr-1 pl-3 text-[14px] text-ink">
               {label(id)}
               {!readOnly ? (
-                <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="grid size-7 place-items-center rounded-full text-muted hover:text-bad" aria-label={`${label(id)} kaldır`}>
+                <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="grid size-7 pointer-coarse:size-10 place-items-center rounded-full text-muted hover:text-bad" aria-label={`${label(id)} kaldır`}>
                   ×
                 </button>
               ) : null}

@@ -17,7 +17,6 @@ import { productExtras } from "@/lib/product-extras";
 import { iconNameOf } from "@/lib/icons";
 import { DEFAULT_ICON, isIconName, type IconName } from "@/lib/icon-names";
 import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
-import { serviceFaq } from "@/components/pages/hizmetler/service-faq";
 import type { FaqItem } from "@/components/site/FaqGrid";
 import type { Media, Product, Service } from "@/payload-types";
 

@@ -16,7 +16,7 @@ const dFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day
 const expired = (q: QuoteRow) => q.status === "gonderildi" && q.validUntil !== null && new Date(q.validUntil).getTime() < Date.now();
 
 const cols: ColumnDef<QuoteRow, unknown>[] = [
-  { accessorKey: "number", header: "No", cell: ({ getValue }) => <span className="font-mono text-[13px] text-ink">{getValue() as string}</span> },
+  { accessorKey: "number", header: "No", cell: ({ getValue }) => <span className="whitespace-nowrap font-mono text-[13px] text-ink">{getValue() as string}</span> },
   { accessorKey: "title", header: "Teklif", cell: ({ getValue }) => <span className="font-medium text-ink">{getValue() as string}</span> },
   { accessorKey: "who", header: "Firma ya da kişi" },
   { accessorKey: "total", header: "Tutar (KDV dahil)", cell: ({ getValue }) => <span className="tabular whitespace-nowrap">{money.format(getValue() as number)}</span> },
@@ -47,7 +47,7 @@ export function QuotesList({ rows }: { rows: QuoteRow[] }) {
           <Input id="teklif-ara" value={q} onChange={(e) => setQ(e.target.value)} placeholder="No, konu ya da firma ara" className="w-full pl-9" />
         </label>
         {[["", "Tümü"], ...Object.entries(QUOTE_STATUS).map(([k, [, l]]) => [k, l])].map(([k, l]) => (
-          <button key={k || "tumu"} type="button" aria-pressed={status === k} onClick={() => setStatus(k)} className={cn("min-h-8.5 rounded-full border border-line px-3 text-[13px]", status === k ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
+          <button key={k || "tumu"} type="button" aria-pressed={status === k} onClick={() => setStatus(k)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", status === k ? "border-accent bg-accent-soft text-accent" : "hover:border-accent")}>
             {l}
           </button>
         ))}

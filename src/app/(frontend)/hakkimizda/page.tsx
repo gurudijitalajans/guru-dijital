@@ -241,7 +241,7 @@ export default async function HakkimizdaPage() {
             ))}
           </StaggerGroup>
           ) : (
-          <StaggerGroup className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:gap-5">
+          <StaggerGroup className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             {team.map((m, i) => (
               <StaggerItem key={`${m.role}-${i}`} className="h-full">
                 <article className={cn(cardCls, "flex h-full flex-col overflow-hidden")}>

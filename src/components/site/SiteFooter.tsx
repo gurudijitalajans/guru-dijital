@@ -8,7 +8,7 @@ import { Logo } from "./Logo";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
 /* mobilde 44px dokunma alanı, masaüstünde sık liste */
-const linkCls = "block py-2.5 text-[14px] text-body transition-colors hover:text-brand md:py-1.5";
+const linkCls = "block py-2.5 text-[14px] text-body transition-colors hover:text-brand md:py-1.5 pointer-coarse:py-2.5";
 
 /** "https://www.instagram.com/gurudijital/" → "gurudijital" */
 const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "gurudijital";

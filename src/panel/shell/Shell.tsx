@@ -89,7 +89,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
                 aria-current={active ? "page" : undefined}
                 title={it.legacy ? "İçerik ekranında, canlı önizlemeyle açılır" : undefined}
                 className={cn(
-                  "flex min-h-10 items-center gap-2.5 rounded-[8px] px-2.5 text-nav-text no-underline hover:bg-nav-hover hover:text-nav-strong",
+                  "flex min-h-10 pointer-coarse:min-h-11 items-center gap-2.5 rounded-[8px] px-2.5 text-nav-text no-underline hover:bg-nav-hover hover:text-nav-strong",
                   active && "bg-nav-hover text-nav-strong shadow-[inset_3px_0_0_var(--accent)]",
                 )}
               >
@@ -221,7 +221,7 @@ export function Shell(props: Props) {
               <span className="sm:hidden">Ara</span>
               <span className="hidden sm:inline">Kişi, firma, fırsat, görev ya da sayfa ara</span>
             </span>
-            <kbd className="hidden rounded-[5px] border border-line bg-surface px-1.5 font-mono text-[11px] sm:inline">⌘K</kbd>
+            <kbd className="hidden rounded-[5px] border border-line bg-surface px-1.5 font-mono text-[11px] sm:inline pointer-coarse:hidden">⌘K</kbd>
           </button>
         </header>
         <main id="icerik" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-12 focus:outline-none lg:px-7 lg:pt-6">

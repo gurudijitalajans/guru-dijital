@@ -6,7 +6,7 @@
  * - Site Ayarları'nı data.ts varsayılanlarıyla doldurur.
  * - Üç blog kategorisi ve iki ÖRNEK yazı ekler (yalnız boşsa).
  * - Koddaki hizmet ve ürün içeriğini (data.ts, products-content.ts,
- *   service-showcase.ts, service-faq.ts) görselleriyle panele aktarır
+ *   service-showcase.ts, src/content/services.json) görselleriyle panele aktarır
  *   (yalnız boşsa). Bundan sonra içeriğin asıl yeri paneldir.
  * - Ana Sayfa metinlerini (hiç kaydedilmemişse), ekip ve referansları
  *   (koleksiyon boşsa) panele aktarır.
@@ -26,7 +26,6 @@ import { productExtrasData } from "./product-extras-data";
 import { productDetails } from "@/lib/products-content";
 import { iconNameOf } from "@/lib/icons";
 import { serviceVisuals, type WorkImage } from "@/components/pages/hizmetler/service-showcase";
-import { serviceFaq } from "@/components/pages/hizmetler/service-faq";
 import type { Post } from "@/payload-types";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -182,7 +181,7 @@ if ((await payload.count({ collection: "services" })).totalDocs === 0) {
         keywords: rows(s.keywords),
         cardImage: visual ? await mediaFor(visual.card) : undefined,
         gallery,
-        faq: serviceFaq[s.slug] ?? [],
+        faq: s.faq,
         showCases: s.slug === "dijital-pazarlama",
         showWebProjects: s.slug === "web-tasarim",
         seoDescription: s.seoDescription,
