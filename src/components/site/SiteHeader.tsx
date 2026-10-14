@@ -36,6 +36,7 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
 
 function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
   const [open, setOpen] = useState(false);
+  const wide = (group.items?.length ?? 0) > 6;
   const id = useId();
   const closeTimer = useRef<number | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -120,9 +121,10 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
         />
       </button>
       {/* Tüm açılır menüler aynı yapıda: iki sütun, her öğede ikon + başlık + tek satır açıklama, altta bağlantı satırı */}
-      <div id={id} hidden={!open} className="absolute left-1/2 top-full z-50 w-[620px] max-w-[calc(100vw-48px)] -translate-x-1/2 pt-3">
+      {/* 6'dan fazla öğe (hizmetler) üç sütunlu 3x3 ızgarada */}
+      <div id={id} hidden={!open} className={cn("absolute left-1/2 top-full z-50 max-w-[calc(100vw-48px)] -translate-x-1/2 pt-3", wide ? "w-[880px]" : "w-[620px]")}>
         <div className="rounded-[20px] bg-white p-2 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_24px_48px_-20px_rgb(1_20_65/0.35)]">
-          <ul className="grid grid-cols-2 gap-1">
+          <ul className={cn("grid gap-1", wide ? "grid-cols-3" : "grid-cols-2")}>
             {group.items.map((it) => (
               <li key={it.href}>
                 <Link

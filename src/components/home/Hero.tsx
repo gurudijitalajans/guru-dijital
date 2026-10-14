@@ -26,7 +26,7 @@ function GooglePartnerPill() {
       </span>
       <span className="leading-tight">
         <b className="block text-[15px] font-semibold text-heading">Google Partner</b>
-        <span className="block text-[12.5px] text-muted">2026 yılında da sertifikalı iş ortağı</span>
+        <span className="block text-[12.5px] text-muted">2026 yılında sertifikalı iş ortağı</span>
       </span>
     </p>
   );
@@ -39,16 +39,14 @@ function GooglePartnerPill() {
  * Giriş metni belirme animasyonu almaz: sayfanın en büyük öğesi (LCP) JS
  * beklemeden görünür; hareketi başlıktaki ışık süpürmesi verir.
  */
-export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]; referenceCount: number }) {
+export async function Hero({ hero }: { hero: HomeContent["hero"]; referenceCount?: number }) {
   const services = hero.showServiceLinks ? await getServices() : [];
-  const badgeText = hero.badgeText.replace("{sayı}", String(referenceCount));
   /* Bölüm yalnız yatayda kırpılır: alttaki kanıt rozetinin gölgesi bölümün dışına yumuşakça taşabilsin */
   return (
     <section className="relative overflow-x-clip pt-12 text-center md:pt-16">
       <div className="container-g">
         <div>
-          <GooglePartnerPill />
-          <h1 className="hero-sweep mt-6 mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
+          <h1 className="hero-sweep mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
             {parseAccent(hero.title).map((part, i) =>
               part.accent ? (
                 <span key={i} className="font-medium">
@@ -92,15 +90,9 @@ export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]
           <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-white/0 to-white" />
         </div>
 
-        <div className="relative z-10 -mt-7 flex justify-center pb-4">
-          <p className="inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl bg-white px-5 py-3 text-[14px] shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_14px_32px_-18px_rgb(1_20_65/0.4)] sm:rounded-full">
-            <span className="relative inline-flex size-2.5" aria-hidden>
-              <span className="absolute inset-0 animate-ping rounded-full bg-brand/40 [animation-duration:2.4s] motion-reduce:animate-none" />
-              <span className="relative inline-block size-2.5 rounded-full bg-brand" />
-            </span>
-            {hero.badgeStrong && <b className="font-semibold text-heading">{hero.badgeStrong}</b>}
-            {badgeText && <span className="text-muted">{badgeText}</span>}
-          </p>
+        {/* Kürenin üstüne binen kanıt kartı: Google Partner */}
+        <div className="relative z-10 -mt-9 flex justify-center pb-4">
+          <GooglePartnerPill />
         </div>
       </div>
     </section>

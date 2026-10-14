@@ -828,6 +828,10 @@ export interface CaseStudy {
   title: string;
   summary: string;
   /**
+   * Vaka bu hizmetin sayfasında gösterilir; Referanslar'da bu hizmetin altında gruplanır.
+   */
+  service?: (number | null) | Service;
+  /**
    * "Kartta göster" seçili ilk üç sonuç kartta görünür; hiçbiri seçili değilse ilk üçü.
    */
   stats?:
@@ -849,51 +853,6 @@ export interface CaseStudy {
    */
   order?: number | null;
   showOnHome?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Yorum metni, kişiden yazılı yayın izni alınıp işaretlenene kadar sitede görünmez.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  quote?: string | null;
-  name: string;
-  title?: string | null;
-  company?: string | null;
-  photo?: (number | null) | Media;
-  /**
-   * Müşterinin video yorumu: YouTube, Vimeo ya da doğrudan .mp4 adresi. Doluysa kartta oynat düğmesi çıkar.
-   */
-  videoUrl?: string | null;
-  /**
-   * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
-   */
-  consent?: boolean | null;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "references".
- */
-export interface Reference {
-  id: number;
-  name: string;
-  logo?: (number | null) | Media;
-  /**
-   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
-   */
-  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1029,6 +988,51 @@ export interface Service {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * Yorum metni, kişiden yazılı yayın izni alınıp işaretlenene kadar sitede görünmez.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote?: string | null;
+  name: string;
+  title?: string | null;
+  company?: string | null;
+  photo?: (number | null) | Media;
+  /**
+   * Müşterinin video yorumu: YouTube, Vimeo ya da doğrudan .mp4 adresi. Doluysa kartta oynat düğmesi çıkar.
+   */
+  videoUrl?: string | null;
+  /**
+   * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
+   */
+  consent?: boolean | null;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Logolar şeritte gri tonda ve aynı yükseklikte gösterilir; şeffaf zeminli SVG ya da PNG önerilir.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references".
+ */
+export interface Reference {
+  id: number;
+  name: string;
+  logo?: (number | null) | Media;
+  /**
+   * Küçük sayı önce gelir (menü, kartlar, alt bilgi).
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2072,6 +2076,7 @@ export interface CaseStudiesSelect<T extends boolean = true> {
   sector?: T;
   title?: T;
   summary?: T;
+  service?: T;
   stats?:
     | T
     | {

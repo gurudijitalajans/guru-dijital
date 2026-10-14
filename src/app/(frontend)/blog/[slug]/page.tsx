@@ -140,9 +140,9 @@ export default async function BlogPostPage({ params }: Props) {
             <PostBody data={post.content} className="prose-guru max-w-[720px]" />
           </div>
           <aside className="hidden min-w-0 lg:block">
-            <div className="grid gap-4 lg:sticky lg:top-28 lg:max-h-[calc(100dvh-19rem)] lg:overflow-y-auto lg:overscroll-contain">
+            <div className="grid gap-4 lg:sticky lg:top-28">
               {headings.length > 2 && (
-                <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5">
+                <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5 lg:max-h-[calc(100dvh-24rem)] lg:overflow-y-auto lg:overscroll-contain">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-muted">İçindekiler</p>
                   <ol className="mt-3 grid gap-1">
                     {headings.map((h) => (

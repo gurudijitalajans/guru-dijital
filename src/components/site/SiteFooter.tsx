@@ -102,7 +102,7 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
 
         <div className="mt-12 grid gap-4 border-t border-[rgb(1_20_65/0.08)] pt-6 text-[13px] text-muted lg:flex lg:items-center lg:justify-between">
           <p>
-            © {year} {site.name}. Tüm hakları saklıdır. <span className="whitespace-nowrap">grow with guru</span>
+            © {year} {site.name}. Tüm hakları saklıdır. <span className="whitespace-nowrap">Grow with Guru</span>
           </p>
           <nav aria-label="Yasal">
             <ul className="flex flex-wrap gap-x-5 gap-y-1">

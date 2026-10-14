@@ -45,7 +45,7 @@ export default async function ReferanslarPage() {
     <>
       <PageIntro
         eyebrow="Referanslarımız"
-        title={`${references.length} markanın dijital yol arkadaşıyız`}
+        title="Onlarca markanın dijital yol arkadaşıyız"
         lead="Sağlıktan turizme, perakendeden eğitime farklı sektörlerden markalarla çalışıyor; stratejiden tasarıma, reklamdan yazılıma kadar birlikte büyüyoruz."
       >
         <Btn href="/iletisim" variant="primary" size="lg" arrow>
@@ -110,7 +110,7 @@ export default async function ReferanslarPage() {
       {/* Vaka çalışmaları */}
       {cases.length > 0 && (
         <div id="vakalar" className="scroll-mt-24">
-          <CasesBlock title="Vaka Çalışmaları" lead="Ölçülebilir hedeflerle başlayıp sonuçlarını rakamlarla paylaştığımız projeler." cases={cases} />
+          <CasesBlock title="Vaka Çalışmaları" lead="Ölçülebilir hedeflerle başlayıp sonuçlarını rakamlarla paylaştığımız projeler." cases={cases} byService />
         </div>
       )}
 

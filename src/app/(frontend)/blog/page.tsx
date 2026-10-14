@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { PostCard } from "@/components/blog/PostCard";
 import { Btn } from "@/components/site/Btn";
@@ -18,10 +19,14 @@ export const metadata: Metadata = pageMetadata({
 /* Panelde yazı değişince sayfa hook ile yenilenir; bu süre yalnız yedek. */
 export const revalidate = 600;
 
-export default async function BlogPage() {
-  const posts = (await getPublishedPosts()).map(toCard);
-  /* En yeni yazı tam genişlikte yatay kart, kalanlar sayfanın tam genişliğinde üç sütun */
-  const [lead, ...rest] = posts;
+const PER_PAGE = 9;
+
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ sayfa?: string }> }) {
+  const all = (await getPublishedPosts()).map(toCard);
+  /* Sayfa başına 9 yazı: üç sütun, üç satır */
+  const pages = Math.max(1, Math.ceil(all.length / PER_PAGE));
+  const page = Math.min(pages, Math.max(1, Number((await searchParams).sayfa) || 1));
+  const posts = all.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <>
@@ -34,18 +39,32 @@ export default async function BlogPage() {
       <section className="pb-16 md:pb-[72px]">
         <div className="container-g">
           {posts.length > 0 ? (
-            <div className="grid gap-5 md:gap-6">
-              <PostCard post={lead} priority eager layout="wide" />
-              {rest.length > 0 && (
-                <StaggerGroup className={cn("grid gap-5 md:gap-6", rest.length === 1 ? "" : "fill-odd-sm sm:grid-cols-2 lg:grid-cols-3")}>
-                  {rest.map((p, i) => (
-                    <StaggerItem key={p.slug} className="h-full">
-                      <PostCard post={p} eager={i < 3} layout={rest.length === 1 ? "wide" : "card"} />
-                    </StaggerItem>
+            <>
+              <StaggerGroup className="fill-odd-sm grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+                {posts.map((p, i) => (
+                  <StaggerItem key={p.slug} className="h-full">
+                    <PostCard post={p} priority={i === 0} eager={i < 3} layout="card" />
+                  </StaggerItem>
+                ))}
+              </StaggerGroup>
+              {pages > 1 && (
+                <nav aria-label="Blog sayfaları" className="mt-10 flex flex-wrap items-center justify-center gap-2">
+                  {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
+                    <Link
+                      key={n}
+                      href={n === 1 ? "/blog" : `/blog?sayfa=${n}`}
+                      aria-current={n === page ? "page" : undefined}
+                      className={cn(
+                        "inline-grid size-11 place-items-center rounded-full text-[15px] font-medium transition-colors",
+                        n === page ? "bg-navy text-white" : "bg-soft text-heading hover:text-brand"
+                      )}
+                    >
+                      {n}
+                    </Link>
                   ))}
-                </StaggerGroup>
+                </nav>
               )}
-            </div>
+            </>
           ) : (
             <div className="mx-auto max-w-xl rounded-2xl bg-soft px-6 py-14 text-center">
               <p className="text-[17px] font-medium text-heading">Henüz yayınlanmış yazı yok</p>

@@ -16,7 +16,7 @@ import type { IconName } from "@/lib/icon-names";
 export const site = {
   name: "Guru Dijital Ajans",
   shortName: "Guru Dijital",
-  tagline: "grow with guru",
+  tagline: "Grow with Guru",
   description:
     "Guru Dijital: sosyal medya yönetimi, grafik tasarım, içerik üretimi, web tasarım, dijital pazarlama ve video tasarımında entegre çözümler sunan dijital ajans.",
   url: "https://www.gurudijital.com",

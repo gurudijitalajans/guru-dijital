@@ -154,22 +154,15 @@ export default async function IletisimPage() {
 
       {/* Toplantı planlama */}
       <section id="toplanti" className={cn("bg-soft", sectionY)}>
-        <div className="container-g grid items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="container-g">
           <Reveal>
             <SectionHead
+              center
               title="Toplantı Planlayın"
-              lead="Size uygun günü ve saati seçin; onayı ve görüşme bağlantısını e-postanıza gönderelim."
+              lead="Size uygun günü ve saati seçin; 30 dakikalık ücretsiz görüşmenin Google Meet bağlantısını e-postanıza gönderelim."
             />
-            <ul className="mt-6 grid gap-3 text-[15px] text-body">
-              {["30 dakikalık ücretsiz tanışma görüşmesi", "Google Meet bağlantısı e-postanıza gelir", "Hedeflerinizi dinler, size uygun planı çıkarırız"].map((t) => (
-                <li key={t} className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" />
-                  {t}
-                </li>
-              ))}
-            </ul>
           </Reveal>
-          <Reveal delay={0.05} className="min-w-0">
+          <Reveal delay={0.05} className="mt-10 min-w-0">
             <MeetingScheduler />
           </Reveal>
         </div>

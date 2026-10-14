@@ -6,8 +6,9 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, LayoutGrid } from "lucide-react";
 import { site, webProjects } from "@/lib/data";
 import { getAbout, getCases, getService, getServices } from "@/lib/content";
+import { CaseCard } from "@/components/home/CasesBlock";
 import { iconFor } from "@/lib/icons";
-import { cn, countWord, formatStat, sentenceStart } from "@/lib/utils";
+import { cn, countWord, sentenceStart } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -59,12 +60,15 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       ? { src: VIDEO_SRC, poster: VIDEO_POSTER, label: "Guru Dijital tanıtım videosunu oynat", trackName: "hizmet-sosyal-medya" }
       : undefined;
   /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */
-  const [caseStudies, about] = service.sections.cases ? await Promise.all([getCases(), getAbout()]) : [[], null];
+  /* Yalnız bu hizmetin vakaları; Google ödülleri reklam hizmetinde */
+  const [allCases, about] = await Promise.all([getCases(), service.slug === "dijital-reklam-yonetimi" ? getAbout() : Promise.resolve(null)]);
+  const caseStudies = allCases.filter((c) => c.service?.slug === service.slug);
   const awards = about?.awards.items ?? [];
+  const showCases = caseStudies.length > 0;
   const others = services.filter((s) => s.slug !== service.slug);
   const contactHref = `/iletisim?hizmet=${service.slug}`;
   /* Vaka bölümü olan sayfalarda SSS beyaz bölümün devamıdır: üst boşluk tekrarlanmaz */
-  const hasCase = service.sections.cases || service.sections.webProjects;
+  const hasCase = showCases || service.sections.webProjects;
 
   const jsonLd = [
     {
@@ -160,41 +164,15 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      {/* 3a. Dijital pazarlama: ölçülmüş vaka sonuçları ve ödüller */}
-      {service.sections.cases && (
+      {/* 3a. Bu hizmetin ölçülmüş vaka sonuçları (ve reklamda Google ödülleri) */}
+      {showCases && (
         <section className={sectionY}>
           <div className="container-g">
-            <SectionHead
-              title="Ölçülen Sonuçlar"
-              lead="Yönetimini devraldığımız hesaplarda ölçtüğümüz sonuçlar."
-            />
-            <StaggerGroup className="mt-10 grid gap-4 md:gap-5 lg:grid-cols-2">
+            <SectionHead title="Ölçülen Sonuçlar" lead="Yönetimini devraldığımız projelerde ölçtüğümüz sonuçlar." />
+            <StaggerGroup className="fill-odd-sm mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {caseStudies.map((cs) => (
                 <StaggerItem key={cs.id} className="h-full">
-                  <article className={cn(cardCls, "flex h-full flex-col p-6 md:p-8")}>
-                    <span className="inline-flex w-fit items-center rounded-full bg-chip px-3 py-1 text-[13px] font-medium text-heading">
-                      {cs.sector}
-                    </span>
-                    <h3 className="mt-5 text-[22px] font-medium leading-snug tracking-[-0.02em] text-heading md:text-[24px]">
-                      {cs.title}
-                    </h3>
-                    <p className={cn(cardTextCls, "mt-3")}>{cs.summary}</p>
-                    <dl className="mt-auto grid grid-cols-1 gap-2 pt-7 min-[420px]:grid-cols-3 min-[420px]:gap-3">
-                      {cs.featured.map((stat) => (
-                          <div
-                            key={stat.label}
-                            /* 420px üstünde rakam üstte, etiket altta: etiket kaç satır olursa olsun rakamlar aynı hizada */
-                            className="flex items-center justify-between gap-4 rounded-xl bg-soft px-4 py-3 min-[420px]:flex-col-reverse min-[420px]:items-start min-[420px]:justify-end min-[420px]:gap-1.5 min-[420px]:p-4"
-                          >
-                            <dt className="text-[13px] leading-snug text-muted">{stat.label}</dt>
-                            <dd className="shrink-0 text-[22px] font-medium tabular-nums leading-none tracking-[-0.02em] text-brand min-[420px]:text-[26px]">
-                              {formatStat(stat)}
-                            </dd>
-                          </div>
-                      ))}
-                    </dl>
-                    <p className="mt-4 text-[13px] text-muted">{cs.note}</p>
-                  </article>
+                  <CaseCard c={cs} />
                 </StaggerItem>
               ))}
             </StaggerGroup>

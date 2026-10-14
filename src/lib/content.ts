@@ -434,6 +434,8 @@ export type CaseView = {
   /** Kartta gösterilecek en çok üç sonuç */
   featured: StatView[];
   showOnHome: boolean;
+  /** Vakanın hizmeti (hizmet sayfasında yalnız kendi vakaları; Referanslar'da gruplama) */
+  service: { slug: string; title: string } | null;
 };
 export type TestimonialView = {
   /** Yalnız yayın izni işaretliyse dolu */
@@ -457,7 +459,7 @@ function pickFeatured(stats: (StatView & { featured?: boolean | null })[]): Stat
 export const getCases = cache(async (): Promise<CaseView[]> => {
   try {
     const payload = await cms();
-    const res = await payload.find({ collection: "case-studies", sort: "order", depth: 0, limit: 50, pagination: false });
+    const res = await payload.find({ collection: "case-studies", sort: "order", depth: 1, limit: 50, pagination: false });
     if (res.docs.length > 0)
       return res.docs.map((c) => ({
         id: String(c.id),
@@ -469,6 +471,7 @@ export const getCases = cache(async (): Promise<CaseView[]> => {
           (c.stats ?? []).map((s) => ({ label: s.label, value: s.value, prefix: s.prefix ?? "", suffix: s.suffix ?? "", featured: s.featured }))
         ),
         showOnHome: c.showOnHome !== false,
+        service: c.service && typeof c.service === "object" ? { slug: c.service.slug ?? "", title: c.service.title } : null,
       }));
   } catch {
     /* panel yok: varsayılan içerik */
@@ -484,6 +487,7 @@ export const getCases = cache(async (): Promise<CaseView[]> => {
       .filter(Boolean)
       .map((s) => ({ label: s.label, value: s.value, prefix: s.prefix ?? "", suffix: s.suffix })),
     showOnHome: true,
+    service: null,
   }));
 });
 

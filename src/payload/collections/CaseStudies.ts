@@ -34,6 +34,13 @@ export const CaseStudies: CollectionConfig = {
     },
     { name: "summary", type: "textarea", label: "Özet", required: true },
     {
+      name: "service",
+      type: "relationship",
+      relationTo: "services",
+      label: "Hizmet",
+      admin: { position: "sidebar", description: "Vaka bu hizmetin sayfasında gösterilir; Referanslar'da bu hizmetin altında gruplanır." },
+    },
+    {
       name: "stats",
       type: "array",
       label: "Sonuçlar",

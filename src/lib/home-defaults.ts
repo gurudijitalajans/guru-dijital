@@ -15,9 +15,9 @@ export const HOME_DEFAULTS = {
     primaryHref: "/iletisim",
     secondaryLabel: "Toplantı Planla",
     secondaryHref: "/iletisim#toplanti",
-    badgeStrong: "grow with guru",
+    badgeStrong: "Grow with Guru",
     /* {sayı} yerine paneldeki referans sayısı yazılır */
-    badgeText: "{sayı} markanın dijital yol arkadaşı",
+    badgeText: "Onlarca markanın dijital yol arkadaşı",
   },
   references: {
     show: true,
