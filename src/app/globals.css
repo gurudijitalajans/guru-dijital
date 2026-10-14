@@ -190,3 +190,91 @@ body {
   .prose-guru { font-size: 16px; }
   .prose-guru h2 { font-size: 23px; }
 }
+
+/* ---- Kayan şerit (referanslar): iki kopya içerik, iz %50 kayar ---- */
+@keyframes marquee-x {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.marquee {
+  display: flex;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  width: max-content;
+  padding-block: 4px;
+  animation: marquee-x 80s linear infinite;
+  will-change: transform;
+}
+.marquee-reverse-track { animation-direction: reverse; }
+@media (hover: hover) {
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; }
+  .marquee-track { animation: none; }
+}
+
+/* ---- Çerez onayı (vanilla-cookieconsent) marka teması ---- */
+#cc-main {
+  --cc-font-family: var(--font-sans), system-ui, sans-serif;
+  --cc-primary-color: #011441;
+  --cc-secondary-color: #475069;
+  --cc-btn-primary-bg: #2a6aca;
+  --cc-btn-primary-hover-bg: #011441;
+  --cc-btn-primary-border-color: #2a6aca;
+  --cc-btn-primary-hover-border-color: #011441;
+  --cc-btn-secondary-bg: #eef3fb;
+  --cc-btn-secondary-hover-bg: #dde8f8;
+  --cc-btn-secondary-border-color: #eef3fb;
+  --cc-btn-secondary-hover-border-color: #dde8f8;
+  --cc-btn-border-radius: 999px;
+  --cc-modal-border-radius: 20px;
+  --cc-link-color: #2a6aca;
+  --cc-toggle-on-bg: #2a6aca;
+  --cc-cookie-category-block-bg: #f4f6fa;
+  --cc-cookie-category-block-hover-bg: #eaeff7;
+  --cc-overlay-bg: rgb(1 20 65 / 0.45);
+}
+#cc-main .cm, #cc-main .pm { box-shadow: 0 24px 60px -24px rgb(1 20 65 / 0.45), 0 0 0 1px rgb(1 20 65 / 0.06); }
+#cc-main button, #cc-main a { cursor: pointer; }
+
+/* Tıklanabilir öğelerde el imleci (Tailwind v4 düğmelerde varsayılanı "default" yapar) */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemradio"],
+  [role="menuitemcheckbox"],
+  [role="option"],
+  [role="switch"],
+  [role="checkbox"],
+  select:not(:disabled),
+  summary,
+  label:has(> input[type="checkbox"]:not(:disabled)),
+  label:has(> input[type="radio"]:not(:disabled)),
+  label:has(> input[type="file"]),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  input[type="color"]:not(:disabled),
+  input[type="date"]:not(:disabled),
+  input[type="datetime-local"]:not(:disabled),
+  input[type="time"]:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  textarea:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+  [aria-busy="true"] { cursor: progress; }
+}

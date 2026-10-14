@@ -57,8 +57,9 @@ export default async function HizmetlerPage() {
             {services.map((s, i) => {
               const Icon = iconFor(s.icon);
               const img = s.card;
+              const lone = services.length % 2 === 1 && i === services.length - 1;
               return (
-                <StaggerItem key={s.slug} className="h-full">
+                <StaggerItem key={s.slug} className={cn("h-full", lone && "sm:col-span-2 lg:col-span-1")}>
                   <Link
                     href={`/hizmetler/${s.slug}`}
                     className={cn(cardCls, cardHoverCls, "group flex h-full flex-col p-2.5")}
@@ -133,7 +134,7 @@ export default async function HizmetlerPage() {
       </section>
 
       <ClosingCta
-        title="Tanışalım"
+        title="İletişime geçin"
         lead="Markanızı ve hedeflerinizi dinleyelim; hangi hizmetlerle başlamanın doğru olduğunu birlikte belirleyelim."
       />
     </>

@@ -12,7 +12,7 @@ const AWARD_META: Record<string, { badge: string; icon: IconName; image: string;
     badge: "Partner Rozeti",
     icon: "badge-check",
     image: "/work/odul-partner.webp",
-    alt: "2025 Google Partner rozeti",
+    alt: "Google Partner rozeti",
   },
   "Google Ads Impact Awards": {
     badge: "Data Innovation Adayı",
@@ -27,7 +27,7 @@ export const ABOUT_DEFAULTS = {
     eyebrow: "Biz Kimiz",
     title: "Markaların yol arkadaşıyız",
     lead: "Strateji, tasarım ve teknolojiyi tek çatıda buluşturuyor; markanızı dijitalde sizinle birlikte büyütüyoruz.",
-    primaryLabel: "Tanışalım",
+    primaryLabel: "İletişim",
     primaryHref: "/iletisim",
     secondaryLabel: "Ekibimizi Tanıyın",
     secondaryHref: "#ekip",
@@ -44,7 +44,7 @@ export const ABOUT_DEFAULTS = {
   awards: {
     show: true,
     title: "Ödüller ve Tanınırlık",
-    lead: "2025'te Google Partner olduk; veri odaklı çalışmalarımızla Google Ads Impact Awards'ta aday gösterildik.",
+    lead: "2025'te Google Partner olduk, 2026'da rozetimizi yeniledik; veri odaklı çalışmalarımızla Google Ads Impact Awards'ta aday gösterildik.",
     items: awards.map((a) => ({
       title: a.title,
       year: a.year,
@@ -69,7 +69,7 @@ export const ABOUT_DEFAULTS = {
   closing: {
     title: "Markanızı Birlikte Büyütelim",
     lead: "Hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz.",
-    primaryLabel: "Tanışalım",
+    primaryLabel: "İletişime Geç",
   },
   seo: {
     title: "Hakkımızda",

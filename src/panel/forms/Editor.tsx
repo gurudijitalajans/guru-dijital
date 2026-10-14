@@ -152,7 +152,7 @@ export function Editor(p: Props) {
 
   return (
     <FormCtx.Provider value={api}>
-      <div className="sticky top-0 z-20 -mx-4 -mt-5 mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-bg/95 px-4 py-3 backdrop-blur lg:-mx-7 lg:-mt-6 lg:px-7">
+      <div className="sticky -top-5 z-20 -mx-4 -mt-5 mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-bg px-4 py-3 shadow-[0_8px_16px_-14px_rgb(1_20_65/0.35)] lg:-top-6 lg:-mx-7 lg:-mt-6 lg:px-7">
         <Button asChild variant="ghost" size="icon">
           <Link href={p.back} aria-label="Geri">
             <ArrowLeft />

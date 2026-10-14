@@ -1,34 +1,57 @@
-import { BrandTile } from "@/components/site/BrandTile";
+import Image from "next/image";
 import { SectionHead } from "@/components/site/SectionHead";
 import { Reveal } from "@/components/ui/Reveal";
 import type { ReferenceView } from "@/lib/content";
 
-/* Ana sayfa referans önizlemesi: Referanslar sayfasıyla aynı marka kartları,
-   ilk 12 marka; tamamı ve vaka çalışmaları /referanslar sayfasında. */
-const PREVIEW = 12;
+/**
+ * Ana sayfa referans şeridi (Magic UI "Marquee" düzeni): iki sıra, zıt
+ * yönlere yavaşça akan renkli logolar; kenarlar yumuşakça kaybolur, üzerine
+ * gelince durur, hareket azaltma tercihinde durağan kalır. Logosu olmayan
+ * marka şeritte yer almaz (tam liste /referanslar sayfasında).
+ * Ekran okuyucu için marka adları ayrı bir listede.
+ */
+function Row({ items, reverse, seconds }: { items: ReferenceView[]; reverse?: boolean; seconds: number }) {
+  return (
+    <div className="marquee">
+      {/* İçerik iki kez: iz %50 kayınca başa döndüğünde dikiş görünmez */}
+      <ul className={reverse ? "marquee-track marquee-reverse-track" : "marquee-track"} style={{ animationDuration: `${seconds}s` }}>
+        {[...items, ...items].map((r, i) =>
+          r.logo ? (
+            <li key={`${r.name}-${i}`} className="mx-3 grid h-[88px] w-[184px] shrink-0 place-items-center rounded-2xl bg-white px-5 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] md:mx-4 md:h-24 md:w-[208px]">
+              <Image src={r.logo.src} alt="" width={r.logo.w} height={r.logo.h} sizes="200px" className="max-h-12 w-auto max-w-full object-contain md:max-h-[52px]" />
+            </li>
+          ) : null
+        )}
+      </ul>
+    </div>
+  );
+}
 
 type LogoWallProps = { title: string; lead: string; references: ReferenceView[] };
 
 export function LogoWall({ title, lead, references }: LogoWallProps) {
-  const shown = references.slice(0, PREVIEW);
+  const withLogo = references.filter((r) => r.logo);
+  const half = Math.ceil(withLogo.length / 2);
+  /* Logo başına ~3,2 sn: kalabalık şerit de aynı hızda akar */
+  const speed = (n: number) => Math.max(40, Math.round(n * 3.2));
   return (
-    <section id="referanslar" className="pb-12 pt-16 md:pb-16 md:pt-20">
+    <section id="referanslar" className="overflow-x-clip pb-12 pt-16 md:pb-16 md:pt-20">
       <div className="container-g">
         <Reveal>
-          <SectionHead
-            title={title}
-            lead={lead}
-            action={{ href: "/referanslar", label: `Tüm Referanslar (${references.length})` }}
-          />
-        </Reveal>
-        <Reveal className="mt-10" delay={0.05}>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-6" aria-label={title}>
-            {shown.map((r, i) => (
-              <BrandTile key={r.name} brand={r} index={i} />
-            ))}
-          </ul>
+          <SectionHead title={title} lead={lead} action={{ href: "/referanslar", label: `Tüm Referanslar (${references.length})` }} />
         </Reveal>
       </div>
+      <ul className="sr-only" aria-label={title}>
+        {references.map((r) => (
+          <li key={r.name}>{r.name}</li>
+        ))}
+      </ul>
+      {withLogo.length > 0 && (
+        <div className="mt-10 grid gap-4 md:gap-5" aria-hidden>
+          <Row items={withLogo.slice(0, half)} seconds={speed(half)} />
+          <Row items={withLogo.slice(half)} reverse seconds={speed(withLogo.length - half)} />
+        </div>
+      )}
     </section>
   );
 }

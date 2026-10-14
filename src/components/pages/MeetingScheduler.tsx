@@ -267,7 +267,7 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
   }
 
   return (
-    <div className={cn(formCardCls, "mx-auto flex max-w-3xl flex-col")}>
+    <div className={cn(formCardCls, "flex flex-col")}>
       {days === null ? (
         /* SSR + hydration iskeleti: tarih üretimi istemciye kalır. */
         <div
@@ -544,6 +544,13 @@ export function MeetingScheduler({ topic }: MeetingSchedulerProps = {}) {
                   Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
                 </p>
               </div>
+            <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
+              Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için kullanılır. Ayrıntılar:{" "}
+              <a href="/yasal/kvkk-aydinlatma-metni" target="_blank" className="text-brand underline-offset-2 hover:underline">
+                KVKK Aydınlatma Metni
+              </a>
+              .
+            </p>
             </motion.form>
           )}
         </AnimatePresence>

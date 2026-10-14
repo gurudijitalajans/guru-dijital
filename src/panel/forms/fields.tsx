@@ -7,7 +7,8 @@ import { ArrowDown, ArrowUp, ChevronDown, ImageOff, Plus, Trash2 } from "lucide-
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { MediaPicker } from "../media/MediaPicker";
-import { countOf, mediaThumbs, relationLabels, relationOptions, type RelOption, type Thumb } from "./actions";
+import { countOf, mediaThumbs, quickCreate, relationLabels, relationOptions, type RelOption, type Thumb } from "./actions";
+import { toast } from "sonner";
 import { rowId, useForm } from "./state";
 import type { CField } from "./types";
 import { cn } from "@/lib/utils";
@@ -288,6 +289,65 @@ function ArrayView({ f, path }: { f: Extract<CField, { kind: "array" }>; path: s
     form.set(path, next);
   };
   const err = form.errors[path];
+  /* Tek metin alanlı listeler (konular, adresler, anahtar kelimeler): akordeonsuz, doğrudan yazılır */
+  const only = f.fields.length === 1 && (f.fields[0].kind === "text" || f.fields[0].kind === "email") ? f.fields[0] : null;
+  if (only && "name" in only) {
+    const add = () => form.set(path, [...rows, { id: rowId(), [only.name]: "" }]);
+    return (
+      <div className="grid min-w-0 gap-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="text-[15px] font-semibold text-ink">{f.label}</span>
+          <span className="tabular text-[12px] text-muted">{rows.length}</span>
+        </div>
+        {f.description ? <p className="-mt-1 mb-0 text-[12px] text-muted">{f.description}</p> : null}
+        {err ? <p className="m-0 text-[13px] text-bad">{err}</p> : null}
+        {rows.map((r, i) => {
+          const p = `${path}.${i}.${only.name}`;
+          const e = form.errors[p];
+          return (
+            <div key={keyOf(r, i)} className="grid gap-1">
+              <div className="flex items-center gap-1">
+                <Input
+                  id={domId(p)}
+                  value={String(r[only.name] ?? "")}
+                  onChange={(ev) => form.set(p, ev.target.value)}
+                  placeholder={only.placeholder ?? `${f.singular} ${i + 1}`}
+                  aria-label={`${f.singular} ${i + 1}`}
+                  aria-invalid={e ? true : undefined}
+                  disabled={ro}
+                  autoFocus={!r[only.name] && i === rows.length - 1 && rows.length > 0}
+                  onKeyDown={(ev) => {
+                    if (ev.key === "Enter") {
+                      ev.preventDefault();
+                      add();
+                    }
+                  }}
+                  className={cn("min-w-0 flex-1", e && "border-bad")}
+                />
+                {!ro ? (
+                  <>
+                    <Button type="button" size="icon" variant="ghost" aria-label="Yukarı taşı" disabled={i === 0} onClick={() => move(i, -1)}>
+                      <ArrowUp />
+                    </Button>
+                    <Button type="button" size="icon" variant="ghost" aria-label={`${f.singular} ${i + 1} sil`} onClick={() => form.set(path, rows.filter((_, j) => j !== i))}>
+                      <Trash2 />
+                    </Button>
+                  </>
+                ) : null}
+              </div>
+              {e ? <p className="m-0 text-[13px] text-bad">{e}</p> : null}
+            </div>
+          );
+        })}
+        {!ro && (f.maxRows === undefined || rows.length < f.maxRows) ? (
+          <Button type="button" size="sm" className="justify-self-start" onClick={add}>
+            <Plus />
+            {`${f.singular} ekle`}
+          </Button>
+        ) : null}
+      </div>
+    );
+  }
   return (
     <div className="grid min-w-0 gap-2">
       <div className="flex items-baseline justify-between gap-2">
@@ -422,15 +482,21 @@ function UploadInput({ path, value, hasMany, readOnly }: { path: string; value: 
 function RelationInput({ path, value, relationTo, hasMany, readOnly }: { path: string; value: unknown; relationTo: string; hasMany: boolean; readOnly: boolean }) {
   const form = useForm();
   const ids = useMemo(() => (hasMany ? (Array.isArray(value) ? value : []) : value ? [value] : []).map(idOf).filter((x): x is number => Boolean(x)), [value, hasMany]);
-  const [opts, setOpts] = useState<RelOption[]>([]);
+  const [q, setQ] = useState("");
+  const [opts, setOpts] = useState<RelOption[] | null>(null);
   const [known, setKnown] = useState<Record<number, string>>({});
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  /* Arama yazıldıkça sunucudan (en çok 50 kayıt) */
   useEffect(() => {
+    if (!open) return;
     let live = true;
-    void relationOptions(form.slug, relationTo, "").then((r) => live && setOpts(r));
+    const t = setTimeout(() => void relationOptions(form.slug, relationTo, q).then((r) => live && setOpts(r)), q ? 220 : 0);
     return () => {
       live = false;
+      clearTimeout(t);
     };
-  }, [form.slug, relationTo]);
+  }, [form.slug, relationTo, q, open]);
   const idsKey = ids.join(",");
   useEffect(() => {
     if (!idsKey) return;
@@ -440,44 +506,87 @@ function RelationInput({ path, value, relationTo, hasMany, readOnly }: { path: s
       live = false;
     };
   }, [form.slug, relationTo, idsKey]);
-  const label = (id: number) => known[id] ?? opts.find((o) => o.value === id)?.label ?? `#${id}`;
-  const choices = opts.filter((o) => !ids.includes(o.value));
+  const label = (id: number) => known[id] ?? opts?.find((o) => o.value === id)?.label ?? `#${id}`;
+  const choose = (o: RelOption) => {
+    setKnown((k) => ({ ...k, [o.value]: o.label }));
+    form.set(path, hasMany ? [...ids, o.value] : o.value);
+    setQ("");
+    setOpen(false);
+  };
+  const create = async () => {
+    const name = q.trim();
+    if (!name) return;
+    setBusy(true);
+    const r = await quickCreate(form.slug, relationTo, name);
+    setBusy(false);
+    if (r.ok && r.option) choose(r.option);
+    else toast.error(r.error ?? "Eklenemedi.");
+  };
+  const choices = (opts ?? []).filter((o) => !ids.includes(o.value));
+  const exact = (opts ?? []).some((o) => o.label.toLocaleLowerCase("tr-TR") === q.trim().toLocaleLowerCase("tr-TR"));
 
-  if (!hasMany)
-    return (
-      <select id={domId(path)} value={ids[0] ?? ""} disabled={readOnly} onChange={(e) => form.set(path, Number(e.target.value) || null)} className={cn(fieldCls, "min-h-10")}>
-        <option value="">Seçin</option>
-        {ids[0] && !opts.some((o) => o.value === ids[0]) ? <option value={ids[0]}>{label(ids[0])}</option> : null}
-        {opts.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    );
   return (
-    <div className="grid gap-2" id={domId(path)}>
-      <div className="flex flex-wrap gap-2">
-        {ids.map((id) => (
-          <span key={id} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-sunken pr-1 pl-3 text-[14px] text-ink">
-            {label(id)}
-            {!readOnly ? (
-              <button type="button" onClick={() => form.set(path, ids.filter((x) => x !== id))} className="grid size-7 place-items-center rounded-full text-muted hover:text-bad" aria-label={`${label(id)} kaldır`}>
-                ×
-              </button>
-            ) : null}
-          </span>
-        ))}
-      </div>
-      {!readOnly && choices.length ? (
-        <select value="" onChange={(e) => e.target.value && form.set(path, [...ids, Number(e.target.value)])} className={cn(fieldCls, "min-h-10")} aria-label="Ekle">
-          <option value="">Ekle…</option>
-          {choices.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
+    <div className="relative grid gap-2" id={domId(path)}>
+      {ids.length ? (
+        <div className="flex flex-wrap gap-2">
+          {ids.map((id) => (
+            <span key={id} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-sunken pr-1 pl-3 text-[14px] text-ink">
+              {label(id)}
+              {!readOnly ? (
+                <button type="button" onClick={() => form.set(path, hasMany ? ids.filter((x) => x !== id) : null)} className="grid size-7 place-items-center rounded-full text-muted hover:text-bad" aria-label={`${label(id)} kaldır`}>
+                  ×
+                </button>
+              ) : null}
+            </span>
           ))}
-        </select>
+        </div>
+      ) : null}
+      {!readOnly && (hasMany || !ids.length) ? (
+        <div className="relative">
+          <Input
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setTimeout(() => setOpen(false), 160)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setOpen(false);
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (choices[0] && (exact || !q.trim())) choose(choices[0]);
+                else if (q.trim()) void create();
+              }
+            }}
+            placeholder={hasMany ? "Ara ve ekle…" : "Ara ve seç…"}
+            role="combobox"
+            aria-expanded={open}
+            aria-autocomplete="list"
+            className="w-full"
+          />
+          {open ? (
+            <ul role="listbox" className="absolute top-full right-0 left-0 z-30 mt-1 max-h-64 overflow-auto rounded-[10px] border border-line bg-surface p-1 shadow-pop">
+              {opts === null ? <li className="px-3 py-2 text-[13px] text-muted">Yükleniyor…</li> : null}
+              {choices.map((o) => (
+                <li key={o.value}>
+                  <button type="button" role="option" aria-selected={false} onMouseDown={(e) => e.preventDefault()} onClick={() => choose(o)} className="flex min-h-10 w-full items-center rounded-[7px] px-3 text-left text-[14px] text-ink hover:bg-accent-soft">
+                    {o.label}
+                  </button>
+                </li>
+              ))}
+              {opts !== null && !choices.length && !q.trim() ? <li className="px-3 py-2 text-[13px] text-muted">Henüz kayıt yok. Adını yazıp ekleyebilirsiniz.</li> : null}
+              {q.trim() && !exact ? (
+                <li>
+                  <button type="button" disabled={busy} onMouseDown={(e) => e.preventDefault()} onClick={() => void create()} className="flex min-h-10 w-full items-center gap-2 rounded-[7px] px-3 text-left text-[14px] font-medium text-accent hover:bg-accent-soft">
+                    <Plus className="size-4" />
+                    {busy ? "Ekleniyor…" : `“${q.trim()}” adıyla yeni ekle`}
+                  </button>
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

@@ -8,6 +8,7 @@ export const ICON_OPTIONS = [
   { value: "palette", label: "Palet (tasarım)" },
   { value: "pen", label: "Kalem (içerik)" },
   { value: "monitor", label: "Ekran ve telefon (web)" },
+  { value: "smartphone", label: "Telefon (mobil uygulama)" },
   { value: "chart-bar", label: "Sütun grafik (pazarlama)" },
   { value: "clapperboard", label: "Klaket (video)" },
   { value: "bot", label: "Robot (chatbot)" },

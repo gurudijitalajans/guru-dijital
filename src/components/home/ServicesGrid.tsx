@@ -19,10 +19,12 @@ export async function ServicesGrid({ title, lead, className }: { title: string; 
           action={{ href: "/hizmetler", label: "Tüm Hizmetler" }}
         />
         <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-          {services.map((s) => {
+          {services.map((s, i) => {
             const Icon = iconFor(s.icon);
+            /* İki sütunda tek kalan son kart iki sütunu kaplar (üç sütunda 9 kart tam dolar) */
+            const lone = services.length % 2 === 1 && i === services.length - 1;
             return (
-              <StaggerItem key={s.slug} className="h-full">
+              <StaggerItem key={s.slug} className={cn("h-full", lone && "sm:col-span-2 lg:col-span-1")}>
                 <Link
                   href={`/hizmetler/${s.slug}`}
                   className={cn(cardCls, cardHoverCls, "group flex h-full flex-col gap-3 p-6 md:p-7")}

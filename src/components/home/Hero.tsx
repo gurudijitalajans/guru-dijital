@@ -5,6 +5,33 @@ import { parseAccent } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
 import { Globe } from "./Globe";
 
+/** Google'ın çok renkli "G" işareti */
+function GoogleG({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden className={className}>
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5Z" />
+      <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7Z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44Z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5Z" />
+    </svg>
+  );
+}
+
+/** Girişin en üstündeki kanıt: Google Partner (2025 ve 2026) */
+function GooglePartnerPill() {
+  return (
+    <p className="inline-flex items-center gap-3 rounded-full bg-white py-2 pl-2 pr-5 text-left shadow-[0_0_0_1px_rgb(1_20_65/0.09),0_10px_28px_-16px_rgb(1_20_65/0.45)]">
+      <span className="grid size-9 place-items-center rounded-full bg-white shadow-[0_0_0_1px_rgb(1_20_65/0.08)]">
+        <GoogleG className="size-5" />
+      </span>
+      <span className="leading-tight">
+        <b className="block text-[15px] font-semibold text-heading">Google Partner</b>
+        <span className="block text-[12.5px] text-muted">2026 yılında da sertifikalı iş ortağı</span>
+      </span>
+    </p>
+  );
+}
+
 /**
  * Ana sayfa girişi (EDME düzeni): ortalanmış ince başlık, kısa açıklama,
  * hizmet bağlantı şeridi, iki buton, altında yarısı görünen nokta küresi
@@ -20,7 +47,8 @@ export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]
     <section className="relative overflow-x-clip pt-12 text-center md:pt-16">
       <div className="container-g">
         <div>
-          <h1 className="hero-sweep mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
+          <GooglePartnerPill />
+          <h1 className="hero-sweep mt-6 mx-auto max-w-[900px] text-balance text-[36px] font-normal leading-[1.1] tracking-[-0.035em] sm:text-[48px] lg:text-[56px]">
             {parseAccent(hero.title).map((part, i) =>
               part.accent ? (
                 <span key={i} className="font-medium">
@@ -32,12 +60,11 @@ export async function Hero({ hero, referenceCount }: { hero: HomeContent["hero"]
             )}
           </h1>
           <p className="mx-auto mt-5 max-w-[680px] text-[16px] leading-relaxed text-muted md:text-[16.5px]">{hero.sub}</p>
-          {/* Dar ekranda satır başına nokta düşmesin: ayraç yalnız lg+ (tek satır) */}
+          {/* Hizmetler yalnız boşlukla ayrılır: kırılan satır ayraçla başlamaz */}
           {services.length > 0 && (
-          <ul className="mx-auto mt-4 flex max-w-[860px] flex-wrap justify-center gap-x-6 text-[13.5px] text-muted lg:mt-5 lg:gap-x-1">
-            {services.map((s, i) => (
+          <ul className="mx-auto mt-4 flex max-w-[900px] flex-wrap justify-center gap-x-6 text-[13.5px] text-muted lg:mt-5 lg:gap-x-5">
+            {services.map((s) => (
               <li key={s.slug} className="flex items-center">
-                {i > 0 && <span aria-hidden className="mx-2.5 hidden text-[#c5cbd6] lg:inline">·</span>}
                 {/* Mobilde 44px dokunma alanı; masaüstünde tek satır */}
                 <Link href={`/hizmetler/${s.slug}`} className="inline-flex min-h-11 items-center transition-colors hover:text-brand lg:min-h-0 lg:py-1">
                   {s.title}

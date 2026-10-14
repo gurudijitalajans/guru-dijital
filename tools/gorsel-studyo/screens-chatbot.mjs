@@ -14,11 +14,14 @@ export const CONVS = [
 
 export function convRow([ini, name, time, prev, unread, ch, active, by], i, { big = false } = {}) {
   const d = big ? 46 : 42;
-  return `<div style="display:flex;gap:12px;align-items:center;padding:${big ? "14px 16px" : "11px 12px"};border-radius:14px;${active ? "background:#eaf2ff;" : ""}">
-    <div style="position:relative">${av(ini, d, i)}<span style="position:absolute;right:-5px;bottom:-4px;border:2.5px solid ${active ? "#eaf2ff" : "#fff"};border-radius:50%">${chan(ch, big ? 17 : 15)}</span></div>
+  /* Sağ sütun (saat + okunmamış rozeti) sabit genişlikte; isim ve önizleme tek satır,
+     taşarsa üç noktayla kesilir ve rozete en az 10px kala biter. */
+  const colW = big ? 44 : 40;
+  return `<div style="display:flex;gap:12px;align-items:center;min-width:0;padding:${big ? "14px 16px" : "11px 12px"};border-radius:14px;${active ? "background:#eaf2ff;" : ""}">
+    <div style="position:relative;flex-shrink:0">${av(ini, d, i)}<span style="position:absolute;right:-5px;bottom:-4px;border:2.5px solid ${active ? "#eaf2ff" : "#fff"};border-radius:50%">${chan(ch, big ? 17 : 15)}</span></div>
     <div style="min-width:0;flex:1">
-      <div class="row" style="gap:8px"><span style="font-size:${big ? 16 : 15}px;font-weight:600">${name}</span>${by === "bot" ? tag(`${icon("sparkles", { size: 11, stroke: 2.4 })}Bot`, "blue", "font-size:11px;padding:2px 7px") : ""}<span style="margin-left:auto;font-size:12.5px;color:#8a95ad">${time}</span></div>
-      <div class="row" style="gap:8px;margin-top:3px"><span style="font-size:${big ? 14.5 : 13.5}px;color:${unread ? "#3b4763" : "#8a95ad"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${unread ? "font-weight:500" : ""}">${prev}</span>${unread ? `<span style="margin-left:auto;min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#12419b;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center">${unread}</span>` : ""}</div>
+      <div class="row" style="gap:10px;min-width:0"><span style="min-width:0;display:flex;align-items:center;gap:7px;flex:1"><span style="min-width:0;font-size:${big ? 16 : 15}px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</span>${by === "bot" ? tag(`${icon("sparkles", { size: 11, stroke: 2.4 })}Bot`, "blue", "font-size:11px;padding:2px 7px;flex-shrink:0") : ""}</span><span style="width:${colW}px;flex-shrink:0;text-align:right;font-size:12.5px;color:#8a95ad">${time}</span></div>
+      <div class="row" style="gap:10px;margin-top:3px;min-width:0"><span style="flex:1;min-width:0;font-size:${big ? 14.5 : 13.5}px;color:${unread ? "#3b4763" : "#8a95ad"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${unread ? "font-weight:500" : ""}">${prev}</span><span style="width:${colW}px;flex-shrink:0;display:flex;justify-content:flex-end">${unread ? `<span style="min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#12419b;color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center">${unread}</span>` : ""}</span></div>
     </div>
   </div>`;
 }
@@ -76,7 +79,7 @@ export function chatbotDesktop() {
       <div style="font-size:12.5px;color:#55617b;margin-top:4px;line-height:1.45">Bilgi bankası güncel, 3 kanalda yanıt veriyor</div>
       <div class="row" style="gap:6px;margin-top:10px">${chan("whatsapp", 22)}${chan("instagram", 22)}${chan("web", 22)}</div>
     </div><div class="foot" style="margin-top:0">`);
-  const list = `<div class="card" style="width:336px;flex-shrink:0;padding:16px 10px;display:flex;flex-direction:column">
+  const list = `<div class="card" style="width:356px;flex-shrink:0;min-width:0;padding:16px 10px;display:flex;flex-direction:column;overflow:hidden">
     <div class="row" style="padding:0 8px 12px"><span class="h3">Konuşmalar</span>${tag("12 açık", "blue", "margin-left:auto")}</div>
     <div class="row" style="gap:6px;padding:0 8px 10px">${[["Tümü", 12, true], ["Bot", 7], ["Ekip", 5]].map(([t, n, on]) => `<span style="height:32px;padding:0 13px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:500;${on ? "background:#12419b;color:#fff" : "background:#f1f4f9;color:#4a5672"}">${t}<span style="opacity:.7">${n}</span></span>`).join("")}</div>
     <div style="display:grid;gap:2px">${CONVS.map((c, i) => convRow(c, i)).join("")}</div>
@@ -87,7 +90,7 @@ export function chatbotDesktop() {
       <div><div style="font-size:16px;font-weight:600">Merve Kaya</div><div class="row" style="gap:6px;font-size:13px;color:#7f8aa3">${dot("#16a34a", 7)}Çevrimiçi · WhatsApp</div></div>
       <span class="btn sec" style="margin-left:auto;height:38px">${icon("user-plus", { size: 16 })}Ata</span><span class="btn sec" style="height:38px">${icon("circle-check", { size: 16 })}Kapat</span>
     </div>
-    <div style="flex:1;padding:14px 22px;display:flex;flex-direction:column;gap:10px">
+    <div style="flex:1;min-height:0;padding:12px 22px 10px;display:flex;flex-direction:column;gap:6px">
       <div style="align-self:center;font-size:12.5px;color:#7f8aa3;background:#f1f4f9;border-radius:999px;padding:4px 12px">Bugün, 4 Eylül</div>
       ${bubble.them("Merhaba, siparişim 3 gündür kargoya verilmedi. Ne zaman gönderilir?", "14:29")}
       ${bubble.bot("Merhaba Merve Hanım! GD-48213 numaralı siparişiniz bugün paketlendi. Teslimat 1-2 iş günü içinde yapılacak.", "14:29")}
@@ -95,16 +98,16 @@ export function chatbotDesktop() {
       ${bubble.bot("Elbette: <b>YK 4821 3390 17</b>", "14:31")}
       ${bubble.them("Teslimat adresini değiştirmek istiyorum, mümkün mü?", "14:32")}
     </div>
-    <div style="padding:0 20px 18px;display:grid;gap:12px">
+    <div style="padding:0 20px 16px;display:grid;gap:10px">
       ${handoffCard()}
       <div class="row" style="gap:8px">${["Adres güncelle", "Kargo durumu", "İade koşulları"].map((t) => `<span style="height:32px;padding:0 13px;border-radius:999px;background:#eaf2ff;color:#12419b;font-size:13.5px;font-weight:500;display:inline-flex;align-items:center;gap:6px">${icon("zap", { size: 13, stroke: 2.3 })}${t}</span>`).join("")}</div>
       <div class="row" style="gap:10px;height:50px;padding:0 8px 0 18px;border-radius:14px;background:#f3f6fb;color:#9aa4ba;font-size:14.5px">Yanıt yazın…<span style="margin-left:auto;display:flex;gap:6px;align-items:center">${icon("paperclip", { size: 18, color: "#9aa4ba" })}<span style="width:36px;height:36px;border-radius:11px;background:#12419b;display:grid;place-items:center">${icon("send-horizontal", { size: 17, color: "#fff", stroke: 2.2 })}</span></span></div>
     </div>
   </div>`;
-  const right = `<div style="width:282px;flex-shrink:0;display:grid;gap:14px;align-content:start">
+  const right = `<div style="width:268px;flex-shrink:0;min-width:0;display:grid;gap:14px;align-content:start">
     ${statCard("Ort. yanıt süresi", "4", "sn", "1,2 sn daha hızlı", "timer")}
     ${statCard("Çözüm oranı", "%86", "", "4 puan bu hafta", "circle-check-big")}
-    ${weeklyCard({ w: 244, h: 128 })}
+    ${weeklyCard({ w: 232, h: 118 })}
     ${channelCard()}
   </div>`;
   return `<div class="app">${side}<main class="main">

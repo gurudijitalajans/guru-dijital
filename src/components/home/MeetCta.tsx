@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Btn } from "@/components/site/Btn";
 import { Reveal } from "@/components/ui/Reveal";
 
-/** EDME'deki "Tanışalım" kapanışı: halkalı marka simgesi, kısa davet, tek buton. */
+/** Ana sayfanın iletişim kapanışı: halkalı marka simgesi, kısa davet, tek buton. */
 type MeetCtaProps = { title: string; text: string; buttonLabel: string; buttonHref: string };
 
 export function MeetCta({ title, text, buttonLabel, buttonHref }: MeetCtaProps) {

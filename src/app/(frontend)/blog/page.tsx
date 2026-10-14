@@ -20,13 +20,8 @@ export const revalidate = 600;
 
 export default async function BlogPage() {
   const posts = (await getPublishedPosts()).map(toCard);
-  /* Sütun sayısı yazı sayısına göre: boş sütun kalmasın, tek yazı yatay kartla basılsın */
-  const gridCls =
-    posts.length === 1
-      ? "mx-auto max-w-5xl"
-      : posts.length === 2
-        ? "sm:grid-cols-2 lg:mx-auto lg:max-w-5xl"
-        : "sm:grid-cols-2 lg:grid-cols-3";
+  /* En yeni yazı tam genişlikte yatay kart, kalanlar sayfanın tam genişliğinde üç sütun */
+  const [lead, ...rest] = posts;
 
   return (
     <>
@@ -39,13 +34,18 @@ export default async function BlogPage() {
       <section className="pb-16 md:pb-[72px]">
         <div className="container-g">
           {posts.length > 0 ? (
-            <StaggerGroup className={cn("grid gap-5 md:gap-6", gridCls)}>
-              {posts.map((p, i) => (
-                <StaggerItem key={p.slug} className="h-full">
-                  <PostCard post={p} priority={i === 0} eager={i < 3} layout={posts.length === 1 ? "wide" : "card"} />
-                </StaggerItem>
-              ))}
-            </StaggerGroup>
+            <div className="grid gap-5 md:gap-6">
+              <PostCard post={lead} priority eager layout="wide" />
+              {rest.length > 0 && (
+                <StaggerGroup className={cn("grid gap-5 md:gap-6", rest.length === 1 ? "" : "sm:grid-cols-2 lg:grid-cols-3")}>
+                  {rest.map((p, i) => (
+                    <StaggerItem key={p.slug} className="h-full">
+                      <PostCard post={p} eager={i < 3} layout={rest.length === 1 ? "wide" : "card"} />
+                    </StaggerItem>
+                  ))}
+                </StaggerGroup>
+              )}
+            </div>
           ) : (
             <div className="mx-auto max-w-xl rounded-2xl bg-soft px-6 py-14 text-center">
               <p className="text-[17px] font-medium text-heading">Henüz yayınlanmış yazı yok</p>

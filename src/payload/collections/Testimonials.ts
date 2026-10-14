@@ -33,7 +33,13 @@ export const Testimonials: CollectionConfig = {
         { name: "company", type: "text", label: "Firma" },
       ],
     },
-    { name: "photo", type: "upload", relationTo: "media", label: "Fotoğraf ya da logo" },
+    { name: "photo", type: "upload", relationTo: "media", label: "Fotoğraf ya da video kapağı" },
+    {
+      name: "videoUrl",
+      type: "text",
+      label: "Video bağlantısı",
+      admin: { description: "Müşterinin video yorumu: YouTube, Vimeo ya da doğrudan .mp4 adresi. Doluysa kartta oynat düğmesi çıkar." },
+    },
     {
       name: "consent",
       type: "checkbox",

@@ -11,13 +11,13 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Empty } from "../ui/card";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
-import { createFolder, deleteMedia, updateMedia } from "./actions";
+import { createFolder, deleteMedia, moveMedia, updateMedia } from "./actions";
 import { uploadOne } from "./upload";
 import { cn } from "@/lib/utils";
 
 export type MediaItem = { id: number; alt: string; filename: string; thumb: string; width: number; height: number };
 export type MediaDetail = { id: number; alt: string; filename: string; preview: string; url: string; size: number; width: number; height: number; created: string; folder: number | null; focalX: number | null; focalY: number | null; uses: MediaUse[] };
-type Folder = { id: number; name: string };
+type Folder = { id: number; name: string; count?: number };
 
 const kb = (n: number) =>
   n >= 1024 * 1024 ? `${(n / 1024 / 1024).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} MB` : n >= 1024 ? `${Math.round(n / 1024).toLocaleString("tr-TR")} KB` : `${n.toLocaleString("tr-TR")} bayt`;
@@ -40,7 +40,26 @@ function useParams() {
   );
 }
 
-export function MediaView({ items, total, page, pages, q, folder, folders, selected, canDelete, clientUpload }: { items: MediaItem[]; total: number; page: number; pages: number; q: string; folder: number | "yok" | null; folders: Folder[]; selected: MediaDetail | null; canDelete: boolean; clientUpload: boolean }) {
+export function MediaView({ items, total, page, pages, q, folder, folders, selected, canDelete, clientUpload, totalAll, looseCount }: { items: MediaItem[]; total: number; page: number; pages: number; q: string; folder: number | "yok" | null; folders: Folder[]; selected: MediaDetail | null; canDelete: boolean; clientUpload: boolean; totalAll?: number; looseCount?: number }) {
+  const [picked, setPicked] = useState<Set<number>>(new Set());
+  const [moveTo, setMoveTo] = useState("");
+  const [moving, startMove] = useTransition();
+  const toggle = (id: number) =>
+    setPicked((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  const moveSelected = () =>
+    startMove(async () => {
+      const r = await moveMedia([...picked], moveTo === "yok" ? null : Number(moveTo) || null);
+      if (!r.ok) return void toast.error(r.error);
+      toast.success(`${picked.size} görsel taşındı.`);
+      setPicked(new Set());
+      setMoveTo("");
+      router.refresh();
+    });
   const set = useParams();
   const router = useRouter();
   const [term, setTerm] = useState(q);
@@ -122,15 +141,16 @@ export function MediaView({ items, total, page, pages, q, folder, folders, selec
 
       <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Klasör">
         <button type="button" className={chip(folder === null)} onClick={() => set({ klasor: null, sayfa: null })}>
-          Tümü
+          Tümü{totalAll !== undefined ? <span className="tabular ml-1.5 text-muted">{totalAll}</span> : null}
         </button>
         {folders.map((f) => (
           <button key={f.id} type="button" className={chip(folder === f.id)} onClick={() => set({ klasor: String(f.id), sayfa: null })}>
             {f.name}
+            {f.count !== undefined ? <span className="tabular ml-1.5 text-muted">{f.count}</span> : null}
           </button>
         ))}
         <button type="button" className={chip(folder === "yok")} onClick={() => set({ klasor: "yok", sayfa: null })}>
-          Klasörsüz
+          Klasörsüz{looseCount !== undefined ? <span className="tabular ml-1.5 text-muted">{looseCount}</span> : null}
         </button>
         {newFolder === null ? (
           <Button variant="ghost" onClick={() => setNewFolder("")}>
@@ -154,10 +174,37 @@ export function MediaView({ items, total, page, pages, q, folder, folders, selec
         )}
       </div>
 
+      {picked.size ? (
+        <div className="sticky -top-5 z-10 mb-3 flex flex-wrap items-center gap-2 rounded-[12px] border border-accent/40 bg-accent-soft px-3 py-2 lg:-top-6">
+          <span className="text-[14px] font-medium text-ink">{`${picked.size} görsel seçildi`}</span>
+          <select value={moveTo} onChange={(e) => setMoveTo(e.target.value)} aria-label="Taşınacak klasör" className="min-h-9 rounded-[9px] border border-line bg-surface px-2.5 text-[14px] text-ink">
+            <option value="">Klasör seçin</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+            <option value="yok">Klasörsüz</option>
+          </select>
+          <Button size="sm" variant="primary" disabled={!moveTo || moving} onClick={moveSelected}>
+            Taşı
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setPicked(new Set(items.map((m) => m.id)))}>
+            Sayfadakilerin tümünü seç
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setPicked(new Set())}>
+            Seçimi temizle
+          </Button>
+        </div>
+      ) : null}
+
       {items.length ? (
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 p-0">
           {items.map((m) => (
-            <li key={m.id} className="min-w-0">
+            <li key={m.id} className="group/tile relative min-w-0">
+              <label className={cn("absolute top-2 left-2 z-[1] grid size-8 place-items-center rounded-[8px] border bg-surface/95 shadow-sm transition-opacity", picked.size || picked.has(m.id) ? "opacity-100" : "opacity-0 group-hover/tile:opacity-100 focus-within:opacity-100 max-lg:opacity-100", picked.has(m.id) ? "border-accent" : "border-line")}>
+                <input type="checkbox" checked={picked.has(m.id)} onChange={() => toggle(m.id)} aria-label={`${m.alt} seç`} className="size-4 accent-[var(--accent)]" />
+              </label>
               <button
                 type="button"
                 onClick={() => set({ gorsel: String(m.id) })}

@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = pageMetadata({
   title: "İletişim",
   description:
-    "Projenizi konuşalım: e-posta, Instagram, iletişim formu veya toplantı planlayarak Guru Dijital'e ulaşın. İlk görüşme ücretsiz, aynı gün dönüş yapıyoruz.",
+    "Projenizi konuşalım: e-posta, WhatsApp, telefon, iletişim formu veya toplantı planlayarak Guru Dijital'e ulaşın. İlk görüşme ücretsiz, aynı gün dönüş yapıyoruz.",
   path: "/iletisim",
 });
 
@@ -64,7 +64,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
     items.push({
       label: "WhatsApp",
       event: "whatsapp",
-      value: site.whatsapp,
+      value: site.phone || site.whatsapp,
       href: `https://wa.me/${site.whatsapp.replace(/\D/g, "")}`,
       external: true,
       icon: <WhatsAppIcon className="size-4" />,
@@ -81,12 +81,9 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
     });
   }
 
-  return items;
+  const order = ["WhatsApp", "E-posta", "Telefon", "Instagram", "Adres"];
+  return items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
 }
-
-/* Sade iletişim çipi: beyaz hap, ince halka, mavi ikon; 44px dokunma hedefi */
-const chipCls =
-  "inline-flex min-h-11 max-w-full items-center gap-2 rounded-full bg-white px-4 text-[14.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.1)] transition-[color,box-shadow] duration-300 hover:text-brand hover:shadow-[0_0_0_1px_rgb(42_106_202/0.45)]";
 
 export default async function IletisimPage() {
   const [info, services] = await Promise.all([getSiteInfo(), getServices()]);
@@ -97,41 +94,59 @@ export default async function IletisimPage() {
     <>
       <PageIntro
         eyebrow="İletişim"
-        title="Tanışalım"
+        title="Bize ulaşın"
         lead="Fikrinizi, hedefinizi ya da aklınızdaki soruyu yazın; aynı gün dönüş yapalım. İlk görüşme ücretsiz."
         className="pb-8 md:pb-10"
-      >
-        <ul className="flex flex-wrap justify-center gap-2" aria-label="İletişim kanalları">
-          {contactItems.map((item) => (
-            <li key={item.label} className="max-w-full">
-              <a
-                href={item.href}
-                {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                data-umami-event={item.event}
-                data-umami-event-konum="iletisim"
-                className={chipCls}
-              >
-                <span className="shrink-0 text-brand" aria-hidden>
-                  {item.icon}
-                </span>
-                <span className="sr-only">{item.label}: </span>
-                <span className="truncate">{item.value}</span>
-              </a>
-            </li>
-          ))}
-          <li>
-            <a href="#toplanti" className={chipCls}>
-              <CalendarClock className="size-4 shrink-0 text-brand" strokeWidth={2} aria-hidden />
-              Toplantı planlayın
-            </a>
-          </li>
-        </ul>
-      </PageIntro>
+      />
 
-      {/* Form: ilk ekranda, ortalanmış */}
+      {/* Form ve doğrudan iletişim: sayfanın tam genişliğinde, geniş ekranda yan yana */}
       <section id="iletisim-form" className="pb-16 md:pb-[72px]">
-        <div className="container-g">
-          <Reveal className="mx-auto max-w-3xl" delay={0.05}>
+        <div className="container-g grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
+          <Reveal>
+            <aside className="relative overflow-hidden rounded-3xl bg-navy p-6 text-white sm:p-8 lg:sticky lg:top-28">
+              <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand/40 blur-3xl" />
+              <h2 className="relative text-[22px] font-medium leading-snug tracking-[-0.02em] md:text-[26px]">Doğrudan ulaşın</h2>
+              <p className="relative mt-2 text-[15px] leading-relaxed text-white/75">
+                Hangi kanal size kolaysa oradan yazın. Hafta içi 09.00-18.00 arasında aynı gün dönüş yapıyoruz.
+              </p>
+              <ul className="relative mt-6 grid gap-2.5" aria-label="İletişim kanalları">
+                {contactItems.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      data-umami-event={item.event}
+                      data-umami-event-konum="iletisim"
+                      className="group flex min-h-14 items-center gap-3.5 rounded-2xl bg-white/[0.07] px-4 py-3 transition-colors hover:bg-white/[0.14]"
+                    >
+                      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-brand" aria-hidden>
+                        {item.icon}
+                      </span>
+                      <span className="min-w-0 leading-tight">
+                        <span className="block text-[12.5px] text-white/60">{item.label}</span>
+                        <span className="block truncate text-[15.5px] font-medium">{item.value}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a href="#toplanti" className="group flex min-h-14 items-center gap-3.5 rounded-2xl bg-white/[0.07] px-4 py-3 transition-colors hover:bg-white/[0.14]">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-brand" aria-hidden>
+                      <CalendarClock className="size-4" strokeWidth={2} />
+                    </span>
+                    <span className="leading-tight">
+                      <span className="block text-[12.5px] text-white/60">Görüntülü görüşme</span>
+                      <span className="block text-[15.5px] font-medium">Toplantı planlayın</span>
+                    </span>
+                  </a>
+                </li>
+              </ul>
+              <p className="relative mt-6 border-t border-white/10 pt-5 text-[13.5px] leading-relaxed text-white/65">
+                Google Partner (2025 · 2026). Teklif ve ilk görüşme ücretsizdir; bilgileriniz yalnız size dönüş yapmak için kullanılır.
+              </p>
+            </aside>
+          </Reveal>
+          <Reveal delay={0.05} className="min-w-0">
             <ContactForm services={serviceRefs} />
           </Reveal>
         </div>
@@ -139,15 +154,22 @@ export default async function IletisimPage() {
 
       {/* Toplantı planlama */}
       <section id="toplanti" className={cn("bg-soft", sectionY)}>
-        <div className="container-g">
+        <div className="container-g grid items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           <Reveal>
             <SectionHead
-              center
               title="Toplantı Planlayın"
               lead="Size uygun günü ve saati seçin; onayı ve görüşme bağlantısını e-postanıza gönderelim."
             />
+            <ul className="mt-6 grid gap-3 text-[15px] text-body">
+              {["30 dakikalık ücretsiz tanışma görüşmesi", "Google Meet bağlantısı e-postanıza gelir", "Hedeflerinizi dinler, size uygun planı çıkarırız"].map((t) => (
+                <li key={t} className="flex items-start gap-2.5">
+                  <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" />
+                  {t}
+                </li>
+              ))}
+            </ul>
           </Reveal>
-          <Reveal className="mt-10" delay={0.05}>
+          <Reveal delay={0.05} className="min-w-0">
             <MeetingScheduler />
           </Reveal>
         </div>
@@ -163,7 +185,7 @@ export default async function IletisimPage() {
               lead="Kısa cevaplar; ayrıntıları tanışma görüşmesinde birlikte netleştiririz."
             />
           </Reveal>
-          <Reveal className="mx-auto mt-10 max-w-5xl" delay={0.05}>
+          <Reveal className="mt-10" delay={0.05}>
             <ContactFaq />
           </Reveal>
         </div>

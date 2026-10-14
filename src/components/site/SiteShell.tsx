@@ -4,6 +4,9 @@ import { AnnounceBar } from "@/components/site/AnnounceBar";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactTab } from "@/components/site/ContactTab";
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
+import { CookieConsentBanner } from "@/components/site/CookieConsent";
+import { ScrollReset } from "@/components/site/ScrollReset";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
 import { PanelBar } from "@/components/site/PanelBar";
 import { ChatWidget } from "@/components/site/ChatWidget";
@@ -50,7 +53,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <html lang="tr" className={`${outfit.variable} h-full`}>
+    <html lang="tr" className={`${outfit.variable} h-full`} data-scroll-behavior="smooth">
       <body className="flex min-h-full flex-col">
         <script
           type="application/ld+json"
@@ -66,7 +69,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
         {/* reducedMotion="user": hareket azaltma tercihinde transform animasyonları
             atlanır; SSR çıktısı değişmez (hydration güvenli). */}
         <MotionConfig reducedMotion="user">
-          {info.announcement.enabled && <AnnounceBar text={info.announcement.text} />}
+          {info.announcement.enabled && <AnnounceBar messages={info.announcement.messages} />}
           <SiteHeader menu={menu} />
           <main id="icerik" tabIndex={-1} className="flex-1 outline-none">
             {children}
@@ -79,10 +82,13 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
             products={footerProducts}
             badge={footerBadge}
           />
-          <ContactTab whatsapp={info.whatsapp} chat={Boolean(chat)} />
+          <ContactTab />
+          <WhatsAppButton number={info.whatsapp} chat={Boolean(chat)} />
           <MobileCtaBar />
           <PanelBar preview={preview} />
           {chat && <ChatWidget info={chat} />}
+          <CookieConsentBanner />
+          <ScrollReset />
         </MotionConfig>
         {/* Umami: çerezsiz ziyaretçi sayımı (Site Ayarları > Ziyaretçi analizi). Tarayıcıda
             "takip etme" tercihi açıksa sayılmaz; alan adı listesi doluysa yalnız o adresler sayılır. */}

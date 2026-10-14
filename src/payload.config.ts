@@ -66,7 +66,7 @@ const secret =
   (isPostgres ? createHash("sha256").update(`guru-panel:${DATABASE_URL}`).digest("hex") : "");
 
 /* Panel bu adreslerden açılabilir (oturum çerezi yalnız bunlarda geçerli) */
-const SITE_ORIGINS = ["https://guru-dijital-pied.vercel.app", "https://gurudijital.com.tr", "https://www.gurudijital.com.tr"];
+const SITE_ORIGINS = ["https://guru-dijital-pied.vercel.app", "https://gurudijital.com", "https://www.gurudijital.com"];
 
 export default buildConfig({
   serverURL,

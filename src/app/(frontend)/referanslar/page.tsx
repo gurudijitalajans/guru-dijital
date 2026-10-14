@@ -39,7 +39,7 @@ export default async function ReferanslarPage() {
   const works = services
     .map((s) => ({ service: s, image: s.gallery[0] ?? s.card }))
     .filter((w): w is { service: (typeof services)[number]; image: NonNullable<(typeof services)[number]["card"]> } => Boolean(w.image));
-  const quotes = testimonials.filter((t) => t.quote);
+  const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
 
   return (
     <>

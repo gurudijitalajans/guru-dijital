@@ -68,7 +68,7 @@ export async function siteChecklist(payload: Payload, guruTenant: number): Promi
     },
     { done: Boolean(process.env.CRON_SECRET), title: "Sabah özeti", detail: process.env.CRON_SECRET ? "Hafta içi her sabah yöneticilere özet e-postası gidiyor" : "Vercel'e CRON_SECRET eklenince hafta içi her sabah özet e-postası gider", href: "/panel/duzenle/business-config" },
     { done: umamiConfigured(), title: "Ziyaretçi analizi", detail: umamiConfigured() ? "Umami bağlı" : "Vercel'e UMAMI_API_KEY eklenince ziyaretçi sayıları görünür", href: "/panel/ziyaretci" },
-    { done: domain, title: "Alan adı", detail: domain ? "gurudijital.com.tr bağlı" : "Site şimdilik vercel.app adresinde", href: null },
+    { done: domain, title: "Alan adı", detail: domain ? "gurudijital.com bağlı" : "Site şimdilik vercel.app adresinde", href: null },
     { done: false, title: "KVKK aydınlatma metni", detail: "Metin gelince formların altına bağlantısı eklenir", href: null },
   ];
 }

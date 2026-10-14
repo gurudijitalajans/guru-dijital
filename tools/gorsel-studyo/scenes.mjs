@@ -38,6 +38,8 @@ const chatbot = [
       name: "Chatbot", theme: THEME.chatbot, desktop: cbD, mobile: cbM,
       card: CARD.chatbot,
       cardPos: "left:960px;top:118px;width:520px;padding:22px 24px",
+      /* Telefon sağ paneldeki kartların üstüne binmesin: dizüstü biraz küçülür, telefon kenara kayar */
+      laptopWidth: 1170, phoneLeft: 1225,
     }),
   },
   {
@@ -67,7 +69,7 @@ const chatbot = [
     name: "guru-chatbot-2", w: 1200, h: 900,
     html: feature({
       name: "Chatbot", theme: THEME.chatbot, desktop: cbD, bg: "navy",
-      win: { crop: [626, 74, 486, 610], scale: 1.08, style: "left:572px;top:84px" },
+      win: { crop: [636, 74, 500, 532], scale: 1.08, style: "left:566px;top:96px" },
       phone: { html: cbM, style: "left:92px;top:104px", width: 330 },
       floats: [{ html: handoffCard({ big: true }), style: "left:470px;top:716px;width:630px", pad: "10px" }],
     }),

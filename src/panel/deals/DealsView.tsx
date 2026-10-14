@@ -1,5 +1,7 @@
 "use client";
 
+import { OFFERINGS } from "../offerings";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -583,7 +585,12 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
               </div>
               <label className="grid gap-1 text-[13px] text-muted">
                 Hizmet ya da ürün
-                <input id="firsat-hizmet" value={form.service} onChange={(e) => setForm({ ...form, service: e.target.value })} className={field} />
+                <input id="firsat-hizmet" list="firsat-hizmet-liste" value={form.service} onChange={(e) => setForm({ ...form, service: e.target.value })} placeholder="Listeden seçin ya da yazın" className={field} />
+                <datalist id="firsat-hizmet-liste">
+                  {OFFERINGS.map((o) => (
+                    <option key={o} value={o} />
+                  ))}
+                </datalist>
               </label>
               <label className="grid gap-1 text-[13px] text-muted">
                 Notlar

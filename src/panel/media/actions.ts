@@ -36,6 +36,19 @@ export async function updateMedia(id: number, d: { alt: string; folder: number |
   }
 }
 
+/** Seçilen görselleri tek seferde bir klasöre taşır (null: klasörsüz) */
+export async function moveMedia(ids: number[], folder: number | null): Promise<Result> {
+  try {
+    const { payload, opts } = await site();
+    const list = ids.filter((n) => Number.isInteger(n)).slice(0, 200);
+    if (!list.length) return { ok: false, error: "Görsel seçilmedi." };
+    await payload.update({ collection: "media", where: { id: { in: list } }, data: { folder: folder || null }, ...opts });
+    return { ok: true };
+  } catch (e) {
+    return fail(e);
+  }
+}
+
 export async function createFolder(name: string): Promise<Result> {
   try {
     const { payload, opts } = await site();

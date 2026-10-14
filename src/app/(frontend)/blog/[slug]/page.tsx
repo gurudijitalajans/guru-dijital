@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { RichText } from "@payloadcms/richtext-lexical/react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { PostBody, postHeadings } from "@/components/blog/PostBody";
 import { PostCard } from "@/components/blog/PostCard";
 import { ClosingCta } from "@/components/site/ClosingCta";
 import { SectionHead } from "@/components/site/SectionHead";
@@ -46,6 +46,7 @@ export default async function BlogPostPage({ params }: Props) {
   /* Kapak 1024px genişlikte basılır: 2x ekranda keskin kalsın diye özgün dosya kaynak olur */
   const cover = mediaSrc(typeof post.cover === "object" ? (post.cover as Media) : null, "original");
   const minutes = readingMinutes(post.content);
+  const headings = postHeadings(post.content);
   const others = (await getPublishedPosts(4))
     .filter((p) => p.slug !== slug)
     .slice(0, 3)
@@ -85,7 +86,7 @@ export default async function BlogPostPage({ params }: Props) {
                   {category.title}
                 </p>
               )}
-              <h1 className="mx-auto mt-3 max-w-3xl text-balance text-[32px] font-normal leading-[1.14] tracking-[-0.03em] text-heading sm:text-[42px] lg:text-[48px]">
+              <h1 className="mx-auto mt-3 max-w-4xl text-balance text-[32px] font-normal leading-[1.14] tracking-[-0.03em] text-heading sm:text-[42px] lg:text-[48px]">
                 {post.title}
               </h1>
               <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[14px] text-muted">
@@ -105,22 +106,65 @@ export default async function BlogPostPage({ params }: Props) {
 
         {cover && (
           <div className="container-g">
-            <div className="relative mx-auto aspect-[16/9] max-w-5xl overflow-hidden rounded-[20px] bg-soft">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-soft lg:aspect-[21/9]">
               <Image
                 src={cover.url}
                 alt={cover.alt}
                 fill
                 preload
-                sizes="(min-width: 1080px) 1024px, calc(100vw - 32px)"
+                sizes="(min-width: 1280px) 1200px, calc(100vw - 32px)"
                 className="object-cover"
               />
             </div>
           </div>
         )}
 
-        <div className="container-g">
-          {/* ~75 karakterlik satır: 17px gövdede rahat okuma genişliği */}
-          <RichText data={post.content} className="prose-guru mx-auto max-w-[620px] pb-4 pt-10 md:pt-14" />
+        {/* Gövde ve kenar sütunu sayfanın tam genişliğinde; metin satırı ~75 karakterde kalır */}
+        <div className="container-g grid gap-10 pb-4 pt-10 md:pt-14 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16">
+          <div className="min-w-0">
+            {/* Dar ekranda içindekiler metnin başında, açılır kutuda */}
+            {headings.length > 2 && (
+              <details className="mb-8 rounded-2xl bg-soft p-5 lg:hidden">
+                <summary className="text-[14px] font-semibold text-heading">İçindekiler</summary>
+                <ol className="mt-3 grid gap-1">
+                  {headings.map((h) => (
+                    <li key={h.id}>
+                      <a href={`#${h.id}`} className="block py-1.5 text-[14.5px] text-body hover:text-brand">
+                        {h.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            )}
+            <PostBody data={post.content} className="prose-guru max-w-[720px]" />
+          </div>
+          <aside className="hidden min-w-0 lg:block">
+            <div className="grid gap-4 lg:sticky lg:top-28">
+              {headings.length > 2 && (
+                <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-muted">İçindekiler</p>
+                  <ol className="mt-3 grid gap-1">
+                    {headings.map((h) => (
+                      <li key={h.id}>
+                        <a href={`#${h.id}`} className="block rounded-lg px-2 py-1.5 text-[14px] leading-snug text-body transition-colors hover:bg-white hover:text-brand">
+                          {h.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              )}
+              <div className="rounded-2xl bg-navy p-5 text-white">
+                <p className="text-[17px] font-medium leading-snug">Bu konuda destek mi lazım?</p>
+                <p className="mt-2 text-[14px] leading-relaxed text-white/75">Markanız için nasıl uygulanacağını ücretsiz ilk görüşmede birlikte planlayalım.</p>
+                <Link href="/iletisim" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-[14.5px] font-medium text-navy transition-colors hover:bg-ice">
+                  İletişime geçin
+                  <ArrowRight aria-hidden className="size-4" />
+                </Link>
+              </div>
+            </div>
+          </aside>
         </div>
       </article>
 

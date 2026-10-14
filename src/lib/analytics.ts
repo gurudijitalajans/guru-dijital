@@ -30,7 +30,7 @@ export const EVENT_LABELS: Record<string, string> = {
   "randevu-alindi": "Randevu alındı",
   "teklif-al": "Teklif Al tıklaması",
   "toplanti-planla": "Toplantı Planla tıklaması",
-  tanisalim: "Tanışalım (menü)",
+  iletisim: "İletişim (menü)",
   "bize-yazin": "Bize Yazın (yan sekme)",
   whatsapp: "WhatsApp tıklaması",
   "e-posta": "E-posta tıklaması",

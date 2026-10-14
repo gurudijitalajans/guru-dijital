@@ -113,16 +113,16 @@ export function fallbackServices(): ServiceView[] {
     headline: s.headline,
     short: s.short,
     menuDesc: s.menuDesc,
-    icon: iconNameOf(s.icon),
+    icon: s.icon,
     intro: s.intro,
     offeringsTitle: s.offeringsTitle,
     offerings: s.offerings,
     keywords: s.keywords,
     card: serviceVisuals[s.slug]?.card ?? null,
     gallery: serviceVisuals[s.slug]?.gallery ?? [],
-    faq: serviceFaq[s.slug] ?? [],
+    faq: s.faq,
     seoDescription: s.seoDescription,
-    sections: { cases: s.slug === "dijital-pazarlama", webProjects: s.slug === "web-tasarim" },
+    sections: { cases: s.slug === "dijital-reklam-yonetimi" || s.slug === "seo", webProjects: s.slug === "web-tasarim" },
   }));
 }
 
@@ -443,6 +443,8 @@ export type TestimonialView = {
   title: string;
   company: string;
   photo: WorkImage | null;
+  /** Yalnız yayın izni işaretliyse dolu: YouTube, Vimeo ya da .mp4 */
+  videoUrl: string | null;
 };
 
 /* Kod içindeki vakalarda kartta gösterilen sonuçlar (önceki sayfa düzeni) */
@@ -497,11 +499,12 @@ export const getTestimonials = cache(async (): Promise<TestimonialView[]> => {
         title: t.title ?? "",
         company: t.company ?? "",
         photo: toImage(t.photo, t.name),
+        videoUrl: t.consent && t.videoUrl?.trim() ? t.videoUrl.trim() : null,
       }));
   } catch {
     /* panel yok: varsayılan içerik */
   }
-  return staticTestimonials.map((t) => ({ quote: null, name: t.name, title: t.title, company: t.company, photo: null }));
+  return staticTestimonials.map((t) => ({ quote: null, name: t.name, title: t.title, company: t.company, photo: null, videoUrl: null }));
 });
 
 export const getAbout = cache(async (): Promise<AboutContent> => {

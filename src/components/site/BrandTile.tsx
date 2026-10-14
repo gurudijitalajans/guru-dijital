@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { ReferenceView } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-/* Logosu panelde yüklü marka gri tonda logo, yüklü olmayan marka farklı yazı
+/* Logosu panelde yüklü marka renkli logo, yüklü olmayan marka farklı yazı
    biçimleriyle adı yazılarak gösterilir; kartlar her durumda aynı boyda.
    İtalik yok: Outfit'in italik kesimi yüklü değil, tarayıcı sahte eğim çizer. */
 const STYLES = [
@@ -18,7 +18,7 @@ const TR_CHARS = /[çğıöşüÇĞİÖŞÜ]/;
 
 export function BrandTile({ brand, index }: { brand: ReferenceView; index: number }) {
   return (
-    <li className="group grid h-[84px] place-items-center rounded-2xl bg-white px-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.22),0_18px_36px_-24px_rgb(1_20_65/0.45)] md:h-24">
+    <li className="group grid h-[96px] place-items-center rounded-2xl bg-white px-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.22),0_18px_36px_-24px_rgb(1_20_65/0.45)] md:h-[112px]">
       {brand.logo ? (
         <Image
           src={brand.logo.src}
@@ -26,7 +26,7 @@ export function BrandTile({ brand, index }: { brand: ReferenceView; index: numbe
           width={brand.logo.w}
           height={brand.logo.h}
           sizes="160px"
-          className="max-h-9 w-auto max-w-[140px] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+          className="max-h-12 w-auto max-w-[150px] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
         />
       ) : (
         <span

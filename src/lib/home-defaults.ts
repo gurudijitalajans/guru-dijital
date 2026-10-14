@@ -15,7 +15,7 @@ export const HOME_DEFAULTS = {
     primaryHref: "/iletisim",
     secondaryLabel: "Toplantı Planla",
     secondaryHref: "/iletisim#toplanti",
-    badgeStrong: "2025 Google Partner",
+    badgeStrong: "grow with guru",
     /* {sayı} yerine paneldeki referans sayısı yazılır */
     badgeText: "{sayı} markanın dijital yol arkadaşı",
   },
@@ -62,7 +62,7 @@ export const HOME_DEFAULTS = {
     items: homeFaq,
   },
   meet: {
-    title: "Tanışalım",
+    title: "İletişime geçin",
     text: "Markanızı ve hedeflerinizi dinleyelim; size uygun planı birlikte çıkaralım. İlk görüşme ücretsiz.",
     buttonLabel: "İletişime Geç",
     buttonHref: "/iletisim",

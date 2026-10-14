@@ -146,7 +146,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                 </>
               }
             />
-            <Reveal className="mx-auto mt-10 max-w-5xl">
+            <Reveal className="mt-10">
               <VideoPlayer src={tour.src} poster={tour.poster} label={`${name} ürün turunu oynat`} trackName={product.slug} />
             </Reveal>
           </div>

@@ -172,7 +172,7 @@ if ((await payload.count({ collection: "services" })).totalDocs === 0) {
         title: s.title,
         slug: s.slug,
         order: (i + 1) * 10,
-        icon: iconNameOf(s.icon),
+        icon: s.icon,
         short: s.short,
         menuDesc: s.menuDesc,
         headline: s.headline,

@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement as defaultAnnouncement, site, umami } from "@/lib/data";
+import { announcement as defaultAnnouncement, announcementMore, site, umami } from "@/lib/data";
 
 /**
  * Site tarafının panelle tek temas noktası. Veritabanına ulaşılamazsa
@@ -12,7 +12,8 @@ import { announcement as defaultAnnouncement, site, umami } from "@/lib/data";
 export const cms = cache(() => getPayload({ config }));
 
 export type SiteInfo = {
-  announcement: { enabled: boolean; text: string };
+  /** messages[0] ana metin; sonrakiler sırayla döner */
+  announcement: { enabled: boolean; messages: string[] };
   email: string;
   phone: string;
   whatsapp: string;
@@ -24,7 +25,7 @@ export type SiteInfo = {
 
 export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
   const fallback: SiteInfo = {
-    announcement: { enabled: true, text: defaultAnnouncement },
+    announcement: { enabled: true, messages: [defaultAnnouncement, ...announcementMore] },
     email: site.email,
     phone: site.phone,
     whatsapp: site.whatsapp,
@@ -40,7 +41,10 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     return {
       announcement: {
         enabled: s.announcement?.enabled ?? true,
-        text: s.announcement?.text?.trim() || fallback.announcement.text,
+        messages: [
+          s.announcement?.text?.trim() || defaultAnnouncement,
+          ...(s.announcement?.more ?? []).map((m) => m.text?.trim()).filter((t): t is string => Boolean(t)),
+        ],
       },
       email: c.email?.trim() || fallback.email,
       phone: c.phone?.trim() || fallback.phone,

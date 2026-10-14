@@ -38,6 +38,14 @@ export default async function MediaPage({ searchParams }: { searchParams: SP }) 
     payload.count({ collection: "media", ...opts }),
   ]);
 
+  /* Klasör başına görsel sayısı (düğmelerde) */
+  const counts = Object.fromEntries(
+    await Promise.all([
+      ...folders.docs.map(async (f) => [String(f.id), (await payload.count({ collection: "media", where: { folder: { equals: f.id } }, ...opts })).totalDocs] as const),
+      (async () => ["yok", (await payload.count({ collection: "media", where: { folder: { exists: false } }, ...opts })).totalDocs] as const)(),
+    ])
+  ) as Record<string, number>;
+
   const items: MediaItem[] = list.docs.map((m) => ({ id: m.id, alt: m.alt, filename: m.filename ?? "", thumb: thumb(m), width: m.width ?? 0, height: m.height ?? 0 }));
 
   let selected: MediaDetail | null = null;
@@ -74,7 +82,9 @@ export default async function MediaPage({ searchParams }: { searchParams: SP }) 
         pages={Math.max(1, list.totalPages)}
         q={q}
         folder={folder}
-        folders={folders.docs.map((f) => ({ id: f.id, name: f.name }))}
+        folders={folders.docs.map((f) => ({ id: f.id, name: f.name, count: counts[String(f.id)] ?? 0 }))}
+        totalAll={all.totalDocs}
+        looseCount={counts.yok ?? 0}
         selected={selected}
         canDelete={ctx.isGuruAdmin}
         clientUpload={Boolean(process.env.BLOB_READ_WRITE_TOKEN)}

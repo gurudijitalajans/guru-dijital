@@ -28,6 +28,7 @@ import {
   Megaphone,
   MessageSquare,
   MonitorSmartphone,
+  Smartphone,
   Palette,
   PenLine,
   PieChart,
@@ -52,6 +53,7 @@ import { DEFAULT_ICON, isIconName, type IconName } from "@/lib/icon-names";
 const ICONS: Record<IconName, LucideIcon> = {
   share: Share2,
   palette: Palette,
+  smartphone: Smartphone,
   pen: PenLine,
   monitor: MonitorSmartphone,
   "chart-bar": BarChart3,

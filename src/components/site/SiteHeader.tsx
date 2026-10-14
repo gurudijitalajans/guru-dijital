@@ -14,7 +14,7 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
     <Link
       href="/iletisim"
       onClick={onClick}
-      data-umami-event="tanisalim"
+      data-umami-event="iletisim"
       data-umami-event-konum="menu"
       className={cn(
         "inline-flex min-h-11 items-center gap-2.5 text-[15px] font-medium text-heading transition-colors hover:text-brand",
@@ -25,7 +25,7 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
         <span className="absolute inset-0 animate-ping rounded-full bg-brand/40 [animation-duration:2.4s] motion-reduce:animate-none" />
         <span className="relative inline-block size-2.5 rounded-full bg-brand" />
       </span>
-      Tanışalım
+      İletişim
     </Link>
   );
 }
@@ -280,7 +280,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
         style={{ top: panelTop }}
         className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto bg-white px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] lg:hidden"
       >
-        {/* Panelin kendi üst satırı: header ile aynı hizada kapat düğmesi, logo, Tanışalım */}
+        {/* Panelin kendi üst satırı: header ile aynı hizada kapat düğmesi, logo, İletişim */}
         <div className="relative -mx-5 mb-2 flex h-[68px] items-center px-5">
           <button
             type="button"

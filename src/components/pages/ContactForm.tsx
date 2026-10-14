@@ -495,6 +495,13 @@ export function ContactForm({
                 Mesajınız doğrudan ekibimize iletilir; size e-posta ya da telefonla dönüş yaparız.
               </p>
             </div>
+            <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
+              Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için kullanılır. Ayrıntılar:{" "}
+              <a href="/yasal/kvkk-aydinlatma-metni" target="_blank" className="text-brand underline-offset-2 hover:underline">
+                KVKK Aydınlatma Metni
+              </a>
+              .
+            </p>
           </motion.form>
         )}
       </AnimatePresence>

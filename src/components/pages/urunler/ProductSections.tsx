@@ -180,7 +180,7 @@ export function ComparisonBlock({ product }: { product: ProductView }) {
           title={`${product.name} ile Neler Değişir`}
           lead="Bugün yaşanan dağınıklığı ve ürünle birlikte kurulan düzeni yan yana koyduk."
         />
-        <div className="mx-auto mt-10 grid max-w-5xl gap-4 md:grid-cols-2 md:gap-5">
+        <div className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
           <Reveal className="h-full">
             <div className="h-full rounded-[22px] bg-soft p-6 md:p-8">
               <p className="text-[14px] font-medium text-muted">Bugün</p>

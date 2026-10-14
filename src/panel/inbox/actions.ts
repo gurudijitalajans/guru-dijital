@@ -21,7 +21,7 @@ const CONV: Record<string, [Tone, string]> = { bot: ["plain", "Asistanda"], ekip
 const LEAD: Record<string, [Tone, string]> = { yeni: ["info", "Yeni"], iletisim: ["plain", "İletişime geçildi"], teklif: ["warn", "Teklif verildi"], kazanildi: ["good", "Kazanıldı"], kaybedildi: ["plain", "Kaybedildi"] };
 const BOOK: Record<string, [Tone, string]> = { bekliyor: ["warn", "Onay bekliyor"], onaylandi: ["good", "Onaylandı"], tamamlandi: ["plain", "Tamamlandı"], iptal: ["plain", "İptal"] };
 
-type Conv = { id: number; label?: string | null; name?: string | null; email?: string | null; phone?: string | null; topic?: string | null; page?: string | null; lastText?: string | null; lastMessageAt?: string | null; status: string; needsReply?: boolean | null; contact?: unknown; lead?: unknown; booking?: unknown; assignee?: unknown; createdAt: string; updatedAt: string };
+type Conv = { id: number; label?: string | null; name?: string | null; email?: string | null; phone?: string | null; topic?: string | null; page?: string | null; channel?: string | null; lastText?: string | null; lastMessageAt?: string | null; status: string; needsReply?: boolean | null; contact?: unknown; lead?: unknown; booking?: unknown; assignee?: unknown; createdAt: string; updatedAt: string };
 type Lead = { id: number; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; status: string; source?: string | null; contact?: unknown; deal?: unknown; createdAt: string; updatedAt: string };
 type Booking = { id: number; name: string; email: string; phone?: string | null; date: string; time: string; topic?: string | null; note?: string | null; status: string; contact?: unknown; deal?: unknown; createdAt: string; updatedAt: string };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: number }).id : (v as number | undefined)) ?? null;
@@ -45,7 +45,8 @@ export async function listInbox(filter: InboxFilter): Promise<InboxItem[]> {
   const items: InboxItem[] = [
     ...(convs.docs as Conv[]).map((c) => {
       const [tone, label] = c.needsReply ? (["bad", "Yanıt bekliyor"] as [Tone, string]) : (CONV[c.status] ?? ["plain", c.status]);
-      return { key: `s${c.id}`, kind: "sohbet" as const, title: c.label || c.name || "Ziyaretçi", preview: c.lastText ?? "", at: c.lastMessageAt ?? c.updatedAt, tone, label, waiting: Boolean(c.needsReply) };
+      const via = c.channel === "whatsapp" ? "WhatsApp · " : c.channel === "instagram" ? "Instagram · " : "";
+      return { key: `s${c.id}`, kind: "sohbet" as const, title: c.label || c.name || "Ziyaretçi", preview: `${via}${c.lastText ?? ""}`, at: c.lastMessageAt ?? c.updatedAt, tone, label, waiting: Boolean(c.needsReply) };
     }),
     ...(leads.docs as Lead[]).map((l) => {
       const [tone, label] = LEAD[l.status] ?? ["plain", l.status];
@@ -109,7 +110,9 @@ export async function getThread(key: string): Promise<Thread | null> {
     const canned = ((cfg.docs[0] as { cannedReplies?: { label: string; text: string }[] | null } | undefined)?.cannedReplies ?? []).map((r) => ({ label: r.label, text: r.text }));
     return {
       key, kind: "sohbet", id: c.id, title: c.label || c.name || "Ziyaretçi",
-      subtitle: [c.email, c.phone, c.page ? `Sayfa: ${c.page}` : null].filter(Boolean).join(" · ") || "Ziyaretçi henüz bilgi bırakmadı",
+      subtitle:
+        [c.channel === "whatsapp" ? "WhatsApp" : c.channel === "instagram" ? "Instagram" : null, c.email, c.phone, c.page && c.channel === "web" ? `Sayfa: ${c.page}` : null].filter(Boolean).join(" · ") ||
+        "Ziyaretçi henüz bilgi bırakmadı",
       tone, label, status: c.status,
       messages: (msgs.docs as { id: number; role: ThreadMessage["role"]; text: string; createdAt: string; author?: unknown; unanswered?: boolean | null }[]).map((m) => ({
         id: m.id, role: m.role, text: m.text, at: m.createdAt, unanswered: Boolean(m.unanswered),

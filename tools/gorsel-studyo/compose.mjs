@@ -13,16 +13,16 @@ const floorShadow = (x, y, w, h, op = 0.55) =>
 /**
  * Giriş görseli 1600x1200: lacivert ışık zemini, eğik dizüstü + önde telefon + bildirim kartı
  */
-export function hero({ name, theme, desktop, mobile, card, cardPos = "left:930px;top:150px;width:520px" }) {
+export function hero({ name, theme, desktop, mobile, card, cardPos = "left:930px;top:150px;width:520px", laptopWidth = 1240, phoneLeft = 1135 }) {
   const body = `
   ${glow(120, 360, 1250, 760)}
   <div style="position:absolute;left:68px;top:66px">${lockup(name)}</div>
   ${floorShadow(110, 1040, 1180, 110)}
   <div style="position:absolute;left:70px;top:300px;perspective:3200px">
-    ${macbook(desktop, { width: 1240, style: "transform:rotateY(13deg) rotateX(4deg) rotateZ(-.6deg);transform-origin:0% 50%" })}
+    ${macbook(desktop, { width: laptopWidth, style: "transform:rotateY(13deg) rotateX(4deg) rotateZ(-.6deg);transform-origin:0% 50%" })}
   </div>
-  ${floorShadow(1110, 1085, 360, 70, 0.6)}
-  <div style="position:absolute;left:1135px;top:430px;perspective:2400px">
+  ${floorShadow(phoneLeft - 25, 1085, 360, 70, 0.6)}
+  <div style="position:absolute;left:${phoneLeft}px;top:430px;perspective:2400px">
     ${iphone(mobile, { width: 330, style: "transform:rotateY(-10deg) rotateZ(1.5deg);filter:drop-shadow(0 50px 50px rgb(0 6 26/.55))" })}
   </div>
   ${card ? floatCard(card, cardPos) : ""}
@@ -98,7 +98,7 @@ export function poster({ theme, name, desktop, mobile }) {
   <div style="position:absolute;left:260px;top:180px;width:1400px;height:900px;border-radius:50%;background:radial-gradient(closest-side,${theme.hi}77,transparent);filter:blur(20px)"></div>
   <div style="position:absolute;left:0;right:0;top:0;height:300px;background:linear-gradient(180deg,${theme.deep} 0%,${theme.deep}cc 45%,${theme.deep}00 100%)"></div>
   <div style="position:absolute;left:72px;top:64px">${lockup(name, { size: 36 })}</div>
-  <div style="position:absolute;right:72px;top:68px;display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 24px;border-radius:999px;background:rgb(255 255 255/.12);box-shadow:inset 0 0 0 1px rgb(255 255 255/.2);color:#fff;font-size:22px;font-weight:500">${icon("play", { size: 20, stroke: 2.2 })}Ürün turu · 1 dk</div>
+  <div style="position:absolute;right:72px;top:68px;display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 24px;border-radius:999px;background:rgb(255 255 255/.12);box-shadow:inset 0 0 0 1px rgb(255 255 255/.2);color:#fff;font-size:22px;font-weight:500">${icon("play", { size: 20, stroke: 2.2 })}Ürün turu · 2 dk</div>
   ${floorShadow(380, 1000, 1160, 90)}
   <div style="position:absolute;left:370px;top:200px">${macbook(desktop, { width: 1180 })}</div>
   <div style="position:absolute;left:1440px;top:390px">${iphone(mobile, { width: 300, style: "filter:drop-shadow(0 40px 40px rgb(0 6 26/.55))" })}</div>

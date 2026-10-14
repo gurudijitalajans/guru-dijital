@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Dialog, DropdownMenu } from "radix-ui";
 import { ArrowUpRight, Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { toast } from "sonner";
+import { PanelMark } from "../ui/panel-mark";
 import { cn } from "@/lib/utils";
 import type { NavGroup } from "../nav";
 import { NavGlyph } from "../ui/icons";
@@ -155,9 +156,7 @@ function SidebarBody({ nav, tenant, tenants, user, path, onNavigate }: Omit<Prop
   return (
     <>
       <div className="flex items-center gap-2.5 px-4.5 pt-1 pb-3.5 font-semibold text-nav-strong">
-        <span className="grid size-7 place-items-center rounded-[8px] bg-accent text-[15px] font-bold text-white" aria-hidden>
-          g
-        </span>
+        <PanelMark size={30} />
         Guru Panel
       </div>
       <TenantSwitcher tenant={tenant} tenants={tenants} />
@@ -171,6 +170,10 @@ export function Shell(props: Props) {
   const path = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [palette, setPalette] = useState(false);
+  /* Sayfa değişince içerik alanı başa döner (kaydırılan öğe pencere değil main) */
+  useEffect(() => {
+    document.getElementById("icerik")?.scrollTo({ top: 0, behavior: "instant" });
+  }, [path]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {

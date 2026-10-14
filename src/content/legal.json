@@ -1,0 +1,685 @@
+{
+ "kvkk-aydinlatma-metni": {
+  "title": "KVKK Aydınlatma Metni",
+  "updated": "2026-10-14",
+  "blocks": [
+   {
+    "type": "p",
+    "text": "Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun (Kanun) 10. maddesi ve Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ uyarınca, gurudijital.com internet sitesini (Site) ziyaret eden, sitedeki formları ve sohbet asistanını kullanan kişilere, kişisel verilerinin nasıl işlendiğini anlatmak için hazırlanmıştır."
+   },
+   {
+    "type": "h2",
+    "text": "1. Veri sorumlusu"
+   },
+   {
+    "type": "p",
+    "text": "Kişisel verileriniz, veri sorumlusu sıfatıyla Guru Dijital Ajans (Guru Dijital) tarafından işlenir."
+   },
+   {
+    "type": "ul",
+    "items": [
+     "E-posta: info@gurudijital.com",
+     "Telefon ve WhatsApp: 0850 308 34 57"
+    ]
+   },
+   {
+    "type": "h2",
+    "text": "2. İşlenen kişisel veriler"
+   },
+   {
+    "type": "table",
+    "head": [
+     "Veri kategorisi",
+     "Veriler",
+     "Nereden gelir"
+    ],
+    "rows": [
+     [
+      "Kimlik",
+      "Ad, soyad",
+      "İletişim/teklif formu, randevu formu, sohbet asistanı (paylaşırsanız)"
+     ],
+     [
+      "İletişim",
+      "E-posta adresi, telefon numarası",
+      "İletişim/teklif formu, randevu formu, sohbet asistanı (paylaşırsanız)"
+     ],
+     [
+      "Müşteri işlem",
+      "İlgilendiğiniz hizmet, mesajınızın içeriği, randevu tarihi ve saati, talebinize ilişkin yazışmalar",
+      "Formlar, e-posta yazışmaları"
+     ],
+     [
+      "Sohbet kayıtları",
+      "Sohbet asistanına yazdığınız mesajlar, asistanın ve ekibimizin yanıtları, mesaj tarihleri",
+      "Sohbet asistanı"
+     ],
+     [
+      "İşlem güvenliği",
+      "IP adresi, tarayıcı ve cihaz bilgisi, istek tarihi ve saati gibi teknik kayıtlar",
+      "Siteyi ziyaret ettiğinizde sunucu tarafından otomatik olarak"
+     ],
+     [
+      "Ziyaret istatistiği",
+      "Görüntülenen sayfalar, yönlendiren site, cihaz türü, ülke gibi kimliğinizi belirlemeyen toplu ölçüm verileri",
+      "Çerez kullanmayan analitik aracı (Umami) aracılığıyla otomatik olarak"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Formlarda ve sohbet asistanında sağlık, din, etnik köken gibi özel nitelikli kişisel verilerinizi paylaşmamanızı rica ederiz. Bu tür verileri işleme amacımız yoktur; yanlışlıkla paylaşılırsa fark edildiğinde silinir."
+   },
+   {
+    "type": "h2",
+    "text": "3. İşleme amaçları ve hukuki sebepler"
+   },
+   {
+    "type": "table",
+    "head": [
+     "Amaç",
+     "Hukuki sebep (Kanun md. 5/2)"
+    ],
+    "rows": [
+     [
+      "İletişim ve teklif taleplerinizi almak, size dönüş yapmak, teklif hazırlamak",
+      "Bir sözleşmenin kurulmasıyla doğrudan ilgili olması (c bendi)"
+     ],
+     [
+      "Toplantı randevusu oluşturmak, randevuyu hatırlatmak ve yönetmek",
+      "Bir sözleşmenin kurulmasıyla doğrudan ilgili olması (c bendi)"
+     ],
+     [
+      "Sohbet asistanı aracılığıyla sorularınızı yanıtlamak, gerektiğinde konuşmayı ekibimize aktarmak",
+      "Bir sözleşmenin kurulmasıyla doğrudan ilgili olması (c bendi); temel hak ve özgürlüklerinize zarar vermemek kaydıyla meşru menfaatimiz (f bendi)"
+     ],
+     [
+      "Sohbet asistanının ve hizmetlerimizin kalitesini izlemek, kötüye kullanımı önlemek",
+      "Meşru menfaatimiz (f bendi)"
+     ],
+     [
+      "Sitenin güvenliğini sağlamak, hataları tespit etmek, saldırıları önlemek",
+      "Meşru menfaatimiz (f bendi); hukuki yükümlülüğümüzü yerine getirmemiz (ç bendi)"
+     ],
+     [
+      "Site kullanımını toplu ve kimliksiz biçimde ölçerek siteyi geliştirmek",
+      "Meşru menfaatimiz (f bendi)"
+     ],
+     [
+      "Yetkili kurum ve kuruluşların bilgi taleplerini karşılamak, olası uyuşmazlıklarda haklarımızı korumak",
+      "Kanunlarda açıkça öngörülmesi (a bendi); hukuki yükümlülük (ç bendi); bir hakkın tesisi, kullanılması veya korunması (e bendi)"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "İleride sitede reklam ölçüm etiketleri (ör. Google Ads, Meta) kullanılmaya başlanırsa, bu etiketler yalnızca çerez onay penceresinden vereceğiniz açık rızaya (Kanun md. 5/1) dayanılarak çalıştırılır ve bu metin buna göre güncellenir."
+   },
+   {
+    "type": "h2",
+    "text": "4. Toplama yöntemi"
+   },
+   {
+    "type": "p",
+    "text": "Kişisel verileriniz; sitedeki iletişim/teklif ve randevu formlarını doldurmanız, sohbet asistanına yazmanız ve bize e-posta, telefon veya WhatsApp üzerinden ulaşmanız yoluyla kısmen otomatik yollarla; siteyi ziyaret etmeniz sırasında sunucu kayıtları ve çerezsiz analitik aracı ile otomatik yollarla elektronik ortamda toplanır."
+   },
+   {
+    "type": "h2",
+    "text": "5. Kişisel verilerin aktarılması"
+   },
+   {
+    "type": "p",
+    "text": "Kişisel verileriniz, yukarıdaki amaçlarla sınırlı olarak ve Kanun'un 8. ve 9. maddelerine uygun biçimde aşağıdaki alıcılara aktarılabilir:"
+   },
+   {
+    "type": "table",
+    "head": [
+     "Alıcı",
+     "Aktarılan veri ve amaç",
+     "Konum"
+    ],
+    "rows": [
+     [
+      "Vercel Inc. (barındırma ve görsel depolama)",
+      "Sitenin çalışması için gereken teknik kayıtlar ve form içerikleri geçici olarak bu altyapıdan geçer",
+      "ABD / Avrupa Birliği"
+     ],
+     [
+      "Neon (veritabanı hizmeti)",
+      "Form başvuruları, randevular ve sohbet kayıtlarının saklanması",
+      "Avrupa Birliği (Frankfurt, Almanya)"
+     ],
+     [
+      "Resend (e-posta gönderimi)",
+      "Talebinize dönüş ve randevu bilgilendirme e-postalarının gönderilmesi için ad ve e-posta adresi, mesaj içeriği",
+      "ABD"
+     ],
+     [
+      "Anthropic PBC (yapay zekâ modeli sağlayıcısı)",
+      "Sohbet asistanına yazdığınız mesajların yanıt üretilmesi için işlenmesi",
+      "ABD"
+     ],
+     [
+      "Umami Cloud (çerezsiz ziyaretçi analitiği)",
+      "Kimliğinizi belirlemeyen toplu ziyaret istatistikleri",
+      "Yurt dışı"
+     ],
+     [
+      "Yetkili kamu kurum ve kuruluşları, mahkemeler",
+      "Kanuni yükümlülük ve talep hâlinde, gerekli olan verilerle sınırlı",
+      "Türkiye"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Bu hizmet sağlayıcıların sunucuları yurt dışında bulunduğundan, söz konusu aktarımlar yurt dışına aktarım niteliğindedir. Kişisel Verileri Koruma Kurulu tarafından ilgili ülkeler için verilmiş bir yeterlilik kararı bulunmadığından, yurt dışına aktarımlar Kanun'un 9. maddesi ve Kişisel Verilerin Yurt Dışına Aktarılmasına İlişkin Usul ve Esaslar Hakkında Yönetmelik uyarınca, Kurul'un ilan ettiği standart sözleşmelerin imzalanması ve imzadan itibaren beş iş günü içinde Kurum'a bildirilmesi suretiyle uygun güvenceler sağlanarak yapılır. Bu hizmet sağlayıcılar, verileri bizim adımıza ve talimatlarımız doğrultusunda işleyen veri işleyen konumundadır."
+   },
+   {
+    "type": "p",
+    "text": "Sitedeki WhatsApp ve Instagram bağlantılarına tıkladığınızda ilgili platforma yönlendirilirsiniz. Bu platformlarda paylaştığınız veriler, o platformların kendi gizlilik koşullarına tabidir."
+   },
+   {
+    "type": "h2",
+    "text": "6. Kanun'un 11. maddesindeki haklarınız"
+   },
+   {
+    "type": "p",
+    "text": "Veri sorumlusuna başvurarak:"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Kişisel verilerinizin işlenip işlenmediğini öğrenme,",
+     "İşlenmişse buna ilişkin bilgi talep etme,",
+     "İşlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme,",
+     "Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme,",
+     "Eksik veya yanlış işlenmişse düzeltilmesini isteme,",
+     "Kanun'un 7. maddesindeki şartlar çerçevesinde silinmesini veya yok edilmesini isteme,",
+     "Düzeltme, silme veya yok etme işlemlerinin, verilerin aktarıldığı üçüncü kişilere bildirilmesini isteme,",
+     "İşlenen verilerin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme,",
+     "Kanuna aykırı işleme sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme"
+    ]
+   },
+   {
+    "type": "p",
+    "text": "haklarına sahipsiniz."
+   },
+   {
+    "type": "h2",
+    "text": "7. Başvuru yolu"
+   },
+   {
+    "type": "p",
+    "text": "Haklarınıza ilişkin taleplerinizi, Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ uyarınca Türkçe olarak ve aşağıdaki yollardan biriyle iletebilirsiniz:"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Güvenli elektronik imza veya mobil imza ile imzalayarak info@gurudijital.com adresine,",
+     "Daha önce bize bildirdiğiniz ve kayıtlarımızda bulunan e-posta adresinizden info@gurudijital.com adresine."
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Başvurunuzda adınız, soyadınız, yazılı başvurularda imzanız, T.C. kimlik numaranız (yabancıysanız uyruğunuz ile pasaport veya kimlik numaranız), tebligata esas yerleşim yeri veya iş yeri adresiniz, varsa bildirime esas e-posta adresiniz, telefon numaranız ve talep konunuz yer almalıdır. Konuyla ilgili bilgi ve belgeler başvuruya eklenmelidir."
+   },
+   {
+    "type": "p",
+    "text": "Başvurunuz, niteliğine göre en kısa sürede ve en geç otuz gün içinde ücretsiz olarak sonuçlandırılır. Yanıtın yazılı olarak verilmesi ve on sayfayı aşması hâlinde, on sayfanın üzerindeki her sayfa için 1 Türk lirası; yanıtın CD, flash bellek gibi bir kayıt ortamında verilmesi hâlinde kayıt ortamının maliyeti kadar ücret alınabilir."
+   },
+   {
+    "type": "p",
+    "text": "Başvurunuzun reddedilmesi, verilen yanıtı yetersiz bulmanız veya süresinde yanıt verilmemesi hâlinde; yanıtı öğrendiğiniz tarihten itibaren otuz gün ve her hâlde başvuru tarihinden itibaren altmış gün içinde Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsiniz."
+   }
+  ]
+ },
+ "cerez-politikasi": {
+  "title": "Çerez Politikası",
+  "updated": "2026-10-14",
+  "blocks": [
+   {
+    "type": "p",
+    "text": "Bu politika, Guru Dijital Ajans (Guru Dijital) olarak gurudijital.com sitesinde kullandığımız çerezleri ve benzer yerel depolama teknolojilerini, bunları hangi amaçla kullandığımızı ve tercihlerinizi nasıl yönetebileceğinizi açıklar. Politika, Kişisel Verileri Koruma Kurumu'nun Çerez Uygulamaları Hakkında Rehberi dikkate alınarak hazırlanmıştır."
+   },
+   {
+    "type": "h2",
+    "text": "1. Çerez ve yerel depolama nedir?"
+   },
+   {
+    "type": "p",
+    "text": "Çerezler, bir siteyi ziyaret ettiğinizde tarayıcınıza kaydedilen küçük metin dosyalarıdır. Yerel depolama (localStorage) ise tarayıcınızın, siteye ait bazı bilgileri cihazınızda tutmasını sağlayan benzer bir teknolojidir. Bu politikada ikisine birlikte kısaca çerez diyoruz."
+   },
+   {
+    "type": "h2",
+    "text": "2. Çerez kategorileri"
+   },
+   {
+    "type": "h3",
+    "text": "Zorunlu çerezler"
+   },
+   {
+    "type": "p",
+    "text": "Sitenin çalışması ve sizin açıkça istediğiniz bir hizmetin sunulabilmesi için kesinlikle gereklidir. Bu çerezler için onay alınmaz; tarayıcı ayarlarından engellerseniz sitenin bazı bölümleri çalışmayabilir."
+   },
+   {
+    "type": "h3",
+    "text": "Tercih çerezleri"
+   },
+   {
+    "type": "p",
+    "text": "Tema (açık veya koyu görünüm) gibi seçimlerinizi hatırlayarak siteyi size göre ayarlar. Yalnızca onay verirseniz kullanılır."
+   },
+   {
+    "type": "h3",
+    "text": "Analitik çerezler"
+   },
+   {
+    "type": "p",
+    "text": "Ziyaretçilerin siteyi nasıl kullandığını ölçmeye yarar. Sitemizde şu anda analitik çerez kullanılmamaktadır: Ziyaret istatistiklerini, çerez kullanmayan ve cihazınıza bilgi kaydetmeyen Umami aracıyla, kimliğinizi belirlemeyen toplu veriler olarak tutuyoruz. İleride analitik çerez kullanılmaya başlanırsa yalnızca onayınızla çalıştırılır."
+   },
+   {
+    "type": "h3",
+    "text": "Pazarlama çerezleri"
+   },
+   {
+    "type": "p",
+    "text": "Reklamların etkisini ölçmek ve ilgi alanlarınıza uygun reklam göstermek için kullanılır. Sitemizde şu anda pazarlama çerezi kullanılmamaktadır. İleride Google Ads veya Meta gibi reklam ölçüm etiketleri eklenirse, bu etiketler yalnızca açık rızanızla çalıştırılır ve bu politika güncellenir."
+   },
+   {
+    "type": "h2",
+    "text": "3. Sitede kullanılan çerezler"
+   },
+   {
+    "type": "table",
+    "head": [
+     "Ad",
+     "Tür",
+     "Kategori",
+     "Amaç",
+     "Süre"
+    ],
+    "rows": [
+     [
+      "Çerez tercihi kaydı",
+      "Yerel depolama",
+      "Zorunlu",
+      "Çerez onay penceresinde yaptığınız seçimi hatırlar, pencerenin her sayfada yeniden açılmasını önler",
+      "Siz silene veya tercihinizi değiştirene kadar"
+     ],
+     [
+      "guru-sohbet",
+      "Yerel depolama",
+      "Zorunlu",
+      "Sohbet asistanını kullandığınızda konuşmanızın anahtarını tutar; pencereyi kapatıp açtığınızda konuşmanız kaldığı yerden sürer. Sohbet penceresini açmazsanız oluşturulmaz.",
+      "Siz silene kadar"
+     ],
+     [
+      "Tema tercihi",
+      "Yerel depolama",
+      "Tercih",
+      "Açık veya koyu görünüm seçiminizi hatırlar",
+      "Siz silene kadar"
+     ],
+     [
+      "payload-token",
+      "Çerez (birinci taraf)",
+      "Zorunlu",
+      "Yalnızca yönetim paneline giriş yapan site yöneticilerinin oturumunu sürdürür; ziyaretçilere yerleştirilmez",
+      "Oturum süresince, en fazla oturum süresi dolana kadar"
+     ],
+     [
+      "guru-panel",
+      "Çerez (birinci taraf)",
+      "Zorunlu",
+      "Yalnızca yönetim paneli kullanıcılarında, sitede yönetim çubuğunun gösterilmesi için kullanılır; ziyaretçilere yerleştirilmez",
+      "30 gün"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Sitede üçüncü taraf çerezi kullanılmamaktadır. WhatsApp veya Instagram bağlantılarına tıkladığınızda açılan sayfalar, o platformların kendi çerez politikalarına tabidir."
+   },
+   {
+    "type": "h2",
+    "text": "4. Hukuki sebep"
+   },
+   {
+    "type": "p",
+    "text": "Zorunlu çerezler, sizin talep ettiğiniz hizmetin sunulması ve sitenin güvenli çalışması için gerekli olduğundan, 6698 sayılı Kanun'un 5. maddesinin ikinci fıkrasındaki sözleşmenin kurulması veya ifası (c bendi) ve meşru menfaat (f bendi) hukuki sebeplerine dayanır. Tercih, analitik ve pazarlama çerezleri ise yalnızca çerez onay penceresinden vereceğiniz açık rızaya dayanılarak kullanılır. Siteyi ziyaret etmeniz veya pencereyi kapatmanız onay anlamına gelmez."
+   },
+   {
+    "type": "h2",
+    "text": "5. Tercihlerinizi nasıl yönetirsiniz?"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Siteye ilk girişinizde açılan pencerede Tümünü kabul et, Yalnız zorunlu veya Tercihler seçeneklerinden birini seçebilirsiniz. Tümünü kabul etmek ile reddetmek aynı kolaylıkta sunulur.",
+     "Verdiğiniz onayı istediğiniz zaman, sayfanın alt bölümündeki Çerez tercihleri bağlantısından değiştirebilir veya geri alabilirsiniz. Onayınızı geri almanız, geri almadan önceki işlemleri etkilemez.",
+     "Tarayıcınızın ayarlarından çerezleri ve yerel depolamayı silebilir veya engelleyebilirsiniz. Bu durumda tema seçiminiz ve sohbet geçmişiniz gibi bilgiler kaybolur.",
+     "Tarayıcınızın gizli pencere özelliğini kullanırsanız, pencere kapandığında yerel depolama bilgileri silinir."
+    ]
+   },
+   {
+    "type": "h2",
+    "text": "6. Kişisel verileriniz ve haklarınız"
+   },
+   {
+    "type": "p",
+    "text": "Çerezler aracılığıyla işlenen kişisel verileriniz ve 6698 sayılı Kanun'un 11. maddesinden doğan haklarınız hakkında ayrıntılı bilgi için KVKK Aydınlatma Metni'ni inceleyebilir, sorularınız için info@gurudijital.com adresine yazabilirsiniz."
+   },
+   {
+    "type": "h2",
+    "text": "7. Değişiklikler"
+   },
+   {
+    "type": "p",
+    "text": "Sitede kullanılan çerezler değiştiğinde bu politikayı güncelleriz. Yeni bir çerez kategorisi onayınızı gerektiriyorsa, onay penceresi size yeniden gösterilir."
+   }
+  ]
+ },
+ "gizlilik-politikasi": {
+  "title": "Gizlilik Politikası",
+  "updated": "2026-10-14",
+  "blocks": [
+   {
+    "type": "p",
+    "text": "Guru Dijital Ajans (Guru Dijital) olarak gurudijital.com sitesini kullanan herkesin gizliliğine önem veriyoruz. Bu politika, hangi bilgileri neden topladığımızı, nasıl koruduğumuzu ve ne kadar sakladığımızı genel hatlarıyla anlatır. Kişisel verilerin işlenmesine ilişkin yasal bilgilendirme için KVKK Aydınlatma Metni'ni, çerezler için Çerez Politikası'nı inceleyebilirsiniz."
+   },
+   {
+    "type": "h2",
+    "text": "1. Topladığımız bilgiler"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "İletişim/teklif formunda paylaştığınız ad, e-posta, telefon, ilgilendiğiniz hizmet ve mesajınız,",
+     "Toplantı randevu formunda paylaştığınız bilgiler ile seçtiğiniz tarih ve saat,",
+     "Sohbet asistanına yazdığınız mesajlar ve verilen yanıtlar,",
+     "Siteyi ziyaret ettiğinizde sunucunun otomatik tuttuğu IP adresi, tarayıcı bilgisi, tarih ve saat gibi teknik kayıtlar,",
+     "Çerez kullanmayan analitik aracımızın tuttuğu, kimliğinizi belirlemeyen toplu ziyaret istatistikleri."
+    ]
+   },
+   {
+    "type": "h2",
+    "text": "2. Bilgileri nasıl kullanıyoruz?"
+   },
+   {
+    "type": "p",
+    "text": "Bilgilerinizi; taleplerinize yanıt vermek, teklif hazırlamak, randevu düzenlemek, sorularınızı sohbet asistanı ve ekibimiz aracılığıyla yanıtlamak, sitenin güvenliğini sağlamak ve siteyi geliştirmek için kullanırız. Bilgilerinizi satmayız, kiralamayız ve sizin onayınız olmadan pazarlama iletisi göndermek için kullanmayız."
+   },
+   {
+    "type": "h2",
+    "text": "3. Sohbet asistanı"
+   },
+   {
+    "type": "p",
+    "text": "Sitedeki sohbet asistanı, sorularınızı yapay zekâ yardımıyla yanıtlar. Yanıtlar otomatik olarak üretildiği için hatalı veya eksik olabilir; önemli kararlarınızdan önce bilgileri ekibimizle doğrulamanızı öneririz. Konuşmalar kaydedilir ve gerektiğinde ekibimiz konuşmayı devralarak yanıt verebilir. Mesajlarınız, yanıt üretilmesi için yurt dışındaki yapay zekâ modeli sağlayıcımız Anthropic'e iletilir. Sohbete parola, kimlik numarası, banka bilgisi veya sağlık bilgisi gibi hassas bilgiler yazmamanızı rica ederiz."
+   },
+   {
+    "type": "h2",
+    "text": "4. Üçüncü taraf hizmetler"
+   },
+   {
+    "type": "p",
+    "text": "Siteyi çalıştırmak için aşağıdaki hizmet sağlayıcılarla çalışıyoruz. Bu sağlayıcılar bilgileri yalnızca bizim adımıza ve talimatlarımız doğrultusunda işler."
+   },
+   {
+    "type": "table",
+    "head": [
+     "Hizmet",
+     "Ne için kullanıyoruz",
+     "Konum"
+    ],
+    "rows": [
+     [
+      "Vercel",
+      "Sitenin barındırılması ve görsellerin depolanması",
+      "ABD / AB"
+     ],
+     [
+      "Neon",
+      "Form, randevu ve sohbet kayıtlarının saklandığı veritabanı",
+      "AB (Frankfurt)"
+     ],
+     [
+      "Resend",
+      "E-posta gönderimi",
+      "ABD"
+     ],
+     [
+      "Anthropic",
+      "Sohbet asistanının yanıtlarını üreten yapay zekâ modeli",
+      "ABD"
+     ],
+     [
+      "Umami Cloud",
+      "Çerez kullanmayan ziyaretçi istatistikleri",
+      "Yurt dışı"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Sitedeki WhatsApp ve Instagram bağlantıları sizi ilgili platformlara yönlendirir. Bu platformlarda paylaştığınız bilgiler, o platformların kendi gizlilik politikalarına tabidir."
+   },
+   {
+    "type": "h2",
+    "text": "5. Veri güvenliği"
+   },
+   {
+    "type": "p",
+    "text": "Bilgilerinizi yetkisiz erişime, kayba ve kötüye kullanıma karşı korumak için makul teknik ve idari tedbirler alıyoruz. Bunlar arasında şunlar yer alır:"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Site ile tarayıcınız arasındaki tüm iletişimin şifreli bağlantı (HTTPS) üzerinden yapılması,",
+     "Kayıtlara yalnızca işi gereği erişmesi gereken yetkili kişilerin, kişiye özel hesaplarla erişebilmesi,",
+     "Hizmet sağlayıcıların güvenlik standartlarına göre seçilmesi ve onlarla gizlilik yükümlülükleri içeren sözleşmeler yapılması,",
+     "Formlara yönelik otomatik ve kötü niyetli gönderimlere karşı önlem alınması,",
+     "Gereğinden fazla veri toplanmaması ve süresi dolan verilerin silinmesi."
+    ]
+   },
+   {
+    "type": "p",
+    "text": "İnternet üzerinden yapılan hiçbir aktarımın tamamen güvenli olduğu garanti edilemez. Bilgilerinizin yetkisiz kişilerce ele geçirildiğini öğrenirsek, mevzuatın öngördüğü şekilde sizi ve Kişisel Verileri Koruma Kurulu'nu bilgilendiririz."
+   },
+   {
+    "type": "h2",
+    "text": "6. Saklama süreleri"
+   },
+   {
+    "type": "table",
+    "head": [
+     "Bilgi",
+     "Saklama süresi"
+    ],
+    "rows": [
+     [
+      "İletişim/teklif ve randevu talepleri",
+      "Son iletişimden itibaren 2 yıl. Talep bir sözleşmeye dönüşürse, ilgili kayıtlar mevzuattaki zamanaşımı ve saklama süreleri boyunca (genellikle 10 yıl) saklanır."
+     ],
+     [
+      "Sohbet kayıtları",
+      "Konuşmanın son mesajından itibaren 1 yıl"
+     ],
+     [
+      "Sunucu ve güvenlik kayıtları",
+      "Barındırma hizmet sağlayıcısının sistemlerinde, en fazla 1 yıl"
+     ],
+     [
+      "Ziyaret istatistikleri",
+      "Kimliğinizi belirlemeyen toplu veriler olduğundan, sitenin geliştirilmesi için gerekli olduğu sürece"
+     ],
+     [
+      "Tarayıcınızdaki yerel depolama",
+      "Siz silene kadar; ayrıntılar Çerez Politikası'ndadır"
+     ]
+    ]
+   },
+   {
+    "type": "p",
+    "text": "Süresi dolan veya işlenme amacı ortadan kalkan bilgiler silinir, yok edilir ya da anonim hâle getirilir. Bir hukuki uyuşmazlık veya yetkili makam talebi olması hâlinde, bilgiler bu süreç tamamlanana kadar saklanabilir."
+   },
+   {
+    "type": "h2",
+    "text": "7. Çocuklar"
+   },
+   {
+    "type": "p",
+    "text": "Sitemiz ve hizmetlerimiz işletmelere ve yetişkinlere yöneliktir. 18 yaşından küçükseniz formları ve sohbet asistanını velinizin bilgisi ve izni olmadan kullanmamanızı rica ederiz. 18 yaşından küçük birine ait bilgileri bilerek toplamayız; böyle bir bilginin bize iletildiğini fark edersek bu bilgiyi sileriz."
+   },
+   {
+    "type": "h2",
+    "text": "8. Haklarınız"
+   },
+   {
+    "type": "p",
+    "text": "Bilgilerinize erişme, düzeltilmesini veya silinmesini isteme gibi haklarınızı nasıl kullanabileceğinizi KVKK Aydınlatma Metni'nde ayrıntılı olarak bulabilirsiniz. Sorularınız için info@gurudijital.com adresine yazabilir veya 0850 308 34 57 numarasından bize ulaşabilirsiniz."
+   },
+   {
+    "type": "h2",
+    "text": "9. Değişiklikler"
+   },
+   {
+    "type": "p",
+    "text": "Bu politikayı, hizmetlerimizde veya mevzuatta değişiklik olduğunda güncelleyebiliriz. Güncel metin her zaman bu sayfada yayımlanır ve sayfanın başındaki tarih değiştirilir. Önemli değişiklikleri sitede ayrıca duyururuz."
+   }
+  ]
+ },
+ "kullanim-kosullari": {
+  "title": "Kullanım Koşulları",
+  "updated": "2026-10-14",
+  "blocks": [
+   {
+    "type": "p",
+    "text": "Bu koşullar, Guru Dijital Ajans (Guru Dijital) tarafından işletilen gurudijital.com sitesinin (Site) kullanımını düzenler. Siteyi kullanarak bu koşulları kabul etmiş sayılırsınız. Koşulları kabul etmiyorsanız lütfen Siteyi kullanmayın."
+   },
+   {
+    "type": "h2",
+    "text": "1. Sitenin kullanımı"
+   },
+   {
+    "type": "p",
+    "text": "Site, hizmetlerimiz hakkında bilgi vermek, sizinle iletişim kurmak ve teklif ile randevu taleplerinizi almak amacıyla sunulur. Siteyi kullanırken:"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Mevzuata, genel ahlaka ve başkalarının haklarına aykırı davranmamayı,",
+     "Formlarda ve sohbet asistanında doğru bilgi vermeyi, başkası adına izinsiz başvuru yapmamayı,",
+     "Siteye, sunuculara veya diğer kullanıcılara zarar verecek yazılım, otomatik araç ya da yoğun istek göndermemeyi,",
+     "Sitenin güvenlik önlemlerini aşmaya, yetkiniz olmayan bölümlere erişmeye çalışmamayı,",
+     "Formları ve sohbet asistanını istenmeyen ileti (spam) veya reklam göndermek için kullanmamayı"
+    ]
+   },
+   {
+    "type": "p",
+    "text": "kabul edersiniz. Bu kurallara aykırı kullanım hâlinde erişiminizi kısıtlama ve yasal yollara başvurma hakkımız saklıdır."
+   },
+   {
+    "type": "h2",
+    "text": "2. Sohbet asistanı"
+   },
+   {
+    "type": "p",
+    "text": "Sohbet asistanının yanıtları yapay zekâ tarafından otomatik olarak üretilir ve bilgilendirme amaçlıdır. Yanıtlar hatalı, eksik veya güncel olmayabilir; bağlayıcı bir teklif, taahhüt ya da profesyonel danışmanlık yerine geçmez. Fiyat, süre ve kapsam gibi konularda geçerli olan, ekibimizin size yazılı olarak ilettiği bilgilerdir."
+   },
+   {
+    "type": "h2",
+    "text": "3. Fikri mülkiyet"
+   },
+   {
+    "type": "p",
+    "text": "Sitedeki tüm metinler, görseller, logolar, tasarımlar, videolar, yazılım ve diğer içerikler Guru Dijital Ajans veya içerik sahibi üçüncü kişilere aittir ve 5846 sayılı Fikir ve Sanat Eserleri Kanunu ile 6769 sayılı Sınai Mülkiyet Kanunu başta olmak üzere ilgili mevzuatla korunur. Referans çalışmalarda yer alan marka ve logolar, ilgili firmaların mülkiyetindedir. İçerikler, kaynak gösterilerek kısa alıntı yapılması dışında, yazılı iznimiz olmadan kopyalanamaz, çoğaltılamaz, değiştirilemez, dağıtılamaz veya ticari amaçla kullanılamaz."
+   },
+   {
+    "type": "h2",
+    "text": "4. Bilgilerin doğruluğu ve sorumluluğun sınırı"
+   },
+   {
+    "type": "p",
+    "text": "Sitedeki bilgilerin doğru ve güncel olması için özen gösteririz; ancak bilgilerin eksiksiz, hatasız ve her zaman güncel olduğunu garanti etmeyiz. Sitedeki içerikler genel bilgilendirme amaçlıdır ve bağlayıcı teklif niteliği taşımaz. Hizmetlerimize ilişkin koşullar, taraflar arasında yapılacak sözleşmeyle belirlenir."
+   },
+   {
+    "type": "p",
+    "text": "Sitenin kesintisiz ve hatasız çalışacağını garanti etmeyiz. Bakım, teknik arıza, hizmet sağlayıcılardan kaynaklanan sorunlar veya elimizde olmayan nedenlerle Siteye erişim geçici olarak durabilir. Mevzuatın izin verdiği ölçüde, Sitenin kullanılmasından veya kullanılamamasından doğan dolaylı zararlardan sorumlu değiliz. Kast veya ağır ihmalden doğan sorumluluk ile emredici kanun hükümlerinden doğan sorumluluklar bu sınırlamanın dışındadır."
+   },
+   {
+    "type": "h2",
+    "text": "5. Bağlantılar"
+   },
+   {
+    "type": "p",
+    "text": "Sitede WhatsApp, Instagram ve diğer üçüncü taraf sitelere bağlantılar bulunabilir. Bu bağlantılar kolaylık sağlamak amacıyla verilmiştir. Bağlantı verilen sitelerin içeriğinden, güvenliğinden ve gizlilik uygulamalarından sorumlu değiliz; bu siteleri kullanırken kendi koşullarını incelemenizi öneririz."
+   },
+   {
+    "type": "h2",
+    "text": "6. Kişisel veriler"
+   },
+   {
+    "type": "p",
+    "text": "Site aracılığıyla paylaştığınız kişisel veriler, KVKK Aydınlatma Metni, Gizlilik Politikası ve Çerez Politikası'na uygun olarak işlenir."
+   },
+   {
+    "type": "h2",
+    "text": "7. Değişiklikler"
+   },
+   {
+    "type": "p",
+    "text": "Bu koşulları gerektiğinde güncelleyebiliriz. Güncel koşullar bu sayfada yayımlandığı tarihten itibaren geçerlidir. Siteyi kullanmaya devam etmeniz, güncel koşulları kabul ettiğiniz anlamına gelir."
+   },
+   {
+    "type": "h2",
+    "text": "8. Uygulanacak hukuk ve yetkili mahkeme"
+   },
+   {
+    "type": "p",
+    "text": "Bu koşullar Türkiye Cumhuriyeti hukukuna tabidir. Koşullardan doğabilecek uyuşmazlıklarda İstanbul mahkemeleri ve icra daireleri yetkilidir. Tüketici sıfatıyla hareket eden kullanıcıların, 6502 sayılı Tüketicinin Korunması Hakkında Kanun'dan doğan tüketici hakem heyetlerine ve tüketici mahkemelerine başvurma hakları saklıdır."
+   },
+   {
+    "type": "h2",
+    "text": "9. İletişim"
+   },
+   {
+    "type": "ul",
+    "items": [
+     "Unvan: Guru Dijital Ajans",
+     "E-posta: info@gurudijital.com",
+     "Telefon ve WhatsApp: 0850 308 34 57"
+    ]
+   }
+  ]
+ },
+ "_banner": {
+  "title": "Çerez tercihleriniz",
+  "text": "Sitenin çalışması için zorunlu depolama araçlarını kullanıyoruz. Ziyaretçi ölçümü ve ileride eklenebilecek reklam ölçümü için onayınızı istiyoruz; seçiminizi sayfanın altındaki Çerez tercihleri bağlantısından istediğiniz zaman değiştirebilirsiniz.",
+  "acceptAll": "Tümünü kabul et",
+  "rejectAll": "Yalnız zorunlu",
+  "prefs": "Tercihler",
+  "save": "Seçimlerimi kaydet",
+  "categories": {
+   "zorunlu": {
+    "title": "Zorunlu",
+    "desc": "Sitenin çalışması, çerez tercihinizin ve sohbet geçmişinizin hatırlanması için gereklidir; kapatılamaz."
+   },
+   "tercih": {
+    "title": "Tercih",
+    "desc": "Açık veya koyu görünüm gibi seçimlerinizi bir sonraki ziyaretinizde hatırlar."
+   },
+   "analitik": {
+    "title": "Analitik",
+    "desc": "Siteyi nasıl kullandığınızı anonim olarak ölçer; kullandığımız ölçüm aracı çerez bırakmaz ve kişisel veri toplamaz."
+   },
+   "pazarlama": {
+    "title": "Pazarlama",
+    "desc": "Reklamlarımızın etkisini ölçmek ve size uygun reklam göstermek için kullanılır; şu anda etkin değildir."
+   }
+  }
+ },
+ "_formOnay": "Talebime dönüş yapılması amacıyla kişisel verilerimin işlenmesine ilişkin KVKK Aydınlatma Metni'ni okudum.",
+ "_formNot": "Paylaştığınız bilgiler yalnızca talebinize dönüş yapmak için kullanılır. Ayrıntılar için KVKK Aydınlatma Metni'ni inceleyebilirsiniz."
+}

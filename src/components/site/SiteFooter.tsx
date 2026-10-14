@@ -1,3 +1,5 @@
+import { LEGAL_PAGES } from "@/lib/legal";
+import { CookiePrefsButton } from "./CookieConsent";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/icons";
@@ -98,9 +100,24 @@ export function SiteFooter({ email, instagram, showBlog = false, services, produ
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} {site.name}. Tüm hakları saklıdır.</p>
-          <p>Unlock the next level</p>
+        <div className="mt-12 grid gap-4 border-t border-[rgb(1_20_65/0.08)] pt-6 text-[13px] text-muted lg:flex lg:items-center lg:justify-between">
+          <p>
+            © {year} {site.name}. Tüm hakları saklıdır. <span className="whitespace-nowrap">grow with guru</span>
+          </p>
+          <nav aria-label="Yasal">
+            <ul className="flex flex-wrap gap-x-5 gap-y-1">
+              {LEGAL_PAGES.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/yasal/${p.slug}`} className="inline-flex min-h-9 items-center transition-colors hover:text-brand">
+                    {p.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <CookiePrefsButton className="inline-flex min-h-9 cursor-pointer items-center transition-colors hover:text-brand" />
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </footer>

@@ -692,6 +692,8 @@ export interface Conversation {
    */
   topic?: string | null;
   page?: string | null;
+  channel?: ('web' | 'whatsapp' | 'instagram') | null;
+  externalId?: string | null;
   lastText?: string | null;
   status: 'bot' | 'ekip' | 'kapali';
   needsReply?: boolean | null;
@@ -864,6 +866,10 @@ export interface Testimonial {
   company?: string | null;
   photo?: (number | null) | Media;
   /**
+   * Müşterinin video yorumu: YouTube, Vimeo ya da doğrudan .mp4 adresi. Doluysa kartta oynat düğmesi çıkar.
+   */
+  videoUrl?: string | null;
+  /**
    * Kişinin adı ve yorumu için yazılı izin alındıysa işaretleyin.
    */
   consent?: boolean | null;
@@ -980,6 +986,7 @@ export interface Service {
     | 'palette'
     | 'pen'
     | 'monitor'
+    | 'smartphone'
     | 'chart-bar'
     | 'clapperboard'
     | 'bot'
@@ -1101,6 +1108,7 @@ export interface Product {
           | 'palette'
           | 'pen'
           | 'monitor'
+          | 'smartphone'
           | 'chart-bar'
           | 'clapperboard'
           | 'bot'
@@ -1200,6 +1208,7 @@ export interface Product {
           | 'palette'
           | 'pen'
           | 'monitor'
+          | 'smartphone'
           | 'chart-bar'
           | 'clapperboard'
           | 'bot'
@@ -1309,6 +1318,7 @@ export interface Product {
     | 'palette'
     | 'pen'
     | 'monitor'
+    | 'smartphone'
     | 'chart-bar'
     | 'clapperboard'
     | 'bot'
@@ -1965,6 +1975,8 @@ export interface ConversationsSelect<T extends boolean = true> {
   phone?: T;
   topic?: T;
   page?: T;
+  channel?: T;
+  externalId?: T;
   lastText?: T;
   status?: T;
   needsReply?: T;
@@ -2086,6 +2098,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
   title?: T;
   company?: T;
   photo?: T;
+  videoUrl?: T;
   consent?: T;
   order?: T;
   updatedAt?: T;
@@ -2698,6 +2711,7 @@ export interface AboutPage {
             | 'palette'
             | 'pen'
             | 'monitor'
+            | 'smartphone'
             | 'chart-bar'
             | 'clapperboard'
             | 'bot'
@@ -2759,6 +2773,7 @@ export interface AboutPage {
             | 'palette'
             | 'pen'
             | 'monitor'
+            | 'smartphone'
             | 'chart-bar'
             | 'clapperboard'
             | 'bot'
@@ -2843,6 +2858,15 @@ export interface SiteSetting {
   announcement?: {
     enabled?: boolean | null;
     text?: string | null;
+    /**
+     * Bant 15 saniyede bir sıradakine geçer; ziyaretçi üzerine gelince durur.
+     */
+    more?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   contact?: {
     email?: string | null;
@@ -3065,6 +3089,12 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         enabled?: T;
         text?: T;
+        more?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
       };
   contact?:
     | T

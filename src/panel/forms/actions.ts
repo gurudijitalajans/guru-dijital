@@ -77,6 +77,22 @@ export async function relationOptions(slug: string, relationTo: string, q: strin
   return r.docs.map((d) => ({ value: d.id as number, label: String((d as unknown as Record<string, unknown>)[title] ?? d.id) }));
 }
 
+/** İlişki alanından hızlı kayıt: yalnız adıyla (useAsTitle) açılabilen koleksiyonlarda */
+const QUICK = new Set(["companies", "categories", "references"]);
+export async function quickCreate(slug: string, relationTo: string, name: string): Promise<{ ok: boolean; option?: RelOption; error?: string }> {
+  try {
+    if (!QUICK.has(relationTo)) return { ok: false, error: "Bu kayıt burada eklenemez; kendi ekranından ekleyin." };
+    const { payload, opts } = await access(slug);
+    const conf = payload.collections[relationTo as CollectionSlug]?.config;
+    const title = conf?.admin?.useAsTitle;
+    if (!conf || !title || title === "id") return { ok: false, error: "Bu kayıt burada eklenemez." };
+    const doc = await payload.create({ collection: relationTo as CollectionSlug, data: { [title]: name.trim().slice(0, 200) } as never, depth: 0, ...opts });
+    return { ok: true, option: { value: doc.id as number, label: name.trim() } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error && e.message ? e.message : "Eklenemedi." };
+  }
+}
+
 export async function relationLabels(slug: string, relationTo: string, ids: number[]): Promise<RelOption[]> {
   if (!ids.length) return [];
   const { payload, opts } = await access(slug);

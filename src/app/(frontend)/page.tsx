@@ -37,7 +37,7 @@ export default async function Home() {
     getTestimonials(),
   ]);
   const homeCases = cases.filter((c) => c.showOnHome);
-  const quotes = testimonials.filter((t) => t.quote);
+  const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
   /* Tanıtım videosu public/video altında varsa oynatıcı açılır (statik sayfada derleme anında bakılır). */
   const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim.mp4"));
   const faqItems = home.faq.show ? home.faq.items : [];

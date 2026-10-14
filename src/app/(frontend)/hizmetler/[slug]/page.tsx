@@ -53,10 +53,10 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
   if (!service) notFound();
 
   const { gallery, faq } = service;
-  /* Video Tasarımı sayfasında galerinin ana karesi ajansın kendi tanıtım videosu */
+  /* Sosyal Medya Yönetimi sayfasında galerinin ana karesi ajansın kendi tanıtım videosu */
   const video: GalleryVideo | undefined =
-    service.slug === "video-tasarimi" && existsSync(join(process.cwd(), "public", VIDEO_SRC))
-      ? { src: VIDEO_SRC, poster: VIDEO_POSTER, label: "Guru Dijital tanıtım videosunu oynat", trackName: "hizmet-video-tasarimi" }
+    service.slug === "sosyal-medya-yonetimi" && existsSync(join(process.cwd(), "public", VIDEO_SRC))
+      ? { src: VIDEO_SRC, poster: VIDEO_POSTER, label: "Guru Dijital tanıtım videosunu oynat", trackName: "hizmet-sosyal-medya" }
       : undefined;
   /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */
   const [caseStudies, about] = service.sections.cases ? await Promise.all([getCases(), getAbout()]) : [[], null];
@@ -335,7 +335,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
 
       {/* 6. Kapanış çağrısı */}
       <ClosingCta
-        title="Tanışalım"
+        title="İletişime geçin"
         lead={`${sentenceStart(service.title)} için hedeflerinizi dinleyelim; size uygun kapsamı ve planı birlikte belirleyelim.`}
         primary={{ href: contactHref, label: "Teklif Al" }}
       />

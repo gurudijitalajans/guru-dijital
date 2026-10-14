@@ -85,6 +85,10 @@ const nextConfig: NextConfig = {
         to(`/admin/collections/${slug}/create`, `/panel/icerik?tur=${tur}&kayit=yeni`),
         to(`/admin/collections/${slug}/${id}`, `/panel/icerik?tur=${tur}&kayit=:id`),
       ]),
+      /* Eski hizmet adresleri (2026-10 hizmet yapısı) */
+      to("/hizmetler/dijital-pazarlama", "/hizmetler/dijital-reklam-yonetimi"),
+      to("/hizmetler/icerik-uretimi", "/hizmetler/sosyal-medya-yonetimi"),
+      to("/hizmetler/video-tasarimi", "/hizmetler/grafik-tasarim"),
       /* Giriş ve hesap ekranları panelde */
       to("/admin/login", "/giris"),
       to("/admin/forgot", "/parola-sifirla"),

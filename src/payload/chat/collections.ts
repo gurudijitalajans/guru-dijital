@@ -3,6 +3,7 @@ import type { ChatbotConfig } from "@/payload-types";
 import { isAdmin, isAdminField, isLoggedIn } from "../access";
 import { idOf } from "../crm/automation";
 import { chatHistory, chatPoll, chatSend } from "./endpoints";
+import { deliverOutbound, metaWebhook } from "../channels/meta";
 import { resetKnowledge } from "./knowledge";
 import { revalidate } from "../utils";
 import { crawlSite, importDocument } from "../channels/importers";
@@ -173,6 +174,8 @@ export const Conversations: CollectionConfig = {
     { path: "/mesaj", method: "post", handler: chatSend },
     { path: "/akis", method: "get", handler: chatPoll },
     { path: "/gecmis", method: "get", handler: chatHistory },
+    { path: "/meta", method: "get", handler: metaWebhook },
+    { path: "/meta", method: "post", handler: metaWebhook },
   ],
   hooks: {
     beforeChange: [
@@ -197,6 +200,20 @@ export const Conversations: CollectionConfig = {
     },
     { name: "topic", type: "text", label: "Konu", index: true, admin: { description: "Asistan sohbetin konusunu kendisi etiketler." } },
     { name: "page", type: "text", label: "Başladığı sayfa", admin: { readOnly: true } },
+    {
+      name: "channel",
+      type: "select",
+      label: "Kanal",
+      defaultValue: "web",
+      index: true,
+      options: [
+        { label: "Web sitesi", value: "web" },
+        { label: "WhatsApp", value: "whatsapp" },
+        { label: "Instagram", value: "instagram" },
+      ],
+      admin: { position: "sidebar", readOnly: true },
+    },
+    { name: "externalId", type: "text", index: true, admin: { hidden: true }, access: { read: () => false } },
     { name: "lastText", type: "text", label: "Son mesaj", admin: { readOnly: true } },
     { name: "status", type: "select", label: "Durum", required: true, defaultValue: "bot", options: CONV_STATUS, index: true, admin: { position: "sidebar" } },
     { name: "needsReply", type: "checkbox", label: "Yanıt bekliyor", defaultValue: false, index: true, admin: { position: "sidebar" } },
@@ -230,6 +247,10 @@ export const ChatMessages: CollectionConfig = {
       },
     ],
     afterChange: [
+      /* WhatsApp/Instagram sohbetinde asistan ve ekip yanıtı müşterinin kanalına gider */
+      async ({ doc, operation, req }) => {
+        if (operation === "create") await deliverOutbound(req, doc);
+      },
       /* Ekip yazınca sohbet ekibe geçer (asistan susar) ve yanıt bekliyor işareti kalkar */
       async ({ doc, operation, req }) => {
         if (operation !== "create" || doc.role !== "ekip") return;
