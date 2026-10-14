@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 20 740 400" width="1480" height="800">
+  <!-- Mavi Düşler Özel Eğitim ve Rehabilitasyon Merkezi: müşteri logosunun vektör yeniden çizimi -->
+  <g stroke="#d9dde3" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M185 300 Q180 330 196 360"/>
+    <path d="M250 190 Q262 260 272 335"/>
+    <path d="M295 300 Q292 320 300 345"/>
+  </g>
+  <polygon points="95,118 215,150 185,300 55,210" fill="#2aa7e1"/>
+  <g stroke="#ffffff" stroke-width="5" opacity=".85"><line x1="95" y1="118" x2="185" y2="300"/><line x1="55" y1="210" x2="215" y2="150"/></g>
+  <polygon points="232,40 310,95 250,190 185,95" fill="#a52a82"/>
+  <g stroke="#ffffff" stroke-width="5" opacity=".85"><line x1="232" y1="40" x2="250" y2="190"/><line x1="185" y1="95" x2="310" y2="95"/></g>
+  <polygon points="290,190 345,232 295,300 255,232" fill="#fbe32b"/>
+  <g stroke="#ffffff" stroke-width="4" opacity=".9"><line x1="290" y1="190" x2="295" y2="300"/><line x1="255" y1="232" x2="345" y2="232"/></g>
+  <g fill="#213f8f" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="380" y="190" font-size="108" textLength="222" lengthAdjust="spacingAndGlyphs">MAVİ</text>
+    <text x="380" y="330" font-size="108" textLength="378" lengthAdjust="spacingAndGlyphs">DÜŞLER</text>
+    <text x="75" y="395" font-size="34" textLength="655" lengthAdjust="spacingAndGlyphs">Özel Eğitim ve Rehabilitasyon Merkezi</text>
+  </g>
+</svg>

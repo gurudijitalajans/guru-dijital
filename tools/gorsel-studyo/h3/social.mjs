@@ -1,18 +1,16 @@
 // Sosyal Medya Yönetimi: müşteri hesaplarının akışı, kaydırmalı gönderiler (gerçek
-// Britten Akademi işi), Reels, içerik takvimi, topluluk ve aylık rapor
-import { asset, chip, cover, feature, glass, hero, icon, page, phone, pic, ROOT, statusBar, T, work } from "./common.mjs";
+// Lya Skin rutin rehberi), Reels, içerik takvimi, topluluk ve aylık rapor
+import { chip, cover, feature, glass, hero, icon, page, phone, pic, statusBar, T, work } from "./common.mjs";
 import { avatar, feedPost, kahvePost, lyaPost, novaPost, pamukPost, profile, storyFrame } from "./kit.mjs";
 
 const t = T["sosyal-medya-yonetimi"];
-const brit = (n) => asset(`${ROOT}/tools/gorsel-studyo/kaynak/britten-${n}.jpg`);
 const lyaAv = (d = 34) => avatar("L", "#3a2a2a", d, "#f7e8df", "Didot,serif");
-const britAv = (d = 34) => avatar("B", "#1d4ed8", d);
-const imgArt = (src, w, h, pos = "center top") => pic(src, `width:${w}px;height:${h}px`, pos);
 
 export const socialScenes = () => {
   const tiles = [lyaPost(130, 163, { v: 1 }), lyaPost(130, 163, { v: 2 }), lyaPost(130, 163, { v: 3 }), lyaPost(130, 163, { v: 4 }), lyaPost(130, 163, { v: 2 }), lyaPost(130, 163, { v: 1 }), lyaPost(130, 163, { v: 3 }), lyaPost(130, 163, { v: 4 }), lyaPost(130, 163, { v: 1 })];
   const lyaProfile = profile({ handle: "lyaskin", name: "Lya Skin", bio: "Hassas ciltler için temiz içerikli bakım 🌿<br>Türkiye'de üretildi · lyaskin.com.tr", av: lyaAv(84), stats: [["148", "gönderi"], ["24,6B", "takipçi"], ["212", "takip"]], tiles });
-  const carousel = (n, slide) => `<div style="width:390px;background:#fff">${statusBar()}${feedPost({ handle: "brittenakademi", av: britAv(), art: `<div style="position:relative">${imgArt(brit(slide), 390, 520)}<span class="abs" style="right:12px;top:12px;padding:4px 10px;border-radius:999px;background:rgb(0 0 0/.6);color:#fff;font:600 12px Outfit">${n}/11</span></div>`, artH: 520, likes: "3.912", caption: "İngilizcede gündelik ifadeler: kaydırın, kaydedin 📌" })}</div>`;
+  /* Kaydırmalı gönderi: Lya Skin akşam rutini (kurgusal marka) */
+  const carousel = (n, v) => `<div style="width:390px;background:#fff">${statusBar()}${feedPost({ handle: "lyaskin", av: lyaAv(), art: `<div style="position:relative">${lyaPost(390, 488, { v })}<span class="abs" style="right:12px;top:12px;padding:4px 10px;border-radius:999px;background:rgb(0 0 0/.6);color:#fff;font:600 12px Outfit">${n}/5</span></div>`, artH: 488, likes: "3.912", caption: "Akşam rutini 3 adımda: kaydırın, kaydedin 📌" })}</div>`;
   const britC = carousel(1, 1);
   const reels = storyFrame({ handle: "kahveduragi", av: avatar("K", "#1f3b2d", 32, "#f6ead8"), art: kahvePost(390, 844, { v: 3 }), reels: true, cta: "" });
 
@@ -35,8 +33,8 @@ export const socialScenes = () => {
   /* 1: Kaydırmalı gönderi (gerçek iş) */
   out.push({
     name: "hizmet3-sosyal-medya-yonetimi-1", w: 1200, h: 900,
-    html: feature({ t, dark: true, title: "Kaydedilen, paylaşılan gönderiler", sub: "Britten Akademi için hazırladığımız 11 sayfalık eğitici kaydırmalı gönderi.", body: `
-      ${[1, 2, 3, 10].map((n, i) => `<div class="abs" style="left:${i * 262}px;top:${i % 2 ? 40 : 0}px;width:250px;height:333px;border-radius:20px;overflow:hidden;box-shadow:0 40px 70px -30px rgb(0 6 26/.7)">${imgArt(brit(n), 250, 333)}</div>`).join("")}
+    html: feature({ t, dark: true, title: "Kaydedilen, paylaşılan gönderiler", sub: "Bir kozmetik markası için hazırlanmış beş sayfalık rutin rehberi.", body: `
+      ${[1, 2, 3, 4].map((v, i) => `<div class="abs" style="left:${i * 262}px;top:${i % 2 ? 40 : 0}px;width:250px;height:313px;border-radius:20px;overflow:hidden;box-shadow:0 40px 70px -30px rgb(0 6 26/.7)">${lyaPost(250, 313, { v })}<span class="abs" style="right:10px;top:10px;padding:3px 9px;border-radius:999px;background:rgb(0 0 0/.55);color:#fff;font:600 12px Outfit">${i + 1}/5</span></div>`).join("")}
       ${glass(`<div class="row" style="gap:30px">${["Kaydetme|2.840", "Paylaşım|1.126", "Yeni takipçi|+940"].map((x) => { const [a, b] = x.split("|"); return `<div><div style="font-size:13.5px;opacity:.7">${a}</div><div style="font-size:28px;font-weight:600">${b}</div></div>`; }).join("")}</div>`, "left:0;top:420px", "22px 28px")}` }),
   });
   /* 2: Profil ızgarası tutarlılığı */
