@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -94,6 +94,18 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Sağlık kliniği vakası: aynı bütçeyle yurt dışı hasta sayısında %300 artış',
     'E-ticaret vakası: kampanya döneminde ciro %96 arttı',
   ],
+  'ozel-yazilim': [
+    'Guru Panel fırsatlar panosu, masaüstü ve telefonda (örnek veri)',
+    'Guru Panel teklifler ekranı, masaüstü ve telefonda (örnek veri)',
+    'Guru Panel görev panosu, masaüstü ve telefonda (örnek veri)',
+    'Guru Panel ekip yükü ekranı, masaüstü ve telefonda (örnek veri)',
+    'Guru Panel takvimi, masaüstü ve telefonda (örnek veri)',
+    'Guru Panel sohbet raporu ve gelen kutusu (örnek veri)',
+  ],
+}
+/* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
+const HERO_ALTS: Record<string, string> = {
+  'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {
@@ -102,7 +114,7 @@ async function serviceGalleries(ctx: Ctx, only?: string[]) {
     if (!s) continue
     const title = String(s.title)
     const up = (f: string, alt: string) => upload(ctx, `services/v4/${slug}-${f}.webp`, alt, 'Hizmetler', 'gercek-')
-    const hero = await up('hero', `${title}: müşterilerimiz için yaptığımız işler`)
+    const hero = await up('hero', HERO_ALTS[slug] ?? `${title}: müşterilerimiz için yaptığımız işler`)
     if (!hero) continue
     const kapak = await up("kapak", `${title}: kapak görseli`)
     const feats = []

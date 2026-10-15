@@ -61,6 +61,8 @@ import { grafikScenesReal } from "./h3/grafik.mjs";
 HIZMET3_SCENES.push(...grafikScenesReal());
 import { reklamScenesReal } from "./h3/reklam.mjs";
 HIZMET3_SCENES.push(...reklamScenesReal());
+import { yazilimScenesReal } from "./h3/yazilim.mjs";
+HIZMET3_SCENES.push(...yazilimScenesReal());
 /* v4 paylaşım görselleri: gerçek iş hero'sundan (real-<slug>-hero.png) */
-for (const slug of ["web-tasarim", "sosyal-medya-yonetimi", "grafik-tasarim", "dijital-reklam-yonetimi"])
+for (const slug of ["web-tasarim", "sosyal-medya-yonetimi", "grafik-tasarim", "dijital-reklam-yonetimi", "ozel-yazilim"])
   HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-hero.png`) }) });
