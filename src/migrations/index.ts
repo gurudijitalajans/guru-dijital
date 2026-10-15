@@ -17,6 +17,7 @@ import * as migration_20261014_170000_dorduncu_tur_veri from './20261014_170000_
 import * as migration_20261014_190000_bosluk_duzeni_veri from './20261014_190000_bosluk_duzeni_veri';
 import * as migration_20261015_090000_eticaret_vakasi_veri from './20261015_090000_eticaret_vakasi_veri';
 import * as migration_20261015_220000_katalog_veri from './20261015_220000_katalog_veri';
+import * as migration_20261016_000000_grafik_galeri_veri from './20261016_000000_grafik_galeri_veri';
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20261015_220000_katalog_veri.up,
     down: migration_20261015_220000_katalog_veri.down,
     name: '20261015_220000_katalog_veri',
+  },
+  {
+    up: migration_20261016_000000_grafik_galeri_veri.up,
+    down: migration_20261016_000000_grafik_galeri_veri.down,
+    name: '20261016_000000_grafik_galeri_veri',
   },
 ];

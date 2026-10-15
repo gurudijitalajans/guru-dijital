@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -78,16 +78,25 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Veggy Snacky için ürün lansmanı gönderileri',
     'Sağlıktan gayrimenkule farklı sektörlerden markalar için hazırladığımız gönderiler',
   ],
+  'grafik-tasarim': [
+    'Veggy Snacky Sour ürün ailesi için altı aromalı paket tasarımı',
+    'Veggy Snacky kakaolu fındık kreması kavanoz etiketi ve tuzlu ayçekirdeği paketi',
+    'Lion Klinker el yapımı tuğla kataloğu: kapak ve ürün sayfaları',
+    'Soiltech gemi bakım ve onarım firması için İngilizce tanıtım kataloğu',
+    'Self Respect kurumsal kimlik seti: kartvizit, zarf, dosya, etiket ve kırtasiye',
+    'Farklı sektörlerden markalar için tasarladığımız sekiz logo',
+  ],
 }
-async function serviceGalleries(ctx: Ctx) {
+async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {
+    if (only && !only.includes(slug)) continue
     const s = await one(ctx, 'services', { slug: { equals: slug } }, true)
     if (!s) continue
     const title = String(s.title)
     const up = (f: string, alt: string) => upload(ctx, `services/v4/${slug}-${f}.webp`, alt, 'Hizmetler', 'gercek-')
     const hero = await up('hero', `${title}: müşterilerimiz için yaptığımız işler`)
     if (!hero) continue
-    const kapak = await up('kapak', `${title} hizmeti kapak görseli`)
+    const kapak = await up("kapak", `${title}: kapak görseli`)
     const feats = []
     for (const [i, alt] of alts.entries()) feats.push(await up(String(i + 1), alt))
     const gallery = [hero, kapak, ...feats].filter(Boolean).map((image) => ({ image }))
@@ -101,4 +110,10 @@ export const STEPS = { awards, serviceGalleries }
 export async function katalog(payload: Payload, req: PayloadRequest) {
   const ctx: Ctx = { payload, req, log: (m) => payload.logger.info(`[katalog] ${m}`) }
   for (const fn of Object.values(STEPS)) await fn(ctx)
+}
+
+/* Sonradan eklenen hizmet galerileri (ilk geçiş canlıda çalıştıktan sonra) */
+export async function katalogGalerileri(payload: Payload, req: PayloadRequest, slugs: string[]) {
+  const ctx: Ctx = { payload, req, log: (m) => payload.logger.info(`[katalog] ${m}`) }
+  await serviceGalleries(ctx, slugs)
 }

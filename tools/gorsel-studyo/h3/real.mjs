@@ -36,6 +36,7 @@ export function webHero({ name = "rimasis", domain = "rimasis.com", what = "Kuru
 }
 
 export const realScenes = () => [];
+export { glow, floor, lockup };
 
 /* ---------- Hikâyemiz kolajı: Guru'yu anlatan üç karo ---------- */
 const P = (f) => K(`gonderiler/${f}.jpg`);
