@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO, E-Ticaret, Marka Tescil). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (dokuz hizmetin tamamı). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -126,6 +126,14 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Marka başvurusundan önce ön araştırmada bakılacaklar',
     'Guru Dijital Marka Tescil hizmet gönderisi',
   ],
+  'mobil-uygulama': [
+    'Telefonun ana ekranında Guru Panel uygulama simgesi (temsili ana ekran)',
+    'Guru Panel açılış ekranı ve tam ekran uygulama görünümü',
+    'Uygulama mağazası sayfası düzeni (temsili)',
+    'İkinci mağaza düzeninde uygulama sayfası (temsili)',
+    'Mağaza için hazırlanan ekran görüntüsü seti (temsili)',
+    'Mobil uygulama süreci: keşiften mağaza yayınına beş adım',
+  ],
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
 const HERO_ALTS: Record<string, string> = {
@@ -133,6 +141,7 @@ const HERO_ALTS: Record<string, string> = {
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
   'e-ticaret-yonetimi': 'BK Collection mağaza vitrini, ham ürün fotoğrafı ve mağaza görseli',
   'marka-tescil': 'Cam kum saatinin içinde kumdan tescil işareti: Marka Tescil',
+  'mobil-uygulama': 'Guru Panel telefonda: ana ekran, uygulama ve mağaza sayfası görünümü',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {
