@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -102,10 +102,19 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Guru Panel takvimi, masaüstü ve telefonda (örnek veri)',
     'Guru Panel sohbet raporu ve gelen kutusu (örnek veri)',
   ],
+  seo: [
+    'SEO e-ticaret vakası: 6 ayda organik trafikte %325 artış',
+    'SEO doğrudan satış vakası: organik gelirde %215 artış',
+    'SEO sağlık turizmi vakası: uluslararası organik trafikte %410 artış',
+    'Aska Hotels çok dilli sitesinin arama sonucundaki başlık ve açıklaması',
+    'Usre Okulları sitesinin telefonda arama sonucundaki görünümü',
+    'Secen Gross ve Esdo İnşaat sitelerinin arama sonucundaki başlık ve açıklamaları',
+  ],
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
 const HERO_ALTS: Record<string, string> = {
   'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
+  seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {

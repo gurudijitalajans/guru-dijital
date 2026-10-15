@@ -28,21 +28,24 @@ const brandCard = (logo, kind, what, chips = [], lh = 40) => `<img src="${LOGO(l
 const tile = (body) => page({ w: 1200, h: 900, bg: themeBg(TR), body: `${glow(80, 220, 1040, 640)}${body}${grainLayer(0.06)}` });
 
 /* Vaka kartları: sektör + başlık; büyük rakam; gerçek değerlerle orantılı çubuklar */
-const caseHead = (sector, title) => `<div class="row" style="gap:14px"><span style="width:50px;height:50px;border-radius:15px;background:#e7f0ff;display:grid;place-items:center">${icon("trending-up", { size: 25, color: ACC, stroke: 2.2 })}</span>
-  <div><div style="font-size:13px;font-weight:600;letter-spacing:.08em;color:${ACC}">VAKA · ${sector.toLocaleUpperCase("tr-TR")}</div><div style="font-size:21px;font-weight:600;margin-top:3px;line-height:1.25">${title}</div></div></div>`;
+const caseHead = (sector, title, acc = ACC) => `<div class="row" style="gap:14px"><span style="width:50px;height:50px;border-radius:15px;background:#e7f0ff;display:grid;place-items:center">${icon("trending-up", { size: 25, color: acc, stroke: 2.2 })}</span>
+  <div><div style="font-size:13px;font-weight:600;letter-spacing:.08em;color:${acc}">VAKA · ${sector.toLocaleUpperCase("tr-TR")}</div><div style="font-size:21px;font-weight:600;margin-top:3px;line-height:1.25">${title}</div></div></div>`;
 const stat = (value, label, x, y, w = 300) => floatCard(`<div style="font-size:54px;font-weight:300;letter-spacing:-.04em;line-height:1;color:#011441">${value}</div><div style="margin-top:10px;font-size:16px;color:#3b4763;line-height:1.35">${label}</div>`, `left:${x}px;top:${y}px;width:${w}px`, "24px 26px");
 const bars = (rows, max, x, y, w) => floatCard(rows.map(([label, v, txt, hi]) => `<div style="margin-top:14px"><div class="row" style="justify-content:space-between;font-size:15px;color:#3b4763"><span>${label}</span><b style="color:#011441;font-size:17px">${txt}</b></div><div style="margin-top:8px;height:16px;border-radius:9px;background:#eef2f9;overflow:hidden"><div style="height:100%;width:${(v / max) * 100}%;border-radius:9px;background:${hi ? "linear-gradient(90deg,#2a6aca,#3d8bf2)" : "#9fb6dc"}"></div></div></div>`).join(""), `left:${x}px;top:${y}px;width:${w}px`, "12px 26px 26px");
 
-const report = ({ sector, title, big, bigLabel, rows, max, side }) => tile(`
+/* Vaka rapor paneli (Dijital Reklam ve SEO): başlık, ana rakam, gerçek değerlerle orantılı çubuklar, yan rakamlar */
+export const reportTile = (theme, { sector, title, big, bigLabel, rows, max, side, note = "" }, acc = ACC) => page({ w: 1200, h: 900, bg: themeBg(theme), body: `${glow(80, 220, 1040, 640)}
   <div style="position:absolute;left:70px;top:50%;transform:translateY(-50%);width:1060px;border-radius:30px;background:#fff;box-shadow:0 0 0 1px rgb(255 255 255/.6),0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a;padding:44px 48px;display:grid;grid-template-columns:1fr 330px;grid-template-rows:auto 1fr;gap:34px 40px">
-    <div style="grid-column:1/3">${caseHead(sector, title)}</div>
+    <div style="grid-column:1/3">${caseHead(sector, title, acc)}</div>
     <div style="display:flex;flex-direction:column">
       <div style="font-size:84px;font-weight:300;letter-spacing:-.045em;line-height:1;color:#011441">${big}</div>
       <div style="margin-top:12px;font-size:18px;color:#3b4763">${bigLabel}</div>
-      <div style="margin-top:34px">${rows.map(([label, v, txt, hi]) => `<div style="margin-top:18px"><div class="row" style="justify-content:space-between;font-size:16px;color:#3b4763"><span>${label}</span><b style="color:#011441;font-size:18px">${txt}</b></div><div style="margin-top:9px;height:18px;border-radius:10px;background:#eef2f9;overflow:hidden"><div style="height:100%;width:${(v / max) * 100}%;border-radius:10px;background:${hi ? "linear-gradient(90deg,#2a6aca,#3d8bf2)" : "#a9bfe3"}"></div></div></div>`).join("")}</div>
+      <div style="margin-top:34px">${rows.map(([label, v, txt, hi]) => `<div style="margin-top:18px"><div class="row" style="justify-content:space-between;font-size:16px;color:#3b4763"><span>${label}</span><b style="color:#011441;font-size:18px">${txt}</b></div><div style="margin-top:9px;height:18px;border-radius:10px;background:#eef2f9;overflow:hidden"><div style="height:100%;width:${(v / max) * 100}%;border-radius:10px;background:${hi ? `linear-gradient(90deg,${acc},#3d8bf2)` : "#a9bfe3"}"></div></div></div>`).join("")}</div>
+      ${note ? `<div class="row" style="gap:8px;margin-top:26px;font-size:15px;color:#3b4763">${icon("clock-3", { size: 17, color: acc, stroke: 2 })}${note}</div>` : ""}
     </div>
     <div style="display:grid;gap:16px;align-content:start">${side.map(([v, l]) => `<div style="border-radius:20px;background:#f3f7fd;padding:24px 26px"><div style="font-size:48px;font-weight:300;letter-spacing:-.04em;line-height:1;color:#011441">${v}</div><div style="margin-top:10px;font-size:16px;color:#3b4763;line-height:1.35">${l}</div></div>`).join("")}</div>
-  </div>`);
+  </div>${grainLayer(0.06)}` });
+const report = (opts) => reportTile(TR, opts);
 
 const tiles = () => [
   /* 1) DC: aynı kampanya iki dilde, sponsorlu */

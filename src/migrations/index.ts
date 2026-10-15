@@ -20,6 +20,7 @@ import * as migration_20261015_220000_katalog_veri from './20261015_220000_katal
 import * as migration_20261016_000000_grafik_galeri_veri from './20261016_000000_grafik_galeri_veri';
 import * as migration_20261016_010000_reklam_galeri_veri from './20261016_010000_reklam_galeri_veri';
 import * as migration_20261016_020000_yazilim_galeri_veri from './20261016_020000_yazilim_galeri_veri';
+import * as migration_20261016_030000_seo_galeri_veri from './20261016_030000_seo_galeri_veri';
 
 export const migrations = [
   {
@@ -131,5 +132,10 @@ export const migrations = [
     up: migration_20261016_020000_yazilim_galeri_veri.up,
     down: migration_20261016_020000_yazilim_galeri_veri.down,
     name: '20261016_020000_yazilim_galeri_veri',
+  },
+  {
+    up: migration_20261016_030000_seo_galeri_veri.up,
+    down: migration_20261016_030000_seo_galeri_veri.down,
+    name: '20261016_030000_seo_galeri_veri',
   },
 ];
