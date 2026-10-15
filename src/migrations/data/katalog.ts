@@ -173,3 +173,22 @@ export async function katalogGalerileri(payload: Payload, req: PayloadRequest, s
   const ctx: Ctx = { payload, req, log: (m) => payload.logger.info(`[katalog] ${m}`) }
   await serviceGalleries(ctx, slugs)
 }
+
+/* Galerideki tek bir görseli yeni adla yükleyip yerine koyar (önbellek eskisini sunmasın); eski medya silinir */
+export async function galeriGorseliYenile(payload: Payload, req: PayloadRequest, slug: string, key: string, prefix: string) {
+  const ctx: Ctx = { payload, req, log: (m) => payload.logger.info(`[katalog] ${m}`) }
+  const s = await one(ctx, 'services', { slug: { equals: slug } }, true)
+  if (!s) return
+  const idx = ['hero', 'kapak', '1', '2', '3', '4', '5', '6'].indexOf(key)
+  const alt = key === 'hero' ? HERO_ALTS[slug] : GALLERY_ALTS[slug]?.[idx - 2]
+  const id = await upload(ctx, `services/v4/${slug}-${key}.webp`, alt ?? `${String(s.title)}: ${key}`, 'Hizmetler', prefix)
+  if (!id) return
+  /* Eski görsel adıyla değil galerideki sırasıyla bulunur (hero, kapak, 1-6): ad çakışmasında -1 eki alabilir */
+  const items = ((s.gallery as { image: number | { id: number } }[]) ?? []).map((g) => (typeof g.image === 'object' ? g.image.id : g.image))
+  const oldId = items[idx]
+  if (oldId === undefined || oldId === id) return
+  const gallery = items.map((gid, i) => ({ image: i === idx ? id : gid }))
+  await ctx.payload.update({ collection: 'services', id: s.id, data: { gallery, _status: 'published' } as never, req: ctx.req, ...ok })
+  await ctx.payload.delete({ collection: 'media', id: oldId, req: ctx.req, ...ok }).catch(() => null)
+  ctx.log(`${slug}-${key}: yenilendi (${prefix})`)
+}
