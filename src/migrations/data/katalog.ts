@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO, E-Ticaret). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO, E-Ticaret, Marka Tescil). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -118,12 +118,21 @@ const GALLERY_ALTS: Record<string, string[]> = {
     "E-ticaret reklam vakaları: ROAS 3,41'den 8,62'ye, kampanya döneminde ciro %96 arttı",
     'E-ticaret SEO vakaları: organik trafikte %325, organik gelirde %215 artış',
   ],
+  'marka-tescil': [
+    'Marka tescil süreci: ön araştırmadan tescil belgesine yedi adım',
+    'Resmi Marka Bülteninde yayından sonra iki aylık itiraz süresi',
+    'Tescilli markanın koruma süresi: başvurudan itibaren on yıl, onar yıllık yenileme',
+    'Nice sınıflandırması: 34 mal ve 11 hizmet sınıfı',
+    'Marka başvurusundan önce ön araştırmada bakılacaklar',
+    'Guru Dijital Marka Tescil hizmet gönderisi',
+  ],
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
 const HERO_ALTS: Record<string, string> = {
   'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
   'e-ticaret-yonetimi': 'BK Collection mağaza vitrini, ham ürün fotoğrafı ve mağaza görseli',
+  'marka-tescil': 'Cam kum saatinin içinde kumdan tescil işareti: Marka Tescil',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {
