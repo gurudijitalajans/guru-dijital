@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam, Özel Yazılım, SEO, E-Ticaret). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -110,11 +110,20 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Usre Okulları sitesinin telefonda arama sonucundaki görünümü',
     'Secen Gross ve Esdo İnşaat sitelerinin arama sonucundaki başlık ve açıklamaları',
   ],
+  'e-ticaret-yonetimi': [
+    'BK Collection: masada çekilen ham ürün fotoğrafı ve aynı ceketin mağaza görseli',
+    "BK Collection: Bahçeşehir Yeni Sezon Sweatshirt'ün stant ve model görseli",
+    'BK Collection mağazasında indirim rozetli ürün listesi',
+    "BK Collection ürün kartları; sweatshirt'te 2.400 TL yerine 1.199 TL kampanya fiyatı",
+    "E-ticaret reklam vakaları: ROAS 3,41'den 8,62'ye, kampanya döneminde ciro %96 arttı",
+    'E-ticaret SEO vakaları: organik trafikte %325, organik gelirde %215 artış',
+  ],
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
 const HERO_ALTS: Record<string, string> = {
   'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
+  'e-ticaret-yonetimi': 'BK Collection mağaza vitrini, ham ürün fotoğrafı ve mağaza görseli',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {
