@@ -5,7 +5,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 
 /**
  * Katalog PSD'lerinden üretilen gerçek iş görselleri (veri geçişi): ödül kartları ve hizmet
- * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
+ * galerileri (Web Tasarım, Sosyal Medya, Grafik Tasarım, Dijital Reklam). Görseller benzersiz adla bir kez yüklenir (görsel önbelleği aynı adı eski
  * haliyle sunuyordu). Canlıda Postgres geçişiyle, yerelde src/payload/run-katalog.ts ile
  * çalışır; tekrar çalışırsa kopya üretmez. Bu dosya geçişe aittir.
  */
@@ -85,6 +85,14 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Soiltech gemi bakım ve onarım firması için İngilizce tanıtım kataloğu',
     'Self Respect kurumsal kimlik seti: kartvizit, zarf, dosya, etiket ve kırtasiye',
     'Farklı sektörlerden markalar için tasarladığımız sekiz logo',
+  ],
+  'dijital-reklam-yonetimi': [
+    'DC diş kliniği için Türkçe ve İngilizce Meta reklam kreatifleri',
+    'Medipunto Clinic için İngilizce estetik kampanyası reklam kreatifi',
+    'WCTLife konut projesi satış kampanyası reklam kreatifi',
+    "Giyim e-ticaret vakası: ROAS 3,41'den 8,62'ye, ciro %74 arttı",
+    'Sağlık kliniği vakası: aynı bütçeyle yurt dışı hasta sayısında %300 artış',
+    'E-ticaret vakası: kampanya döneminde ciro %96 arttı',
   ],
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
