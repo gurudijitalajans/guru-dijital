@@ -33,3 +33,30 @@ for (const [slug, title] of Object.entries(OG))
 /* Blog kapakları v2 (blog2-*) */
 import { blogScenes } from "./h3/blog.mjs";
 HIZMET3_SCENES.push(...blogScenes());
+
+/* Ödül kartları v2 (odul2-*) */
+import { awardScenes } from "./h3/awards.mjs";
+HIZMET3_SCENES.push(...awardScenes());
+import { aboutScenes } from "./h3/awards.mjs";
+HIZMET3_SCENES.push(...aboutScenes());
+import { webCoverScenes } from "./h3/awards.mjs";
+HIZMET3_SCENES.push(...webCoverScenes());
+import { webTileScenes } from "./h3/awards.mjs";
+HIZMET3_SCENES.push(...webTileScenes());
+import { realScenes } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...realScenes());
+import { storyScenes } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...storyScenes());
+import { webScenesReal } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...webScenesReal());
+import { storyConcepts } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...storyConcepts());
+import { storyV3 } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...storyV3());
+import { socialSample } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...socialSample());
+import { socialScenesReal } from "./h3/real.mjs";
+HIZMET3_SCENES.push(...socialScenesReal());
+/* v4 paylaşım görselleri: gerçek iş hero'sundan (real-<slug>-hero.png) */
+for (const slug of ["web-tasarim", "sosyal-medya-yonetimi"])
+  HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-hero.png`) }) });

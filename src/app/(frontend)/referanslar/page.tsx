@@ -1,5 +1,4 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { serviceAsset } from "@/lib/service-assets";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,8 +40,8 @@ export default async function ReferanslarPage() {
   const works = services
     .map((s) => ({
       service: s,
-      image: existsSync(join(process.cwd(), "public", "services", "v3", `${s.slug}-kart.webp`))
-        ? { src: `/services/v3/${s.slug}-kart.webp`, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
+      image: serviceAsset(s.slug, "kart.webp")
+        ? { src: serviceAsset(s.slug, "kart.webp") as string, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
         : (s.gallery[0] ?? s.card),
     }))
     .filter((w): w is { service: (typeof services)[number]; image: NonNullable<(typeof services)[number]["card"]> } => Boolean(w.image));

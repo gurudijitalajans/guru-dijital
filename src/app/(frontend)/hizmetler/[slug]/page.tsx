@@ -2,6 +2,7 @@ import Image from "next/image";
 import { LightboxRoot } from "@/components/ui/Lightbox";
 import { zoomCls, zoomProps } from "@/components/ui/zoom";
 import { existsSync } from "fs";
+import { serviceAsset } from "@/lib/service-assets";
 import { join } from "path";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -46,8 +47,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: service.title,
     description: service.seoDescription ?? service.short,
     path: `/hizmetler/${service.slug}`,
-    ...(existsSync(join(process.cwd(), "public", "services", "v3", `${service.slug}-og.jpg`))
-      ? { image: { url: `/services/v3/${service.slug}-og.jpg`, width: 1200, height: 630, alt: service.title } }
+    ...(serviceAsset(service.slug, "og.jpg")
+      ? { image: { url: serviceAsset(service.slug, "og.jpg") as string, width: 1200, height: 630, alt: service.title } }
       : {}),
   });
 }

@@ -21,12 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /* Referans markalarımızın sektörleri (Referanslar sayfasındaki markalarla aynı) */
 const SECTORS = ["Sağlık", "Turizm", "Perakende", "İnşaat", "Eğitim", "Gıda"];
-/* Hikâye mozaiği: hizmet galerilerindeki gerçek işlerden üçü (ilki dikey karo).
-   Panelde aynı dosya adıyla bulunur; yoksa sitedeki kopyası kullanılır. */
+/* Hikâye mozaiği: Guru'yu anlatan üç 3D karo (cam Guru işareti, dokuz disiplin
+   tek ekip, büyüme). Panelde aynı dosya adıyla bulunur; yoksa sitedeki kopyası kullanılır. */
 const MOSAIC = [
-  { file: "ambalaj-kavanoz", alt: "Kakaolu fındık kreması kavanoz ambalaj tasarımı", w: 1600, h: 1131 },
-  { file: "web-mockup-dark", alt: "Kurumsal web sitesi laptop mockup", w: 1600, h: 1396 },
-  { file: "ambalaj-aycekirdek", alt: "Ay çekirdeği ambalajı ürün tanıtım kreatifi", w: 1600, h: 1131 },
+  { file: "hikaye6-guru", alt: "Camdan Guru işareti, lacivert zeminde ışık huzmesi altında: Grow with Guru", w: 1000, h: 1600 },
+  { file: "hikaye6-ekip", alt: "Tek ekip, dokuz disiplin: reklam, web, SEO, yazılım, mobil, marka tescil, e-ticaret, grafik ve sosyal medya", w: 1250, h: 1000 },
+  { file: "hikaye6-buyume", alt: "Büyüme: buz mavisinden laciverte yükselen cam sütunlar ve zirvede ışık alan küre", w: 1250, h: 1000 },
 ];
 
 /** Ad Soyad → "AS" */
@@ -58,14 +58,14 @@ export default async function HakkimizdaPage() {
     getTeam(),
   ]);
   const { intro, story, awards, closing } = about;
-  /* Mozaik: hizmet galerilerindeki gerçek iş görselleri (panel: Hizmetler > Görseller) */
+  /* Mozaik: panelde (hizmet görsellerinde) aynı adlı dosya varsa o, yoksa /work kopyası */
   const workImages = services.flatMap((sv) => [sv.card, ...sv.gallery]).filter((c): c is NonNullable<typeof c> => Boolean(c));
   const mosaic = MOSAIC.map(
     (m) => workImages.find((w) => w.src.includes(m.file)) ?? { src: `/work/${m.file}.webp`, alt: m.alt, w: m.w, h: m.h }
   );
-  const firstAward = awards.items[0];
+  /* Referans sayısı listelenenlerden fazlası olduğu için "50+" biçiminde */
   const stats = [
-    { value: references.length, label: about.stats.referencesLabel },
+    { value: `${references.length}+`, label: about.stats.referencesLabel },
     { value: services.length, label: about.stats.servicesLabel },
     { value: products.length, label: about.stats.productsLabel },
   ];
@@ -82,8 +82,8 @@ export default async function HakkimizdaPage() {
         )}
       </PageIntro>
 
-      {/* Hikâye: solda metin, sektörler ve gerçek sayılar; sağda kendi işlerimizden
-          mozaik ve ödül rozeti; altında dört ilke tek satırda, eşit boyda */}
+      {/* Hikâye: solda metin, sektörler ve gerçek sayılar; sağda Guru'yu anlatan
+          3D mozaik (ödüller aşağıda kendi bölümünde); altında dört ilke tek satırda */}
       <section className="pb-16 pt-4 md:pb-[72px] md:pt-8">
         <div className="container-g">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
@@ -114,7 +114,7 @@ export default async function HakkimizdaPage() {
             </Reveal>
 
             {mosaic.length > 0 && (
-              <Reveal delay={0.06} className="relative">
+              <Reveal delay={0.06}>
                 <div className="grid aspect-[5/4] grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
                   {mosaic.map((m, i) => (
                     <div
@@ -137,19 +137,6 @@ export default async function HakkimizdaPage() {
                     </div>
                   ))}
                 </div>
-                {firstAward && (
-                  <p className="absolute -bottom-5 left-4 inline-flex items-center gap-3 rounded-2xl bg-white py-3 pl-3 pr-5 shadow-[0_0_0_1px_rgb(1_20_65/0.06),0_20px_40px_-20px_rgb(1_20_65/0.45)] sm:left-6">
-                    <span className={cn(iconBoxCls, "size-10")} aria-hidden>
-                      <IconByName name={firstAward.icon} className="size-5" strokeWidth={1.8} />
-                    </span>
-                    <span className="leading-tight">
-                      <span className="block text-[15px] font-semibold text-heading">
-                        {firstAward.year} {firstAward.title}
-                      </span>
-                      <span className="block text-[13px] text-muted">{firstAward.badge || "Resmi iş ortaklığı"}</span>
-                    </span>
-                  </p>
-                )}
               </Reveal>
             )}
           </div>

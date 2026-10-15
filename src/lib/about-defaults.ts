@@ -11,14 +11,14 @@ const AWARD_META: Record<string, { badge: string; icon: IconName; image: string;
   "Google Partner": {
     badge: "Partner Rozeti",
     icon: "badge-check",
-    image: "/work/odul-partner.webp",
+    image: "/work/odul2-partner.webp",
     alt: "Google Partner rozeti",
   },
   "Google Ads Impact Awards": {
     badge: "Data Innovation Adayı",
     icon: "award",
-    image: "/work/odul-impact.webp",
-    alt: "Google Ads Impact Awards 2025 Data Innovation kategorisi aday belgesi",
+    image: "/work/odul2-impact.webp",
+    alt: "Google Ads Impact Awards 2025 kupası",
   },
 };
 
