@@ -228,3 +228,26 @@ export async function setStatus(kind: "talep" | "randevu", id: number, status: s
     return fail(e);
   }
 }
+
+/**
+ * Sohbet, talep ya da randevuyu kalıcı siler (yalnız işletme yöneticisi).
+ * Sohbetin mesajları da silinir; talebe bağlı kişi ve fırsat CRM'de kalır.
+ */
+export async function deleteInboxItem(kind: InboxKind, id: number): Promise<Result> {
+  const ctx = await getPanelContext();
+  if (!ctx.isTenantAdmin) return { ok: false, error: "Kaydı yalnız işletme yöneticisi silebilir." };
+  if (!ctx.has(kind === "sohbet" ? "chat" : "crm")) return { ok: false, error: "Yetki yok." };
+  try {
+    if (kind === "sohbet") {
+      if (!(await ctx.findByID("conversations", id, 0))) return { ok: false, error: "Sohbet bulunamadı." };
+      const msgs = await ctx.find("chat-messages", { where: { conversation: { equals: id } }, limit: 2000, select: { id: true } });
+      for (const m of msgs.docs) await ctx.remove("chat-messages", m.id);
+    }
+    const ok = await ctx.remove(kind === "sohbet" ? "conversations" : kind === "talep" ? "leads" : "bookings", id);
+    return ok ? { ok: true } : { ok: false, error: "Kayıt bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}

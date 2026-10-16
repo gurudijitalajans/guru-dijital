@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, Bot, CalendarCheck, FileText, MessageCircle, Send } from "lucide-react";
+import { ArrowLeft, Bot, CalendarCheck, FileText, MessageCircle, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Fields } from "../ui/sheet";
-import { getThread, listInbox, replyChat, setConversation, setStatus, type InboxFilter, type InboxItem, type InboxKind, type Thread } from "./actions";
+import { deleteInboxItem, getThread, listInbox, replyChat, setConversation, setStatus, type InboxFilter, type InboxItem, type InboxKind, type Thread } from "./actions";
 
 const TZ = "Europe/Istanbul";
 const stamp = (iso: string) => {
@@ -30,13 +30,14 @@ const writeUrl = (filter: InboxFilter, key: string) => {
   window.history.replaceState(null, "", `/panel/gelen${p.toString() ? `?${p}` : ""}`);
 };
 
-export function Inbox({ filters, initialFilter, initialItems, initialThread }: { filters: FilterDef[]; initialFilter: InboxFilter; initialItems: InboxItem[]; initialThread: Thread | null }) {
+export function Inbox({ filters, initialFilter, initialItems, initialThread, canDelete = false }: { filters: FilterDef[]; initialFilter: InboxFilter; initialItems: InboxItem[]; initialThread: Thread | null; canDelete?: boolean }) {
   const [filter, setFilter] = useState<InboxFilter>(initialFilter);
   const [items, setItems] = useState(initialItems);
   const [thread, setThread] = useState<Thread | null>(initialThread);
   const [key, setKey] = useState(initialThread?.key ?? "");
   const [reply, setReply] = useState("");
   const [pending, start] = useTransition();
+  const [confirm, setConfirm] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const reloadList = useCallback(async (f: InboxFilter) => setItems(await listInbox(f)), []);
@@ -68,6 +69,7 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
   const open = (k: string) => {
     setKey(k);
     setReply("");
+    setConfirm(false);
     writeUrl(filter, k);
     start(() => reloadThread(k));
   };
@@ -82,6 +84,16 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
       if (!r.ok) return void toast.error(r.error ?? "İşlem yapılamadı.");
       toast.success(done);
       await Promise.all([reloadThread(key), reloadList(filter)]);
+    });
+  const remove = () =>
+    thread &&
+    start(async () => {
+      const r = await deleteInboxItem(thread.kind, thread.id);
+      setConfirm(false);
+      if (!r.ok) return void toast.error(r.error ?? "Silinemedi.");
+      toast.success(`${KIND_LABEL[thread.kind]} silindi.`);
+      back();
+      await reloadList(filter);
     });
   const send = () => {
     if (!thread || !reply.trim()) return;
@@ -186,7 +198,28 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
                     onPick={(v, l) => run(() => setStatus("randevu", thread.id, v), `Randevu: ${l}.`)}
                   />
                 )}
+                {canDelete && !confirm ? (
+                  <Button size="sm" variant="ghost" disabled={pending} onClick={() => setConfirm(true)} aria-label={`${KIND_LABEL[thread.kind]} kaydını sil`}>
+                    <Trash2 /> Sil
+                  </Button>
+                ) : null}
               </div>
+              {confirm ? (
+                <div className="flex w-full flex-wrap items-center gap-2 rounded-[10px] border border-line bg-sunken px-3 py-2" role="alert">
+                  <span className="text-[14px] text-ink">
+                    {thread.kind === "sohbet" ? "Sohbet ve tüm mesajları" : thread.kind === "talep" ? "Talep" : "Randevu"} kalıcı olarak silinsin mi?
+                    {thread.kind !== "sohbet" ? <span className="block text-[13px] text-muted">CRM&apos;deki kişi ve fırsat kalır; onları ayrıca silebilirsiniz.</span> : null}
+                  </span>
+                  <span className="ml-auto flex gap-2">
+                    <Button size="sm" variant="danger" disabled={pending} onClick={remove}>
+                      Evet, sil
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setConfirm(false)}>
+                      Vazgeç
+                    </Button>
+                  </span>
+                </div>
+              ) : null}
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto bg-bg px-4 py-4" aria-live="polite">

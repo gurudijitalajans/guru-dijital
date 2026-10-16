@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Dialog } from "radix-ui";
-import { AlertTriangle, Phone, Plus, Search, X } from "lucide-react";
+import { AlertTriangle, Phone, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTable } from "../ui/data-table";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
-import { addNote, createDeal, findContacts, moveDeal, scheduleCall, updateDeal } from "./actions";
+import { addNote, createDeal, deleteDeal, findContacts, moveDeal, scheduleCall, updateDeal } from "./actions";
 
 export type BoardDeal = { id: number; title: string; stage: string; value: number; order: number | null; who: string; owner: number | null; ownerName: string; expectedClose: string | null; updatedAt: string; closedAt: string | null; lateTask: boolean };
 export type DealDetail = {
@@ -53,7 +53,7 @@ const byOrder = (a: BoardDeal, b: BoardDeal) => (a.order ?? Infinity) - (b.order
 
 type View = "pano" | "liste";
 
-export function DealsView({ deals: initial, detail, me, hasOps, initialView }: { deals: BoardDeal[]; detail: DealDetail | null; me: number; hasOps: boolean; initialView: View }) {
+export function DealsView({ deals: initial, detail, me, hasOps, canDelete = false, initialView }: { deals: BoardDeal[]; detail: DealDetail | null; me: number; hasOps: boolean; canDelete?: boolean; initialView: View }) {
   const router = useRouter();
   const path = usePathname();
   const params = useSearchParams();
@@ -334,7 +334,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, initialView }: {
         }}
       />
       <NewDealDialog open={creating} onOpenChange={setCreating} onCreated={(id) => setParam("firsat", String(id))} />
-      <DealSheet detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
+      <DealSheet canDelete={canDelete} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
     </>
   );
 }
@@ -483,18 +483,20 @@ function NewDealDialog({ open, onOpenChange, onCreated }: { open: boolean; onOpe
   );
 }
 
-function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
+function DealSheet({ detail, hasOps, canDelete, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; canDelete: boolean; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [note, setNote] = useState("");
   const [busy, start] = useTransition();
   const [form, setForm] = useState<{ title: string; value: string; expectedClose: string; service: string; notes: string } | null>(null);
   const [forId, setForId] = useState<number | null>(null);
-  /* Başka fırsat açılınca düzenleme formu kapanır */
+  const [confirm, setConfirm] = useState(false);
+  /* Başka fırsat açılınca düzenleme formu ve silme onayı kapanır */
   if ((detail?.id ?? null) !== forId) {
     setForId(detail?.id ?? null);
     setEditing(false);
     setNote("");
+    setConfirm(false);
   }
   const startEdit = () => {
     if (!detail) return;
@@ -529,6 +531,18 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
       const r = await scheduleCall(detail.id);
       if (!r.ok) return void toast.error(r.error ?? "Planlanamadı.");
       toast.success("Arama bir sonraki iş günü 10:00 için planlandı; o gün ana sayfada görünür.");
+      router.refresh();
+    });
+  const remove = () =>
+    detail &&
+    start(async () => {
+      const r = await deleteDeal(detail.id);
+      if (!r.ok) {
+        setConfirm(false);
+        return void toast.error(r.error ?? "Silinemedi.");
+      }
+      toast.success("Fırsat silindi.");
+      onClose();
       router.refresh();
     });
   const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
@@ -686,6 +700,29 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
               <p className="m-0 text-[14px] text-muted">Henüz kayıt yok.</p>
             )}
           </SheetSection>
+
+          {canDelete ? (
+            <SheetSection title="Fırsatı sil">
+              {confirm ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[14px] text-ink">Fırsat, notları ve görevleri kalıcı olarak silinsin mi?</span>
+                  <Button type="button" size="sm" variant="danger" onClick={remove} disabled={busy}>
+                    Evet, sil
+                  </Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setConfirm(false)}>
+                    Vazgeç
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid gap-2">
+                  <p className="m-0 text-[13px] text-muted">Deneme ya da yanlış açılmış fırsatlar için. Kişi, teklif ve projeler silinmez.</p>
+                  <Button type="button" size="sm" variant="danger" className="justify-self-start" onClick={() => setConfirm(true)}>
+                    <Trash2 /> Sil
+                  </Button>
+                </div>
+              )}
+            </SheetSection>
+          ) : null}
         </>
       ) : null}
     </Sheet>

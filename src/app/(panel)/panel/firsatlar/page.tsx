@@ -83,7 +83,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageHeader title="Fırsatlar" description="Kartı sürükleyerek aşamasını değiştirin. Pano ve liste aynı kayıtları gösterir." />
-      <DealsView deals={deals} detail={detail} me={ctx.user.id} hasOps={ctx.has("ops")} initialView={sp.gorunum === "liste" ? "liste" : "pano"} />
+      <DealsView deals={deals} detail={detail} me={ctx.user.id} hasOps={ctx.has("ops")} canDelete={ctx.isTenantAdmin} initialView={sp.gorunum === "liste" ? "liste" : "pano"} />
     </>
   );
 }

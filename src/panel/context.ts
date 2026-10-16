@@ -45,6 +45,8 @@ export type PanelContext = {
   names: () => Promise<(v: unknown) => string>;
   /** Yalnız seçili işletmenin kaydı güncellenir; değilse null */
   update: (collection: CollectionSlug, id: number | string, data: Record<string, unknown>) => Promise<unknown | null>;
+  /** Yalnız seçili işletmenin kaydı ve yalnız işletme yöneticisi siler; silindiyse true */
+  remove: (collection: CollectionSlug, id: number | string) => Promise<boolean>;
 };
 
 const toOption = (t: Tenant): TenantOption => ({ id: t.id, name: t.name, slug: t.slug, modules: (t.modules ?? []) as string[] });
@@ -161,6 +163,12 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
       const { tenant: _drop, ...rest } = data;
       void _drop;
       return payload.update({ collection, id, data: rest as never, user: u, req, overrideAccess: false });
+    },
+    /* Koleksiyon kuralı silmeyi Guru yöneticisine bırakır; işletme yöneticisi kendi kaydını burada siler */
+    remove: async (collection, id) => {
+      if (!isTenantAdmin(u, guruAdmin ? undefined : tenant.id) || !(await own(collection, id, 0))) return false;
+      await payload.delete({ collection, id, user: u, req, overrideAccess: true });
+      return true;
     },
   };
 });

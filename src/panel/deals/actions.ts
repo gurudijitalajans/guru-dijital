@@ -55,6 +55,22 @@ export async function updateDeal(id: number, d: DealInput): Promise<Result> {
   }
 }
 
+/** Fırsatı ve ona bağlı not ve görevleri kalıcı siler (yalnız işletme yöneticisi); teklif ve projeler kalır */
+export async function deleteDeal(id: number): Promise<Result> {
+  try {
+    const ctx = await crm();
+    if (!ctx.isTenantAdmin) return { ok: false, error: "Fırsatı yalnız işletme yöneticisi silebilir." };
+    if (!(await ctx.findByID("deals", id, 0))) return { ok: false, error: "Fırsat bulunamadı." };
+    const acts = await ctx.find("activities", { where: { deal: { equals: id } }, limit: 2000, select: { id: true } });
+    for (const a of acts.docs) await ctx.remove("activities", a.id);
+    return (await ctx.remove("deals", id)) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
 export async function createDeal(d: DealInput): Promise<Result> {
   try {
     const ctx = await crm();
