@@ -1,4 +1,4 @@
-import { BG, THEME, bars, chan, donut, icon, page, ring, tag } from "./lib.mjs";
+import { BG, THEME, appIcon, bars, chan, donut, icon, page, ring, tag } from "./lib.mjs";
 import { cover, feature, hero, og, poster } from "./compose.mjs";
 import { CHANNELS, CONVS, WEEK, WEEK_L, chatbotDesktop, chatbotMobile, convRow, handoffCard } from "./screens-chatbot.mjs";
 import { STAGES, crmDesktop, crmMobile, crmReportsDesktop, dealCard, trendChart } from "./screens-crm.mjs";
@@ -24,8 +24,8 @@ const CARD = {
   operation: `<div class="row" style="gap:14px"><span style="width:52px;height:52px;border-radius:16px;background:#e6f6ec;display:grid;place-items:center">${icon("circle-check-big", { size: 26, color: "#12873f", stroke: 2 })}</span>
           <div><div style="font-size:14px;font-weight:600;letter-spacing:.06em;color:#12873f">KONTROLDEN GEÇTİ</div><div style="font-size:21px;font-weight:600;margin-top:2px">Stok uyarı eşikleri</div></div><span style="margin-left:auto;font-size:15px;color:#8a95ad">OP-131</span></div>
         <div class="row" style="gap:12px;margin-top:18px;padding:14px 16px;border-radius:14px;background:#f3f6fb;font-size:15px"><span class="row" style="gap:-6px">${av("BT", 30, 3)}${av("EK", 30, 4)}</span><span style="color:#3b4763">Burak Taş tamamladı, Elif Koç onayladı</span></div>`,
-  business: notif("GURU BUSINESS", `<span style="width:26px;height:26px;border-radius:8px;background:#12419b;display:grid;place-items:center">${icon("sun", { size: 15, color: "#fff", stroke: 2.2 })}</span>`, "Günaydın, Cem Bey", "İşletmenizin bugünkü özeti hazır", "08:30") +
-        `<div class="row" style="gap:10px;margin-top:16px">${MODULES.map((m) => `<div style="flex:1;padding:12px 12px;border-radius:14px;background:#f3f6fb"><span style="width:28px;height:28px;border-radius:9px;background:${m.c};display:grid;place-items:center">${icon(m.ic, { size: 15, color: "#fff", stroke: 2.2 })}</span><div style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:8px">${m.m[0][0]}</div><div style="font-size:13px;color:#7f8aa3">${m.m[0][1]}</div></div>`).join("")}</div>`,
+  business: notif("GURU BUSINESS", appIcon("guru-business", 26), "Günaydın, Cem Bey", "İşletmenizin bugünkü özeti hazır", "08:30") +
+        `<div class="row" style="gap:10px;margin-top:16px">${MODULES.map((m) => `<div style="flex:1;padding:12px 12px;border-radius:14px;background:#f3f6fb">${appIcon(m.slug, 30)}<div style="font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:8px">${m.m[0][0]}</div><div style="font-size:13px;color:#7f8aa3">${m.m[0][1]}</div></div>`).join("")}</div>`,
 };
 
 /* ---------------- Guru Chatbot ---------------- */

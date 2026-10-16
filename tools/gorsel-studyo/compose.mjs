@@ -1,8 +1,9 @@
-import { BG, appWindow, floatCard, grainLayer, iceBg, icon, iphone, macbook, mark, page, themeBg } from "./lib.mjs";
+import { BG, PRODUCT_SLUG, appIcon, appWindow, floatCard, grainLayer, iceBg, icon, iphone, macbook, page, themeBg } from "./lib.mjs";
 
-/* Ürün imzası: g işareti + ürün adı */
+/* Ürün imzası: uygulama simgesi + ürün adı */
+const iconShadow = "box-shadow:0 0 0 1px rgb(255 255 255/.14),0 14px 28px -12px rgb(0 6 26/.7)";
 export const lockup = (name, { tone = "white", size = 34 } = {}) =>
-  `<div class="row" style="gap:${size * 0.42}px;color:${tone === "white" ? "#fff" : "#011441"}">${mark(tone, size * 1.3)}<span style="font-size:${size}px;font-weight:500;letter-spacing:-.02em;line-height:1">Guru <span style="font-weight:400;opacity:.92">${name}</span></span></div>`;
+  `<div class="row" style="gap:${size * 0.46}px;color:${tone === "white" ? "#fff" : "#011441"}">${appIcon(PRODUCT_SLUG[name], Math.round(size * 1.6), iconShadow)}<span style="font-size:${size}px;font-weight:500;letter-spacing:-.02em;line-height:1">Guru <span style="font-weight:400;opacity:.92">${name}</span></span></div>`;
 
 /* Cihazın arkasındaki yumuşak ışık */
 const glow = (x, y, w, h, c = "rgb(68 161 241 / .45)") =>
@@ -79,7 +80,7 @@ export function cover({ theme, name, headline, sub, mobile, card, cardStyle = "l
   <div style="position:absolute;left:150px;top:520px;width:900px;height:1100px;border-radius:50%;background:radial-gradient(closest-side,${theme.hi}88,transparent);filter:blur(20px)"></div>
   <div style="position:absolute;left:0;right:0;top:0;height:760px;background:linear-gradient(180deg,${theme.deep} 0%,${theme.deep}e6 42%,${theme.deep}00 100%)"></div>
   <div style="position:absolute;left:0;right:0;top:96px;display:grid;justify-items:center;text-align:center;padding:0 80px">
-    <div class="row" style="gap:14px;padding:10px 22px 10px 12px;border-radius:999px;background:rgb(255 255 255/.10);box-shadow:inset 0 0 0 1px rgb(255 255 255/.18)">${mark("white", 40)}<span style="font-size:28px;font-weight:500;color:#fff;letter-spacing:-.01em">Guru ${name}</span></div>
+    <div class="row" style="gap:14px;padding:9px 24px 9px 9px;border-radius:999px;background:rgb(255 255 255/.10);box-shadow:inset 0 0 0 1px rgb(255 255 255/.18)">${appIcon(PRODUCT_SLUG[name], 48)}<span style="font-size:28px;font-weight:500;color:#fff;letter-spacing:-.01em">Guru ${name}</span></div>
     <h1 style="margin-top:36px;max-width:900px;font-size:104px;line-height:1.02;font-weight:600;letter-spacing:-.045em;color:#fff;text-wrap:balance">${h}</h1>
     <p style="margin-top:26px;font-size:32px;line-height:1.35;color:rgb(255 255 255/.8);max-width:900px;text-wrap:balance">${sub}</p>
   </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import type { NavGroup } from "@/lib/data";
 import { IconByName } from "@/lib/icons";
@@ -35,8 +35,18 @@ function TalkLink({ className, onClick }: { className?: string; onClick?: () => 
 /*  Masaüstü açılır menü                                               */
 /* ------------------------------------------------------------------ */
 
-function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
-  const [open, setOpen] = useState(false);
+/* Açık menü üst bileşende tutulur: aynı anda tek panel açık kalır, menüler arası geçiş anında olur */
+function DesktopGroup({
+  group,
+  active,
+  open,
+  setOpen,
+}: {
+  group: NavGroup;
+  active: boolean;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
   const wide = (group.items?.length ?? 0) > 6;
   const id = useId();
   const closeTimer = useRef<number | null>(null);
@@ -75,7 +85,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onDoc);
     };
-  }, [open]);
+  }, [open, setOpen]);
 
   const linkCls = cn(
     "inline-flex min-h-11 items-center gap-1 text-[15px] font-medium transition-colors hover:text-brand",
@@ -111,7 +121,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
         onClick={() => {
           const keep = hoverOpened.current;
           hoverOpened.current = false;
-          setOpen((v) => (keep ? true : !v));
+          setOpen(keep ? true : !open);
         }}
         className={linkCls}
       >
@@ -179,6 +189,15 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [desktopOpen, setDesktopOpen] = useState<string | null>(null);
+  /* Kapatma yalnız hâlâ açık olan menünün kendisinden gelirse geçerli: gecikmeli kapanış yeni açılanı kapatmaz */
+  const desktopSetters = useMemo(
+    () =>
+      Object.fromEntries(
+        menu.map((g) => [g.label, (v: boolean) => setDesktopOpen((cur) => (v ? g.label : cur === g.label ? null : cur))])
+      ),
+    [menu]
+  );
   const [scrolled, setScrolled] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -191,6 +210,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
     setLastPath(pathname);
     setOpen(false);
     setExpanded(null);
+    setDesktopOpen(null);
   }
 
   useEffect(() => {
@@ -268,7 +288,13 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
 
         <nav aria-label="Ana menü" className="relative mx-auto hidden items-center gap-8 lg:flex">
           {menu.map((g) => (
-            <DesktopGroup key={g.label} group={g} active={isActive(g)} />
+            <DesktopGroup
+              key={g.label}
+              group={g}
+              active={isActive(g)}
+              open={desktopOpen === g.label}
+              setOpen={desktopSetters[g.label]}
+            />
           ))}
         </nav>
 

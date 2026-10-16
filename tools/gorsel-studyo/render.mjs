@@ -1,5 +1,5 @@
 // HTML sahneleri headless Chrome ile 2x çözünürlükte PNG'ye çevirir.
-// Kullanım: node render.mjs <filtre?>   (sahneler scenes.mjs'ten)
+// Kullanım: node render.mjs <filtre?>   (sahneler scenes.mjs'ten; "re:^guru-" gibi düzenli ifade de olur)
 import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -32,7 +32,7 @@ try {
   await s("Page.enable");
   await s("Runtime.enable");
   for (const sc of SCENES) {
-    if (only && !sc.name.includes(only)) continue;
+    if (only && !(only.startsWith("re:") ? new RegExp(only.slice(3)).test(sc.name) : sc.name.includes(only))) continue;
     const file = `${OUT}${sc.name}.html`;
     writeFileSync(file, sc.html);
     await s("Emulation.setDeviceMetricsOverride", { width: sc.w, height: sc.h, deviceScaleFactor: DPR, mobile: false });

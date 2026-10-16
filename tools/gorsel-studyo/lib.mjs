@@ -54,6 +54,11 @@ export const logo = (tone = "white", h = 40, extra = "") =>
 export const mark = (tone = "navy", h = 28, extra = "") =>
   `<img src="${fileUrl(`${ROOT}/public/brand/mark-${tone}.svg`)}" style="height:${h}px;display:block;${extra}">`;
 
+/* Ürün uygulama simgesi (public/products/icons, sitedekiyle aynı): kare SVG, köşeler burada yuvarlanır */
+export const PRODUCT_SLUG = { Chatbot: "guru-chatbot", CRM: "guru-crm", Operation: "guru-operation", Business: "guru-business" };
+export const appIcon = (slug, s = 40, extra = "") =>
+  `<img src="${fileUrl(`${ROOT}/public/products/icons/${slug}.svg`)}" style="width:${s}px;height:${s}px;border-radius:${(s * 0.226).toFixed(2)}px;display:block;flex-shrink:0;${extra}">`;
+
 /* ---------------- Zeminler ---------------- */
 const GRAIN = `url("data:image/svg+xml;utf8,${encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>`
@@ -131,7 +136,7 @@ export const dot = (c, s = 8) => `<span style="width:${s}px;height:${s}px;border
 
 export function sidebar({ product, items, user }) {
   return `<aside class="side">
-    <div class="brand">${mark("navy", 30)}<span class="pn">${product}</span></div>
+    <div class="brand">${PRODUCT_SLUG[product] ? appIcon(PRODUCT_SLUG[product], 32) : mark("navy", 30)}<span class="pn">${product}</span></div>
     <nav class="nav">${items
       .map(([ic, label, on, ct]) => `<div class="ni${on ? " on" : ""}">${icon(ic, { size: 19, stroke: on ? 2.2 : 1.9 })}<span>${label}</span>${ct ? `<span class="ct">${ct}</span>` : ""}</div>`)
       .join("")}</nav>

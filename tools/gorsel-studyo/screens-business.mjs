@@ -1,12 +1,12 @@
-import { av, bars, donut, dot, icon, sidebar, tag } from "./lib.mjs";
+import { appIcon, av, bars, donut, dot, icon, sidebar, tag } from "./lib.mjs";
 import { kpi, tabBar } from "./screens-common.mjs";
 import { statusBar } from "./screens-chatbot.mjs";
 
 /* Mevcut ürün ekranıyla aynı örnek veri */
 export const MODULES = [
-  { n: "Guru Chatbot", ic: "message-circle", c: "#2a6aca", sub: "3 kanal bağlı · 412 sohbet", m: [["412", "sohbet bugün"], ["4 sn", "ort. yanıt"], ["%94", "memnuniyet"]] },
-  { n: "Guru CRM", ic: "handshake", c: "#7c5cff", sub: "14 kullanıcı · 3.812 müşteri", m: [["86", "açık fırsat"], ["₺1,2M", "satış hattı"], ["%31", "kapanış oranı"]] },
-  { n: "Guru Operation", ic: "list-checks", c: "#0ea5a5", sub: "5 süreç · 24 kullanıcı", m: [["37", "açık görev"], ["%73", "ekip kapasitesi"], ["12", "tamamlanan iş"]] },
+  { n: "Guru Chatbot", slug: "guru-chatbot", ic: "message-circle", c: "#2a6aca", sub: "3 kanal bağlı · 412 sohbet", m: [["412", "sohbet bugün"], ["4 sn", "ort. yanıt"], ["%94", "memnuniyet"]] },
+  { n: "Guru CRM", slug: "guru-crm", ic: "handshake", c: "#7c5cff", sub: "14 kullanıcı · 3.812 müşteri", m: [["86", "açık fırsat"], ["₺1,2M", "satış hattı"], ["%31", "kapanış oranı"]] },
+  { n: "Guru Operation", slug: "guru-operation", ic: "list-checks", c: "#0ea5a5", sub: "5 süreç · 24 kullanıcı", m: [["37", "açık görev"], ["%73", "ekip kapasitesi"], ["12", "tamamlanan iş"]] },
 ];
 export const REVENUE = [
   ["E-ticaret", 42, "₺287.490", "#12419b"],
@@ -26,7 +26,7 @@ const MTONE = { Chatbot: "blue", CRM: "violet", Operation: "teal" };
 export function moduleCard(m, { big = false } = {}) {
   const f = big ? 1.28 : 1;
   return `<div class="card" style="flex:1;min-width:0;padding:${17 * f}px ${18 * f}px">
-    <div class="row" style="gap:${11 * f}px"><span style="width:${38 * f}px;height:${38 * f}px;border-radius:${12 * f}px;background:${m.c};display:grid;place-items:center;box-shadow:0 8px 16px -10px ${m.c}">${icon(m.ic, { size: 19 * f, color: "#fff", stroke: 2.1 })}</span>
+    <div class="row" style="gap:${11 * f}px">${appIcon(m.slug, 40 * f, `box-shadow:0 8px 16px -10px ${m.c}`)}
       <div style="min-width:0"><div style="font-size:${15.5 * f}px;font-weight:600">${m.n}</div><div style="font-size:${12 * f}px;color:#8a95ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.sub}</div></div>
       ${tag(`${dot("#16a34a", 6 * f)}Çalışıyor`, "green", `margin-left:auto;font-size:${11.5 * f}px`)}</div>
     <div class="row" style="gap:${8 * f}px;margin-top:${14 * f}px">${m.m.map(([v, l]) => `<div style="flex:1;padding:${10 * f}px ${11 * f}px;border-radius:${12 * f}px;background:#f5f8fd"><div style="font-size:${19 * f}px;font-weight:600;letter-spacing:-.02em">${v}</div><div style="font-size:${12 * f}px;color:#7f8aa3">${l}</div></div>`).join("")}</div>
@@ -54,7 +54,7 @@ export function businessDesktop({ lift = false } = {}) {
     user: ["CA", "Cem Arslan", "Genel Müdür", 5],
   }).replace('<div class="foot">', `<div style="margin-top:auto;padding:16px 14px;border-radius:16px;background:linear-gradient(150deg,#eaf2ff,#f5f9ff);margin-bottom:12px">
       <div style="font-size:12.5px;color:#55617b">Paketiniz</div><div style="font-size:15px;font-weight:600;color:#12419b;margin-top:2px">Guru Business</div>
-      <div class="row" style="gap:6px;margin-top:10px">${MODULES.map((m) => `<span style="width:26px;height:26px;border-radius:8px;background:${m.c};display:grid;place-items:center">${icon(m.ic, { size: 14, color: "#fff", stroke: 2.2 })}</span>`).join("")}<span style="font-size:12.5px;color:#55617b;margin-left:4px">3 modül aktif</span></div>
+      <div class="row" style="gap:6px;margin-top:10px">${MODULES.map((m) => appIcon(m.slug, 26)).join("")}<span style="font-size:12.5px;color:#55617b;margin-left:4px">3 modül aktif</span></div>
     </div><div class="foot" style="margin-top:0">`);
   return `<div class="app">${side}<main class="main">
     <div class="top"><div><h1>Genel Bakış</h1><div class="sub">4 Eylül 2026, Cuma</div></div>
@@ -90,7 +90,7 @@ export function businessMobile() {
     <div style="padding:14px 18px 0;display:flex;flex-direction:column;gap:11px;flex:1">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${tile("Aylık gelir", "₺684,5K", "%12,1", "wallet")}${tile("Aktif müşteri", "1.248", "%8,4", "users")}${tile("Bot çözüm", "%87", "%3,2", "sparkles")}${tile("Açık görev", "37", "6 azaldı", "list-checks", true)}</div>
       <div class="card" style="padding:14px 16px"><div class="h3" style="font-size:15px">Modüller</div>
-        <div style="display:grid;gap:11px;margin-top:12px">${MODULES.map((m) => `<div class="row" style="gap:11px"><span style="width:32px;height:32px;border-radius:10px;background:${m.c};display:grid;place-items:center">${icon(m.ic, { size: 16, color: "#fff", stroke: 2.1 })}</span><div><div style="font-size:14.5px;font-weight:600">${m.n}</div><div style="font-size:12px;color:#8a95ad">${m.m[0][0]} ${m.m[0][1]}</div></div>${tag(`${dot("#16a34a", 6)}Çalışıyor`, "green", "margin-left:auto;font-size:11px")}</div>`).join("")}</div></div>
+        <div style="display:grid;gap:11px;margin-top:12px">${MODULES.map((m) => `<div class="row" style="gap:11px">${appIcon(m.slug, 34)}<div><div style="font-size:14.5px;font-weight:600">${m.n}</div><div style="font-size:12px;color:#8a95ad">${m.m[0][0]} ${m.m[0][1]}</div></div>${tag(`${dot("#16a34a", 6)}Çalışıyor`, "green", "margin-left:auto;font-size:11px")}</div>`).join("")}</div></div>
       <div class="card" style="padding:14px 16px"><div class="h3" style="font-size:15px">Son aktivite</div><div style="display:grid;gap:11px;margin-top:11px">${activityRows({ n: 2 })}</div></div>
     </div>
     <div style="height:10px"></div>

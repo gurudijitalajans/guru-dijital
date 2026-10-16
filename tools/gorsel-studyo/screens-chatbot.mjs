@@ -1,4 +1,4 @@
-import { av, bars, chan, dot, icon, mark, sidebar, tag } from "./lib.mjs";
+import { appIcon, av, bars, chan, dot, icon, sidebar, tag } from "./lib.mjs";
 
 /* Konuşma listesi verisi (mevcut ürün ekranıyla aynı örnek veri) */
 export const CONVS = [
@@ -132,7 +132,7 @@ export function chatbotMobile() {
     <div style="background:linear-gradient(160deg,#011441,#12419b 70%,#2a6aca);color:#fff;padding-bottom:18px">
       ${statusBar("#fff")}
       <div class="row" style="gap:12px;padding:6px 20px 0">
-        <span style="width:46px;height:46px;border-radius:15px;background:#fff;display:grid;place-items:center">${mark("navy", 26)}</span>
+        ${appIcon("guru-chatbot", 46, "box-shadow:0 0 0 2px rgb(255 255 255/.9)")}
         <div><div style="font-size:18px;font-weight:600">Guru Asistan</div><div class="row" style="gap:6px;font-size:13.5px;color:#bfe0ff">${dot("#4ade80", 7)}Genellikle anında yanıt verir</div></div>
         <span style="margin-left:auto;width:38px;height:38px;border-radius:12px;background:rgb(255 255 255/.12);display:grid;place-items:center">${icon("x", { size: 18, color: "#fff" })}</span>
       </div>
