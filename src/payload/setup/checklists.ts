@@ -3,6 +3,7 @@ import { chatConfigOf } from "../chat/collections";
 import { siteConnectionOf } from "../channels/collections";
 import { aiConfigured } from "../chat/ai";
 import type { Module } from "../business/roles";
+import { redisConfigured } from "../../lib/analiz/tampon";
 
 /**
  * Kurulum listeleri: her madde verinin kendisinden ya da ortam ayarından
@@ -65,6 +66,7 @@ export async function siteChecklist(payload: Payload, guruTenant: number): Promi
       detail: !aiConfigured() ? "Vercel'e ANTHROPIC_API_KEY eklenince asistan yanıt verir; şimdilik sohbetler doğrudan ekibe düşer" : chat.enabled ? "Sitede sohbet balonu açık" : "Sohbet asistanı ayarlarından balonu açın",
       href: "/panel/duzenle/chatbot-config",
     },
+    { done: redisConfigured(), title: "Ziyaretçi ölçümü", detail: redisConfigured() ? "Çerezsiz sayaç çalışıyor; sonuçlar Analiz ekranında" : "Vercel > Storage > Upstash for Redis eklenince site ziyaret saymaya başlar", href: "/panel/analiz" },
     { done: Boolean(process.env.CRON_SECRET), title: "Sabah özeti", detail: process.env.CRON_SECRET ? "Hafta içi her sabah yöneticilere özet e-postası gidiyor" : "Vercel'e CRON_SECRET eklenince hafta içi her sabah özet e-postası gider", href: "/panel/duzenle/business-config" },
     { done: domain, title: "Alan adı", detail: domain ? "gurudijital.com bağlı" : "Site şimdilik vercel.app adresinde", href: null },
     { done: false, title: "KVKK aydınlatma metni", detail: "Metin gelince formların altına bağlantısı eklenir", href: null },

@@ -1,4 +1,6 @@
 import { MotionConfig } from "motion/react";
+import { Sayac } from "@/components/site/Sayac";
+import { Etiketler } from "@/components/site/Etiketler";
 import { AnnounceBar } from "@/components/site/AnnounceBar";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -91,6 +93,9 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
           <PanelBar preview={preview} />
           {chat && <ChatWidget info={chat} />}
           <CookieConsentBanner />
+          {/* Kendi çerezsiz sayacımız ve onaya bağlı reklam etiketleri; panel önizlemesinde çalışmaz */}
+          {!preview && <Sayac />}
+          {!preview && info.izleme && <Etiketler z={info.izleme} />}
           <ScrollReset />
           <HyphenGuard />
         </MotionConfig>

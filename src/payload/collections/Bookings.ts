@@ -2,6 +2,7 @@ import { APIError, type CollectionConfig } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
 import { busySlots, submitBooking } from "../endpoints/forms";
 import { dayKey } from "../utils";
+import { kaynakField } from "../kaynak";
 import { bookingToCrm, CRM_SKIP, syncBookingActivity } from "../crm/automation";
 
 /* Sitedeki toplantı planlayıcısıyla aynı saatler (öğle arası hariç). */
@@ -123,6 +124,7 @@ export const Bookings: CollectionConfig = {
       admin: { hidden: true },
     },
     { name: "source", type: "text", label: "Geldiği sayfa", admin: { position: "sidebar", readOnly: true } },
+    kaynakField,
     { name: "contact", type: "relationship", relationTo: "contacts", label: "Kişi", admin: { position: "sidebar", readOnly: true } },
     { name: "deal", type: "relationship", relationTo: "deals", label: "Fırsat", admin: { position: "sidebar", readOnly: true } },
     {

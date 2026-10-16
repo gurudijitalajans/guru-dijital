@@ -200,6 +200,39 @@ export interface Lead {
   message: string;
   status: 'yeni' | 'iletisim' | 'teklif' | 'kazanildi' | 'kaybedildi';
   source?: string | null;
+  /**
+   * Ziyaretin geldiği kanal (siteden otomatik).
+   */
+  kaynak?: {
+    kanal?:
+      | (
+          | 'reklam-google'
+          | 'reklam-meta'
+          | 'reklam'
+          | 'organik-arama'
+          | 'sosyal'
+          | 'yapay-zeka'
+          | 'e-posta'
+          | 'whatsapp'
+          | 'qr'
+          | 'yonlendirme'
+          | 'dogrudan'
+        )
+      | null;
+    utmSource?: string | null;
+    utmMedium?: string | null;
+    utmCampaign?: string | null;
+    utmTerm?: string | null;
+    utmContent?: string | null;
+    ref?: string | null;
+    giris?: string | null;
+    gclid?: string | null;
+    gbraid?: string | null;
+    wbraid?: string | null;
+    fbclid?: string | null;
+    msclkid?: string | null;
+    oturum?: string | null;
+  };
   contact?: (number | null) | Contact;
   deal?: (number | null) | Deal;
   /**
@@ -488,6 +521,39 @@ export interface Booking {
   status: 'bekliyor' | 'onaylandi' | 'tamamlandi' | 'iptal';
   slot?: string | null;
   source?: string | null;
+  /**
+   * Ziyaretin geldiği kanal (siteden otomatik).
+   */
+  kaynak?: {
+    kanal?:
+      | (
+          | 'reklam-google'
+          | 'reklam-meta'
+          | 'reklam'
+          | 'organik-arama'
+          | 'sosyal'
+          | 'yapay-zeka'
+          | 'e-posta'
+          | 'whatsapp'
+          | 'qr'
+          | 'yonlendirme'
+          | 'dogrudan'
+        )
+      | null;
+    utmSource?: string | null;
+    utmMedium?: string | null;
+    utmCampaign?: string | null;
+    utmTerm?: string | null;
+    utmContent?: string | null;
+    ref?: string | null;
+    giris?: string | null;
+    gclid?: string | null;
+    gbraid?: string | null;
+    wbraid?: string | null;
+    fbclid?: string | null;
+    msclkid?: string | null;
+    oturum?: string | null;
+  };
   contact?: (number | null) | Contact;
   deal?: (number | null) | Deal;
   /**
@@ -1751,6 +1817,24 @@ export interface LeadsSelect<T extends boolean = true> {
   message?: T;
   status?: T;
   source?: T;
+  kaynak?:
+    | T
+    | {
+        kanal?: T;
+        utmSource?: T;
+        utmMedium?: T;
+        utmCampaign?: T;
+        utmTerm?: T;
+        utmContent?: T;
+        ref?: T;
+        giris?: T;
+        gclid?: T;
+        gbraid?: T;
+        wbraid?: T;
+        fbclid?: T;
+        msclkid?: T;
+        oturum?: T;
+      };
   contact?: T;
   deal?: T;
   notes?: T;
@@ -1773,6 +1857,24 @@ export interface BookingsSelect<T extends boolean = true> {
   status?: T;
   slot?: T;
   source?: T;
+  kaynak?:
+    | T
+    | {
+        kanal?: T;
+        utmSource?: T;
+        utmMedium?: T;
+        utmCampaign?: T;
+        utmTerm?: T;
+        utmContent?: T;
+        ref?: T;
+        giris?: T;
+        gclid?: T;
+        gbraid?: T;
+        wbraid?: T;
+        fbclid?: T;
+        msclkid?: T;
+        oturum?: T;
+      };
   contact?: T;
   deal?: T;
   notes?: T;
@@ -2887,6 +2989,26 @@ export interface SiteSetting {
     instagram?: string | null;
     address?: string | null;
   };
+  /**
+   * Reklam ve ölçüm etiketleri. Hiçbiri ziyaretçi çerez tercihinde onay vermeden yüklenmez: reklam etiketleri Pazarlama, Clarity Analitik onayıyla. Site olayları (talep, randevu, iletişim tıklaması) dolu olan her etikete aynı anda iletilir. Yalnız yöneticiler düzenleyebilir.
+   */
+  izleme?: {
+    metaPixelId?: string | null;
+    googleAdsId?: string | null;
+    adsTalep?: string | null;
+    adsRandevu?: string | null;
+    adsIletisim?: string | null;
+    ga4Id?: string | null;
+    gtmId?: string | null;
+    tiktokPixelId?: string | null;
+    linkedinPartnerId?: string | null;
+    clarityId?: string | null;
+    /**
+     * Yukarıdaki alanların karşılamadığı bir etiket için. Panel sayfalarına asla yüklenmez; seçilen onay verilince sitenin head bölümüne eklenir. Güvenmediğiniz kodu yapıştırmayın.
+     */
+    customHead?: string | null;
+    customHeadConsent?: ('pazarlama' | 'analitik') | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3102,6 +3224,22 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         whatsapp?: T;
         instagram?: T;
         address?: T;
+      };
+  izleme?:
+    | T
+    | {
+        metaPixelId?: T;
+        googleAdsId?: T;
+        adsTalep?: T;
+        adsRandevu?: T;
+        adsIletisim?: T;
+        ga4Id?: T;
+        gtmId?: T;
+        tiktokPixelId?: T;
+        linkedinPartnerId?: T;
+        clarityId?: T;
+        customHead?: T;
+        customHeadConsent?: T;
       };
   updatedAt?: T;
   createdAt?: T;

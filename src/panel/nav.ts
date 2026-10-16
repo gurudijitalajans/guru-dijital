@@ -53,6 +53,7 @@ export const NAV: NavGroup[] = [
     label: "Raporlar",
     items: [
       { id: "exec", label: "Yönetim özeti", href: "/panel/ozet", icon: "report", modules: ["business"], tenantAdmin: true, keywords: "yönetici panosu rapor hedef" },
+      { id: "analytics", label: "Analiz", href: "/panel/analiz", icon: "report", modules: ["site"], keywords: "ziyaretçi trafik kanal huni dönüşüm reklam pixel meta google ads etiket izleme kodu kampanya utm" },
       { id: "chatreport", label: "Sohbet raporu", href: "/panel/sohbet-raporu", icon: "chat", modules: ["chat"], keywords: "asistan konu yanıtlanamayan" },
     ],
   },

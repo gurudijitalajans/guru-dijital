@@ -32,6 +32,7 @@ import * as migration_20261016_110000_hizmet_imzalari from './20261016_110000_hi
 import * as migration_20261016_120000_sss_altinci from './20261016_120000_sss_altinci';
 import * as migration_20261016_121751_cep_telefonu from './20261016_121751_cep_telefonu';
 import * as migration_20261016_130000_umami_kaldir from './20261016_130000_umami_kaldir';
+import * as migration_20261016_140000_analiz from './20261016_140000_analiz';
 
 export const migrations = [
   {
@@ -203,5 +204,10 @@ export const migrations = [
     up: migration_20261016_130000_umami_kaldir.up,
     down: migration_20261016_130000_umami_kaldir.down,
     name: '20261016_130000_umami_kaldir',
+  },
+  {
+    up: migration_20261016_140000_analiz.up,
+    down: migration_20261016_140000_analiz.down,
+    name: '20261016_140000_analiz',
   },
 ];

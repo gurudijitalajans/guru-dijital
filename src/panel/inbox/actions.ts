@@ -4,6 +4,7 @@ import type { Where } from "payload";
 import { getPanelContext } from "../context";
 import type { Tone } from "../ui/badge";
 import { sessionLost } from "../errors";
+import { kanalAdi } from "@/lib/analiz/kanal";
 
 /**
  * Gelen kutusu: sitedeki sohbetler, form talepleri ve randevular tek listede.
@@ -23,8 +24,8 @@ const LEAD: Record<string, [Tone, string]> = { yeni: ["info", "Yeni"], iletisim:
 const BOOK: Record<string, [Tone, string]> = { bekliyor: ["warn", "Onay bekliyor"], onaylandi: ["good", "Onaylandı"], tamamlandi: ["plain", "Tamamlandı"], iptal: ["plain", "İptal"] };
 
 type Conv = { id: number; label?: string | null; name?: string | null; email?: string | null; phone?: string | null; topic?: string | null; page?: string | null; channel?: string | null; lastText?: string | null; lastMessageAt?: string | null; status: string; needsReply?: boolean | null; contact?: unknown; lead?: unknown; booking?: unknown; assignee?: unknown; createdAt: string; updatedAt: string };
-type Lead = { id: number; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; status: string; source?: string | null; contact?: unknown; deal?: unknown; createdAt: string; updatedAt: string };
-type Booking = { id: number; name: string; email: string; phone?: string | null; date: string; time: string; topic?: string | null; note?: string | null; status: string; contact?: unknown; deal?: unknown; createdAt: string; updatedAt: string };
+type Lead = { id: number; name: string; email: string; phone?: string | null; service?: string | null; subject?: string | null; message: string; status: string; source?: string | null; contact?: unknown; deal?: unknown; kaynak?: { kanal?: string | null; utmCampaign?: string | null; utmSource?: string | null; ref?: string | null; giris?: string | null } | null; createdAt: string; updatedAt: string };
+type Booking = { id: number; name: string; email: string; phone?: string | null; date: string; time: string; topic?: string | null; note?: string | null; status: string; contact?: unknown; deal?: unknown; kaynak?: { kanal?: string | null; utmCampaign?: string | null; utmSource?: string | null; ref?: string | null; giris?: string | null } | null; createdAt: string; updatedAt: string };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: number }).id : (v as number | undefined)) ?? null;
 
 export async function listInbox(filter: InboxFilter): Promise<InboxItem[]> {
@@ -93,6 +94,12 @@ async function contactBlock(contactId: number | null) {
   };
 }
 
+/** "Google Ads · kampanya: ekim-web · giriş: /hizmetler/web-tasarim" */
+function kaynakText(k?: { kanal?: string | null; utmCampaign?: string | null; utmSource?: string | null; ref?: string | null; giris?: string | null } | null) {
+  if (!k?.kanal) return "";
+  return [kanalAdi(k.kanal), k.utmCampaign ? `kampanya: ${k.utmCampaign}` : k.utmSource ? `kaynak: ${k.utmSource}` : k.ref ? k.ref : null, k.giris ? `giriş: ${k.giris}` : null].filter(Boolean).join(" · ");
+}
+
 export async function getThread(key: string): Promise<Thread | null> {
   const ctx = await getPanelContext();
   /* "t12" ve eski e-postalardaki "t:12" biçimi */
@@ -144,7 +151,7 @@ export async function getThread(key: string): Promise<Thread | null> {
         { id: 0, role: "sistem", text: `Site formundan talep${l.source ? ` · ${l.source}` : ""}`, at: l.createdAt },
         { id: 1, role: "ziyaretci", text: [l.subject, l.message].filter(Boolean).join("\n\n"), at: l.createdAt },
       ],
-      fields: [["Hizmet", l.service ?? ""], ["E-posta", l.email], ["Telefon", l.phone ?? ""]],
+      fields: [["Hizmet", l.service ?? ""], ["E-posta", l.email], ["Telefon", l.phone ?? ""], ["Kaynak", kaynakText(l.kaynak)]],
       ...block,
       links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/leads/${l.id}` }],
       canned: [],
@@ -158,7 +165,7 @@ export async function getThread(key: string): Promise<Thread | null> {
     return {
       key, kind: "randevu", id: b.id, title: b.name, subtitle: [b.email, b.phone].filter(Boolean).join(" · "), tone, label, status: b.status,
       messages: [{ id: 0, role: "sistem", text: `Randevu talebi · ${dateFmt.format(new Date(b.date))} ${b.time}${b.topic ? ` · ${b.topic}` : ""}`, at: b.createdAt }, ...(b.note ? [{ id: 1, role: "ziyaretci" as const, text: b.note, at: b.createdAt }] : [])],
-      fields: [["Tarih", `${dateFmt.format(new Date(b.date))} ${b.time}`], ["Konu", b.topic ?? ""], ["E-posta", b.email], ["Telefon", b.phone ?? ""]],
+      fields: [["Tarih", `${dateFmt.format(new Date(b.date))} ${b.time}`], ["Konu", b.topic ?? ""], ["E-posta", b.email], ["Telefon", b.phone ?? ""], ["Kaynak", kaynakText(b.kaynak)]],
       ...block,
       links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/bookings/${b.id}` }],
       canned: [],

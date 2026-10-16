@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 import { isAdmin, isLoggedIn } from "../access";
 import { submitLead } from "../endpoints/forms";
+import { kaynakField } from "../kaynak";
 import { CRM_SKIP, idOf, leadToCrm } from "../crm/automation";
 
 const STAGE_FOR: Record<string, string> = { yeni: "aday", iletisim: "gorusme", teklif: "teklif", kazanildi: "kazanildi", kaybedildi: "kaybedildi" };
@@ -75,6 +76,7 @@ export const Leads: CollectionConfig = {
       label: "Geldiği sayfa",
       admin: { position: "sidebar", readOnly: true },
     },
+    kaynakField,
     { name: "contact", type: "relationship", relationTo: "contacts", label: "Kişi", admin: { position: "sidebar", readOnly: true } },
     { name: "deal", type: "relationship", relationTo: "deals", label: "Fırsat", admin: { position: "sidebar", readOnly: true } },
     {

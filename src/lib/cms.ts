@@ -21,6 +21,23 @@ export type SiteInfo = {
   whatsapp: string;
   address: string;
   instagram: string;
+  /** Site Ayarları > İzleme kodları: yalnız dolu alanlar; hiçbiri yoksa null */
+  izleme: Izleme | null;
+};
+
+export type Izleme = {
+  metaPixelId?: string;
+  googleAdsId?: string;
+  adsTalep?: string;
+  adsRandevu?: string;
+  adsIletisim?: string;
+  ga4Id?: string;
+  gtmId?: string;
+  tiktokPixelId?: string;
+  linkedinPartnerId?: string;
+  clarityId?: string;
+  customHead?: string;
+  customHeadConsent?: "pazarlama" | "analitik";
 };
 
 export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
@@ -32,6 +49,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     whatsapp: site.whatsapp,
     address: site.address,
     instagram: site.instagram,
+    izleme: null,
   };
   try {
     const payload = await cms();
@@ -51,6 +69,12 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       whatsapp: c.whatsapp?.trim() || fallback.whatsapp,
       address: c.address?.trim() || fallback.address,
       instagram: c.instagram?.trim() || fallback.instagram,
+      izleme: (() => {
+        const z = (s as { izleme?: Record<string, unknown> | null }).izleme ?? {};
+        const out = Object.fromEntries(Object.entries(z).filter(([k, v]) => k !== "id" && typeof v === "string" && v.trim()).map(([k, v]) => [k, String(v).trim()])) as Izleme;
+        const any = Object.keys(out).some((k) => k !== "customHeadConsent");
+        return any ? out : null;
+      })(),
     };
   } catch {
     return fallback;

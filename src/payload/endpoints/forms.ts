@@ -7,6 +7,7 @@ import { connectionByKey } from "../channels/collections";
 import { addUsage } from "../channels/usage";
 import { clientIp, dayKey, rateLimited } from "../utils";
 import { closedReason, isOpenSlot } from "../../lib/tatiller";
+import { kaynakOf } from "../kaynak";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,9 +27,28 @@ async function readBody(req: Parameters<PayloadHandler>[0]): Promise<Body> {
 /** Bal küpü doluysa bot kabul edilir: başarı döner ama kayıt yazılmaz. */
 const isBot = (body: Body) => str(body.website, 200).length > 0;
 
-export type LeadInput = { name: string; email: string; phone?: string; service?: string; subject?: string; message: string; source?: string };
-export type BookingInput = { name: string; email: string; phone?: string; topic?: string; note?: string; source?: string; day: string; time: string };
+export type LeadInput = { name: string; email: string; phone?: string; service?: string; subject?: string; message: string; source?: string; atif?: unknown };
+export type BookingInput = { name: string; email: string; phone?: string; topic?: string; note?: string; source?: string; day: string; time: string; atif?: unknown };
 type Result = { ok: true; id: number | string } | { ok: false; status: number; error: string; code?: string };
+
+/**
+ * Talebin kaynağı: formla gelen kaynak doğrudan değilse o kullanılır; değilse
+ * (sayfa tam yenilenip bellekteki bilgi kaybolduysa) aynı ziyaretçinin günlük
+ * giriş kaydından sunucuda eşleştirilir. Ölçüm tablosu yoksa sessizce atlanır.
+ */
+async function resolveKaynak(req: PayloadRequest, atif: unknown) {
+  const client = kaynakOf(atif);
+  if (client && client.kanal !== "dogrudan") return client;
+  try {
+    if (!req.headers) return client;
+    const { kaynakFromVisit } = await import("../../lib/analiz/eslestir");
+    const server = await kaynakFromVisit(req.payload, req.headers);
+    return server ? { ...server, kanal: server.kanal as NonNullable<typeof client>["kanal"], oturum: client?.oturum } : client;
+  } catch (err) {
+    req.payload.logger.warn({ err }, "Analiz: talep kaynağı eşleştirilemedi");
+    return client;
+  }
+}
 
 /**
  * Talebi doğrular, kaydeder, CRM'e aktarır ve ekibe bildirir. Site formu ve
@@ -48,7 +68,8 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
   if (!data.name || !EMAIL_RE.test(data.email) || !data.message) {
     return { ok: false, status: 400, error: "Lütfen ad, geçerli bir e-posta ve mesaj yazın." };
   }
-  const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni", tenant }, overrideAccess: true });
+  const kaynak = await resolveKaynak(req, input.atif);
+  const lead = await req.payload.create({ collection: "leads", data: { ...data, status: "yeni", tenant, ...(kaynak ? { kaynak } : {}) }, overrideAccess: true });
   /* Talep kaydedildi; CRM aktarımı (kişi, fırsat, görev) ayrı işlemlerde, hata talebi etkilemez */
   await leadToCrm(req, lead, via).catch((err) => req.payload.logger.error({ err }, "CRM: talep aktarılamadı"));
   await notifyTeam(req, {
@@ -97,11 +118,12 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
     return { ok: false, status: 400, error: why ? `${why} nedeniyle bu gün kapalıyız; lütfen başka bir gün seçin.` : "Bu saatte kapalıyız; lütfen daha erken bir saat seçin." };
   }
 
+  const kaynak = await resolveKaynak(req, input.atif);
   let bookingId: number | string;
   try {
     const booking = await req.payload.create({
       collection: "bookings",
-      data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor", tenant },
+      data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor", tenant, ...(kaynak ? { kaynak } : {}) },
       overrideAccess: true,
     });
     bookingId = booking.id;

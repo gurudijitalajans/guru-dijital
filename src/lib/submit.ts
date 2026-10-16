@@ -7,6 +7,8 @@
  * - "fallback": panel ulaşılamadı (ağ hatası, panelin olmadığı bir ortam);
  *   form eski yönteme, e-posta uygulamasıyla göndermeye döner.
  */
+import { atifOzeti } from "@/lib/analiz/oturum";
+
 export type SubmitResult =
   | { kind: "saved" }
   | { kind: "fallback" }
@@ -17,7 +19,8 @@ export async function postForm(path: string, body: Record<string, string>): Prom
     const res = await fetch(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      /* Ziyaretin kaynağı (UTM, reklam kimliği, giriş sayfası) talep ve randevu kaydına eklenir */
+      body: JSON.stringify({ ...body, atif: atifOzeti() }),
     });
     if (res.ok) return { kind: "saved" };
     if (res.status === 400 || res.status === 409 || res.status === 429) {

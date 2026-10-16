@@ -6,6 +6,10 @@
     {
       "path": "/api/yonetici/sabah-ozeti",
       "schedule": "0 5 * * 1-5"
+    },
+    {
+      "path": "/api/analiz/aktar",
+      "schedule": "30 2 * * *"
     }
   ]
 }

@@ -12,8 +12,8 @@ import { Glyph } from "./Glyph";
  * "Tümünü kabul et" ile "Yalnız zorunlu" aynı ağırlıkta, tercih her zaman alt bilgideki
  * "Çerez tercihleri" bağlantısından değiştirilebilir. Seçim "guru-cerez-tercihi" çerezinde
  * 180 gün saklanır (eski vanilla-cookieconsent kaydı da okunur: categories + revision).
- * Şu an sitede ölçüm ya da pazarlama etiketi yok; eklendiğinde yalnız ilgili onayla
- * yüklenmeli (consentOf().includes("analitik") / includes("pazarlama")).
+ * Guru'nun çerezsiz sayacı (Sayac.tsx) "analitik" reddedilmedikçe sayar; reklam ve
+ * ölçüm etiketleri (Etiketler.tsx) yalnız ilgili onayla yüklenir.
  */
 type Banner = { title: string; text: string; acceptAll: string; rejectAll: string; prefs: string; save: string; categories: Record<string, { title: string; desc: string }> };
 const B = (legal as unknown as { _banner: Banner })._banner;
@@ -42,7 +42,12 @@ export function consentOf(): Cat[] | null {
 function save(cats: Cat[]) {
   const value = encodeURIComponent(JSON.stringify({ categories: cats, revision: REVISION, consentTimestamp: new Date().toISOString() }));
   document.cookie = `${COOKIE}=${value}; Max-Age=${DAYS * 86400}; Path=/; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
+  /* Ölçüm ve reklam etiketleri tercihi bu olaydan öğrenir (sayfa yenilenmeden) */
+  window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: cats }));
 }
+
+/** Tercih kaydedilince yayınlanan olay */
+export const CONSENT_EVENT = "guru:onay";
 
 const btn = "inline-flex min-h-11 items-center justify-center rounded-full px-5 text-[14.5px] font-medium transition-colors";
 const solid = cn(btn, "bg-navy text-white hover:bg-brand");
