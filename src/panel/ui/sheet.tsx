@@ -36,7 +36,7 @@ export function Sheet({ open, onOpenChange, title, description, children, classN
 export function SheetSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="mt-5 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">{title}</h3>
+      <h3 className="mt-5 mb-2 text-[12px] font-semibold text-muted">{title}</h3>
       {children}
     </section>
   );

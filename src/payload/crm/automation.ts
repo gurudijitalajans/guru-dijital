@@ -1,6 +1,7 @@
 import type { PayloadRequest } from "payload";
 import { defaultTenantId } from "./tenant";
 import { stageLabel } from "./stages";
+import { isClosedDay } from "../../lib/tatiller";
 
 /**
  * Sitedeki formlardan CRM'e akış. Talep gelince: kişi (e-postaya göre bulunur
@@ -29,11 +30,11 @@ async function quietly<T>(req: PayloadRequest, run: () => Promise<T>): Promise<T
 const idOf = (v: unknown): Id | undefined =>
   v && typeof v === "object" ? (v as { id?: Id }).id : (v as Id | undefined) ?? undefined;
 
-/** Ertesi iş günü, İstanbul saatiyle 10:00 (UTC 07:00) */
+/** Ertesi iş günü (hafta sonu ve resmi tatil atlanır), İstanbul saatiyle 10:00 (UTC 07:00) */
 export function nextBusinessDay(from = new Date()): string {
   const d = new Date(from);
   do d.setUTCDate(d.getUTCDate() + 1);
-  while (d.getUTCDay() === 0 || d.getUTCDay() === 6);
+  while (isClosedDay(d.toISOString().slice(0, 10)));
   d.setUTCHours(7, 0, 0, 0);
   return d.toISOString();
 }
@@ -113,7 +114,7 @@ export async function leadToCrm(
     context: { [CRM_SKIP]: true },
   }));
   await logActivity(req, { type: "sistem", title: via === "chatbot" ? "Sohbetten talep geldi" : "Siteden talep geldi", body: [lead.subject, lead.message, lead.source && `Sayfa: ${lead.source}`].filter(Boolean).join("\n\n"), deal: deal.id, contact });
-  await logActivity(req, { type: "gorev", title: `İlk dönüşü yapın: ${lead.name}`, deal: deal.id, contact, dueAt: nextBusinessDay(), done: false });
+  await logActivity(req, { type: "gorev", title: `${FIRST_RESPONSE}: ${lead.name}`, deal: deal.id, contact, dueAt: nextBusinessDay(), done: false });
   await quietly(req, async () => req.payload.update({ collection: "leads", id: lead.id, data: { contact, deal: deal.id } as never, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));
 }
 
@@ -168,6 +169,22 @@ export async function syncBookingActivity(req: PayloadRequest, b: { id: Id; date
   }));
 }
 
+export const FIRST_RESPONSE = "İlk dönüşü yapın";
+
+/** Fırsatın açık ilk dönüş görevlerini tamamlandı yapar (ekip yanıt verdi ya da fırsat ilerledi) */
+export async function closeFirstResponse(req: PayloadRequest, deal: Id) {
+  const open = await req.payload.find({
+    collection: "activities",
+    where: { and: [{ deal: { equals: deal } }, { done: { equals: false } }, { title: { like: FIRST_RESPONSE } }] },
+    limit: 10,
+    depth: 0,
+    req,
+    overrideAccess: true,
+  });
+  for (const a of open.docs)
+    await quietly(req, async () => req.payload.update({ collection: "activities", id: a.id, data: { done: true }, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));
+}
+
 /* Fırsat aşaması talebin durumuna yansır: talepler listesi CRM ile aynı şeyi söyler */
 const LEAD_STATUS_FOR: Record<string, string> = { aday: "yeni", gorusme: "iletisim", teklif: "teklif", kazanildi: "kazanildi", kaybedildi: "kaybedildi" };
 
@@ -180,6 +197,8 @@ export async function dealStageChanged(req: PayloadRequest, deal: { id: Id; stag
     contact: idOf(deal.contact),
     company: idOf(deal.company),
   });
+  /* Fırsat adaydan çıktı (iletişime geçildi, toplantı, teklif ya da kapandı): açık "İlk dönüşü yapın" görevi biter */
+  if (from === "aday" && deal.stage !== "aday") await closeFirstResponse(req, deal.id);
   const lead = idOf(deal.lead);
   if (lead && LEAD_STATUS_FOR[deal.stage]) {
     await quietly(req, async () => req.payload.update({ collection: "leads", id: lead, data: { status: LEAD_STATUS_FOR[deal.stage] } as never, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));

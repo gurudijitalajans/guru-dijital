@@ -236,11 +236,17 @@ export default buildConfig({
   folders: {
     browseByFolder: true,
     collectionOverrides: [
-      ({ collection }) => ({
-        ...collection,
-        labels: { singular: "Klasör", plural: "Klasörler" },
-        admin: { ...collection.admin, group: "Kitaplık" },
-      }),
+      /* Medya klasörleri yalnız site modülü olanlara açık (müşteri işletmeleri Guru'nun klasörlerini göremez ve silemez) */
+      ({ collection }) =>
+        guardCollection(
+          {
+            ...collection,
+            labels: { singular: "Klasör", plural: "Klasörler" },
+            admin: { ...collection.admin, group: "Kitaplık" },
+          },
+          "site",
+          { privateRead: true },
+        ),
     ],
   },
   editor: lexicalEditor(),

@@ -2,13 +2,16 @@
  * İş günü hesapları (İstanbul saati, UTC+3, yaz saati yok). Görev tarihleri
  * gün olarak tutulur: öğlen UTC, böylece Türkiye'de de aynı güne düşer.
  */
+import { TATILLER } from "../../lib/tatiller";
+
 const DAY = 86400000;
 
 export const dayOf = (v: string | Date) => new Date(new Date(v).getTime() + 3 * 3600000).toISOString().slice(0, 10);
 export const noonUtc = (day: string) => `${day}T12:00:00.000Z`;
-const isWeekend = (d: Date) => d.getUTCDay() === 0 || d.getUTCDay() === 6;
+/* Hafta sonu ya da resmi tatil (src/lib/tatiller.ts) */
+const isWeekend = (d: Date) => d.getUTCDay() === 0 || d.getUTCDay() === 6 || d.toISOString().slice(0, 10) in TATILLER;
 
-/** `day` gününe `n` iş günü ekler (hafta sonu atlanır); n=0 ve gün hafta sonuysa ilk iş günü */
+/** `day` gününe `n` iş günü ekler (hafta sonu ve resmi tatil atlanır); n=0 ve gün hafta sonuysa ilk iş günü */
 export function addBusinessDays(day: string, n: number): string {
   const d = new Date(noonUtc(day));
   while (isWeekend(d)) d.setUTCDate(d.getUTCDate() + 1);

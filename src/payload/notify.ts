@@ -58,9 +58,16 @@ ${base ? `<p><a href="${esc(link)}" style="color:#12419b">Panelde aç</a></p>` :
 </div>`;
   const text = [opts.intro, "", ...rows.map(([k, v]) => `${k}: ${v}`), ...(base ? ["", `Panelde aç: ${link}`] : [])].join("\n");
 
+  /* E-posta servisi yoksa Payload iletiyi yalnız günlüğe yazar: bunu "gönderildi" saymıyoruz */
+  if (!emailConfigured()) return { ok: false, error: "E-posta servisi bağlı değil (RESEND_API_KEY)." };
   try {
     await req.payload.sendEmail({ to, subject: opts.subject, html, text, ...(opts.replyTo ? { replyTo: opts.replyTo } : {}) });
+    return { ok: true };
   } catch (err) {
     req.payload.logger.error({ err, msg: "Bildirim e-postası gönderilemedi" });
+    return { ok: false, error: err instanceof Error ? err.message : "Gönderilemedi." };
   }
 }
+
+/** Gerçek e-posta servisi (Resend) bağlı mı */
+export const emailConfigured = () => Boolean(process.env.RESEND_API_KEY);

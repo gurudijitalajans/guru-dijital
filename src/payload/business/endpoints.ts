@@ -1,5 +1,5 @@
 import type { Endpoint, PayloadHandler, PayloadRequest } from "payload";
-import { sendNotice } from "../notify";
+import { emailConfigured, sendNotice } from "../notify";
 import { dayOf } from "../ops/dates";
 import { canReq, isAdminUser, isTenantAdminReq } from "./roles";
 import { businessConfigOf } from "./collections";
@@ -124,15 +124,20 @@ export async function sendMorningSummary(req: PayloadRequest, tenant: number | s
     ["Onay bekleyen", `${s.review} görev Kontrol aşamasında`],
     ["Satış hattı", `${s.openDeals} açık fırsat, ${money(s.openPipeline)}; ${s.pendingQuotes} teklif yanıt bekliyor`],
   ];
+  if (!emailConfigured()) return { sent: 0, reason: "E-posta servisi bağlı değil: Vercel'e RESEND_API_KEY eklenince özet gönderilir." };
+  let sent = 0;
+  const failed: string[] = [];
   for (const email of to) {
-    await sendNotice(req, email, {
+    const r = await sendNotice(req, email, {
       subject: `Günaydın: ${s.newLeads + s.waitingChats} bekleyen, ${s.lateTasks} geciken`,
       intro: `${brand.name} sabah özeti (Guru Business).`,
       rows,
       path: "/panel/ozet",
     });
+    if (r?.ok) sent++;
+    else failed.push(email);
   }
-  return { sent: to.size };
+  return { sent, ...(failed.length ? { reason: `${failed.length} adrese gönderilemedi: ${failed.join(", ")}` } : {}) };
 }
 
 const morning: PayloadHandler = async (req) => {

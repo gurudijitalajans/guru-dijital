@@ -30,6 +30,7 @@ const RANK: Record<Tone, number> = { bad: 0, info: 1, warn: 2, good: 3, plain: 4
 type Row = { key: string; title: string; detail: string; href: string; tone: Tone; badge: string; at: string };
 type Today = { key: string; time: string; title: string; detail: string; href: string; tone: Tone };
 const nameOf = (v: unknown) => (v && typeof v === "object" ? ((v as { name?: string; title?: string }).name ?? (v as { title?: string }).title ?? "") : "");
+const idOf = (v: unknown) => (v && typeof v === "object" ? ((v as { id?: number }).id ?? null) : ((v as number | null | undefined) ?? null));
 
 /**
  * Ana sayfa: "Bugün neyle ilgilenmeliyim?" Önce bekleyenler (yanıt bekleyen
@@ -50,7 +51,7 @@ export default async function PanelHome() {
   const ops = ctx.has("ops");
   const none = Promise.resolve({ docs: [] as unknown[], totalDocs: 0 });
 
-  const [waiting, leads, late, stale, openDeals, won, newLeads, todayActs, todayBookings, todayTasks, openTasks] = await Promise.all([
+  const [waiting, leads, late, stale, openDeals, won, newLeads, todayActs, todayBookings, todayTasks, openTasks, lateActs] = await Promise.all([
     chat ? ctx.find("conversations", { where: { needsReply: { equals: true } }, sort: "-lastMessageAt", limit: 6 }) : none,
     crm ? ctx.find("leads", { where: { status: { equals: "yeni" } }, sort: "-createdAt", limit: 6 }) : none,
     ops ? ctx.find("tasks", { where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: startToday } }] }, sort: "dueDate", limit: 6, depth: 1 }) : none,
@@ -58,10 +59,12 @@ export default async function PanelHome() {
     crm ? ctx.find("deals", { where: { stage: { in: OPEN_STAGES } }, limit: 500, select: { value: true } }) : none,
     crm ? ctx.find("deals", { where: { and: [{ stage: { equals: "kazanildi" } }, { closedAt: { greater_than_equal: monthStart } }] }, limit: 500, select: { value: true } }) : none,
     crm ? ctx.count("leads", { createdAt: { greater_than_equal: daysAgoIso(7) } }) : Promise.resolve(0),
-    crm ? ctx.find("activities", { where: { and: [{ done: { equals: false } }, { dueAt: { greater_than_equal: startToday } }, { dueAt: { less_than_equal: endToday } }] }, sort: "dueAt", limit: 8, depth: 1 }) : none,
+    crm ? ctx.find("activities", { where: { and: [{ done: { equals: false } }, { dueAt: { greater_than_equal: startToday } }, { dueAt: { less_than_equal: endToday } }, { booking: { exists: false } }] }, sort: "dueAt", limit: 8, depth: 1 }) : none,
     crm ? ctx.find("bookings", { where: { and: [{ slot: { like: today } }, { status: { in: ["bekliyor", "onaylandi"] } }] }, sort: "slot", limit: 8 }) : none,
     ops ? ctx.find("tasks", { where: { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { greater_than_equal: startToday } }, { dueDate: { less_than_equal: endToday } }] }, limit: 8, depth: 1 }) : none,
     ops ? ctx.count("tasks", { stage: { not_equals: "tamam" } }) : Promise.resolve(0),
+    /* Dünden kalan CRM işleri (arama, takip, ilk dönüş): ertesi gün kaybolmasın */
+    crm ? ctx.find("activities", { where: { and: [{ done: { equals: false } }, { dueAt: { less_than: startToday } }, { type: { not_in: ["not", "sistem"] } }, { booking: { exists: false } }] }, sort: "dueAt", limit: 6, depth: 1 }) : none,
   ]);
 
   /* İlgilenmeniz gerekenler */
@@ -72,6 +75,8 @@ export default async function PanelHome() {
     rows.push({ key: `l${d.id}`, title: `${d.name} talep bıraktı`, detail: [d.service || d.subject, shortFmt.format(new Date(d.createdAt))].filter(Boolean).join(" · "), href: `/panel/gelen?s=t${d.id}`, tone: "info", badge: "Yeni talep", at: d.createdAt });
   for (const d of late.docs as { id: number; title: string; seq?: number | null; dueDate?: string | null; project?: unknown }[])
     rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
+  for (const a of lateActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
+    rows.push({ key: `ga${a.id}`, title: a.title, detail: [nameOf(a.deal) || nameOf(a.contact), a.dueAt ? shortFmt.format(new Date(a.dueAt)) : null].filter(Boolean).join(" · "), href: idOf(a.deal) ? `/panel/firsatlar?firsat=${idOf(a.deal)}` : `/panel/duzenle/activities/${a.id}`, tone: "bad", badge: "Gecikti", at: a.dueAt ?? "" });
   for (const d of stale.docs as { id: number; title: string; value?: number | null; updatedAt: string; company?: unknown; contact?: unknown }[]) {
     const days = Math.floor((now.getTime() - new Date(d.updatedAt).getTime()) / 86400000);
     rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `/panel/firsatlar?firsat=${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });

@@ -18,9 +18,10 @@ const QUOTE: Record<string, string> = { taslak: "Taslak", gonderildi: "Gönderil
 export default async function DealsPage({ searchParams }: { searchParams: Promise<{ firsat?: string; gorunum?: string }> }) {
   const ctx = await requireModule("crm");
   const sp = await searchParams;
-  const [res, late] = await Promise.all([
+  const [res, late, who] = await Promise.all([
     ctx.find("deals", { where: { or: [{ stage: { in: ["aday", "gorusme", "teklif"] } }, { closedAt: { greater_than_equal: daysAgoIso(30) } }] }, sort: "order", limit: 500, depth: 1 }),
     ctx.find("activities", { where: { and: [{ done: { equals: false } }, { deal: { exists: true } }, { dueAt: { less_than_equal: new Date().toISOString() } }] }, limit: 500, select: { deal: true } }),
+    ctx.names(),
   ]);
   const lateSet = new Set((late.docs as { deal?: unknown }[]).map((a) => String(idOf(a.deal))));
   const deals: BoardDeal[] = (res.docs as { id: number; title: string; stage: string; value?: number | null; order?: number | null; contact?: unknown; company?: unknown; owner?: unknown; expectedClose?: string | null; updatedAt: string; closedAt?: string | null }[]).map((d) => ({
@@ -31,7 +32,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
     order: d.order ?? null,
     who: nameOf(d.company) || nameOf(d.contact),
     owner: idOf(d.owner),
-    ownerName: nameOf(d.owner),
+    ownerName: who(d.owner),
     expectedClose: d.expectedClose ?? null,
     updatedAt: d.updatedAt,
     closedAt: d.closedAt ?? null,
@@ -63,7 +64,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
         who: nameOf(d.company) || nameOf(d.contact),
         contact: contact ? { id: contact.id, name: contact.name, email: contact.email ?? "", phone: contact.phone ?? "" } : null,
         company: d.company && typeof d.company === "object" ? { id: (d.company as { id: number }).id, name: nameOf(d.company) } : null,
-        ownerName: nameOf(d.owner),
+        ownerName: who(d.owner),
         created: dateFmt.format(new Date(d.createdAt)),
         leadKey: idOf(d.lead) ? `t${idOf(d.lead)}` : null,
         timeline: (acts.docs as { id: number; type: string; title: string; body?: string | null; done?: boolean | null; dueAt?: string | null; createdAt: string }[]).map((a) => ({

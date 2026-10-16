@@ -60,6 +60,9 @@ export function toCard(p: Post): PostCardData {
   };
 }
 
+/* İleri tarihli yazı, yayın tarihi gelene kadar sitede görünmez (listede, yazı sayfasında ve site haritasında) */
+const publishedNow = () => ({ or: [{ publishedAt: { less_than_equal: new Date().toISOString() } }, { publishedAt: { exists: false } }] });
+
 export const getPublishedPosts = cache(async (limit = 60): Promise<Post[]> => {
   try {
     const payload = await cms();
@@ -68,7 +71,7 @@ export const getPublishedPosts = cache(async (limit = 60): Promise<Post[]> => {
     const res = await payload.find({
       collection: "posts",
       draft: preview,
-      where: preview ? undefined : { _status: { equals: "published" } },
+      where: preview ? undefined : { and: [{ _status: { equals: "published" } }, publishedNow()] },
       sort: "-publishedAt",
       limit,
       depth: 1,
@@ -86,7 +89,7 @@ export const getPostBySlug = cache(async (slug: string): Promise<Post | null> =>
     const res = await payload.find({
       collection: "posts",
       draft: preview,
-      where: preview ? { slug: { equals: slug } } : { and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }] },
+      where: preview ? { slug: { equals: slug } } : { and: [{ slug: { equals: slug } }, { _status: { equals: "published" } }, publishedNow()] },
       limit: 1,
       depth: 2,
     });

@@ -81,7 +81,7 @@ export default async function SettingsPage() {
         ) : null}
         {visible.map((g) => (
           <section key={g.title}>
-            <h2 className="mt-0 mb-2.5 text-[13px] font-semibold uppercase tracking-[0.07em] text-muted">{g.title}</h2>
+            <h2 className="mt-0 mb-2.5 text-[13px] font-semibold text-muted">{g.title}</h2>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {g.items.map((it) => (
                 <Link key={it.title} href={it.href} prefetch={false} className="group flex min-h-20 items-center gap-3 rounded-card border border-line bg-surface px-4 py-3.5 no-underline hover:border-accent">

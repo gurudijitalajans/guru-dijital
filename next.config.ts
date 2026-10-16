@@ -16,6 +16,28 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["unpdf"],
   /* Geliştirme simgesi gömülü sohbet çerçevesinde balonun üstüne biniyordu */
   devIndicators: false,
+  poweredByHeader: false,
+  /* Güvenlik başlıkları. Panel ve giriş ekranları hiçbir siteye gömülemez (tıklama kaçırmaya karşı);
+     site sayfaları yalnız kendi panelimizin önizlemesine gömülür. Müşteri sitelerine gömülen
+     /gomulu/* rotaları kendi izinli adres kuralını kullanır, burada kısıtlanmaz. */
+  async headers() {
+    const base = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+    ];
+    const noFrame = [...base, { key: "X-Frame-Options", value: "DENY" }, { key: "Content-Security-Policy", value: "frame-ancestors 'none'" }];
+    const selfFrame = [...base, { key: "Content-Security-Policy", value: "frame-ancestors 'self'" }];
+    return [
+      { source: "/((?!gomulu|api|_next).*)", headers: selfFrame },
+      { source: "/panel/:path*", headers: noFrame },
+      { source: "/panel", headers: noFrame },
+      { source: "/giris", headers: noFrame },
+      { source: "/parola-sifirla", headers: noFrame },
+      { source: "/parola/:path*", headers: noFrame },
+      { source: "/admin/:path*", headers: noFrame },
+    ];
+  },
   /* Günlük işler yeni panelde (/panel): eski ekranlar ve listeler oraya gider.
      Hesap ve giriş ekranları şimdilik Payload'da. */
   async redirects() {

@@ -18,6 +18,7 @@ import {
   labelCls,
 } from "@/components/pages/ContactForm";
 import { site } from "@/lib/data";
+import { isClosedDay, isOpenSlot } from "@/lib/tatiller";
 import { postForm } from "@/lib/submit";
 import { EVENTS, track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ type Day = {
   full: string;
 };
 
-/* Yarından itibaren önümüzdeki 10 iş günü (hafta sonları atlanır). */
+/* Yarından itibaren önümüzdeki 10 iş günü (hafta sonu ve resmi tatiller atlanır). */
 function buildBusinessDays(): Day[] {
   const wd = new Intl.DateTimeFormat("tr-TR", { weekday: "short" });
   /* { day, month: "2-digit" } Chrome'da "22/08" üretiyor; kısa ay adı her tarayıcıda aynı */
@@ -55,12 +56,12 @@ function buildBusinessDays(): Day[] {
   const cursor = new Date();
   while (days.length < 10) {
     cursor.setDate(cursor.getDate() + 1);
-    const dow = cursor.getDay();
-    if (dow === 0 || dow === 6) continue;
     const pad = (n: number) => String(n).padStart(2, "0");
+    /* "YYYY-MM-DD": panelin dolu saat anahtarıyla aynı biçim */
+    const key = `${cursor.getFullYear()}-${pad(cursor.getMonth() + 1)}-${pad(cursor.getDate())}`;
+    if (isClosedDay(key)) continue;
     days.push({
-      /* "YYYY-MM-DD": panelin dolu saat anahtarıyla aynı biçim */
-      key: `${cursor.getFullYear()}-${pad(cursor.getMonth() + 1)}-${pad(cursor.getDate())}`,
+      key,
       weekday: wd.format(cursor),
       short: dm.format(cursor),
       full: dmy.format(cursor),
@@ -202,7 +203,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
   }, []);
 
   const isBusy = (day: string | null, t: string) =>
-    Boolean(day && busy.has(`${day} ${t}`));
+    Boolean(day && (busy.has(`${day} ${t}`) || !isOpenSlot(day, t)));
 
   useEffect(() => {
     // Yalnız unmount temizliği: bekleyen "kopyalandı" zamanlayıcısını iptal et.

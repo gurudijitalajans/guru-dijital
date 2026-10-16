@@ -36,7 +36,7 @@ const initials = (n: string) =>
     .slice(0, 2)
     .map((w) => w[0]!.toLocaleUpperCase("tr-TR"))
     .join("");
-const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] text-ink focus:border-accent focus:outline-none";
+const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 
 export function TasksView({ tasks: initial, detail, me, team, projects, initialView }: { tasks: BoardTask[]; detail: TaskDetail | null; me: number; team: Option[]; projects: Option[]; initialView: "pano" | "liste" }) {
   const router = useRouter();

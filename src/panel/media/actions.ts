@@ -4,6 +4,7 @@ import type { PayloadRequest } from "payload";
 import { headers } from "next/headers";
 import { cms } from "@/lib/cms";
 import { getPanelContext } from "../context";
+import { sessionLost } from "../errors";
 
 /**
  * Medya işlemleri: açıklama ve klasör, yeni klasör, silme. Medya Guru
@@ -32,6 +33,8 @@ export async function updateMedia(id: number, d: { alt: string; folder: number |
     await payload.update({ collection: "media", id, data: { alt, folder: d.folder || null, ...(focal(d.focalX) !== undefined ? { focalX: focal(d.focalX), focalY: focal(d.focalY) } : {}) }, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -45,6 +48,8 @@ export async function moveMedia(ids: number[], folder: number | null): Promise<R
     await payload.update({ collection: "media", where: { id: { in: list } }, data: { folder: folder || null }, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -57,6 +62,8 @@ export async function createFolder(name: string): Promise<Result> {
     const doc = await payload.create({ collection: "payload-folders", data: { name: n, folderType: ["media"] }, ...opts });
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -68,6 +75,8 @@ export async function deleteMedia(id: number): Promise<Result> {
     await payload.delete({ collection: "media", id, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -95,6 +104,8 @@ export async function discardOriginal(id: number, pathname: string): Promise<Res
     await del(new URL(`/${pathname}`, doc.url).toString(), { token });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }

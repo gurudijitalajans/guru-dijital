@@ -403,7 +403,7 @@ function NewDealDialog({ open, onOpenChange, onCreated }: { open: boolean; onOpe
       onCreated(r.id);
     });
   };
-  const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] text-ink focus:border-accent focus:outline-none";
+  const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -531,7 +531,7 @@ function DealSheet({ detail, hasOps, onClose, onMove, pending }: { detail: DealD
       toast.success("Arama bir sonraki iş günü 10:00 için planlandı; o gün ana sayfada görünür.");
       router.refresh();
     });
-  const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] text-ink focus:border-accent focus:outline-none";
+  const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 
   return (
     <Sheet open={Boolean(detail)} onOpenChange={(o) => !o && onClose()} title={detail?.title ?? ""} description={detail ? [detail.who, money.format(detail.value)].filter(Boolean).join(" · ") : undefined}>

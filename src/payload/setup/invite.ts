@@ -1,3 +1,4 @@
+import { sendNotice } from "../notify";
 import { randomBytes } from "crypto";
 import type { PayloadHandler, PayloadRequest } from "payload";
 import { addDataAndFileToRequest } from "payload";
@@ -74,8 +75,11 @@ export const inviteUser: PayloadHandler = async (req) => {
   const existing = (await req.payload.find({ collection: "users", where: { email: { equals: email } }, limit: 1, depth: 0, req, overrideAccess: true })).docs[0];
   if (existing) {
     if ((existing.tenants ?? []).some((r) => String(idOf(r.tenant)) === String(tenant))) return json({ ok: false, error: "Bu kişi zaten ekipte." }, 400);
-    if (existing.role === "admin") return json({ ok: false, error: "Bu adres bir Guru yöneticisine ait." }, 400);
-    /* Başka işletmede hesabı olan kişi: yalnız bu işletmeye eklenir; parolası değişmez */
+    /* Yanıt her durumda aynı: başka işletmelerdeki hesaplar ya da Guru yöneticileri bu uçtan taranamaz */
+    const same = json({ ok: true, existing: true, message: "Davet işlendi. Bu adresin zaten bir Guru Panel hesabı varsa kişi mevcut parolasıyla girer ve e-postayla bilgilendirilir." });
+    /* Guru yöneticileri her işletmeye zaten erişir: satır eklenmez */
+    if (existing.role === "admin") return same;
+    /* Başka işletmede hesabı olan kişi: bu işletmeye eklenir (parolası değişmez) ve haberdar edilir */
     await req.payload.update({
       collection: "users",
       id: existing.id,
@@ -84,7 +88,13 @@ export const inviteUser: PayloadHandler = async (req) => {
       /* Yetki yukarıda denetlendi; satır kuralları (yalnız yönettiği işletme, açık modüller) Users kancasında */
       overrideAccess: true,
     });
-    return json({ ok: true, existing: true, message: `${existing.name} ekibe eklendi; mevcut parolasıyla giriş yapabilir.` });
+    await sendNotice(req, existing.email, {
+      subject: `${t.name} sizi Guru Panel ekibine ekledi`,
+      intro: `${t.name} işletmesi sizi Guru Panel'de ekibine ekledi. Mevcut parolanızla giriş yapıp işletme seçiciden ${t.name} işletmesine geçebilirsiniz. Bunu beklemiyorsanız işletmeyle ya da Guru Dijital ile iletişime geçin.`,
+      rows: [],
+      path: "/panel",
+    });
+    return same;
   }
 
   const user = await req.payload.create({

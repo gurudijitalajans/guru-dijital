@@ -55,7 +55,7 @@ export function CommandMenu({ open, onOpenChange, nav }: { open: boolean; onOpen
             <Command.List className="max-h-[55vh] overflow-y-auto p-1.5">
               <Command.Empty className="px-3 py-4 text-[14px] text-muted">{loading ? "Aranıyor…" : q.trim().length < 2 ? "En az iki harf yazın." : "Sonuç yok."}</Command.Empty>
               {groups.map((g) => (
-                <Command.Group key={g} heading={g} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted">
+                <Command.Group key={g} heading={g} className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted">
                   {hits.filter((h) => h.group === g).map((h) => (
                     <Command.Item key={h.id} value={h.id} onSelect={() => go(h.href)} className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[8px] px-3 py-2 data-[selected=true]:bg-accent-soft">
                       <span className="min-w-0 flex-1 truncate text-ink">{h.label}</span>
@@ -64,7 +64,7 @@ export function CommandMenu({ open, onOpenChange, nav }: { open: boolean; onOpen
                   ))}
                 </Command.Group>
               ))}
-              <Command.Group heading="Sayfalar" className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted">
+              <Command.Group heading="Sayfalar" className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted">
                 {pages
                   .filter((p) => {
                     const t = q.trim().toLocaleLowerCase("tr-TR");

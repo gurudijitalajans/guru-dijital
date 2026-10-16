@@ -2,6 +2,7 @@
 
 import { getPanelContext } from "../context";
 import { TASK_STAGES, PRIORITIES } from "@/payload/ops/stages";
+import { sessionLost } from "../errors";
 
 /**
  * Görev işlemleri: aşama ve sıra (sürükle bırak), kontrol listesi, düzenleme
@@ -32,6 +33,8 @@ export async function moveTask(id: number, stage: string, order: number): Promis
     if (!STAGES.includes(stage)) return { ok: false, error: "Geçersiz aşama." };
     return (await ctx.update("tasks", id, { stage, order: Number.isFinite(order) ? order : undefined })) ? { ok: true } : { ok: false, error: "Görev bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -45,6 +48,8 @@ export async function toggleCheck(id: number, index: number, done: boolean): Pro
     await ctx.update("tasks", id, { checklist: list });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -69,6 +74,8 @@ export async function updateTask(id: number, d: TaskInput): Promise<Result> {
     });
     return r ? { ok: true } : { ok: false, error: "Görev bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -93,6 +100,8 @@ export async function createTask(d: TaskInput): Promise<Result> {
     })) as { id: number };
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -123,6 +132,8 @@ export async function createProject(d: ProjectInput): Promise<Result> {
     })) as { id: number };
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -146,6 +157,8 @@ export async function updateProject(id: number, d: Partial<ProjectInput>): Promi
     }
     return (await ctx.update("projects", id, data)) ? { ok: true, id } : { ok: false, error: "Proje bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }

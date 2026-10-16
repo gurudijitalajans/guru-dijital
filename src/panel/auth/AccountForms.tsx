@@ -14,6 +14,8 @@ export function AccountForms({ name: n0, email: e0 }: { name: string; email: str
   const [email, setEmail] = useState(e0);
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
+  const [cur, setCur] = useState("");
+  const [cur2, setCur2] = useState("");
   const [pending, start] = useTransition();
   const label = "grid gap-1 text-[14px]";
 
@@ -26,9 +28,10 @@ export function AccountForms({ name: n0, email: e0 }: { name: string; email: str
           onSubmit={(e) => {
             e.preventDefault();
             start(async () => {
-              const r = await updateAccount({ name, email });
+              const r = await updateAccount({ name, email, current: cur2 });
               if (!r.ok) return void toast.error(r.error);
-              toast.success("Kaydedildi.");
+              setCur2("");
+              toast.success(email !== e0 ? "Kaydedildi. Eski adresinize bilgilendirme e-postası gitti." : "Kaydedildi.");
               router.refresh();
             });
           }}
@@ -42,6 +45,13 @@ export function AccountForms({ name: n0, email: e0 }: { name: string; email: str
             <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
             <span className="text-[12px] text-muted">Girişte ve parola yenileme e-postasında bu adres kullanılır.</span>
           </label>
+          {email.trim().toLowerCase() !== e0.toLowerCase() ? (
+            <label className={label}>
+              <span className="text-muted">Mevcut parolanız</span>
+              <Input type="password" required value={cur2} onChange={(e) => setCur2(e.target.value)} autoComplete="current-password" />
+              <span className="text-[12px] text-muted">E-posta adresini değiştirmek için mevcut parolanızı yazın.</span>
+            </label>
+          ) : null}
           <div>
             <Button type="submit" variant="primary" disabled={pending || (name === n0 && email === e0)}>
               Kaydet
@@ -57,14 +67,19 @@ export function AccountForms({ name: n0, email: e0 }: { name: string; email: str
             e.preventDefault();
             if (pw !== pw2) return void toast.error("İki parola aynı değil.");
             start(async () => {
-              const r = await changePassword(pw);
+              const r = await changePassword(pw, cur);
               if (!r.ok) return void toast.error(r.error);
               setPw("");
               setPw2("");
-              toast.success("Parolanız değişti.");
+              setCur("");
+              toast.success("Parolanız değişti. Diğer cihazlardaki oturumlar kapatıldı.");
             });
           }}
         >
+          <label className={label}>
+            <span className="text-muted">Mevcut parola</span>
+            <Input type="password" required value={cur} onChange={(e) => setCur(e.target.value)} autoComplete="current-password" />
+          </label>
           <label className={label}>
             <span className="text-muted">Yeni parola</span>
             <Input type="password" required minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" />
@@ -75,7 +90,7 @@ export function AccountForms({ name: n0, email: e0 }: { name: string; email: str
             <span className="text-[12px] text-muted">En az 8 karakter.</span>
           </label>
           <div>
-            <Button type="submit" variant="primary" disabled={pending || !pw}>
+            <Button type="submit" variant="primary" disabled={pending || !pw || !cur}>
               Parolayı değiştir
             </Button>
           </div>

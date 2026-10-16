@@ -15,10 +15,11 @@ const titleOf = (v: unknown) => (v && typeof v === "object" ? ((v as { title?: s
 export default async function TasksPage({ searchParams }: { searchParams: Promise<{ gorev?: string; gorunum?: string }> }) {
   const ctx = await requireModule("ops");
   const sp = await searchParams;
-  const [res, projects, team] = await Promise.all([
+  const [res, projects, team, who] = await Promise.all([
     ctx.find("tasks", { where: { or: [{ stage: { not_equals: "tamam" } }, { completedAt: { greater_than_equal: daysAgoIso(14) } }] }, sort: "order", limit: 1000, depth: 1 }),
     ctx.find("projects", { where: { status: { in: ["aktif", "beklemede"] } }, sort: "title", limit: 200 }),
     ctx.team(),
+    ctx.names(),
   ]);
   const today = dayOf(new Date());
   type Raw = { id: number; seq?: number | null; title: string; stage: string; order?: number | null; priority: string; dueDate?: string | null; startDate?: string | null; hours?: number | null; assignee?: unknown; project?: unknown; checklist?: { text?: string; done?: boolean | null }[] | null; updatedAt: string; completedAt?: string | null };
@@ -35,7 +36,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
       late: Boolean(t.dueDate && t.stage !== "tamam" && dayOf(t.dueDate) < today),
       hours: t.hours ?? null,
       assignee: idOf(t.assignee),
-      assigneeName: titleOf(t.assignee),
+      assigneeName: who(t.assignee),
       project: idOf(t.project),
       projectTitle: titleOf(t.project),
       checks: [list.filter((c) => c.done).length, list.length],

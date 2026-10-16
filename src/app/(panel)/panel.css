@@ -159,3 +159,23 @@ body {
   input::placeholder,
   textarea::placeholder { color: #a3abbb; opacity: 1; }
 }
+
+/* Markanın çapraz ışık zemini (sitedeki .guru-beam ile aynı): giriş ekranlarının bandı */
+.guru-beam {
+  background-color: #011441;
+  background-image:
+    radial-gradient(48% 60% at 0% 100%, rgb(196 238 255 / .9) 0%, rgb(132 206 252 / .55) 38%, rgb(80 165 245 / 0) 78%),
+    conic-gradient(from 180deg at 103% -3%,
+      #1a4fae 0deg, #0b2e7c 9deg, #011648 17deg, #011648 36deg, #072560 39deg,
+      #2a72d9 41deg, #bfeaff 42.8deg, #b0e5ff 45deg, #6cc0f8 49.5deg, #3383e2 54.5deg,
+      #1a52b4 60deg, #0d3787 67deg, #04205e 76deg, #011649 84deg, #001341 90deg);
+}
+
+/* Telefonda (dokunmatik) form alanları 16 px: iOS Safari 16 px altındaki alana odaklanınca sayfayı yakınlaştırıyordu */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
