@@ -59,8 +59,8 @@ const tiles = () => [
   tile(`${phoneAt(homeScreen(), 140, 110, 330, -4)}
     ${floatCard(card("smartphone", "Kurulum", "Ana ekranda Guru Panel", "Telefona uygulama olarak eklenir; kendi simgesiyle, tam ekran açılır"), "left:600px;top:330px;width:500px")}`),
   /* 2) Açılış ve uygulama ekranları */
-  tile(`${phoneAt(splash(), 70, 150, 290, -6)}${phoneAt(shot("ozet-m"), 400, 110, 300, 0)}${phoneAt(shot("gorevler-m"), 740, 150, 290, 6)}
-    ${floatCard(card("layout-dashboard", "Uygulama", "Açılış ekranı ve tam ekran uygulama"), "left:70px;top:48px;width:470px")}`),
+  tile(`${phoneAt(splash(), 120, 190, 290, -6)}${phoneAt(shot("ozet-m"), 450, 150, 300, 0)}${phoneAt(shot("gorevler-m"), 790, 190, 290, 6)}
+    ${floatCard(card("layout-dashboard", "Uygulama", "Açılış ekranı ve tam ekran uygulama"), "left:120px;top:60px;width:470px")}`),
   /* 3) Mağaza sayfası, birinci düzen (temsili) */
   tile(`${phoneAt(storeA(), 160, 100, 340, -3)}
     ${floatCard(card("store", "Mağaza sayfası", "Uygulama mağazası görünümü", "Simge, ekran görüntüleri ve açıklama", true), "left:620px;top:320px;width:460px")}`),
@@ -69,7 +69,7 @@ const tiles = () => [
     ${floatCard(card("store", "Mağaza sayfası", "İki mağaza, iki düzen", "Her mağazanın kendi ölçülerinde görsel seti", true), "left:90px;top:320px;width:460px")}`),
   /* 5) Mağaza görseli seti */
   tile(`<div class="row" style="position:absolute;left:0;right:0;top:170px;gap:28px;justify-content:center">${[["Satış hattınız cebinizde", "firsatlar-m", "linear-gradient(170deg,#3646c0,#0b1250)"], ["Görevler tek panoda", "gorevler-m", "linear-gradient(170deg,#1747a8,#011441)"], ["Ekip yükü bir bakışta", "ekip-yuku-m", "linear-gradient(170deg,#0b4f7a,#011a3d)"]].map(([t, f, bg]) => promo(t, f, bg)).join("")}</div>
-    ${floatCard(card("images", "Mağaza görselleri", "Ekran görüntüsü seti", "", true), "left:60px;top:40px;width:420px")}`),
+    ${floatCard(card("images", "Mağaza görselleri", "Ekran görüntüsü seti", "", true), "left:122px;top:50px;width:420px")}`),
   /* 6) Süreç */
   tile(`<div style="position:absolute;left:70px;top:50%;transform:translateY(-50%);width:1060px;border-radius:30px;background:#fff;box-shadow:0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a;padding:42px 46px">
     ${card("route", "Süreç", "Fikirden mağazaya beş adım")}

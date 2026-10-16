@@ -48,8 +48,8 @@ const CASES = [
 const tiles = () => [
   ...CASES.map((c) => reportTile(TS, c, ACC)),
   /* 4) Aska Hotels: çok dilli site, arama sonucunda */
-  tile(`${searchBar("aska hotels", 70, 110, 620)}${snipCard(SITES.aska, 70, 220, 1060, 0, 1.45)}
-    ${floatCard(infoCard("languages", "Turizm · Çok dilli", "Aska Hotels", "Site her dil sürümü için hreflang ile işaretli; başlık ve açıklama markayı ve bölgeyi anlatıyor"), "left:640px;top:560px;width:490px")}`),
+  tile(`${searchBar("aska hotels", 70, 150, 620)}${snipCard(SITES.aska, 70, 260, 1060, 0, 1.45)}
+    ${floatCard(infoCard("languages", "Turizm · Çok dilli", "Aska Hotels", "Site her dil sürümü için hreflang ile işaretli; başlık ve açıklama markayı ve bölgeyi anlatıyor"), "left:640px;top:600px;width:490px")}`),
   /* 5) Usre Okulları: telefonda arama sonucu */
   tile(`<div style="position:absolute;left:150px;top:70px;transform:rotate(-3deg)">${iphone(mobileSerp("usre okulları", SITES.usre), { width: 370, style: "filter:drop-shadow(0 46px 46px rgb(0 6 26/.55))" })}</div>
     ${floatCard(infoCard("graduation-cap", "Eğitim · Yerel arama", "Usre Okulları", "Başlıkta şehir ve arama niyeti: “Antalya Özel Okul - Kolej”; açıklamada eylem çağrısı: “Hemen bilgi alın”"), "left:600px;top:320px;width:500px")}`),

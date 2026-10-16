@@ -45,8 +45,8 @@ const tiles = () => [
     ${photo("model-ceket.jpg", 630, 120, 470, 640, 3, tag("sparkles", "Mağaza görseli"), "50% 20%")}
     ${floatCard(infoCard("image", "Ürün görseli", "Masada çekilen fotoğraftan vitrine", ""), "left:60px;top:60px;width:470px")}`),
   /* 2) Pazar yeri mağaza kurulumu */
-  tile(`<div style="position:absolute;left:60px;top:150px;display:grid;grid-template-columns:repeat(2,240px);gap:30px 24px">${MARKETS.map((m, i) => logoCard(m, 240, 118, i === 4 ? "grid-column:1/3;justify-self:center" : "")).join("")}</div>
-    <div style="position:absolute;left:640px;top:120px;width:500px;border-radius:26px;background:#fff;padding:30px 32px;box-shadow:0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a">
+  tile(`<div style="position:absolute;left:90px;top:215px;display:grid;grid-template-columns:repeat(2,240px);gap:30px 24px">${MARKETS.map((m, i) => logoCard(m, 240, 118, i === 4 ? "grid-column:1/3;justify-self:center" : "")).join("")}</div>
+    <div style="position:absolute;left:640px;top:205px;width:480px;border-radius:26px;background:#fff;padding:30px 32px;box-shadow:0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a">
       ${infoCard("store", "Pazar yerleri", "Mağaza kurulumu", "")}
       <div style="margin-top:18px">${checklist([["file-check", "Mağaza başvurusu ve açılış"], ["tags", "Kategori ve marka eşleştirme"], ["upload", "Toplu ürün yükleme"], ["truck", "Kargo, iade ve fatura ayarları"], ["calendar-days", "Kampanya takvimi"]])}</div></div>`),
   /* 3) Pazar yeri optimizasyonu: örnek ürün sayfası üzerinde iyileştirilen alanlar */
@@ -60,8 +60,8 @@ const tiles = () => [
     ${[["Görsel standartları ve çoklu açı", "images", 50, 170], ["Anahtar kelimeli başlık", "type", 50, 420], ["Pazar yeri reklamları", "megaphone", 900, 150], ["Varyant ve özellik alanları", "list-tree", 900, 380], ["Kampanya ve fiyat", "badge-percent", 900, 560]].map(([t, ic, x, y]) => floatCard(`<div class="row" style="gap:12px"><span style="width:40px;height:40px;border-radius:12px;background:#dff6fa;display:grid;place-items:center">${icon(ic, { size: 20, color: ACC, stroke: 2 })}</span><span style="font:600 17px Outfit;color:#1f2b46;max-width:190px;line-height:1.25">${t}</span></div>`, `left:${x}px;top:${y}px;width:260px`, "14px 16px")).join("")}
     ${floatCard(infoCard("sparkles", "Pazar yerleri", "Ürün sayfası optimizasyonu", ""), "left:880px;top:720px;width:290px", "16px 18px")}`),
   /* 4) E-ticaret altyapıları: Shopify ve ikas, ortaklık rozetleriyle */
-  tile(`<div style="position:absolute;left:70px;top:170px;display:grid;gap:56px">${STACKS.map((m) => logoCard(m, 420, 190)).join("")}</div>
-    <div style="position:absolute;left:600px;top:140px;width:530px;border-radius:26px;background:#fff;padding:30px 32px;box-shadow:0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a">
+  tile(`<div style="position:absolute;left:100px;top:225px;display:grid;gap:56px">${STACKS.map((m) => logoCard(m, 420, 190)).join("")}</div>
+    <div style="position:absolute;left:600px;top:250px;width:510px;border-radius:26px;background:#fff;padding:30px 32px;box-shadow:0 60px 100px -40px rgb(1 12 40/.7);font-family:Outfit;color:#0c1a3a">
       ${infoCard("layers", "E-ticaret altyapıları", "Kurulum ve yönetim", "")}
       <div style="margin-top:18px">${checklist([["palette", "Mağaza kurulumu ve tema"], ["credit-card", "Ödeme ve kargo entegrasyonu"], ["boxes", "Ürün, stok ve sipariş yönetimi"], ["chart-no-axes-column", "Günlük yönetim ve raporlama"]])}</div></div>`),
   /* 5-6) E-ticaret vakalarının sonuçları: reklam ve SEO */

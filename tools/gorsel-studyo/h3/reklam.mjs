@@ -53,11 +53,11 @@ const tiles = () => [
     ${phoneAt(adScreen("DC", "DC", "#35b8cf", "didem_coban_reklam_5", "Daha fazla bilgi al"), 450, 120, 300, 4)}
     ${floatCard(brandCard("dc", "Meta reklamları", "Diş kliniği için iki dilde kampanya kreatifleri", ["Türkçe", "İngilizce"], 64), "left:820px;top:280px;width:330px")}`),
   /* 2) Medipunto Clinic: yurt dışına yönelik kampanya */
-  tile(`${phoneAt(adScreen("Medipunto Clinic", "M", "#1aa0d8", "mediounto_reklam"), 330, 110, 320, -3)}
-    ${floatCard(brandCard("medipunto-clinic", "Meta reklamları", "İngilizce estetik kampanyası", ["İngilizce", "Fiyat listeli kreatif"]), "left:800px;top:320px;width:330px")}`),
+  tile(`${phoneAt(adScreen("Medipunto Clinic", "M", "#1aa0d8", "mediounto_reklam"), 230, 110, 320, -3)}
+    ${floatCard(brandCard("medipunto-clinic", "Meta reklamları", "İngilizce estetik kampanyası", ["İngilizce", "Fiyat listeli kreatif"]), "left:640px;top:320px;width:330px")}`),
   /* 3) WCTLife: konut projesi satış kampanyası */
-  tile(`${phoneAt(adScreen("WCTLife", "W", "#6b2fb3", "WCT_Reklam_3"), 330, 110, 320, 3)}
-    ${floatCard(brandCard("wctlife", "Meta reklamları", "Konut projesi satış kampanyası", ["Proje tanıtımı", "Fiyat ve vade"]), "left:780px;top:320px;width:360px")}`),
+  tile(`${phoneAt(adScreen("WCTLife", "W", "#6b2fb3", "WCT_Reklam_3"), 220, 110, 320, 3)}
+    ${floatCard(brandCard("wctlife", "Meta reklamları", "Konut projesi satış kampanyası", ["Proje tanıtımı", "Fiyat ve vade"]), "left:620px;top:320px;width:360px")}`),
   /* 4-6) Vakalar: tek rapor paneli (başlık, ana rakam, gerçek değerlerle orantılı çubuklar, yan rakamlar) */
   report({ sector: "E-Ticaret / Giyim", title: "ROAS'ı 3,41'den 8,62'ye taşıyan performans dönüşümü", big: "3,41 → 8,62", bigLabel: "ROAS, dönüşüm öncesi ve sonrası",
     rows: [["Önce", 3.41, "3,41", false], ["Sonra", 8.62, "8,62", true]], max: 8.62, side: [["%152", "ROAS artışı"], ["%74", "Ciro artışı"], ["%42", "Alışveriş başına maliyette azalma"]] }),

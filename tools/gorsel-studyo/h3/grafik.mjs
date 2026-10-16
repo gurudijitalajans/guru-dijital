@@ -35,7 +35,7 @@ const tile = (body) => page({ w: 1200, h: 900, bg: themeBg(TG), body: `${glow(80
 
 const tiles = () => [
   /* 1) Veggy Snacky Sour: altı aromalı ürün ailesi */
-  tile(`${[["karpuz", 40, 330, 400, -9], ["kola", 205, 300, 420, -5], ["gokkusagi", 760, 300, 420, 5], ["elma", 925, 330, 400, 9], ["cilek", 380, 270, 460, -2], ["blue-raspberry", 560, 270, 460, 2]].map(([n, x, y, h, r]) => pouch(n, x, y, h, r)).join("")}
+  tile(`${[["karpuz", 40, 370, 400, -9], ["kola", 205, 340, 420, -5], ["gokkusagi", 760, 340, 420, 5], ["elma", 925, 370, 400, 9], ["cilek", 380, 310, 460, -2], ["blue-raspberry", 560, 310, 460, 2]].map(([n, x, y, h, r]) => pouch(n, x, y, h, r)).join("")}
     ${floatCard(card({ logo: "veggy-snacky", lh: 62, kind: "Ambalaj tasarımı", what: "Sour ürün ailesi, altı aroma", chips: ["Etiket tasarımı", "Ürün ailesi"] }), "left:56px;top:48px;width:400px")}`),
   /* 2) Veggy Snacky: kavanoz etiketi ve ayçekirdeği paketi */
   tile(`${product(G("kavanoz.png"), 1090 / 1400, 120, 250, 560)}${product(G("cekirdek.png"), 770 / 981, 560, 210, 600, 0, true)}
@@ -44,14 +44,14 @@ const tiles = () => [
   tile(`${cover("lionklinker-kapak.jpg", 80, 290, 310, -7)}${spread("lionklinker-sol.jpg", "lionklinker-sag.jpg", 440, 300, 700, 3)}
     ${floatCard(card({ logo: "lionklinker", lh: 44, kind: "Katalog tasarımı", what: "El yapımı tuğla kataloğu", chips: ["Kapak", "Ürün sayfaları", "Seri ve ölçüler"] }), "left:56px;top:48px;width:400px")}`),
   /* 4) Soiltech: İngilizce tanıtım kataloğu */
-  tile(`${spread("soiltech-sol.jpg", "soiltech-sag.jpg", 380, 280, 760, -2)}${cover("soiltech-kapak.jpg", 70, 240, 330, -6)}
-    ${floatCard(card({ name: "Soiltech", kind: "Katalog tasarımı", what: "Gemi bakım ve onarım firması için İngilizce tanıtım kataloğu", chips: ["İngilizce", "Kapak", "Referans sayfası"] }), "left:760px;top:40px;width:390px")}`),
+  tile(`${spread("soiltech-sol.jpg", "soiltech-sag.jpg", 380, 330, 760, -2)}${cover("soiltech-kapak.jpg", 70, 290, 330, -6)}
+    ${floatCard(card({ name: "Soiltech", kind: "Katalog tasarımı", what: "Gemi bakım ve onarım firması için İngilizce tanıtım kataloğu", chips: ["İngilizce", "Kapak", "Referans sayfası"] }), "left:760px;top:90px;width:390px")}`),
   /* 5) Self Respect: kurumsal kimlik seti */
   tile(`<img src="${KI("kimlik-self-respect.png")}" style="position:absolute;left:90px;top:60px;height:780px">
     ${floatCard(card({ name: "Self Respect", kind: "Kurumsal kimlik", what: "Kurumsal kimlik seti", chips: ["Kartvizit", "Zarf ve dosya", "Etiket", "Kırtasiye"] }), "left:810px;top:320px;width:340px")}`),
   /* 6) Logo tasarımları: farklı sektörlerden sekiz marka */
-  tile(`<div style="position:absolute;left:90px;top:300px;display:grid;grid-template-columns:repeat(4,240px);gap:20px">${[1, 2, 3, 4, 5, 6, 7, 8].map((i) => `<div style="height:150px;border-radius:22px;background:#fff;display:grid;place-items:center;box-shadow:0 30px 50px -26px rgb(0 6 26/.7)"><img src="${G(`logo-${i}.png`)}" style="max-width:190px;max-height:92px"></div>`).join("")}</div>
-    ${floatCard(`<div class="row" style="gap:14px"><span style="width:50px;height:50px;border-radius:15px;background:#e7f0ff;display:grid;place-items:center">${icon("pen-tool", { size: 25, color: ACC, stroke: 2 })}</span><div><div style="font-size:13px;font-weight:600;letter-spacing:.08em;color:${ACC}">LOGO TASARIMI</div><div style="font-size:21px;font-weight:600;margin-top:2px">Farklı sektörlerden markalar</div></div></div><div style="margin-top:12px;font-size:16px;color:#3b4763">Modadan dış ticarete, tasarladığımız logolardan sekizi</div>`, "left:90px;top:80px;width:470px")}`),
+  tile(`<div style="position:absolute;left:90px;top:410px;display:grid;grid-template-columns:repeat(4,240px);gap:20px">${[1, 2, 3, 4, 5, 6, 7, 8].map((i) => `<div style="height:150px;border-radius:22px;background:#fff;display:grid;place-items:center;box-shadow:0 30px 50px -26px rgb(0 6 26/.7)"><img src="${G(`logo-${i}.png`)}" style="max-width:190px;max-height:92px"></div>`).join("")}</div>
+    ${floatCard(`<div class="row" style="gap:14px"><span style="width:50px;height:50px;border-radius:15px;background:#e7f0ff;display:grid;place-items:center">${icon("pen-tool", { size: 25, color: ACC, stroke: 2 })}</span><div><div style="font-size:13px;font-weight:600;letter-spacing:.08em;color:${ACC}">LOGO TASARIMI</div><div style="font-size:21px;font-weight:600;margin-top:2px">Farklı sektörlerden markalar</div></div></div><div style="margin-top:12px;font-size:16px;color:#3b4763">Modadan dış ticarete, tasarladığımız logolardan sekizi</div>`, "left:90px;top:190px;width:470px")}`),
 ];
 
 export function grafikHero() {
