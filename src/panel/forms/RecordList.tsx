@@ -44,7 +44,7 @@ export function RecordList({ headers, rows, q, page, pages, searchable }: { head
           <div className="hidden overflow-x-auto rounded-[14px] border border-line bg-surface md:block">
             <table className="w-full border-collapse text-[14px]">
               <thead>
-                <tr className="border-b border-line text-left text-[12px] uppercase tracking-[0.06em] text-muted">
+                <tr className="border-b border-line text-left text-[12px] text-muted">
                   {headers.map((h) => (
                     <th key={h} className="px-4 py-3 font-semibold">
                       {h}

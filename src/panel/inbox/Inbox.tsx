@@ -270,9 +270,9 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
       {/* Kişi ve CRM bilgisi */}
       {thread ? (
         <aside className="hidden min-h-0 overflow-y-auto border-l border-line px-4 py-4 xl:block" aria-label="Kişi bilgisi">
-          <h3 className="mt-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">Bilgiler</h3>
+          <h3 className="mt-0 mb-2 text-[12px] font-semibold text-muted">Bilgiler</h3>
           <Fields rows={thread.fields} />
-          <h3 className="mt-5 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">Kişi</h3>
+          <h3 className="mt-5 mb-2 text-[12px] font-semibold text-muted">Kişi</h3>
           {thread.contact ? (
             <>
               <p className="m-0 font-medium text-ink">{thread.contact.name}</p>
@@ -286,7 +286,7 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
           )}
           {thread.deals.length ? (
             <>
-              <h3 className="mt-5 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">Fırsatlar</h3>
+              <h3 className="mt-5 mb-2 text-[12px] font-semibold text-muted">Fırsatlar</h3>
               <ul className="m-0 list-none p-0">
                 {thread.deals.map((d) => (
                   <li key={d.id} className="mb-1.5">
@@ -304,7 +304,8 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread }: {
           {thread.links.length ? (
             <div className="mt-5 flex flex-col gap-1">
               {thread.links.map((l) =>
-                l.href.startsWith("/panel") ? (
+                /* Yalnız gelen kutusu içi bağlantılar yerinde açılır; diğer panel sayfaları (ör. Tüm alanları düzenle) normal bağlantı */
+                l.href.startsWith("/panel/gelen?") ? (
                   <button key={l.label} type="button" onClick={() => open(new URL(l.href, "http://x").searchParams.get("s") ?? "")} className="text-left text-[14px] text-accent">
                     {l.label}
                   </button>

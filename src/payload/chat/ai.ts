@@ -9,7 +9,9 @@
 export type Block =
   | { type: "text"; text: string }
   | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
-  | { type: "tool_result"; tool_use_id: string; content: string; is_error?: boolean };
+  | { type: "tool_result"; tool_use_id: string; content: string; is_error?: boolean }
+  /* Haiku 5.5 ve Sonnet 5.5'te düşünme açık: bloklar araç turunda olduğu gibi geri gönderilir */
+  | { type: "thinking"; thinking: string; signature?: string };
 export type Msg = { role: "user" | "assistant"; content: string | Block[] };
 export type Tool = { name: string; description: string; input_schema: Record<string, unknown> };
 type Reply = { content: Block[]; stop_reason: string; usage?: Record<string, number> };
@@ -28,7 +30,10 @@ export async function claude(opts: { model: string; system: string; messages: Ms
     },
     body: JSON.stringify({
       model: opts.model,
-      max_tokens: opts.maxTokens ?? 700,
+      /* Düşünme tokenleri de bu sınıra sayılır: kısa yanıt için bile pay bırakılır */
+      max_tokens: opts.maxTokens ?? 4000,
+      /* Sohbet asistanı: düşük efor, kısa ve hızlı yanıt (Haiku 5.5 varsayılanı medium) */
+      output_config: { effort: "low" },
       /* Bilgi tabanı her mesajda aynı: önbelleğe alınır, maliyet düşer */
       system: [{ type: "text", text: opts.system, cache_control: { type: "ephemeral" } }],
       messages: opts.messages,

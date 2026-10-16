@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import type { CollectionSlug, PayloadRequest, Where } from "payload";
 import type { Tenant, User } from "@/payload-types";
 import { cms } from "@/lib/cms";
@@ -41,6 +41,8 @@ export type PanelContext = {
   create: (collection: CollectionSlug, data: Record<string, unknown>) => Promise<unknown>;
   /** Seçili işletmenin ekibi (görev sorumlusu ve ekip yükü için): yalnız ad ve haftalık saat */
   team: () => Promise<{ id: number; name: string; weeklyHours: number }[]>;
+  /** Kişi adı çözücü (ekip + Guru yöneticileri). İlişki doldurma yetkiye takılabildiği için adlar buradan okunur */
+  names: () => Promise<(v: unknown) => string>;
   /** Yalnız seçili işletmenin kaydı güncellenir; değilse null */
   update: (collection: CollectionSlug, id: number | string, data: Record<string, unknown>) => Promise<unknown | null>;
 };
@@ -68,7 +70,7 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
     overrideAccess: true,
   });
   const tenants = list.docs.filter((t) => t.status !== "askida" || guruAdmin).map(toOption);
-  if (!tenants.length) notFound();
+  if (!tenants.length) redirect("/giris?durum=isletme-yok");
 
   /* Seçili işletme: çerez (üye olduğu ya da Guru yöneticisi), yoksa Guru Dijital ya da ilk işletme */
   const jar = await cookies();
@@ -92,6 +94,20 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
     const tid = t && typeof t === "object" ? (t as { id: number }).id : t;
     return doc && String(tid) === String(tenant.id) ? doc : null;
   };
+
+  /* Ad haritası: işletme ekibi ve tüm Guru yöneticileri (işletme satırları yoktur) */
+  const people = cache(async () => {
+    const r = await payload.find({
+      collection: "users",
+      where: { or: [{ "tenants.tenant": { equals: tenant.id } }, { role: { equals: "admin" } }] },
+      limit: 500,
+      depth: 0,
+      pagination: false,
+      overrideAccess: true,
+      select: { name: true },
+    });
+    return new Map(r.docs.map((x) => [x.id, x.name]));
+  });
 
   return {
     user: u,
@@ -131,6 +147,14 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
       });
       return r.docs.map((x) => ({ id: x.id, name: x.name, weeklyHours: x.weeklyHours ?? 40 }));
     }),
+    names: async () => {
+      const map = await people();
+      return (v: unknown) => {
+        if (v && typeof v === "object" && (v as { name?: string }).name) return (v as { name: string }).name;
+        const id = v && typeof v === "object" ? (v as { id?: number }).id : (v as number | null | undefined);
+        return id ? (map.get(Number(id)) ?? "") : "";
+      };
+    },
     create: (collection, data) => payload.create({ collection, data: { ...data, tenant: tenant.id } as never, user: u, req, overrideAccess: false }),
     update: async (collection, id, data) => {
       if (!(await own(collection, id, 0))) return null;

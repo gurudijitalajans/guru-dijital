@@ -52,11 +52,12 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const noonTo = `${days[6]}T23:59:59.000Z`;
   const none = Promise.resolve({ docs: [] as unknown[] });
 
-  const [books, acts, tasks, projects] = await Promise.all([
+  const [books, acts, tasks, projects, who] = await Promise.all([
     crm ? ctx.find("bookings", { where: { and: [{ date: { greater_than_equal: noonFrom } }, { date: { less_than_equal: noonTo } }, { status: { in: ["bekliyor", "onaylandi", "tamamlandi"] } }] }, sort: "date", limit: 300 }) : none,
-    crm ? ctx.find("activities", { where: { and: [{ dueAt: { greater_than_equal: from } }, { dueAt: { less_than_equal: to } }, { type: { not_in: ["not", "sistem"] } }] }, sort: "dueAt", limit: 300, depth: 1 }) : none,
+    crm ? ctx.find("activities", { where: { and: [{ dueAt: { greater_than_equal: from } }, { dueAt: { less_than_equal: to } }, { type: { not_in: ["not", "sistem"] } }, { booking: { exists: false } }] }, sort: "dueAt", limit: 300, depth: 1 }) : none,
     ops ? ctx.find("tasks", { where: { and: [{ dueDate: { greater_than_equal: noonFrom } }, { dueDate: { less_than_equal: noonTo } }] }, limit: 300, depth: 1 }) : none,
     ops ? ctx.find("projects", { where: { and: [{ dueDate: { greater_than_equal: noonFrom } }, { dueDate: { less_than_equal: noonTo } }, { status: { in: ["aktif", "beklemede"] } }] }, limit: 100, depth: 1 }) : none,
+    ctx.names(),
   ]);
 
   const events: Ev[] = [
@@ -69,7 +70,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
       kind: "crm" as const, activity: { id: a.id, done: Boolean(a.done) },
     })),
     ...(tasks.docs as { id: number; seq?: number | null; title: string; dueDate: string; stage: string; project?: unknown; assignee?: unknown }[]).map((t) => ({
-      key: `t${t.id}`, day: dayOf(t.dueDate), time: "Teslim", title: `${t.seq ? `G-${t.seq} ` : ""}${t.title}${t.stage === "tamam" ? " (tamam)" : ""}`, detail: [nameOf(t.project), nameOf(t.assignee)].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${t.id}`, kind: "teslim" as const,
+      key: `t${t.id}`, day: dayOf(t.dueDate), time: "Teslim", title: `${t.seq ? `G-${t.seq} ` : ""}${t.title}${t.stage === "tamam" ? " (tamam)" : ""}`, detail: [nameOf(t.project), who(t.assignee)].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${t.id}`, kind: "teslim" as const,
     })),
     ...(projects.docs as { id: number; title: string; dueDate: string; company?: unknown }[]).map((p) => ({
       key: `p${p.id}`, day: dayOf(p.dueDate), time: "Proje", title: p.title, detail: nameOf(p.company) || "Proje teslimi", href: `/panel/projeler?proje=${p.id}`, kind: "proje" as const,

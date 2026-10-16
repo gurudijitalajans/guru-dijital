@@ -86,7 +86,7 @@ export default async function TeamLoadPage({ searchParams }: { searchParams: Pro
 
       <section className="overflow-x-auto rounded-card border border-line bg-surface">
         <div className="min-w-[640px]">
-          <div className="grid grid-cols-[minmax(150px,1.2fr)_repeat(4,minmax(0,1fr))] border-b border-line bg-sunken text-[12px] font-medium uppercase tracking-[0.05em] text-muted">
+          <div className="grid grid-cols-[minmax(150px,1.2fr)_repeat(4,minmax(0,1fr))] border-b border-line bg-sunken text-[12px] font-medium text-muted">
             <div className="px-4 py-2.5">Kişi</div>
             {weeks.map((w, i) => (
               <div key={w.monday} className={cn("px-3 py-2.5 tabular", i === 0 && "text-ink")}>

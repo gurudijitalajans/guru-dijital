@@ -3,6 +3,7 @@
 import type { Where } from "payload";
 import { getPanelContext } from "../context";
 import type { Tone } from "../ui/badge";
+import { sessionLost } from "../errors";
 
 /**
  * Gelen kutusu: sitedeki sohbetler, form talepleri ve randevular tek listede.
@@ -94,17 +95,22 @@ async function contactBlock(contactId: number | null) {
 
 export async function getThread(key: string): Promise<Thread | null> {
   const ctx = await getPanelContext();
-  const kind = key[0];
-  const id = Number(key.slice(1));
-  if (!id) return null;
+  /* "t12" ve eski e-postalardaki "t:12" biçimi */
+  const m = /^([str]):?(\d+)$/.exec(key);
+  if (!m) return null;
+  const kind = m[1];
+  const id = Number(m[2]);
 
   if (kind === "s" && ctx.has("chat")) {
     const c = (await ctx.findByID("conversations", id, 0)) as Conv | null;
     if (!c) return null;
     const [msgs, cfg] = await Promise.all([
-      ctx.find("chat-messages", { where: { conversation: { equals: c.id } }, sort: "createdAt", limit: 300, depth: 1 }),
+      /* En yeni 300 mesaj (uzun WhatsApp yazışmalarında eskiler değil yeniler görünsün) */
+      ctx.find("chat-messages", { where: { conversation: { equals: c.id } }, sort: "-createdAt", limit: 300, depth: 0 }),
       ctx.find("chatbot-config", { limit: 1 }),
     ]);
+    const who = await ctx.names();
+    msgs.docs.reverse();
     const block = await contactBlock(idOf(c.contact));
     const [tone, label] = c.needsReply ? (["bad", "Yanıt bekliyor"] as [Tone, string]) : (CONV[c.status] ?? ["plain", c.status]);
     const canned = ((cfg.docs[0] as { cannedReplies?: { label: string; text: string }[] | null } | undefined)?.cannedReplies ?? []).map((r) => ({ label: r.label, text: r.text }));
@@ -116,7 +122,7 @@ export async function getThread(key: string): Promise<Thread | null> {
       tone, label, status: c.status,
       messages: (msgs.docs as { id: number; role: ThreadMessage["role"]; text: string; createdAt: string; author?: unknown; unanswered?: boolean | null }[]).map((m) => ({
         id: m.id, role: m.role, text: m.text, at: m.createdAt, unanswered: Boolean(m.unanswered),
-        ...(m.role === "ekip" && m.author && typeof m.author === "object" ? { author: (m.author as { name: string }).name } : {}),
+        ...(m.role === "ekip" && m.author ? { author: who(m.author) || "Ekip" } : {}),
       })),
       fields: [["Konu", c.topic ?? ""], ["E-posta", c.email ?? ""], ["Telefon", c.phone ?? ""]],
       ...block,
@@ -174,6 +180,8 @@ export async function replyChat(id: number, text: string): Promise<Result> {
     await ctx.create("chat-messages", { conversation: id, role: "ekip", text: body });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -190,6 +198,8 @@ export async function setConversation(id: number, action: "devral" | "asistan" |
   try {
     return (await ctx.update("conversations", id, data)) ? { ok: true } : { ok: false, error: "Sohbet bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -206,6 +216,8 @@ export async function setStatus(kind: "talep" | "randevu", id: number, status: s
   try {
     return (await ctx.update(kind === "talep" ? "leads" : "bookings", id, { status })) ? { ok: true } : { ok: false, error: "Kayıt bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }

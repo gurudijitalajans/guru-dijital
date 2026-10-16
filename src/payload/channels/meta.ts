@@ -3,7 +3,7 @@ import type { PayloadHandler, PayloadRequest } from "payload";
 import type { Conversation } from "@/payload-types";
 import { idOf } from "../crm/tenant";
 import { chatConfigOf } from "../chat/collections";
-import { botReply } from "../chat/engine";
+import { botReply, handoff } from "../chat/engine";
 import { addUsage } from "./usage";
 
 /**
@@ -128,7 +128,11 @@ async function receive(req: PayloadRequest, m: Inbound) {
     overrideAccess: true,
   })) as Conversation;
   /* Asistanın yanıtı chat-messages kancasıyla kanala gider */
-  if (conv.status === "bot" && settings.enabled) await botReply(req, conv, settings);
+  if (conv.status === "bot") {
+    /* "enabled" yalnız sitedeki balonu açar; WhatsApp/Instagram'da asistan kapalıysa mesaj doğrudan ekibe düşer */
+    if (settings.enabled) await botReply(req, conv, settings);
+    else await handoff(req, conv, settings, `${m.channel === "whatsapp" ? "WhatsApp" : "Instagram"} mesajı; asistan kapalı olduğu için doğrudan ekibe düştü.`);
+  }
 }
 
 export const metaWebhook: PayloadHandler = async (req) => {

@@ -44,15 +44,15 @@ function Alert({ tone, children }: { tone: "bad" | "good"; children: React.React
   );
 }
 
-export function LoginForm({ next, loggedOut }: { next: string | null; loggedOut: boolean }) {
+export function LoginForm({ next, loggedOut, noTenant = false }: { next: string | null; loggedOut: boolean; noTenant?: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   /* Eski /admin/logout adresinden gelindiyse oturum kapatılır */
   useEffect(() => {
-    if (loggedOut) void fetch("/api/users/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
-  }, [loggedOut]);
+    if (loggedOut || noTenant) void fetch("/api/users/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
+  }, [loggedOut, noTenant]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,10 +67,11 @@ export function LoginForm({ next, loggedOut }: { next: string | null; loggedOut:
     setError(
       !r
         ? "Bağlantı kurulamadı. İnternetinizi kontrol edip tekrar deneyin."
-        : r.status === 401
-          ? "E-posta ya da parola hatalı."
-          : r.status === 423 || /locked|kilit/i.test(msgOf(j))
-            ? "Çok fazla hatalı deneme yapıldı; hesap kısa süreliğine kilitlendi. Birkaç dakika sonra tekrar deneyin ya da parolanızı yenileyin."
+        : /* Payload kilitli hesapta da 401 döndürür: kilit önce mesajdan anlaşılır */
+          r.status === 423 || /locked|kilit/i.test(msgOf(j))
+          ? "Çok fazla hatalı deneme yapıldı; hesabınız 10 dakikalığına kilitlendi. Parolanızı yenilerseniz kilit hemen açılır."
+          : r.status === 401
+            ? "E-posta ya da parola hatalı."
             : r.status === 429
               ? "Çok sık deneme yapıldı. Biraz bekleyip tekrar deneyin."
               : msgOf(j) || "Giriş yapılamadı.",
@@ -85,6 +86,7 @@ export function LoginForm({ next, loggedOut }: { next: string | null; loggedOut:
         <p className="mt-1 mb-0 text-[14px] text-muted">Guru Panel hesabınızla devam edin.</p>
       </div>
       {loggedOut ? <Alert tone="good">Oturumunuz kapatıldı.</Alert> : null}
+      {noTenant ? <Alert tone="bad">Hesabınız şu an etkin bir işletmeye bağlı değil. İşletmenizin yöneticisiyle ya da Guru Dijital ile görüşün.</Alert> : null}
       {error ? <Alert tone="bad">{error}</Alert> : null}
       <Field label="E-posta">
         <Input type="email" required autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />

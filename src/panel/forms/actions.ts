@@ -7,6 +7,7 @@ import { getPanelContext } from "../context";
 import { canOpen, ENTITIES } from "./entities";
 import { hiddenPaths } from "./schema";
 import type { FieldError } from "./types";
+import { sessionLost } from "../errors";
 
 /**
  * Panel düzenleyicisinin sunucu işlemleri: kaydet (taslak ya da yayın),
@@ -54,6 +55,8 @@ export async function saveDoc(slug: string, id: number | null, data: Record<stri
       : await payload.create({ collection, data: body as never, depth: 0, draft, ...opts });
     return { ok: true, id: doc.id as number, updatedAt: (doc as { updatedAt?: string }).updatedAt };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     const err = e as { message?: string; data?: { errors?: { path?: string; message?: string }[] } };
     const errors = (err.data?.errors ?? []).filter((x) => x.path).map((x) => ({ path: String(x.path), message: x.message ?? "Geçersiz değer." }));
     return { ok: false, error: errors.length ? "Kaydedilemedi: işaretli alanları düzeltin." : err.message || "Kaydedilemedi.", errors };
@@ -89,6 +92,8 @@ export async function quickCreate(slug: string, relationTo: string, name: string
     const doc = await payload.create({ collection: relationTo as CollectionSlug, data: { [title]: name.trim().slice(0, 200) } as never, depth: 0, ...opts });
     return { ok: true, option: { value: doc.id as number, label: name.trim() } };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Eklenemedi." };
   }
 }
@@ -127,6 +132,8 @@ export async function deleteDoc(slug: string, id: number): Promise<SaveResult> {
     await payload.delete({ collection: slug as CollectionSlug, id, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Silinemedi." };
   }
 }
@@ -142,6 +149,8 @@ export async function unpublishDoc(slug: string, id: number): Promise<SaveResult
     await payload.update({ collection, id, data: { ...rest, _status: "draft" } as never, draft: false, depth: 0, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Yayından kaldırılamadı." };
   }
 }

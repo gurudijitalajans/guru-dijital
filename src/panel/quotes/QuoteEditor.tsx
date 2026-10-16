@@ -41,7 +41,7 @@ const totals = (items: QuoteItemInput[]) => {
   }
   return { subtotal: round(subtotal), vat: round(vat), total: round(subtotal + vat) };
 };
-const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] text-ink focus:border-accent focus:outline-none";
+const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 const num = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
 
 export function QuoteEditor({ quote, deals }: { quote: EditorQuote; deals: DealOption[] }) {

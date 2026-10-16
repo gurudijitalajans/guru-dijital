@@ -1,5 +1,5 @@
 import "server-only";
-import { businessDays, dayOf, mondayOf, shiftDays } from "@/payload/ops/dates";
+import { addBusinessDays, businessDays, dayOf, mondayOf, shiftDays } from "@/payload/ops/dates";
 
 /**
  * Ekip yükü hesabı (mevcut Ekip planıyla aynı kural): görevin tahmini saati
@@ -23,6 +23,11 @@ export function weeksFrom(startDay: string, count: number): WeekLoad[] {
 
 export function span(t: LoadTask, today: string): [string, string] {
   const due = t.dueDate ? dayOf(t.dueDate) : t.startDate ? dayOf(t.startDate) : today;
+  /* Teslimi geçmiş açık görev hâlâ iş demektir: kalan saati bugüne (ilk iş gününe) yazılır, yükten düşmez */
+  if (t.stage !== "tamam" && due < today) {
+    const now = addBusinessDays(today, 0);
+    return [now, now];
+  }
   const start = t.startDate ? dayOf(t.startDate) : due;
   return start <= due ? [start, due] : [due, due];
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { getPanelContext } from "../context";
+import { sessionLost } from "../errors";
 
 /**
  * Teklif kaydı. Toplamlar, teklif numarası (işletme ön eki-yıl-sıra) ve
@@ -42,6 +43,8 @@ export async function saveQuote(id: number | null, d: QuoteInput): Promise<Resul
     const doc = (await ctx.create("quotes", { ...data, owner: ctx.user.id })) as { id: number };
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Kaydedilemedi." };
   }
 }
@@ -52,6 +55,8 @@ export async function setQuoteStatus(id: number, status: string): Promise<Result
   try {
     return (await ctx.update("quotes", id, { status })) ? { ok: true, id } : { ok: false, error: "Teklif bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Kaydedilemedi." };
   }
 }

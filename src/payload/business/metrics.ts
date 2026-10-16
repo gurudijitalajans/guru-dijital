@@ -22,7 +22,13 @@ export function periodOf(key: string): Period {
     const pm = mm === 1 ? 12 : mm - 1;
     const ny = mm === 12 ? yy + 1 : yy;
     const nm = mm === 12 ? 1 : mm + 1;
-    return { key: k, label: monthLabel(yy, mm), from: monthStart(yy, mm), to: monthStart(ny, nm), prev: { from: monthStart(py, pm), to: monthStart(yy, mm) } };
+    const from = monthStart(yy, mm);
+    const prevFrom = monthStart(py, pm);
+    /* Süren ay, geçen ayın AYNI gün sayısıyla kıyaslanır (16 günlük Ekim ile Eylül'ün ilk 16 günü), tamamlanmış ay tam ayla */
+    const elapsed = Date.now() - new Date(from).getTime();
+    const ongoing = elapsed > 0 && Date.now() < new Date(monthStart(ny, nm)).getTime();
+    const prevTo = ongoing ? new Date(Math.min(new Date(prevFrom).getTime() + elapsed, new Date(from).getTime())).toISOString() : from;
+    return { key: k, label: monthLabel(yy, mm), from, to: monthStart(ny, nm), prev: { from: prevFrom, to: prevTo } };
   };
   const ay = key.match(/^ay:(\d{4})-(\d{2})$/);
   if (ay) return month(Number(ay[1]), Number(ay[2]), key);

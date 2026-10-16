@@ -33,7 +33,7 @@ const STATUS: Record<string, [Tone, string]> = { aktif: ["info", "Sürüyor"], b
 const STAGE: Record<string, string> = { yapilacak: "Yapılacak", devam: "Devam", kontrol: "Kontrol", tamam: "Tamam" };
 const dFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "UTC", day: "numeric", month: "short" });
 const fmt = (d: string | null) => (d ? dFmt.format(new Date(`${d}T12:00:00Z`)) : "");
-const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] text-ink focus:border-accent focus:outline-none";
+const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 
 export function ProjectsView({ rows, detail, team, templates, deals, me, startNew, fromDeal }: { rows: ProjectRow[]; detail: ProjectDetail | null; team: Opt[]; templates: Opt[]; deals: Opt[]; me: number; startNew: boolean; fromDeal: number | null }) {
   const router = useRouter();

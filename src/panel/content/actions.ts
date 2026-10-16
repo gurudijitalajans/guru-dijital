@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { cms } from "@/lib/cms";
 import { getPanelContext } from "../context";
 import { PUBLISHABLE, SIMPLE, type PublishKey, type SimpleKey } from "./kinds";
+import { sessionLost } from "../errors";
 
 /**
  * Site içeriği işlemleri: basit kayıtların (ekip, referans, yorum, vaka)
@@ -57,6 +58,8 @@ export async function saveItem(kind: SimpleKey, id: number | null, raw: Record<s
     const doc = id ? await payload.update({ collection, id, data: data as never, ...opts }) : await payload.create({ collection, data: data as never, ...opts });
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -69,6 +72,8 @@ export async function deleteItem(kind: SimpleKey, id: number): Promise<Result> {
     await payload.delete({ collection: SIMPLE[kind].collection, id, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -87,6 +92,8 @@ export async function setPublished(kind: PublishKey, id: number, publish: boolea
     await payload.update({ collection, id, data: { ...rest, _status: publish ? "published" : "draft" } as never, draft: false, ...opts });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }

@@ -16,7 +16,7 @@ export function SummaryNow() {
         start(async () => {
           const r = await fetch("/api/yonetici/sabah-ozeti", { method: "POST", credentials: "same-origin" }).catch(() => null);
           const j = (await r?.json().catch(() => null)) as { ok?: boolean; sent?: number; reason?: string; error?: string } | null;
-          if (j?.sent) toast.success(`Sabah özeti ${j.sent} kişiye gönderildi.`);
+          if (j?.sent) (j.reason ? toast.warning : toast.success)(`Sabah özeti ${j.sent} kişiye gönderildi.${j.reason ? ` ${j.reason}` : ""}`);
           else toast.error(j?.reason ?? j?.error ?? "Gönderilemedi.");
         })
       }

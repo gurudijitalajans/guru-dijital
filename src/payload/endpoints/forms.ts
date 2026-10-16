@@ -6,6 +6,7 @@ import { defaultTenantId } from "../crm/tenant";
 import { connectionByKey } from "../channels/collections";
 import { addUsage } from "../channels/usage";
 import { clientIp, dayKey, rateLimited } from "../utils";
+import { closedReason, isOpenSlot } from "../../lib/tatiller";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,7 +64,7 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
       ["Geldiği sayfa", data.source],
     ],
     replyTo: data.email,
-    path: `/panel/gelen?f=tumu&s=t:${lead.id}`,
+    path: `/panel/gelen?f=tumu&s=t${lead.id}`,
     tenant,
   });
   return { ok: true, id: lead.id };
@@ -90,9 +91,10 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
   if (Number.isNaN(date.getTime()) || dayKey(date) <= dayKey(new Date())) {
     return { ok: false, status: 400, error: "Lütfen yarın ya da daha ileri bir gün seçin." };
   }
-  /* Takvim yalnız hafta içini gösterir; doğrudan istekle hafta sonu alınamaz */
-  if (date.getUTCDay() === 0 || date.getUTCDay() === 6) {
-    return { ok: false, status: 400, error: "Toplantılar hafta içi günlerde planlanabiliyor." };
+  /* Takvim yalnız açık günleri gösterir; doğrudan istekle hafta sonu, tatil ya da arife öğleden sonrası alınamaz */
+  if (!isOpenSlot(day, time)) {
+    const why = closedReason(day);
+    return { ok: false, status: 400, error: why ? `${why} nedeniyle bu gün kapalıyız; lütfen başka bir gün seçin.` : "Bu saatte kapalıyız; lütfen daha erken bir saat seçin." };
   }
 
   let bookingId: number | string;
@@ -122,7 +124,7 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
       ["Geldiği sayfa", data.source],
     ],
     replyTo: data.email,
-    path: `/panel/gelen?f=tumu&s=r:${bookingId}`,
+    path: `/panel/gelen?f=tumu&s=r${bookingId}`,
     tenant,
   });
   return { ok: true, id: bookingId };

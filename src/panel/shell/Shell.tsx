@@ -56,7 +56,7 @@ function TenantSwitcher({ tenant, tenants }: { tenant: ShellTenant; tenants: She
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content align="start" sideOffset={6} className="z-50 max-h-[60vh] w-[260px] overflow-y-auto rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
-          <DropdownMenu.Label className="px-2.5 py-1.5 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">İşletme</DropdownMenu.Label>
+          <DropdownMenu.Label className="px-2.5 py-1.5 text-[12px] font-semibold text-muted">İşletme</DropdownMenu.Label>
           {tenants.map((t) => (
             <DropdownMenu.Item key={t.id} onSelect={() => t.id !== tenant.id && pick(t.id)} className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 py-1.5 outline-none data-[highlighted]:bg-accent-soft">
               <span className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
     <nav aria-label="Ana menü" className="min-h-0 flex-1 overflow-y-auto px-2.5">
       {nav.map((g) => (
         <div key={g.label || "son"} className="mb-1">
-          {g.label ? <div className="mx-2.5 mt-4 mb-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-nav-label">{g.label}</div> : <div className="mt-4 border-t border-white/10" />}
+          {g.label ? <div className="mx-2.5 mt-4 mb-1 text-[11px] font-semibold text-nav-label">{g.label}</div> : <div className="mt-4 border-t border-white/10" />}
           {g.items.map((it) => {
             const active = isActive(path, it.href);
             return (
@@ -170,6 +170,26 @@ export function Shell(props: Props) {
   const path = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [palette, setPalette] = useState(false);
+  /* Kayan oturum: sekme açık ve görünürken oturum 30 dakikada bir yenilenir (Payload'un 8 saatlik
+     belirteci gün ortasında düşmesin); sekmeye geri dönülünce de hemen yenilenir */
+  useEffect(() => {
+    let last = Date.now();
+    const refresh = () => {
+      last = Date.now();
+      void fetch("/api/users/refresh-token", { method: "POST", credentials: "same-origin" }).catch(() => null);
+    };
+    const tick = window.setInterval(() => {
+      if (document.visibilityState === "visible") refresh();
+    }, 30 * 60 * 1000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && Date.now() - last > 10 * 60 * 1000) refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.clearInterval(tick);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
   /* Sayfa değişince içerik alanı başa döner (kaydırılan öğe pencere değil main) */
   useEffect(() => {
     document.getElementById("icerik")?.scrollTo({ top: 0, behavior: "instant" });

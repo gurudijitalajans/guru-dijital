@@ -683,7 +683,7 @@ const PAGES: Record<string, string[]> = {
 function PageMap({ page, active, note }: { page: string; active: string[]; note?: string }) {
   return (
     <div className="rounded-[12px] border border-line bg-sunken p-3">
-      <p className="mt-0 mb-2 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">{note ?? "Sayfada nerede"}</p>
+      <p className="mt-0 mb-2 text-[12px] font-semibold text-muted">{note ?? "Sayfada nerede"}</p>
       <ol className="m-0 flex list-none flex-wrap gap-1.5 p-0">
         {(PAGES[page] ?? []).map((r) => (
           <li key={r} className={cn("rounded-full px-2.5 py-1 text-[12px]", active.includes(r) ? "bg-accent text-white" : "bg-surface text-muted")}>

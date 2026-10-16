@@ -211,7 +211,7 @@ export function Editor(p: Props) {
         >
           {side.length ? (
             <section className="grid gap-4 rounded-[14px] border border-line bg-surface p-4">
-              <h2 className="m-0 text-[12px] font-semibold uppercase tracking-[0.07em] text-muted">Ayarlar</h2>
+              <h2 className="m-0 text-[12px] font-semibold text-muted">Ayarlar</h2>
               <FieldList fields={side} />
             </section>
           ) : null}

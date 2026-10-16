@@ -2,6 +2,7 @@
 
 import { getPanelContext } from "../context";
 import { DEAL_STAGES } from "@/payload/crm/stages";
+import { sessionLost } from "../errors";
 
 /**
  * Fırsat işlemleri: aşama ve sıra (sürükle bırak), düzenleme, yeni fırsat,
@@ -26,6 +27,8 @@ export async function moveDeal(id: number, stage: string, order: number, lostRea
     if (stage === "kaybedildi" && lostReason?.trim()) data.lostReason = lostReason.trim().slice(0, 2000);
     return (await ctx.update("deals", id, data)) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -46,6 +49,8 @@ export async function updateDeal(id: number, d: DealInput): Promise<Result> {
     if (!d.title?.trim()) return { ok: false, error: "Fırsat adı boş olamaz." };
     return (await ctx.update("deals", id, clean(d))) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -60,6 +65,8 @@ export async function createDeal(d: DealInput): Promise<Result> {
     const doc = (await ctx.create("deals", { ...clean(d), stage, contact: d.contact || undefined, owner: ctx.user.id })) as { id: number };
     return { ok: true, id: doc.id };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -74,6 +81,8 @@ export async function addNote(dealId: number, text: string): Promise<Result> {
     await ctx.create("activities", { type: "not", title: body.split("\n")[0].slice(0, 120), body, deal: deal.id, done: true, owner: ctx.user.id });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }
@@ -91,6 +100,8 @@ export async function scheduleCall(dealId: number): Promise<Result> {
     await ctx.create("activities", { type: "arama", title: `Ara: ${deal.title}`.slice(0, 120), deal: deal.id, dueAt: d.toISOString(), done: false, owner: ctx.user.id });
     return { ok: true };
   } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
     return fail(e);
   }
 }

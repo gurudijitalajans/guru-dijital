@@ -15,11 +15,12 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   const ctx = await requireModule("ops");
   const sp = await searchParams;
   const today = dayOf(new Date());
-  const [res, team, templates, deals] = await Promise.all([
+  const [res, team, templates, deals, who] = await Promise.all([
     ctx.find("projects", { sort: "-createdAt", limit: 500, depth: 1 }),
     ctx.team(),
     ctx.find("templates", { sort: "name", limit: 100 }),
     ctx.has("crm") ? ctx.find("deals", { where: { stage: { in: ["kazanildi", "teklif", "gorusme"] } }, sort: "-updatedAt", limit: 200 }) : Promise.resolve({ docs: [] as unknown[] }),
+    ctx.names(),
   ]);
   const ids = (res.docs as { id: number }[]).map((p) => p.id);
   const tasks = ids.length ? await ctx.find("tasks", { where: { project: { in: ids } }, limit: 5000, select: { project: true, stage: true, dueDate: true } }) : { docs: [] };
@@ -36,7 +37,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   type Raw = { id: number; title: string; status: string; company?: unknown; contact?: unknown; owner?: unknown; deal?: unknown; startDate?: string | null; dueDate?: string | null; description?: string | null; completedAt?: string | null };
   const rows: ProjectRow[] = (res.docs as Raw[]).map((p) => {
     const s = stats.get(p.id) ?? { total: 0, done: 0, late: 0 };
-    return { id: p.id, title: p.title, status: p.status, who: nameOf(p.company) || nameOf(p.contact), owner: nameOf(p.owner), due: p.dueDate ? dayOf(p.dueDate) : null, late: Boolean(p.dueDate && p.status === "aktif" && dayOf(p.dueDate) < today), total: s.total, done: s.done, lateTasks: s.late };
+    return { id: p.id, title: p.title, status: p.status, who: nameOf(p.company) || nameOf(p.contact), owner: who(p.owner), due: p.dueDate ? dayOf(p.dueDate) : null, late: Boolean(p.dueDate && p.status === "aktif" && dayOf(p.dueDate) < today), total: s.total, done: s.done, lateTasks: s.late };
   });
 
   let detail: ProjectDetail | null = null;
@@ -50,7 +51,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
         status: p.status,
         who: nameOf(p.company) || nameOf(p.contact),
         owner: idOf(p.owner),
-        ownerName: nameOf(p.owner),
+        ownerName: who(p.owner),
         deal: idOf(p.deal) ? { id: idOf(p.deal)!, title: nameOf(p.deal) } : null,
         startDate: p.startDate ? dayOf(p.startDate) : "",
         dueDate: p.dueDate ? dayOf(p.dueDate) : "",
@@ -62,7 +63,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
           stage: t.stage,
           due: t.dueDate ? dayOf(t.dueDate) : null,
           late: Boolean(t.dueDate && t.stage !== "tamam" && dayOf(t.dueDate) < today),
-          assignee: nameOf(t.assignee),
+          assignee: who(t.assignee),
         })),
       };
     }
