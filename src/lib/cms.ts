@@ -51,7 +51,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       },
       email: c.email?.trim() || fallback.email,
       phone: c.phone?.trim() || fallback.phone,
-      mobile: (c as { mobile?: string | null }).mobile?.trim() || fallback.mobile,
+      mobile: c.mobile?.trim() || fallback.mobile,
       whatsapp: c.whatsapp?.trim() || fallback.whatsapp,
       address: c.address?.trim() || fallback.address,
       instagram: c.instagram?.trim() || fallback.instagram,

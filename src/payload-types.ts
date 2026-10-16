@@ -2877,6 +2877,10 @@ export interface SiteSetting {
     email?: string | null;
     phone?: string | null;
     /**
+     * Doluysa iletişim sayfasında ve alt bilgide arama kartı, mobilde alt çubukta Ara düğmesi görünür.
+     */
+    mobile?: string | null;
+    /**
      * Ülke koduyla; doldurulunca sağdaki sekme WhatsApp'a gider.
      */
     whatsapp?: string | null;
@@ -3106,6 +3110,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         email?: T;
         phone?: T;
+        mobile?: T;
         whatsapp?: T;
         instagram?: T;
         address?: T;
