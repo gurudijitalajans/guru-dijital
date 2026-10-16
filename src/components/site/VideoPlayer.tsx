@@ -51,7 +51,8 @@ export function VideoPlayer({ src, poster, label, trackName, className }: VideoP
             playsInline
             controls={started}
             onEnded={() => setStarted(false)}
-            className="absolute inset-0 size-full object-cover"
+            /* contain: tam ekranda (16:10 MacBook, telefon) video kenarlardan kırpılmasın */
+            className="absolute inset-0 size-full object-contain"
           >
             Tarayıcınız video oynatmayı desteklemiyor.
           </video>
