@@ -192,7 +192,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
               title="Pakete Dahil Ürünler"
               lead="Her biri tek başına da kullanılabilir; pakette aynı veri tabanını ve tek girişi paylaşır."
             />
-            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-3 md:gap-5">
+            <StaggerGroup className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
               {bundle.map((b) => (
                 <StaggerItem key={b.slug} className="h-full">
                   <ProductCardLink product={b} />
@@ -257,7 +257,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                 <StaggerItem key={useCase.title}>
                   <article className={cn(cardCls, "p-6 md:p-7")}>
                     <p className="text-[13px] font-medium text-brand">Senaryo {pad(i + 1)}</p>
-                    <h3 className={cn(cardTitleCls, "mt-2 text-[20px]")}>{useCase.title}</h3>
+                    <h3 className={cn(cardTitleCls, "mt-2 text-[20px] leading-snug")}>{useCase.title}</h3>
                     <p className={cn(cardTextCls, "mt-2")}>{useCase.desc}</p>
                   </article>
                 </StaggerItem>
@@ -279,7 +279,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
                 </h2>
                 <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:mt-10 lg:grid-cols-4">
                   {product.stats.map((stat) => (
-                    <div key={stat.label} className="flex flex-col-reverse">
+                    <div key={stat.label} className="flex flex-col-reverse justify-end">
                       <dt className="mt-2 text-[14px] leading-snug text-white/80">{stat.label}</dt>
                       <dd className="text-[34px] font-normal leading-none tracking-[-0.03em] text-white sm:text-[44px]">{formatStat(stat)}</dd>
                     </div>
@@ -315,7 +315,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
               <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:pt-2">
                 {product.integrations.map((integration) => (
                   <li key={integration} className={cn(pillCls, "bg-chip px-4 py-2.5 text-[14px] shadow-none")}>
-                    <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+                    <span className="size-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
                     {integration}
                   </li>
                 ))}
@@ -342,7 +342,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
         <section className={sectionY}>
           <div className="container-g">
             <SectionHead title="Diğer Ürünlerimiz" lead="Hepsi aynı veri tabanını paylaşır; ihtiyacınız büyüdükçe birbirine bağlanır." />
-            <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-3 md:gap-5">
+            <StaggerGroup className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
               {others.map((p) => (
                 <StaggerItem key={p.slug} className="h-full">
                   <ProductCardLink product={p} />
@@ -358,7 +358,7 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
           Diğer ürünler (beyaz) varsa üst boşluk tekrarlanmaz. */}
       <section id="demo" className={cn(anchorCls, sectionY, others.length > 0 && "pt-0 md:pt-0")}>
         <div className="container-g">
-          <div className="rounded-[24px] bg-soft px-3 py-10 sm:px-6 md:rounded-[28px] md:px-10 md:py-14">
+          <div className="rounded-[24px] bg-soft px-2 py-10 min-[360px]:px-3 sm:px-6 md:rounded-[28px] md:px-10 md:py-14">
           <SectionHead
             center
             title="Demo Talep Edin"

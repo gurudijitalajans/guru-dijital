@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { MessageCircle, Send, X } from "lucide-react";
 import type { ChatInfo } from "@/lib/cms";
 import { cn } from "@/lib/utils";
+import { floatPos, useFloatsAway } from "./useFloatsAway";
 
 /**
  * Sağ alttaki sohbet balonu (Guru Chatbot). Asistan bilgi tabanıyla yanıtlar;
@@ -84,6 +85,7 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
     if (embed && window.parent !== window) window.parent.postMessage({ guru: "sohbet", open }, "*");
   };
   const [open, setOpen] = useState(false);
+  const away = useFloatsAway();
   /* Sohbet açıkken sağ alttaki diğer sabit öğeler (WhatsApp, alt çubuk, yan sekme) gizlenir */
   useEffect(() => {
     document.documentElement.toggleAttribute("data-chat-open", open);
@@ -200,8 +202,10 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
           data-umami-event="sohbet-ac"
           style={paint}
           className={cn(
-            "fixed z-[45] inline-flex size-14 items-center justify-center rounded-full bg-navy text-white shadow-[0_14px_32px_-12px_rgb(1_20_65/0.55)] transition-colors hover:bg-brand",
-            embed ? "bottom-5 right-5" : "bottom-[88px] right-4 lg:bottom-6 lg:right-6",
+            "fixed z-[45] inline-flex size-14 items-center justify-center rounded-full bg-navy text-white shadow-[0_14px_32px_-12px_rgb(1_20_65/0.55)] transition-[bottom,background-color,transform,opacity] duration-300 hover:bg-brand",
+            embed ? "bottom-5 right-5" : cn(floatPos.low, floatPos.right, floatPos.wait),
+            /* Formların ve footer'ın son satırının üstüne binmesin (WhatsApp düğmesiyle birlikte çekilir) */
+            !embed && away && "pointer-events-none translate-x-24 opacity-0",
           )}
         >
           <MessageCircle aria-hidden className="size-6" strokeWidth={2} />
@@ -217,10 +221,11 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
               ? embed.desktop
                 ? "inset-3 overflow-hidden rounded-2xl shadow-[0_18px_44px_-18px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]"
                 : "inset-0"
-              : "inset-0 sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[min(620px,calc(100dvh-48px))] sm:w-[390px] sm:overflow-hidden sm:rounded-2xl sm:shadow-[0_24px_60px_-20px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]",
+              : /* Yüzen pencere yalnız yeterince geniş VE yüksek ekranda; yatay telefonda (390 px yükseklik) tam ekran kalır */
+                "inset-0 [@media(min-width:640px)_and_(min-height:560px)]:inset-auto [@media(min-width:640px)_and_(min-height:560px)]:bottom-6 [@media(min-width:640px)_and_(min-height:560px)]:right-6 [@media(min-width:640px)_and_(min-height:560px)]:h-[min(620px,calc(100dvh-48px))] [@media(min-width:640px)_and_(min-height:560px)]:w-[390px] [@media(min-width:640px)_and_(min-height:560px)]:overflow-hidden [@media(min-width:640px)_and_(min-height:560px)]:rounded-2xl [@media(min-width:640px)_and_(min-height:560px)]:shadow-[0_24px_60px_-20px_rgb(1_20_65/0.45),0_0_0_1px_rgb(1_20_65/0.06)]",
           )}
         >
-          <header style={paint} className="flex items-center gap-3 bg-navy px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-white sm:pt-3">
+          <header style={paint} className="flex items-center gap-3 bg-navy py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[calc(0.75rem+env(safe-area-inset-top))] text-white [@media(min-width:640px)_and_(min-height:560px)]:px-4 [@media(min-width:640px)_and_(min-height:560px)]:pt-3">
             <span className="inline-flex size-9 items-center justify-center rounded-full bg-white/15" aria-hidden>
               <MessageCircle className="size-[18px]" strokeWidth={2} />
             </span>
@@ -233,7 +238,7 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
             </button>
           </header>
 
-          <div className="flex-1 space-y-2.5 overflow-y-auto bg-soft px-4 py-4" aria-live="polite">
+          <div className="flex-1 space-y-2.5 overflow-y-auto bg-soft py-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]" aria-live="polite">
             {info.greeting && (
               <div className="max-w-[85%] rounded-2xl rounded-bl-md bg-white px-3.5 py-2.5 text-[14.5px] leading-relaxed text-body shadow-[0_0_0_1px_rgb(1_20_65/0.05)]">{info.greeting}</div>
             )}
@@ -283,7 +288,7 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
           </div>
 
           <form
-            className="border-t border-line bg-white px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 sm:pb-3"
+            className="border-t border-line bg-white pb-[calc(0.75rem+env(safe-area-inset-bottom))] pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] pt-3 [@media(min-width:640px)_and_(min-height:560px)]:px-3 [@media(min-width:640px)_and_(min-height:560px)]:pb-3"
             onSubmit={(e) => {
               e.preventDefault();
               void sendText(text);
@@ -312,7 +317,8 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
                   }
                 }}
                 placeholder="Mesajınızı yazın"
-                className="max-h-32 min-h-11 flex-1 resize-none rounded-2xl border border-line bg-soft px-3.5 py-2.5 text-[15px] text-heading outline-none placeholder:text-muted focus:border-brand"
+                /* 16px: iOS Safari daha küçük yazılı alana odaklanınca sayfayı yakınlaştırır */
+                className="max-h-32 min-h-11 flex-1 resize-none rounded-2xl border border-line bg-soft px-3.5 py-2.5 text-[16px] text-heading outline-none placeholder:text-muted focus:border-brand"
               />
               <button
                 type="submit"
@@ -324,7 +330,7 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
                 <Send aria-hidden className="size-[18px]" />
               </button>
             </div>
-            {info.notice && <p className="mt-2 px-1 text-[11.5px] leading-snug text-muted">{info.notice}</p>}
+            {info.notice && <p className="mt-2 px-1 text-[12px] leading-snug text-muted">{info.notice}</p>}
           </form>
         </section>
       )}

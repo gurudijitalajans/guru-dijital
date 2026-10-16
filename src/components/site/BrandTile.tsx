@@ -18,7 +18,8 @@ const TR_CHARS = /[çğıöşüÇĞİÖŞÜ]/;
 
 export function BrandTile({ brand, index }: { brand: ReferenceView; index: number }) {
   return (
-    <li className="group grid h-[96px] place-items-center rounded-2xl bg-white px-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.22),0_18px_36px_-24px_rgb(1_20_65/0.45)] md:h-[112px]">
+    /* Tek sütun karonun genişliğinde (minmax 0): geniş logo dar mobil karoda taşmaz, ortada kalır */
+    <li className="group grid h-[96px] grid-cols-[minmax(0,1fr)] place-items-center rounded-2xl bg-white px-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.22),0_18px_36px_-24px_rgb(1_20_65/0.45)] md:h-[112px]">
       {brand.logo ? (
         <Image
           src={brand.logo.src}
@@ -26,7 +27,7 @@ export function BrandTile({ brand, index }: { brand: ReferenceView; index: numbe
           width={brand.logo.w}
           height={brand.logo.h}
           sizes="160px"
-          className="max-h-12 w-auto max-w-[150px] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+          className="max-h-12 w-auto max-w-[min(150px,100%)] object-contain transition-transform duration-300 group-hover:scale-[1.04]"
         />
       ) : (
         <span

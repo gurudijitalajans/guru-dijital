@@ -2,6 +2,7 @@ import Image from "next/image";
 import { SectionHead } from "@/components/site/SectionHead";
 import { Reveal } from "@/components/ui/Reveal";
 import type { ReferenceView } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
 /**
  * Ana sayfa referans şeridi (Magic UI "Marquee" düzeni): üç sıra, zıt
@@ -17,7 +18,8 @@ function Row({ items, reverse, seconds }: { items: ReferenceView[]; reverse?: bo
       <ul className={reverse ? "marquee-track marquee-reverse-track" : "marquee-track"} style={{ animationDuration: `${seconds}s` }}>
         {[...items, ...items].map((r, i) =>
           r.logo ? (
-            <li key={`${r.name}-${i}`} className="mx-2.5 grid h-[76px] w-[172px] shrink-0 place-items-center rounded-2xl bg-white px-5 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] md:mx-3 md:h-[84px] md:w-[196px]">
+            /* Hareket azaltmada şerit kaydırılabilir listeye döner: ikinci kopya gizlenir, her logo bir kez */
+            <li key={`${r.name}-${i}`} className={cn("mx-2.5 grid h-[76px] w-[172px] shrink-0 place-items-center rounded-2xl bg-white px-5 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] md:mx-3 md:h-[84px] md:w-[196px]", i >= items.length && "motion-reduce:hidden")}>
               <Image src={r.logo.src} alt="" width={r.logo.w} height={r.logo.h} sizes="200px" className="max-h-12 w-auto max-w-full object-contain md:max-h-[52px]" />
             </li>
           ) : null

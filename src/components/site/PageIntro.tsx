@@ -35,7 +35,8 @@ export function PageIntro({ eyebrow, title, lead, children, visual, className }:
           {lead && (
             <p className="mx-auto mt-5 max-w-4xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{lead}</p>
           )}
-          {children && <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>}
+          {/* Çok dar ekranda iki düğme yan yana sığmıyor: farklı genişlikte iki hap yerine eşit genişlikte alt alta */}
+          {children && <div className="mt-8 flex flex-wrap items-center justify-center gap-3 max-[359px]:flex-col max-[359px]:items-stretch">{children}</div>}
         </Reveal>
         {visual && <div className="mt-10 md:mt-12">{visual}</div>}
       </div>

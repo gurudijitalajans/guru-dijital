@@ -106,13 +106,15 @@ export default async function BlogPostPage({ params }: Props) {
 
         {cover && (
           <div className="container-g">
-            <div className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-soft lg:aspect-[21/9]">
+            {/* Kapaklar 16:9 üretiliyor: geniş ekranda 21:9'a kırpmak kategori çipini ve maketlerin
+                altını kesiyordu. Oran sabit, yükseklik büyümesin diye genişlik 1024 px'te durur. */}
+            <div className="relative mx-auto aspect-video max-w-[1024px] overflow-hidden rounded-[20px] bg-soft">
               <Image
                 src={cover.url}
                 alt={cover.alt}
                 fill
                 preload
-                sizes="(min-width: 1280px) 1200px, calc(100vw - 32px)"
+                sizes="(min-width: 1072px) 1024px, calc(100vw - 40px)"
                 className="object-cover"
               />
             </div>
@@ -124,9 +126,9 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="min-w-0">
             {/* Dar ekranda içindekiler metnin başında, açılır kutuda */}
             {headings.length > 2 && (
-              <details className="mb-8 rounded-2xl bg-soft p-5 lg:hidden">
-                <summary className="text-[14px] font-semibold text-heading">İçindekiler</summary>
-                <ol className="mt-3 grid gap-1">
+              <details className="mb-8 max-w-[720px] rounded-2xl bg-soft px-5 py-2 lg:hidden">
+                <summary className="cursor-pointer py-2.5 text-[14px] font-semibold text-heading">İçindekiler</summary>
+                <ol className="mb-2 mt-1 grid gap-1">
                   {headings.map((h) => (
                     <li key={h.id}>
                       <a href={`#${h.id}`} className="block py-1.5 text-[14.5px] text-body hover:text-brand">
@@ -142,8 +144,10 @@ export default async function BlogPostPage({ params }: Props) {
           <aside className="hidden min-w-0 lg:block">
             <div className="grid gap-4 lg:sticky lg:top-28">
               {headings.length > 2 && (
-                <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5 lg:max-h-[calc(100dvh-24rem)] lg:overflow-y-auto lg:overscroll-contain">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-muted">İçindekiler</p>
+                /* Yükseklik sınırı, kenar sütununun altını sağ alttaki yüzen düğmelerden (WhatsApp, sohbet)
+                    uzak tutar; kap kenar boşluğu düğmelere yetecek kadar genişleyince (1360+) gevşer */
+                <nav aria-label="İçindekiler" className="rounded-2xl bg-soft p-5 lg:max-h-[calc(100dvh-30rem)] lg:overflow-y-auto lg:overscroll-contain min-[1360px]:max-h-[calc(100dvh-24rem)]">
+                  <p className="text-[13px] font-semibold text-muted">İçindekiler</p>
                   <ol className="mt-3 grid gap-1">
                     {headings.map((h) => (
                       <li key={h.id}>
@@ -172,8 +176,9 @@ export default async function BlogPostPage({ params }: Props) {
         <section className={`bg-soft ${sectionY} mt-8 md:mt-10`}>
           <div className="container-g">
             <SectionHead title="Diğer Yazılar" action={{ href: "/blog", label: "Tüm yazılar" }} />
-            {/* Tek yazı yatay kartla, ikisi iki sütunda: üç sütunlu ızgarada boş sütun kalmaz */}
-            <div className={cn("fill-odd-sm mt-10 grid gap-5 md:gap-6", others.length === 2 ? "sm:grid-cols-2" : others.length > 2 && "sm:grid-cols-2 lg:grid-cols-3")}>
+            {/* Tek yazı yatay kartla, ikisi iki sütunda: üç sütunlu ızgarada boş sütun kalmaz. Üç yazıda
+                iki sütunlu aralıkta (640-1023) üçüncü gizlenir: tek başına tam genişliğe yayılıyordu */}
+            <div className={cn("mt-10 grid gap-5 md:gap-6", others.length === 2 ? "sm:grid-cols-2" : others.length > 2 && "sm:grid-cols-2 lg:grid-cols-3 sm:max-lg:[&>:nth-child(3)]:hidden")}>
               {others.map((p) => (
                 <PostCard key={p.slug} post={p} as="h3" layout={others.length === 1 ? "wide" : "card"} />
               ))}

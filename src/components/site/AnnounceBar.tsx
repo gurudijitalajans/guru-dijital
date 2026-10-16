@@ -32,11 +32,12 @@ export function AnnounceBar({ messages }: { messages: string[] }) {
     >
       <p className="sr-only">{list.join(" ")}</p>
       {/* Tüm cümleler üst üste: bant yüksekliği en uzun cümleye göre sabit, sayfa zıplamaz */}
-      <div className="grid" aria-hidden>
+      <div className="grid items-center" aria-hidden>
         {list.map((m, n) => (
           <span
             key={n}
-            className={`[grid-area:1/1] transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none ${n === i ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"}`}
+            /* Giden cümle hızlı söner, gelen onu bekler: iki cümle hiç üst üste görünmez */
+            className={`[grid-area:1/1] transition-[opacity,transform] ease-out motion-reduce:transition-none motion-reduce:delay-0 ${n === i ? "translate-y-0 opacity-100 delay-200 duration-500" : "pointer-events-none -translate-y-1 opacity-0 delay-0 duration-200"}`}
           >
             {m}
           </span>

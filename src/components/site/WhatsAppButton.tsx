@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { floatPos, useFloatsAway } from "./useFloatsAway";
 
 /** WhatsApp'ın resmi balon simgesi (tek renk) */
 function WaIcon({ className }: { className?: string }) {
@@ -15,29 +15,14 @@ function WaIcon({ className }: { className?: string }) {
 
 /**
  * Sağ altta WhatsApp düğmesi: sohbet balonunun üstünde, mobilde alt eylem
- * çubuğunun da üstünde. Üzerine gelince ya da odaklanınca etiket açılır;
+ * çubuğu görünürken onun da üstünde. Üzerine gelince ya da odaklanınca etiket açılır;
  * mesaj, bulunulan sayfaya göre hazır yazılı gelir.
  */
 export function WhatsAppButton({ number, chat }: { number: string; chat: boolean }) {
   const pathname = usePathname();
   const wa = number.replace(/\D/g, "");
-  /* 1280px altında form ekrandayken düğme çekilir: tarih seçici gibi alanların üstüne binmesin */
-  const [overForm, setOverForm] = useState(false);
-  useEffect(() => {
-    const seen = new Set<Element>();
-    const io = new IntersectionObserver((es) => {
-      for (const e of es) {
-        if (e.isIntersecting) seen.add(e.target);
-        else seen.delete(e.target);
-      }
-      setOverForm(seen.size > 0 && window.innerWidth < 1280);
-    });
-    const t = window.setTimeout(() => document.querySelectorAll("main form, [data-hide-floats]").forEach((el) => io.observe(el)), 300);
-    return () => {
-      window.clearTimeout(t);
-      io.disconnect();
-    };
-  }, [pathname]);
+  /* Formların ve footer'ın son satırının üstüne binmesin (bkz. useFloatsAway) */
+  const away = useFloatsAway();
   if (!wa) return null;
   const text = `Merhaba Guru Dijital, ${pathname === "/" ? "web sitenizden" : `sitenizdeki ${pathname} sayfasından`} yazıyorum.`;
   return (
@@ -50,9 +35,11 @@ export function WhatsAppButton({ number, chat }: { number: string; chat: boolean
       data-umami-event-konum="balon"
       data-float=""
       className={cn(
-        "group fixed right-4 z-[45] inline-flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-[0_14px_32px_-12px_rgb(18_140_74/0.7)] transition-[background-color,transform,opacity] duration-300 hover:bg-[#1ebe5b] active:scale-95 lg:right-6",
-        overForm && "pointer-events-none translate-x-24 opacity-0",
-        chat ? "bottom-[160px] lg:bottom-[96px]" : "bottom-[88px] lg:bottom-6"
+        "group fixed z-[45] inline-flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-[0_14px_32px_-12px_rgb(18_140_74/0.7)] transition-[bottom,background-color,transform,opacity] duration-300 hover:bg-[#1ebe5b] active:scale-95",
+        floatPos.right,
+        floatPos.wait,
+        away && "pointer-events-none translate-x-24 opacity-0",
+        chat ? floatPos.high : floatPos.low
       )}
     >
       <span className="grid size-14 shrink-0 place-items-center">

@@ -136,7 +136,8 @@ function Viewer({ shots, index, onIndex, onClose }: { shots: Shot[]; index: numb
         if (many && x0 !== null && x1 !== undefined && Math.abs(x1 - x0) > 50) go(x1 < x0 ? 1 : -1);
       }}
     >
-      <div className="flex items-center justify-between gap-4 px-4 py-3 text-white sm:px-6">
+      {/* Yatay telefonda çentik / Dynamic Island payı (viewportFit: cover) */}
+      <div className="flex items-center justify-between gap-4 pb-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(0.75rem,env(safe-area-inset-top))] text-white sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
         <p className="text-[14px] tabular-nums text-white/70">{many ? `${index + 1} / ${shots.length}` : ""}</p>
         <button
           ref={closeBtn}
@@ -149,7 +150,7 @@ function Viewer({ shots, index, onIndex, onClose }: { shots: Shot[]; index: numb
         </button>
       </div>
       <div
-        className="relative flex min-h-0 flex-1 items-center justify-center px-4 pb-4 sm:px-20"
+        className="relative flex min-h-0 flex-1 items-center justify-center px-4 pb-4 [--lb-gx:2rem] sm:px-20 sm:[--lb-gx:10rem]"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -158,7 +159,9 @@ function Viewer({ shots, index, onIndex, onClose }: { shots: Shot[]; index: numb
           <motion.div
             key={shot.src}
             className="relative max-h-full max-w-[min(1600px,100%)]"
-            style={{ aspectRatio: `${shot.w} / ${shot.h}`, height: `min(100%, calc((100vw - ${many ? 10 : 2}rem) * ${shot.h / shot.w}))` }}
+            /* Kutu, görsel alanının gerçek genişliğine göre (telefonda px-4, sm+ yan oklar için px-20) ve
+               1600px sınırıyla boyutlanır: oran korunur, telefonda görsel sayfadakinden küçük açılmaz */
+            style={{ aspectRatio: `${shot.w} / ${shot.h}`, height: `min(100%, calc(min(1600px, 100vw - var(--lb-gx)) * ${shot.h / shot.w}))` }}
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
@@ -169,16 +172,27 @@ function Viewer({ shots, index, onIndex, onClose }: { shots: Shot[]; index: numb
         </AnimatePresence>
         {many && (
           <>
-            <button type="button" onClick={() => go(-1)} aria-label="Önceki görsel" className={cn(navBtn, "left-2 hidden sm:grid sm:left-5")}>
+            <button type="button" onClick={() => go(-1)} aria-label="Önceki görsel" className={cn(navBtn, "hidden sm:left-[max(1.25rem,env(safe-area-inset-left))] sm:grid")}>
               <ChevronLeft className="size-6" aria-hidden />
             </button>
-            <button type="button" onClick={() => go(1)} aria-label="Sonraki görsel" className={cn(navBtn, "right-2 hidden sm:grid sm:right-5")}>
+            <button type="button" onClick={() => go(1)} aria-label="Sonraki görsel" className={cn(navBtn, "hidden sm:right-[max(1.25rem,env(safe-area-inset-right))] sm:grid")}>
               <ChevronRight className="size-6" aria-hidden />
             </button>
           </>
         )}
       </div>
-      {shot.alt && <p className="px-6 pb-5 text-center text-[14px] text-white/75">{shot.alt}</p>}
+      {/* Telefonda yan oklar yok (görsel alanı dar): geçiş düğmeleri görselin altında */}
+      {many && (
+        <div className="flex justify-center gap-3 pb-3 sm:hidden">
+          <button type="button" onClick={() => go(-1)} aria-label="Önceki görsel" className="grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors active:bg-white/20 focus-visible:outline-2 focus-visible:outline-white">
+            <ChevronLeft className="size-6" aria-hidden />
+          </button>
+          <button type="button" onClick={() => go(1)} aria-label="Sonraki görsel" className="grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors active:bg-white/20 focus-visible:outline-2 focus-visible:outline-white">
+            <ChevronRight className="size-6" aria-hidden />
+          </button>
+        </div>
+      )}
+      {shot.alt && <p className="px-[max(1.5rem,env(safe-area-inset-left))] pb-[max(1.25rem,env(safe-area-inset-bottom))] text-center text-[14px] text-white/75">{shot.alt}</p>}
     </motion.div>
   );
 }

@@ -110,7 +110,8 @@ export function DemoSwitch({ form, scheduler }: DemoSwitchProps) {
               onClick={() => setTab(t.key)}
               onKeyDown={onKeyDown}
               className={cn(
-                "min-h-11 rounded-full px-3 text-[14px] font-medium transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+                /* 360 altında 13px ve dar iç boşluk: iki etiket tek satırda kalır (hapın içinde iki satır sıkışıyordu) */
+                "min-h-11 rounded-full px-2 text-[13px] font-medium leading-tight transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand min-[360px]:px-3 min-[360px]:text-[14px]",
                 active ? "bg-navy text-white" : "text-body hover:text-heading"
               )}
             >

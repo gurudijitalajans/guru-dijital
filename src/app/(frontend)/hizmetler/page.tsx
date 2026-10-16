@@ -60,10 +60,11 @@ export default async function HizmetlerPage() {
                 <StaggerItem key={s.slug} className={cn("h-full", lone && "sm:col-span-2 lg:col-span-1")}>
                   <Link
                     href={`/hizmetler/${s.slug}`}
-                    className={cn(cardCls, cardHoverCls, "group flex h-full flex-col p-2.5")}
+                    /* Tek kalan son kart iki sütunlu aralıkta (640-1023) yatay: tam genişlikte dikey kart diğerlerinin iki katı boya çıkıyordu */
+                    className={cn(cardCls, cardHoverCls, "group flex h-full flex-col p-2.5", lone && "sm:max-lg:flex-row sm:max-lg:gap-2")}
                   >
                     {img && (
-                      <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-soft">
+                      <div className={cn("relative aspect-[16/10] overflow-hidden rounded-xl bg-soft", lone && "sm:max-lg:w-1/2 sm:max-lg:shrink-0 sm:max-lg:self-start")}>
                         <Image
                           src={img.src}
                           alt={img.alt}
@@ -82,7 +83,7 @@ export default async function HizmetlerPage() {
                           {s.no}
                         </span>
                       </div>
-                      <h2 className={cn(cardTitleCls, "mt-1 text-[19px]")}>{s.title}</h2>
+                      <h2 className={cn(cardTitleCls, "mt-1 text-[19px] leading-snug")}>{s.title}</h2>
                       <p className={cardTextCls}>{s.short}</p>
                       <span className="mt-auto inline-flex min-h-11 items-center gap-1.5 pt-1 text-[14px] font-medium text-heading transition-colors group-hover:text-brand">
                         İncele

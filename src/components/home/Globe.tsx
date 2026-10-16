@@ -120,7 +120,7 @@ export function Globe({ className }: GlobeProps) {
       <canvas
         ref={canvasRef}
         aria-hidden
-        className="size-full cursor-grab opacity-0 transition-opacity duration-1000 [contain:layout_paint_size] active:cursor-grabbing group-data-[fallback=1]:hidden"
+        className="size-full cursor-grab touch-pan-y opacity-0 transition-opacity duration-1000 [contain:layout_paint_size] active:cursor-grabbing group-data-[fallback=1]:hidden"
         onPointerDown={(e) => {
           drag.current = { x: e.clientX, phi: offset.current };
           (e.currentTarget as HTMLCanvasElement).setPointerCapture(e.pointerId);

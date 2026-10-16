@@ -16,7 +16,7 @@ function VideoQuote({ url, poster, name }: { url: string; poster: string | null;
     );
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" className="group relative grid aspect-[4/5] w-full place-items-center overflow-hidden rounded-xl bg-navy" aria-label={`${name} video yorumunu izleyin`}>
-      {poster && <Image src={poster} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover opacity-90 transition-transform duration-500 group-hover:scale-[1.03]" />}
+      {poster && <Image src={poster} alt="" fill sizes="(min-width: 1280px) 340px, (min-width: 768px) 24vw, calc(100vw - 88px)" className="object-cover opacity-90 transition-transform duration-500 group-hover:scale-[1.03]" />}
       <span className="relative grid size-16 place-items-center rounded-full bg-white/95 text-navy shadow-lg transition-transform group-hover:scale-105">
         <Play className="ml-1 size-6" fill="currentColor" aria-hidden />
       </span>

@@ -44,7 +44,8 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
               <StaggerGroup key={page} className="fill-odd-sm grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
                 {posts.map((p, i) => (
                   <StaggerItem key={p.slug} className="h-full">
-                    <PostCard post={p} priority={i === 0} eager={i < 3} layout="card" />
+                    {/* Tek kalan son kart iki sütunlu aralıkta (640-1023) yatay: tam genişlikte dikey kart çok uzuyordu */}
+                    <PostCard post={p} priority={i === 0} eager={i < 3} layout={posts.length % 2 === 1 && i === posts.length - 1 ? "wide-sm" : "card"} />
                   </StaggerItem>
                 ))}
               </StaggerGroup>

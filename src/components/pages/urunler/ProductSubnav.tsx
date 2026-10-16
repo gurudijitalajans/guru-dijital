@@ -19,6 +19,10 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
   const [stuck, setStuck] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  /* Mobil eylem düğmesi kayan şeridin dışında, sağda sabit durur: şeridin sonunda kalınca
+     telefonda ekran dışındaydı (alt eylem çubuğu ürün sayfasında yok, tek çağrı bu) */
+  const cta = items.find((i) => i.cta);
+  const tabs = items.filter((i) => !i.cta);
 
   useEffect(() => {
     const sections = items
@@ -78,7 +82,8 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
       <div
         ref={barRef}
         className={cn(
-          "sticky top-[68px] z-40 bg-white/95 backdrop-blur-md transition-shadow duration-300 lg:top-[76px]",
+          /* Kısa yatay ekranda yapışkan değil: üst menüyle birlikte görünür alanın üçte birini kaplıyordu */
+          "sticky top-[68px] z-40 bg-white/95 backdrop-blur-md transition-shadow duration-300 lg:top-[76px] [@media(max-height:480px)]:static",
           stuck && "shadow-[0_14px_28px_-22px_rgb(1_20_65/0.45)]"
         )}
       >
@@ -87,8 +92,8 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
             ref={listRef}
             className="-mx-4 flex min-w-0 flex-1 gap-1 overflow-x-auto px-4 [scrollbar-width:none] max-lg:[mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%_-_24px),transparent)] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:px-0"
           >
-            {items.map((i) => (
-              <li key={i.id} data-id={i.id} className={cn("shrink-0", i.cta && "lg:hidden")}>
+            {tabs.map((i) => (
+              <li key={i.id} data-id={i.id} className="shrink-0">
                 <a
                   href={`#${i.id}`}
                   aria-current={active === i.id ? "true" : undefined}
@@ -96,11 +101,7 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
                   data-umami-event-bolum={i.label}
                   className={cn(
                     "inline-flex min-h-11 items-center rounded-full px-4 text-[14.5px] font-medium transition-colors",
-                    i.cta
-                      ? "bg-navy text-white hover:bg-brand"
-                      : active === i.id
-                        ? "bg-chip text-heading"
-                        : "text-muted hover:text-heading"
+                    active === i.id ? "bg-chip text-heading" : "text-muted hover:text-heading"
                   )}
                 >
                   {i.label}
@@ -108,6 +109,17 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
               </li>
             ))}
           </ul>
+          {cta && (
+            <a
+              href={`#${cta.id}`}
+              aria-current={active === cta.id ? "true" : undefined}
+              data-umami-event="urun-menu"
+              data-umami-event-bolum={cta.label}
+              className="-ml-2 inline-flex min-h-11 shrink-0 items-center rounded-full bg-navy px-4 text-[14.5px] font-medium text-white transition-colors hover:bg-brand lg:hidden"
+            >
+              {cta.label}
+            </a>
+          )}
           <Btn href="#demo" variant="primary" size="md" arrow className="hidden shrink-0 lg:inline-flex" data-umami-event="teklif-al" data-umami-event-konum="urun-menu">
             {ctaLabel}
           </Btn>

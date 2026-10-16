@@ -153,19 +153,19 @@ function DesktopGroup({
                   <NavIcon item={it} />
                   <span className="min-w-0">
                     <span className="block text-[14.5px] font-medium leading-snug text-heading">{it.label}</span>
-                    <span className="mt-0.5 block line-clamp-2 text-[13px] leading-snug text-muted">{it.desc}</span>
+                    <span className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-muted">{it.desc}</span>
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
           {group.footer && (
-            <div className="mt-1 flex items-center justify-between gap-4 rounded-2xl bg-soft px-4 py-3">
+            <div className="mt-1 flex items-center justify-between gap-4 rounded-2xl bg-soft px-4 py-1">
               <span className="text-[13px] text-muted">{group.footer.hint}</span>
               <Link
                 href={group.footer.href}
                 onClick={() => setOpen(false)}
-                className="inline-flex shrink-0 items-center gap-1.5 text-[13.5px] font-medium text-brand transition-colors hover:text-navy"
+                className="inline-flex min-h-10 shrink-0 items-center gap-1.5 text-[13.5px] font-medium text-brand transition-colors hover:text-navy"
               >
                 {group.footer.label}
                 <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
@@ -238,10 +238,20 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
       }
     };
     window.addEventListener("keydown", onKey);
+    /* Ekran masaüstü genişliğine geçerse (tablet döndürme, pencere büyütme) panel lg:hidden ile
+       kaybolur: menü de kapanmalı, yoksa kaydırma kilidi kalır. Yön değişince duyuru bandının
+       yüksekliği değişir, panelin üst kenarı header'a göre yeniden ölçülür. */
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onDesktop = () => { if (desktop.matches) setOpen(false); };
+    const onResize = () => setPanelTop(Math.max(0, headerRef.current?.getBoundingClientRect().top ?? 0));
+    desktop.addEventListener("change", onDesktop);
+    window.addEventListener("resize", onResize);
     panelRef.current?.querySelector<HTMLElement>("a, button")?.focus();
     return () => {
       root.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onDesktop);
+      window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
@@ -300,7 +310,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
       </div>
 
     </header>
-      {/* Mobil menü paneli */}
+      {/* Mobil menü paneli. z-[75]: ilk ziyaretteki çerez bandının (70) üstünde, tercih penceresinin (80) altında */}
       <div
         id="mobil-menu"
         ref={panelRef}
@@ -309,10 +319,12 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
         aria-label="Menü"
         hidden={!open}
         style={{ top: panelTop }}
-        className="fixed inset-x-0 bottom-0 z-[60] overflow-y-auto bg-white px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-[75] overflow-y-auto overscroll-contain bg-white pb-[calc(2rem+env(safe-area-inset-bottom))] pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))] md:pl-[max(1.5rem,env(safe-area-inset-left))] md:pr-[max(1.5rem,env(safe-area-inset-right))] lg:hidden"
       >
-        {/* Panelin kendi üst satırı: header ile aynı hizada kapat düğmesi, logo, İletişim */}
-        <div className="relative -mx-5 mb-2 flex h-[68px] items-center px-5">
+        {/* Panelin kendi üst satırı: header ile aynı hizada (container-g ile aynı iç boşluk, yatay
+            telefonda çentik payı dahil) kapat düğmesi, logo, İletişim. Yapışkan: uzun grup açılıp
+            kaydırılınca kapat düğmesi kaybolmaz; negatif kenar boşluğu panel dolgusuna eşit */}
+        <div className="sticky top-0 z-10 -ml-[max(1.25rem,env(safe-area-inset-left))] -mr-[max(1.25rem,env(safe-area-inset-right))] mb-2 flex h-[68px] items-center bg-white pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))] md:-ml-[max(1.5rem,env(safe-area-inset-left))] md:-mr-[max(1.5rem,env(safe-area-inset-right))] md:pl-[max(1.5rem,env(safe-area-inset-left))] md:pr-[max(1.5rem,env(safe-area-inset-right))]">
           <button
             type="button"
             aria-label="Menüyü kapat"
@@ -329,7 +341,8 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
           </Link>
           <TalkLink className="ml-auto" onClick={close} />
         </div>
-        <ul>
+        {/* Tablette (768-1023) liste ve düğme tam genişliğe yayılınca ok etiketten çok uzakta kalıyordu */}
+        <ul className="md:max-w-xl">
           {menu.map((g) => {
             const isOpen = expanded === g.label;
             return (
@@ -352,7 +365,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
                             <NavIcon item={it} />
                             <span className="min-w-0">
                               <span className="block text-[16px] font-medium leading-snug text-heading">{it.label}</span>
-                              <span className="mt-0.5 block line-clamp-2 text-[13.5px] leading-snug text-muted">{it.desc}</span>
+                              <span className="mt-0.5 line-clamp-2 text-[13.5px] leading-snug text-muted">{it.desc}</span>
                             </span>
                           </Link>
                         </li>
@@ -376,7 +389,7 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
             );
           })}
         </ul>
-        <div className="mt-6">
+        <div className="mt-6 md:max-w-xl">
           <Link
             href="/iletisim"
             onClick={close}

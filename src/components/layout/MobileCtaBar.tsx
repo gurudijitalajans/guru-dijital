@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Btn } from "@/components/site/Btn";
@@ -11,13 +11,29 @@ const EASE = [0.22, 1, 0.36, 1] as const;
    CTA'sı ve footer zaten eylem noktasıdır; üst üste binme olmaz. */
 const BLOCKER_SELECTOR = "footer, form, [data-hide-cta-bar]";
 
+/* Kısa ekran (yatay telefon): sunucuda false, istemcide gerçek değer */
+const SHORT = "(max-height: 500px)";
+const subscribeShort = (cb: () => void) => {
+  const mq = window.matchMedia(SHORT);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+const getShort = () => window.matchMedia(SHORT).matches;
+
 /**
  * Mobil/tablet için başparmak bölgesinde kalıcı dönüşüm girişi.
- * - Hero (main içindeki ilk section) ekrandan çıkınca alttan gelir.
+ * - Hero (main içindeki [data-hero] ya da ilk section/header) ekrandan çıkınca alttan gelir.
  * - Footer, form ya da [data-hide-cta-bar] görünümdeyken gizlenir.
  * - /iletisim'de (hedefi zaten o sayfa) ve ürün detayında (yapışkan alt menüde
  *   Demo düğmesi var) hiç render edilmez.
  * - /iletisim'e gider; hizmet sayfasında hizmet ön seçili olarak.
+ * - Kısa (yatay telefon) ekranda gösterilmez: yapışkan menüyle birlikte görünür alanın
+ *   üçte birinden fazlasını kaplıyordu.
+ * - Görünürken html'e data-cta-bar konur: yüzen düğmeler (WhatsApp, sohbet) çubuğun
+ *   üstüne çıkar, çubuk yokken ekranın altına iner (bkz. floatPos).
+ * - Yüzen düğmeler de mobilde hero geçilince belirir (html[data-floats]): hero'nun tam
+ *   genişlik Teklif Al / Toplantı Planla düğmelerinin ve ilk kartların üstüne biniyorlardı.
+ *   Çubuğun gösterilmediği sayfalarda da aynı kural; hero bulunamazsa hemen görünürler.
  * Hydration: SSR'da hiçbir şey basılmaz (show=false); görünürlük yalnız
  * IntersectionObserver callback'lerinde güncellenir.
  */
@@ -25,17 +41,20 @@ export function MobileCtaBar() {
   const pathname = usePathname();
   const [heroOut, setHeroOut] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [noHero, setNoHero] = useState(false);
+  const short = useSyncExternalStore(subscribeShort, getShort, () => false);
   /* İletişimde hedef zaten o sayfa; ürün detayında yapışkan alt menüdeki Demo düğmesi bu işi görür (ekranda üç sabit çubuk olmasın) */
   const enabled = pathname !== "/iletisim" && !pathname.startsWith("/urunler/");
 
   useEffect(() => {
-    if (!enabled) return;
     let heroIO: IntersectionObserver | undefined;
     let blockIO: IntersectionObserver | undefined;
 
     // Yeni sayfa DOM'a oturduktan sonra gözlemle (rota geçişinde de çalışır).
     const rafId = requestAnimationFrame(() => {
-      const hero = document.querySelector("main section");
+      /* Blog yazısı ve yasal sayfada giriş alanı <header>: ilk section sayfanın dibindeki bölüm olurdu */
+      const hero = document.querySelector("main [data-hero]") ?? document.querySelector("main :is(section, header)");
+      setNoHero(!hero);
       if (!hero) {
         setHeroOut(false);
         return;
@@ -65,14 +84,27 @@ export function MobileCtaBar() {
       heroIO?.disconnect();
       blockIO?.disconnect();
     };
-  }, [pathname, enabled]);
+  }, [pathname]);
+
+  const show = enabled && heroOut && !blocked && !short;
+  /* Çubuğun olmadığı sayfalarda da (iletişim, ürün detayı) hero kuralı geçerli: ilk ekrandaki
+     kanal kartlarının ve düğmelerin üstüne binmesinler */
+  const floats = heroOut || noHero;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.toggleAttribute("data-cta-bar", show);
+    root.toggleAttribute("data-floats", floats);
+    return () => {
+      root.removeAttribute("data-cta-bar");
+      root.removeAttribute("data-floats");
+    };
+  }, [show, floats]);
 
   if (!enabled) return null;
 
   /* Hizmet sayfasında form o hizmet seçili açılır (sayfadaki Teklif Al düğmeleri gibi) */
   const service = pathname.match(/^\/hizmetler\/([^/]+)$/)?.[1];
   const href = service ? `/iletisim?hizmet=${service}` : "/iletisim";
-  const show = heroOut && !blocked;
 
   return (
     <AnimatePresence>

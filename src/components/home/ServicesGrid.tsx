@@ -29,7 +29,7 @@ export async function ServicesGrid({ title, lead, className }: { title: string; 
                   className={cn(cardCls, cardHoverCls, "group flex h-full flex-col gap-3 p-6 md:p-7")}
                 >
                   <ServiceIcon name={s.icon} />
-                  <h3 className={cn(cardTitleCls, "mt-2 text-[19px]")}>{s.title}</h3>
+                  <h3 className={cn(cardTitleCls, "mt-2 text-[19px] leading-snug")}>{s.title}</h3>
                   <p className={cardTextCls}>{s.short}</p>
                   <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[14px] font-medium text-heading transition-colors group-hover:text-brand">
                     İncele

@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 
 /**
  * Sağ kenarda dikey "Teklif Alın" sekmesi: iletişim sayfasına gider. WhatsApp
- * sağ alttaki düğmede. 1280px ve üstünde görünür (daha dar ekranda içeriğe
+ * sağ alttaki düğmede. 1360px ve üstünde görünür (daha dar ekranda içeriğe
  * biner; orada header'daki İletişim ve mobilde alt eylem çubuğu var).
  * İletişim sayfasında gizlenir. Üzerine gelince sola doğru açılan kısa bir
  * bilgi kartı gösterir.
@@ -19,7 +19,7 @@ export function ContactTab() {
       href="/iletisim"
       data-float=""
       aria-label="Teklif alın: ücretsiz ön görüşme, aynı gün dönüş"
-      className="group fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 xl:block"
+      className="group fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 min-[1360px]:block"
       data-umami-event="teklif-al"
       data-umami-event-konum="yan-sekme"
     >

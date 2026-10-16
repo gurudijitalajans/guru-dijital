@@ -17,6 +17,8 @@ export function VideoBlock({ hasVideo, title, lead }: { hasVideo: boolean; title
             poster={VIDEO_POSTER}
             label="Tanıtım videosunu oynat"
             trackName="ajans-tanitim"
+            /* Kısa ekranda (yatay telefon, alçak dizüstü) video yapışkan menünün altında tümüyle görünsün */
+            className="max-w-[calc((100svh-var(--header-h)-2rem)*16/9)]"
           />
         </Reveal>
       </div>
