@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { zoomCls, zoomProps } from "@/components/ui/zoom";
@@ -10,7 +11,8 @@ export type GalleryVideo = { src: string; poster: string; label: string; trackNa
 
 /**
  * Hizmet galerisi (yuvarlak köşeli, çizgisiz).
- * Mobil: ana kare tam genişlik, iki yan görsel ikili ızgara.
+ * Mobil ve tablet (md altı): her görsel kendi oranında (--ar), hiçbiri kırpılmaz; ana kare
+ * tam genişlik, dikey kapak tam genişlik, iki yan görsel ikili ızgara.
  * md+: ana kare solda (8/12), iki yan görsel sağda üst üste; yan kareler
  * satır yüksekliğini ana kareden alır (md:aspect-auto). 8/4 bölünme yan
  * kareleri kaynak görsellere yakın orana (~4:3) getirir; aşırı kırpılmazlar.
@@ -49,11 +51,12 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
               className={cn(
                 frameCls,
                 zoomCls,
-                "col-span-2 aspect-[4/3]",
-                wide ? "md:col-span-12 md:aspect-[21/9]" : "md:col-span-8 md:row-span-2",
+                "col-span-2 aspect-(--ar)",
+                wide ? "md:col-span-12 md:aspect-[21/9]" : "md:col-span-8 md:row-span-2 md:aspect-[4/3]",
                 /* Tek yan görselde (16:10 kart + 4:5 afiş) 8/12 ile 4/12 aynı boya gelir: ikisi de kırpılmaz */
                 sides.length === 1 && "md:aspect-[16/10]"
               )}
+              style={{ "--ar": `${main.w} / ${main.h}` } as CSSProperties}
             >
               <Image
                 src={main.src}
@@ -74,9 +77,10 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
             className={cn(
               frameCls,
               zoomCls,
-              "aspect-[4/3] md:col-span-4 md:aspect-auto",
+              "aspect-(--ar) md:col-span-4 md:aspect-auto",
               sides.length === 1 && "col-span-2 md:row-span-2"
             )}
+            style={{ "--ar": `${img.w} / ${img.h}` } as CSSProperties}
           >
             {/* Yan görseller ilk ekranda: geç yüklenirse LCP adayı olurken boş kalır */}
             <Image

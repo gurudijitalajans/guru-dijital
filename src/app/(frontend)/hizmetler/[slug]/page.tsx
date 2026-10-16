@@ -11,7 +11,7 @@ import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { site, webProjects } from "@/lib/data";
 import { getAbout, getCases, getService, getServices } from "@/lib/content";
 import { CaseCard } from "@/components/home/CasesBlock";
-import { cn, countWord, sentenceStart } from "@/lib/utils";
+import { cn, countWord, sentenceStart, shortServiceTitle } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
@@ -51,6 +51,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       : {}),
   });
 }
+
+/* "Örneklerle …" bölümünün açıklaması: müşteri işi olmayan galerilerde neyin gösterildiği açıkça yazılır */
+const WORK_LEADS: Record<string, string> = {
+  "ozel-yazilim": "Kendi geliştirdiğimiz Guru Panel'den ekranlar; ekranlarda örnek veri kullanılmıştır.",
+  "mobil-uygulama": "Guru Panel'in telefona kurulabilen sürümü ve temsili uygulama ekranları.",
+  "marka-tescil": "Başvurudan tescile sürecin adımları ve bilmeniz gerekenler.",
+};
 
 export default async function HizmetDetayPage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -210,7 +217,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       {(tour || features.length > 0) && (
         <section className={cn(sectionY, "pt-0 md:pt-0")}>
           <div className="container-g">
-            <SectionHead title="Teslim Ettiğimiz İşler" lead={`${service.title} kapsamında müşterilerimiz için hazırladığımız işlerden örnekler.`} />
+            <SectionHead title={`Örneklerle ${shortServiceTitle(service.title)}`} lead={WORK_LEADS[service.slug] ?? "Markalarımız için hazırladığımız işlerden örnekler."} />
             {tour ? (
               <div className="mt-10">
                 <VideoPlayer src={tour.src} poster={tour.poster} label={tour.label} trackName={tour.trackName} />

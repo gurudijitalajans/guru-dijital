@@ -37,7 +37,8 @@ export function PostCard({ post, priority = false, eager = false, layout = "card
         href={href}
         tabIndex={-1}
         aria-hidden
-        className={cn("relative block aspect-[16/10] overflow-hidden bg-soft", wide && "md:aspect-auto md:min-h-72")}
+        /* Kapaklar 16:9 üretilir: kutu da 16:9, kırpılmaz (geniş kartta yan sütun yüksekliğine uyar) */
+        className={cn("relative block aspect-video overflow-hidden bg-soft", wide && "md:aspect-auto md:min-h-72")}
       >
         {post.cover ? (
           <Image

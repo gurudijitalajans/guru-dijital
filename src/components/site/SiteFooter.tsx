@@ -1,14 +1,21 @@
-import { LEGAL_PAGES } from "@/lib/legal";
-import { CookiePrefsButton } from "./CookieConsent";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Mail } from "lucide-react";
-import { InstagramIcon } from "@/components/ui/icons";
-import { site } from "@/lib/data";
+import { ArrowRight } from "lucide-react";
+import type { IconName } from "@/lib/icon-names";
+import { LEGAL_PAGES } from "@/lib/legal";
+import { InstagramIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { partnerBadges, site } from "@/lib/data";
+import { cn, shortServiceTitle } from "@/lib/utils";
+import { CookiePrefsButton } from "./CookieConsent";
+import { Glyph } from "./Glyph";
 import { Logo } from "./Logo";
+import { ProductIcon } from "./ProductIcon";
+import { iconBoxCls } from "./styles";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
 /* mobilde 44px dokunma alanı, masaüstünde sık liste */
 const linkCls = "block py-2.5 text-[14px] text-body transition-colors hover:text-brand md:py-1.5 pointer-coarse:py-2.5";
+const allCls = "inline-flex items-center gap-1.5 py-2.5 text-[14px] font-medium text-brand transition-colors hover:text-navy md:py-1.5 pointer-coarse:py-2.5";
 
 /** "https://www.instagram.com/gurudijital/" → "gurudijital" */
 const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "gurudijital";
@@ -16,96 +23,157 @@ const handleOf = (url: string) => url.replace(/\/+$/, "").split("/").pop() || "g
 type SiteFooterProps = {
   email: string;
   instagram: string;
+  phone?: string;
+  whatsapp?: string;
   showBlog?: boolean;
   services: { title: string; slug: string }[];
-  products: { name: string; slug: string }[];
+  products: { name: string; slug: string; icon: IconName }[];
   /** Hakkımızda > Ödüller listesindeki ilk ödül, ör. "2025 Google Partner" */
   badge?: string;
 };
 
-/** İletişim bilgileri, hizmet ve ürün listeleri panelden gelir; blog bağlantısı yayında yazı varken görünür. */
-export function SiteFooter({ email, instagram, showBlog = false, services, products, badge }: SiteFooterProps) {
+type Channel = { label: string; value: string; href: string; event: string; external?: boolean; icon: ReactNode };
+
+/**
+ * Alt bilgi: solda marka ve iş ortaklıkları, sağda dengeli bağlantı sütunları (hizmetler iki
+ * alt sütunda, ürünler uygulama simgeleriyle), altında iletişim kanalları şeridi ve en altta
+ * telif + Blog + yasal bağlantılar. İletişim bilgileri, hizmet ve ürün listeleri panelden gelir.
+ */
+export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false, services, products, badge }: SiteFooterProps) {
   const year = new Date().getFullYear();
+  const badges = [...(badge ? [badge] : []), ...partnerBadges];
+  /* "Tüm Hizmetler" ve "Tüm Ürünler" satırlarıyla sütunlar aynı boyda biter (9 hizmet + 1 → 5/5, 4 ürün + 1, kurumsal 5) */
+  const rows = Math.ceil((services.length + 1) / 2);
+
+  /* WhatsApp yoksa telefon; panelde boş bırakılan kanal görünmez */
+  const channels: Channel[] = [];
+  if (whatsapp) channels.push({ label: "WhatsApp", value: phone || whatsapp, href: `https://wa.me/${whatsapp.replace(/\D/g, "")}`, event: "whatsapp", external: true, icon: <WhatsAppIcon className="size-[17px]" /> });
+  else if (phone) channels.push({ label: "Telefon", value: phone, href: `tel:${phone.replace(/\s/g, "")}`, event: "telefon", icon: <Glyph name="phone" className="size-5" strokeWidth={1.7} /> });
+  channels.push(
+    { label: "E-posta", value: email, href: `mailto:${email}`, event: "e-posta", icon: <Glyph name="mail" className="size-5" strokeWidth={1.7} /> },
+    { label: "Instagram", value: `@${handleOf(instagram)}`, href: instagram, event: "instagram", external: true, icon: <InstagramIcon className="size-[17px]" /> },
+    { label: "Görüntülü görüşme", value: "Toplantı planlayın", href: "/iletisim#toplanti", event: "toplanti-planla", icon: <Glyph name="calendar-clock" className="size-5" strokeWidth={1.7} /> }
+  );
 
   return (
-    <footer className="bg-soft pb-8 pt-12 md:pt-14">
+    <footer className="bg-soft pb-8 pt-12 md:pt-16">
       <div className="container-g">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_1.1fr_1fr_1fr]">
-          <div className="col-span-2 lg:col-span-1">
+        {/* Geniş ekranda marka solda; daha darda üstte (hizmet adları kırılmasın) */}
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,2.6fr)] xl:gap-14">
+          {/* Marka bloğu: dar ekranda tek sütun, tablette rozetler sağda, geniş ekranda sol sütun */}
+          <div className="md:flex md:items-start md:justify-between md:gap-10 xl:block">
+            <div>
             <Logo height={30} />
-            <p className="mt-4 max-w-[260px] text-pretty text-[14px] leading-relaxed text-muted">
+            <p className="mt-4 max-w-[300px] text-pretty text-[14px] leading-relaxed text-muted">
               Markanızı dijitalde büyüten entegre ajans hizmetleri ve işletme yazılımları.
             </p>
-            {badge && (
-              <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-1.5 text-[12.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)]">
-                <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-                {badge}
-              </p>
+            </div>
+            {badges.length > 0 && (
+              <ul className="mt-6 flex max-w-[360px] flex-wrap gap-2 md:mt-1 md:max-w-[420px] md:justify-end xl:mt-6 xl:max-w-none xl:justify-start" aria-label="İş ortaklıkları">
+                {badges.map((b) => (
+                  <li
+                    key={b}
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)]"
+                  >
+                    <span className="size-1.5 rounded-full bg-brand" aria-hidden />
+                    {b}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 
-          <nav aria-label="Kurumsal">
-            <h2 className={headCls}>Kurumsal</h2>
-            <Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link>
-            <Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link>
-            <Link href="/referanslar" className={linkCls}>Referanslarımız</Link>
-            {showBlog && <Link href="/blog" className={linkCls}>Blog</Link>}
-            <Link href="/iletisim" className={linkCls}>İletişim</Link>
-          </nav>
+          {/* Hizmetler iki alt sütunda (sütun sütun dolar), ürünler simgeli: üç sütun aynı boyda biter */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)_minmax(0,1fr)] md:gap-x-10">
+            <nav aria-label="Hizmetler" className="col-span-2 md:col-span-1">
+              <h2 className={headCls}>Hizmetler</h2>
+              <ul className="grid grid-flow-col grid-cols-2 gap-x-6" style={{ gridTemplateRows: `repeat(${rows}, auto)` }}>
+                {services.map((s) => (
+                  <li key={s.slug} className="min-w-0">
+                    <Link href={`/hizmetler/${s.slug}`} className={linkCls}>
+                      {shortServiceTitle(s.title)}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/hizmetler" className={allCls}>
+                    Tüm Hizmetler
+                    <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+                  </Link>
+                </li>
+              </ul>
+            </nav>
 
-          <nav aria-label="Hizmetler">
-            <h2 className={headCls}>Hizmetler</h2>
-            {services.map((s) => (
-              <Link key={s.slug} href={`/hizmetler/${s.slug}`} className={linkCls}>
-                {s.title}
-              </Link>
-            ))}
-          </nav>
+            <nav aria-label="Ürünler">
+              <h2 className={headCls}>Ürünler</h2>
+              <ul>
+                {products.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/urunler/${p.slug}`} className={cn(linkCls, "flex items-center gap-2.5 md:py-1.5")}>
+                      <ProductIcon slug={p.slug} icon={p.icon} size={24} className="shadow-[0_3px_8px_-4px_rgb(1_20_65/0.5)]" />
+                      {p.name}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/urunler" className={allCls}>
+                    Tüm Ürünler
+                    <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+                  </Link>
+                </li>
+              </ul>
+            </nav>
 
-          <nav aria-label="Ürünler">
-            <h2 className={headCls}>Ürünler</h2>
-            {products.map((p) => (
-              <Link key={p.slug} href={`/urunler/${p.slug}`} className={linkCls}>
-                {p.name}
-              </Link>
-            ))}
-          </nav>
-
-          <div>
-            <h2 className={headCls}>İletişim</h2>
-            <a href={`mailto:${email}`} className={`${linkCls} break-all`}>
-              {email}
-            </a>
-            <a href={instagram} target="_blank" rel="noopener noreferrer" className={linkCls}>
-              @{handleOf(instagram)}
-            </a>
-            <div className="mt-3 flex gap-2">
-              <a
-                href={instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="grid size-11 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-colors hover:bg-brand hover:text-white"
-              >
-                <InstagramIcon className="size-4" />
-              </a>
-              <a
-                href={`mailto:${email}`}
-                aria-label="E-posta"
-                className="grid size-11 place-items-center rounded-full bg-white text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-colors hover:bg-brand hover:text-white"
-              >
-                <Mail className="size-4" />
-              </a>
-            </div>
+            <nav aria-label="Kurumsal">
+              <h2 className={headCls}>Kurumsal</h2>
+              <ul>
+                <li><Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link></li>
+                <li><Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link></li>
+                <li><Link href="/hakkimizda#oduller" className={linkCls}>Ödüllerimiz</Link></li>
+                <li><Link href="/referanslar" className={linkCls}>Referanslarımız</Link></li>
+                <li><Link href="/iletisim" className={linkCls}>İletişim</Link></li>
+              </ul>
+            </nav>
           </div>
         </div>
 
-        <div className="mt-12 grid gap-4 border-t border-[rgb(1_20_65/0.08)] pt-6 text-[13px] text-muted lg:flex lg:items-center lg:justify-between">
+        {/* İletişim kanalları: tek satırda kartlar (mobilde alt alta) */}
+        <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="İletişim kanalları">
+          {channels.map((c) => (
+            <li key={c.label} className="min-w-0">
+              <a
+                href={c.href}
+                {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                data-umami-event={c.event}
+                data-umami-event-konum="footer"
+                className="group flex min-h-16 items-center gap-3.5 rounded-2xl bg-white p-3 pr-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.35),0_14px_30px_-20px_rgb(1_20_65/0.35)]"
+              >
+                <span aria-hidden className={cn(iconBoxCls, "size-10 shrink-0")}>
+                  {c.icon}
+                </span>
+                <span className="min-w-0 leading-tight">
+                  <span className="block text-[12.5px] text-muted">{c.label}</span>
+                  <span className="block truncate text-[14.5px] font-medium text-heading transition-colors group-hover:text-brand">{c.value}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-10 grid gap-4 border-t border-[rgb(1_20_65/0.08)] pt-6 text-[13px] text-muted xl:flex xl:items-center xl:justify-between">
           <p>
-            © {year} {site.name}. Tüm hakları saklıdır. <span className="whitespace-nowrap">Grow with Guru</span>
+            © {year} {site.name}. Tüm hakları saklıdır. <span className="whitespace-nowrap">{site.tagline}</span>
           </p>
-          <nav aria-label="Yasal">
+          {/* Blog bilerek burada, yasal bağlantıların solunda: menüde öne çıkmaz */}
+          <nav aria-label="Alt bağlantılar">
             <ul className="flex flex-wrap gap-x-5 gap-y-1">
+              {showBlog && (
+                <li>
+                  <Link href="/blog" className="inline-flex min-h-9 items-center transition-colors hover:text-brand">
+                    Blog
+                  </Link>
+                </li>
+              )}
               {LEGAL_PAGES.map((p) => (
                 <li key={p.slug}>
                   <Link href={`/yasal/${p.slug}`} className="inline-flex min-h-9 items-center transition-colors hover:text-brand">

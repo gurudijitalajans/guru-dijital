@@ -101,15 +101,16 @@ export default async function IletisimPage() {
 
       {/* Form ve doğrudan iletişim: sayfanın tam genişliğinde, geniş ekranda yan yana */}
       <section id="iletisim-form" className="pb-16 md:pb-[72px]">
-        <div className="container-g grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
-          <Reveal>
-            <aside className="relative overflow-hidden rounded-3xl bg-navy p-6 text-white sm:p-8 lg:sticky lg:top-28">
+        {/* İki kart geniş ekranda eşit boyda: form kutusu uzar, metin alanı boşluğu doldurur */}
+        <div className="container-g grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
+          <Reveal className="h-full">
+            <aside className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-navy p-6 text-white sm:p-8">
               <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand/40 blur-3xl" />
               <h2 className="relative text-[22px] font-medium leading-snug tracking-[-0.02em] md:text-[26px]">Doğrudan ulaşın</h2>
               <p className="relative mt-2 text-[15px] leading-relaxed text-white/75">
                 Hangi kanal size kolaysa oradan yazın. Hafta içi 09.00-18.00 arasında aynı gün dönüş yapıyoruz.
               </p>
-              <ul className="relative mt-6 grid gap-2.5" aria-label="İletişim kanalları">
+              <ul className="relative mb-6 mt-6 grid gap-2.5" aria-label="İletişim kanalları">
                 {contactItems.map((item) => (
                   <li key={item.label}>
                     <a
@@ -141,13 +142,13 @@ export default async function IletisimPage() {
                   </a>
                 </li>
               </ul>
-              <p className="relative mt-6 border-t border-white/10 pt-5 text-[13.5px] leading-relaxed text-white/65">
+              <p className="relative mt-auto border-t border-white/10 pt-5 text-[13.5px] leading-relaxed text-white/65">
                 Google Partner (2025 · 2026). Teklif ve ilk görüşme ücretsizdir; bilgileriniz yalnız size dönüş yapmak için kullanılır.
               </p>
             </aside>
           </Reveal>
-          <Reveal delay={0.05} className="min-w-0">
-            <ContactForm services={serviceRefs} />
+          <Reveal delay={0.05} className="h-full min-w-0">
+            <ContactForm services={serviceRefs} className="h-full" />
           </Reveal>
         </div>
       </section>

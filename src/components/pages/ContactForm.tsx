@@ -160,6 +160,8 @@ export type ContactFormProps = {
   services?: ServiceRef[];
   /** Mesaj alanının yer tutucusu; ürün sayfalarında ajans metni yerine ürüne uygun soru. */
   messagePlaceholder?: string;
+  /** Kart sınıfı (ör. h-full: yandaki kartla eşit boy, metin alanı uzar) */
+  className?: string;
 };
 
 export function ContactForm({
@@ -170,6 +172,7 @@ export function ContactForm({
   initialService,
   services = defaultServices,
   messagePlaceholder = "Projenizden, hedeflerinizden ya da aklınızdaki sorudan kısaca bahsedin.",
+  className,
 }: ContactFormProps = {}) {
   const options = serviceOptions ?? services.map((s) => s.title);
   const optionList =
@@ -280,7 +283,7 @@ export function ContactForm({
 
   return (
     /* flex-col: yan yana yerleşimde (DemoSwitch) kart sütun boyuna uzar, mesaj alanı aradaki boşluğu doldurur */
-    <div className={cn(formCardCls, "flex flex-col")}>
+    <div className={cn(formCardCls, "flex flex-col", className)}>
       <AnimatePresence mode="wait" initial={false}>
         {submitted ? (
           <motion.div

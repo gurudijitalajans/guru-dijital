@@ -29,6 +29,7 @@ import * as migration_20261016_080000_eticaret_platformlar from './20261016_0800
 import * as migration_20261016_090000_karolar_ortalandi from './20261016_090000_karolar_ortalandi';
 import * as migration_20261016_100000_urun_simgeleri from './20261016_100000_urun_simgeleri';
 import * as migration_20261016_110000_hizmet_imzalari from './20261016_110000_hizmet_imzalari';
+import * as migration_20261016_120000_sss_altinci from './20261016_120000_sss_altinci';
 
 export const migrations = [
   {
@@ -185,5 +186,10 @@ export const migrations = [
     up: migration_20261016_110000_hizmet_imzalari.up,
     down: migration_20261016_110000_hizmet_imzalari.down,
     name: '20261016_110000_hizmet_imzalari',
+  },
+  {
+    up: migration_20261016_120000_sss_altinci.up,
+    down: migration_20261016_120000_sss_altinci.down,
+    name: '20261016_120000_sss_altinci',
   },
 ];

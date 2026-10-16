@@ -48,6 +48,10 @@
    {
     "q": "Raporlarda neleri görürüm?",
     "a": "Harcama, dönüşüm sayısı, dönüşüm başı maliyet ve e-ticarette reklam getirisi (ROAS) gibi işinize doğrudan dokunan ölçümleri görürsünüz. Rakamların yanında ne yaptığımızı ve bir sonraki adımı da yazıyoruz."
+   },
+   {
+    "q": "Dönüşüm takibini nasıl kuruyorsunuz?",
+    "a": "Form, arama, WhatsApp mesajı ya da satış gibi sizin için değerli işlemleri Google Etiket Yöneticisi, Meta pikseli ve dönüşüm API'siyle ölçecek şekilde kuruyoruz. Kampanyalar bu verilere göre optimize edildiği için takibin doğru çalıştığını reklamlar yayına girmeden önce test ediyoruz."
    }
   ],
   "icon": "megaphone",
@@ -102,6 +106,10 @@
    {
     "q": "Mevcut sitemi yenilerken Google'daki yerimi kaybeder miyim?",
     "a": "Eski adresleri yeni sayfalara doğru şekilde yönlendirerek (301 yönlendirme) bu riski azaltıyoruz. Geçişten önce mevcut sitenin hangi sayfalarının trafik aldığını tespit edip korunmasını sağlıyoruz."
+   },
+   {
+    "q": "Site telefonda da hızlı ve düzgün görünecek mi?",
+    "a": "Evet. Tasarımı önce telefon ekranına göre planlıyor, her sayfayı farklı ekran boyutlarında test ediyoruz. Görselleri sıkıştırıp sayfaları hızlı açılacak şekilde kuruyor, yayından önce Google'ın PageSpeed ölçümleriyle kontrol ediyoruz."
    }
   ],
   "icon": "monitor",
@@ -156,6 +164,10 @@
    {
     "q": "SEO ile Google reklamları arasındaki fark ne?",
     "a": "Reklamlar ödeme yaptığınız sürece görünür ve hızlı sonuç verir. SEO ile elde edilen görünürlük tıklama başına ücret gerektirmez ama oluşması zaman alır. Çoğu işletme için ikisi birlikte iyi çalışır."
+   },
+   {
+    "q": "SEO için sitemi baştan yaptırmam gerekir mi?",
+    "a": "Çoğu zaman hayır. Önce teknik bir denetimle mevcut sitenin hız, dizine eklenme ve yapı sorunlarını çıkarıyor, düzeltilebilecekleri mevcut sitede düzeltiyoruz. Altyapı SEO çalışmasını gerçekten engelliyorsa yenilemeyi o zaman öneriyoruz."
    }
   ],
   "icon": "search",
@@ -210,6 +222,10 @@
    {
     "q": "Yapay zekâyı işimde nasıl kullanabilirim?",
     "a": "Müşteri sorularını yanıtlayan asistanlar, gelen belgeleri okuyup sınıflandıran araçlar ya da ürün açıklaması taslağı hazırlayan sistemler en yaygın örnekler. Hangi işte gerçekten zaman kazandıracağını birlikte değerlendiriyoruz."
+   },
+   {
+    "q": "Proje bittikten sonra destek veriyor musunuz?",
+    "a": "Evet. Yayından sonra hata düzeltmeleri, güvenlik güncellemeleri ve yedekleme için bakım desteği sunuyoruz; yeni özellik talepleri ayrıca planlanır. Destek kapsamı ve yanıt süreleri sözleşmede yazılı olarak belirtilir."
    }
   ],
   "icon": "code",
@@ -263,6 +279,10 @@
    {
     "q": "Mevcut web sitem ya da sistemimle bağlantılı çalışabilir mi?",
     "a": "Evet. Uygulamayı mevcut sitenizin, e-ticaret altyapınızın ya da iç sistemlerinizin verileriyle API üzerinden konuşacak şekilde geliştirebiliyoruz."
+   },
+   {
+    "q": "Uygulama fikrimi önce küçük bir sürümle deneyebilir miyim?",
+    "a": "Evet. Tıklanabilir bir prototip ya da yalnız temel özellikleri içeren ilk sürümle (MVP) başlamak, büyük bir yatırım yapmadan kullanıcı tepkisini görmenizi sağlar. Gelen geri bildirime göre sonraki özellikleri birlikte planlıyoruz."
    }
   ],
   "icon": "smartphone",
@@ -375,6 +395,10 @@
    {
     "q": "Reklam yönetimini de yapıyor musunuz?",
     "a": "Evet. Google Alışveriş, Meta ve pazaryeri içi reklamları dijital reklam ekibimizle birlikte yönetiyoruz; böylece mağaza ve reklam tarafı aynı hedefe göre planlanıyor."
+   },
+   {
+    "q": "Stok ve siparişleri tek yerden yönetebilir miyim?",
+    "a": "Evet. Sitenizi ve pazaryeri mağazalarınızı entegrasyon araçlarıyla bağlayarak stok, fiyat ve siparişlerin tek panelden takip edilmesini sağlıyoruz. Hangi aracın uygun olduğu, kullandığınız altyapıya ve satış kanalı sayınıza göre belirlenir."
    }
   ],
   "icon": "cart",
@@ -428,6 +452,10 @@
    {
     "q": "Yeni logom için marka tescili yapmalı mıyım?",
     "a": "Uzun süre kullanacağınız bir logo için tescili öneriyoruz. Marka tescil hizmetimizle tasarım aşamasında benzer marka araştırması da yapabiliyoruz."
+   },
+   {
+    "q": "Kurumsal kimlik çalışmasına neler dahil?",
+    "a": "Logo, renk paleti ve yazı tipi seçiminin yanında kartvizit, antetli kâğıt, e-posta imzası ve sosyal medya şablonları gibi temel uygulamalar hazırlanır. Hangi uygulamaların yer alacağı ihtiyacınıza göre teklifte netleşir; isterseniz kullanım kurallarını anlatan bir marka kılavuzu da hazırlıyoruz."
    }
   ],
   "icon": "palette",
@@ -481,6 +509,10 @@
    {
     "q": "Reklam bütçesi hizmet bedeline dahil mi?",
     "a": "Hayır. Reklam bütçesi doğrudan platforma ödenir ve tutarını birlikte belirleriz. Kampanyaların kurulumu ve yönetimi hizmet kapsamında yer alır."
+   },
+   {
+    "q": "Yorum ve mesajlara kim yanıt veriyor?",
+    "a": "Topluluk yönetimi pakete dahilse yorum ve mesajları belirlenen saatlerde biz yanıtlıyoruz. Fiyat, sipariş ya da şikâyet gibi sizin bilgi vermeniz gereken konuları size iletiyor, sık gelen sorular için birlikte hazır yanıtlar oluşturuyoruz."
    }
   ],
   "icon": "share",

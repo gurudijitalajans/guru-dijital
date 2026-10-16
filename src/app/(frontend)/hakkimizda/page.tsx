@@ -170,7 +170,7 @@ export default async function HakkimizdaPage() {
 
       {/* Ödüller ve tanınırlık */}
       {awards.show && awards.items.length > 0 && (
-      <section id="oduller" className={cn("scroll-mt-24 bg-soft", sectionY)}>
+      <section id="oduller" className={cn("bg-soft", sectionY)}>
         <div className="container-g">
           <Reveal>
             <SectionHead title={awards.title} lead={awards.lead || undefined} />
@@ -230,7 +230,8 @@ export default async function HakkimizdaPage() {
                 <article className={cn(cardCls, "flex h-full flex-col overflow-hidden")}>
                   <div
                     className={cn(
-                      "relative grid aspect-[4/3] place-items-center bg-gradient-to-br md:aspect-[16/10]",
+                      /* Ekip görselleri 4:5 üretilir (ana sayfa ekip bloğuyla aynı): her ekranda tam görünür */
+                      "relative grid aspect-[4/5] place-items-center bg-gradient-to-br",
                       !m.photo && avatarTones[i % avatarTones.length]
                     )}
                   >

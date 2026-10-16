@@ -305,6 +305,42 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
     setSubmitted("mail");
   }
 
+  /* Gönder satırı ve KVKK notu: dar düzende bilgilerin altında, geniş düzende iki sütunun altında tam genişlikte */
+  const actions = (
+    <>
+      <Honeypot value={trap} onChange={setTrap} />
+      <FormNotice message={notice} />
+
+      <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
+        <Btn
+          type="submit"
+          variant="primary"
+          size="lg"
+          arrow={!sending}
+          disabled={sending}
+          className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+        >
+          {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
+        </Btn>
+        <p className="text-[13px] leading-relaxed text-muted">
+          Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
+        </p>
+      </div>
+      <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
+        Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için
+        kullanılır. Ayrıntılar:{" "}
+        <a
+          href="/yasal/kvkk-aydinlatma-metni"
+          target="_blank"
+          className="text-brand underline-offset-2 hover:underline"
+        >
+          KVKK Aydınlatma Metni
+        </a>
+        .
+      </p>
+    </>
+  );
+
   return (
     <div className={cn(formCardCls, "flex flex-col")}>
       {days === null ? (
@@ -535,9 +571,10 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                 </div>
                 <div className="flex min-w-0 flex-col">
                   {/* Adım 3: iletişim bilgileri */}
-                  <div className={cn("mt-6 space-y-3", wide && "lg:mt-0")}>
+                  {/* Geniş düzende not alanı uzar: iki sütun aynı boyda biter */}
+                  <div className={cn("mt-6 space-y-3", wide && "lg:mt-0 lg:flex lg:flex-1 lg:flex-col")}>
                     <StepLabel n={3}>Bilgileriniz</StepLabel>
-                    <div className="grid gap-5 sm:grid-cols-2">
+                    <div className={cn("grid gap-5 sm:grid-cols-2", wide && "lg:flex-1 lg:grid-rows-[auto_1fr]")}>
                       <div className="space-y-2">
                         <label htmlFor="ms-name" className={labelCls}>
                           Ad soyad <Req />
@@ -595,7 +632,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                         />
                       </div>
 
-                      <div className="space-y-2 sm:col-span-2">
+                      <div className={cn("space-y-2 sm:col-span-2", wide && "lg:flex lg:flex-col")}>
                         <label htmlFor="ms-note" className={labelCls}>
                           Kısa not <Opt />
                         </label>
@@ -609,44 +646,17 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                           className={cn(
                             fieldCls(false),
                             "block resize-y py-3 leading-relaxed",
+                            wide && "lg:min-h-24 lg:flex-1",
                           )}
                         />
                       </div>
                     </div>
                   </div>
 
-                  <Honeypot value={trap} onChange={setTrap} />
-                  <FormNotice message={notice} />
-
-                  <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
-                    <Btn
-                      type="submit"
-                      variant="primary"
-                      size="lg"
-                      arrow={!sending}
-                      disabled={sending}
-                      className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
-                    >
-                      {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
-                    </Btn>
-                    <p className="text-[13px] leading-relaxed text-muted">
-                      Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
-                    </p>
-                  </div>
-                  <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
-                    Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için
-                    kullanılır. Ayrıntılar:{" "}
-                    <a
-                      href="/yasal/kvkk-aydinlatma-metni"
-                      target="_blank"
-                      className="text-brand underline-offset-2 hover:underline"
-                    >
-                      KVKK Aydınlatma Metni
-                    </a>
-                    .
-                  </p>
+                  {!wide && actions}
                 </div>
               </div>
+              {wide && <div className="lg:mt-8 lg:border-t lg:border-[rgb(1_20_65/0.08)]">{actions}</div>}
             </motion.form>
           )}
         </AnimatePresence>

@@ -1,4 +1,3 @@
-import { serviceAsset } from "@/lib/service-assets";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,14 +35,10 @@ export default async function ReferanslarPage() {
     getCases(),
     getTestimonials(),
   ]);
-  /* Her hizmetin 4:3 için tasarlanmış kart görseli (yoksa ilk galeri görseli): kartta kırpılmaz */
+  /* Her hizmetin kart görseli (galerinin ana karesi, 16:10): kartta kendi oranıyla basılır, kırpılmaz.
+     Eski 4:3 kart kırpımı soldaki hizmet imzasını kesiyordu. */
   const works = services
-    .map((s) => ({
-      service: s,
-      image: serviceAsset(s.slug, "kart.webp")
-        ? { src: serviceAsset(s.slug, "kart.webp") as string, alt: `${s.title}: Guru Dijital işlerinden örnek`, w: 1200, h: 900 }
-        : (s.gallery[0] ?? s.card),
-    }))
+    .map((s) => ({ service: s, image: s.card ?? s.gallery[0] }))
     .filter((w): w is { service: (typeof services)[number]; image: NonNullable<(typeof services)[number]["card"]> } => Boolean(w.image));
   const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
 
@@ -91,7 +86,7 @@ export default async function ReferanslarPage() {
               {works.map(({ service, image }) => (
                 <StaggerItem key={service.slug} className="h-full">
                   <Link href={`/hizmetler/${service.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
-                    <div className="relative aspect-[4/3] overflow-hidden bg-soft">
+                    <div className="relative overflow-hidden bg-soft" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
                       <Image
                         src={image.src}
                         alt={image.alt}

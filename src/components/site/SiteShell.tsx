@@ -19,8 +19,8 @@ import { isPreview } from "@/lib/preview";
 /**
  * Sitenin html/body iskeleti: duyuru bandı, üst menü, içerik, alt bilgi ve
  * sabit iletişim öğeleri (sohbet balonu panelde açıksa). Site layout'u ve global 404 aynı kabuğu kullanır.
- * Duyuru metni, iletişim bilgileri, menüdeki hizmet ve ürünler ile blog
- * bağlantısı panelden gelir.
+ * Duyuru metni, iletişim bilgileri, menüdeki hizmet ve ürünler panelden gelir; blog
+ * bağlantısı yayında yazı varken alt bilgide görünür.
  */
 export async function SiteShell({ children }: { children: React.ReactNode }) {
   const [info, postCount, services, products, about, preview, chat] = await Promise.all([
@@ -35,10 +35,10 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   const firstAward = about.awards.items[0];
   const footerBadge = firstAward ? `${firstAward.year} ${firstAward.title}` : undefined;
   const showBlog = postCount > 0;
+  /* Blog üst menüde yok (kullanıcı isteği): alt bilgide yasal bağlantıların solunda */
   const menu = buildNavMenu(services, products);
-  if (showBlog) menu.push({ label: "Blog", href: "/blog" });
   const footerServices = services.map((s) => ({ title: s.title, slug: s.slug }));
-  const footerProducts = products.map((p) => ({ name: p.name, slug: p.slug }));
+  const footerProducts = products.map((p) => ({ name: p.name, slug: p.slug, icon: p.icon }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -77,6 +77,8 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
           <SiteFooter
             email={info.email}
             instagram={info.instagram}
+            phone={info.phone}
+            whatsapp={info.whatsapp}
             showBlog={showBlog}
             services={footerServices}
             products={footerProducts}

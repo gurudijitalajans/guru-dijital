@@ -47,8 +47,13 @@ body {
   color: var(--color-navy);
 }
 
-/* Sabit header altında çapa hedefleri görünür kalsın */
-:target { scroll-margin-top: 120px; }
+/* Sabit header altında çapa hedefleri görünür kalsın. Bölümlerde payı her zaman (menüden
+   istemci içi geçişte :target eşleşmez) menü yüksekliği: bölümün üst kenarı menünün hemen
+   altına gelir, önceki bölümden şerit görünmez. Sınıflı scroll-mt-* bu iki kuralı ezer. */
+:root { --header-h: 68px; }
+@media (min-width: 1024px) { :root { --header-h: 76px; } }
+:where(:target) { scroll-margin-top: 120px; }
+:where(section[id]) { scroll-margin-top: var(--header-h); }
 
 /* ---- düzen ---- */
 .container-g {

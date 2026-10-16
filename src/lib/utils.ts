@@ -40,3 +40,6 @@ export const sentenceStart = (name: string) => {
   const s = inSentence(name);
   return s.charAt(0).toLocaleUpperCase("tr-TR") + s.slice(1);
 };
+
+/** Hizmetin kısa adı: "SEO (Arama Motoru Optimizasyonu)" → "SEO", "Web Tasarım Hizmetleri" → "Web Tasarım" */
+export const shortServiceTitle = (t: string) => t.replace(/\s*\(.*?\)\s*/g, " ").replace(/\s+Hizmetleri$/, "").trim();

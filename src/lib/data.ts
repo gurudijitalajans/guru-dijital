@@ -28,6 +28,9 @@ export const site = {
   address: "",
 };
 
+/* Müşterinin teyit ettiği iş ortaklıkları (2026-10-16): alt bilgide Google Partner rozetinin yanında */
+export const partnerBadges = ["Shopify Partner", "ikas İş Ortağı", "Trendyol Çözüm Ortağı"];
+
 /* Umami: çerezsiz, kişisel veri toplamayan ziyaretçi sayımı (Umami Cloud, Guru
    hesabı). Site kimliği gizli değildir, betikte herkese açık görünür. Yalnız
    aşağıdaki alan adları sayılır: önizleme ve yerel adresler sayıma girmez. */
