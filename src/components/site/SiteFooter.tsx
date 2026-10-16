@@ -136,7 +136,8 @@ export function SiteFooter({ email, instagram, phone, mobile, whatsapp, showBlog
         </div>
 
         {/* İletişim kanalları: tek satırda kartlar (mobilde alt alta) */}
-        <ul className={cn("mt-12 grid gap-3 sm:grid-cols-2", channels.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4")} aria-label="İletişim kanalları">
+        {/* Beş kart tek satıra ancak 1280'de sığıyor (1024-1279'da telefon/e-posta kesiliyordu): o zamana dek iki sütun, tek kalan son kart tam genişlik */}
+        <ul className={cn("mt-12 grid gap-3 sm:grid-cols-2", channels.length === 5 ? "sm:max-xl:[&>:last-child]:col-span-2 xl:grid-cols-5" : "lg:grid-cols-4")} aria-label="İletişim kanalları">
           {channels.map((c) => (
             <li key={c.label} className="min-w-0">
               <a
