@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { getServices } from "@/lib/content";
 import type { HomeContent } from "@/lib/home-defaults";
-import { parseAccent } from "@/lib/utils";
+import { parseAccent, shortServiceTitle } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
+import { ServiceIcon } from "@/components/site/Glyph";
 import { Globe } from "./Globe";
 
 /** Google'ın çok renkli "G" işareti */
@@ -34,7 +35,7 @@ function GooglePartnerPill() {
 
 /**
  * Ana sayfa girişi (EDME düzeni): ortalanmış ince başlık, kısa açıklama,
- * hizmet bağlantı şeridi, iki buton, altında yarısı görünen nokta küresi
+ * hizmet rafı (karolar tek sırada, mobilde 3 x 3), iki buton, altında yarısı görünen nokta küresi
  * ve kürenin üstüne binen kanıt rozeti. Metinler panelden (Ana Sayfa > Giriş).
  * Giriş metni belirme animasyonu almaz: sayfanın en büyük öğesi (LCP) JS
  * beklemeden görünür; hareketi başlıktaki ışık süpürmesi verir.
@@ -58,21 +59,25 @@ export async function Hero({ hero }: { hero: HomeContent["hero"]; referenceCount
             )}
           </h1>
           <p className="mx-auto mt-5 max-w-4xl text-pretty text-[16px] leading-relaxed text-muted md:text-[16.5px]">{hero.sub}</p>
-          {/* Hizmetler yalnız boşlukla ayrılır: kırılan satır ayraçla başlamaz */}
+          {/* Hizmet rafı: karolar aynı hizada tek sırada (mobilde 3 x 3), adları altında. Uzun ad tablette iki satıra iner, karolar hizada kalır */}
           {services.length > 0 && (
-          <ul className="mx-auto mt-4 flex max-w-[900px] flex-wrap justify-center gap-x-6 text-[13.5px] text-muted lg:mt-5 lg:gap-x-5">
+          <ul className="mx-auto mt-7 grid max-w-[340px] grid-cols-3 gap-x-2 gap-y-5 md:max-w-[740px] md:grid-cols-9 md:gap-x-1 lg:mt-8 lg:max-w-[1000px] lg:gap-x-2">
             {services.map((s) => (
-              <li key={s.slug} className="flex items-center">
-                {/* Mobilde 44px dokunma alanı; masaüstünde tek satır */}
-                <Link href={`/hizmetler/${s.slug}`} className="inline-flex min-h-11 items-center transition-colors hover:text-brand lg:min-h-0 lg:py-1">
-                  {s.title}
+              <li key={s.slug} className="flex justify-center">
+                <Link
+                  href={`/hizmetler/${s.slug}`}
+                  className="group flex flex-col items-center gap-2 text-balance text-center text-[12.5px] font-medium leading-tight text-body transition-colors hover:text-brand"
+                >
+                  <ServiceIcon name={s.icon} size={50} className="transition-[filter] duration-300 group-hover:brightness-110" />
+                  {/* Rafta en kısa ad: "Dijital Reklam Yönetimi" → "Dijital Reklam" */}
+                  {shortServiceTitle(s.title).replace(/\s+Yönetimi$/, "")}
                 </Link>
               </li>
             ))}
           </ul>
           )}
           {/* relative z-10: küre kutusu yukarı çekildiği için düğmelerin altına biner, tıklamayı kapmasın */}
-          <div className="relative z-10 mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row lg:mt-8">
+          <div className="relative z-10 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:mt-9">
             <Btn href={hero.primaryHref} variant="primary" size="lg" arrow className="w-full max-w-xs sm:w-auto" data-umami-event="giris-ana-buton" data-umami-event-metin={hero.primaryLabel}>
               {hero.primaryLabel}
             </Btn>
