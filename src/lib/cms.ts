@@ -16,6 +16,8 @@ export type SiteInfo = {
   announcement: { enabled: boolean; messages: string[] };
   email: string;
   phone: string;
+  /** Doğrudan arama hattı (cep); boşsa arama kartı ve Ara düğmesi görünmez */
+  mobile: string;
   whatsapp: string;
   address: string;
   instagram: string;
@@ -28,6 +30,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     announcement: { enabled: true, messages: [defaultAnnouncement, ...announcementMore] },
     email: site.email,
     phone: site.phone,
+    mobile: site.mobile,
     whatsapp: site.whatsapp,
     address: site.address,
     instagram: site.instagram,
@@ -48,6 +51,7 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       },
       email: c.email?.trim() || fallback.email,
       phone: c.phone?.trim() || fallback.phone,
+      mobile: (c as { mobile?: string | null }).mobile?.trim() || fallback.mobile,
       whatsapp: c.whatsapp?.trim() || fallback.whatsapp,
       address: c.address?.trim() || fallback.address,
       instagram: c.instagram?.trim() || fallback.instagram,

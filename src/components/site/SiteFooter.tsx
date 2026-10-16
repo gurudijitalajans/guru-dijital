@@ -22,6 +22,8 @@ type SiteFooterProps = {
   email: string;
   instagram: string;
   phone?: string;
+  /** Doğrudan arama hattı (cep) */
+  mobile?: string;
   whatsapp?: string;
   showBlog?: boolean;
   services: { title: string; slug: string }[];
@@ -37,7 +39,7 @@ type Channel = { label: string; value: string; href: string; event: string; exte
  * alt sütunda), altında iletişim kanalları şeridi ve en altta
  * telif + Blog + yasal bağlantılar. İletişim bilgileri, hizmet ve ürün listeleri panelden gelir.
  */
-export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false, services, products, badge }: SiteFooterProps) {
+export function SiteFooter({ email, instagram, phone, mobile, whatsapp, showBlog = false, services, products, badge }: SiteFooterProps) {
   const year = new Date().getFullYear();
   const badges = [...(badge ? [badge] : []), ...partnerBadges];
   /* "Tüm Hizmetler" ve "Tüm Ürünler" satırlarıyla sütunlar aynı boyda biter (9 hizmet + 1 → 5/5, 4 ürün + 1, kurumsal 5) */
@@ -47,6 +49,7 @@ export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false
   const channels: Channel[] = [];
   if (whatsapp) channels.push({ label: "WhatsApp", value: phone || whatsapp, href: `https://wa.me/${whatsapp.replace(/\D/g, "")}`, event: "whatsapp", external: true, icon: <WhatsAppIcon className="size-[17px]" /> });
   else if (phone) channels.push({ label: "Telefon", value: phone, href: `tel:${phone.replace(/\s/g, "")}`, event: "telefon", icon: <Glyph name="phone" className="size-5" strokeWidth={1.7} /> });
+  if (mobile) channels.push({ label: "Hemen arayın", value: mobile, href: `tel:${mobile.replace(/[^\d+]/g, "")}`, event: "telefon-cep", icon: <Glyph name="phone" className="size-5" strokeWidth={1.7} /> });
   channels.push(
     { label: "E-posta", value: email, href: `mailto:${email}`, event: "e-posta", icon: <Glyph name="mail" className="size-5" strokeWidth={1.7} /> },
     { label: "Instagram", value: `@${handleOf(instagram)}`, href: instagram, event: "instagram", external: true, icon: <InstagramIcon className="size-[17px]" /> },
@@ -133,7 +136,7 @@ export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false
         </div>
 
         {/* İletişim kanalları: tek satırda kartlar (mobilde alt alta) */}
-        <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="İletişim kanalları">
+        <ul className={cn("mt-12 grid gap-3 sm:grid-cols-2", channels.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4")} aria-label="İletişim kanalları">
           {channels.map((c) => (
             <li key={c.label} className="min-w-0">
               <a

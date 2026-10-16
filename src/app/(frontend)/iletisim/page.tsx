@@ -60,6 +60,15 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
       icon: <Glyph name="phone" className="size-[18px]" />,
     });
   }
+  if (site.mobile) {
+    items.push({
+      label: "Cep telefonu",
+      event: "telefon-cep",
+      value: site.mobile,
+      href: `tel:${site.mobile.replace(/[^\d+]/g, "")}`,
+      icon: <Glyph name="phone" className="size-[18px]" />,
+    });
+  }
   if (site.whatsapp) {
     items.push({
       label: "WhatsApp",
@@ -81,7 +90,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
     });
   }
 
-  const order = ["WhatsApp", "E-posta", "Telefon", "Instagram", "Adres"];
+  const order = ["WhatsApp", "Cep telefonu", "E-posta", "Telefon", "Instagram", "Adres"];
   return items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
 }
 

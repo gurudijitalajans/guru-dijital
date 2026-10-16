@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Btn } from "@/components/site/Btn";
+import { Glyph } from "@/components/site/Glyph";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -37,7 +38,8 @@ const getShort = () => window.matchMedia(SHORT).matches;
  * Hydration: SSR'da hiçbir şey basılmaz (show=false); görünürlük yalnız
  * IntersectionObserver callback'lerinde güncellenir.
  */
-export function MobileCtaBar() {
+/** mobile: doluysa çubukta Teklif Al'ın yanında doğrudan arama düğmesi (Ara) */
+export function MobileCtaBar({ mobile }: { mobile?: string }) {
   const pathname = usePathname();
   const [heroOut, setHeroOut] = useState(false);
   const [blocked, setBlocked] = useState(false);
@@ -119,10 +121,21 @@ export function MobileCtaBar() {
           className="fixed inset-x-0 bottom-0 z-40 bg-white/95 shadow-[0_-10px_30px_-18px_rgb(1_20_65/0.32)] backdrop-blur-md lg:hidden"
         >
           <div className="container-g flex items-center justify-between gap-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-            <span className="min-w-0 text-[13px] font-medium text-muted">
-              Aynı gün dönüş
-            </span>
-            <Btn href={href} variant="primary" size="md" className="shrink-0" data-umami-event="teklif-al" data-umami-event-konum="mobil-bar">
+            {mobile ? (
+              /* Çubuğun boyu değişmez (tek satır, aynı düğme boyu): yüzen düğmelerin floatPos değerleri geçerli */
+              <a
+                href={`tel:${mobile.replace(/[^\d+]/g, "")}`}
+                data-umami-event="telefon-cep"
+                data-umami-event-konum="mobil-bar"
+                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 text-[15px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.14)]"
+              >
+                <Glyph name="phone" className="size-[18px] text-[#0a2463]" strokeWidth={1.8} />
+                Ara
+              </a>
+            ) : (
+              <span className="min-w-0 text-[13px] font-medium text-muted">Aynı gün dönüş</span>
+            )}
+            <Btn href={href} variant="primary" size="md" className={mobile ? "flex-1 justify-center" : "shrink-0"} data-umami-event="teklif-al" data-umami-event-konum="mobil-bar">
               Teklif Al
             </Btn>
           </div>

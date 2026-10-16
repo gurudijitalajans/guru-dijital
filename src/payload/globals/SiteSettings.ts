@@ -49,6 +49,15 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          name: "mobile",
+          type: "text",
+          label: "Cep telefonu (doğrudan arama)",
+          admin: {
+            placeholder: "+90 5xx xxx xx xx",
+            description: "Doluysa iletişim sayfasında ve alt bilgide arama kartı, mobilde alt çubukta Ara düğmesi görünür.",
+          },
+        },
+        {
           type: "row",
           fields: [
             {

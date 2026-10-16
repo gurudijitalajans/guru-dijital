@@ -30,6 +30,7 @@ import * as migration_20261016_090000_karolar_ortalandi from './20261016_090000_
 import * as migration_20261016_100000_urun_simgeleri from './20261016_100000_urun_simgeleri';
 import * as migration_20261016_110000_hizmet_imzalari from './20261016_110000_hizmet_imzalari';
 import * as migration_20261016_120000_sss_altinci from './20261016_120000_sss_altinci';
+import * as migration_20261016_121751_cep_telefonu from './20261016_121751_cep_telefonu';
 
 export const migrations = [
   {
@@ -95,7 +96,7 @@ export const migrations = [
   {
     up: migration_20261014_084626_ikinci_tur_sema.up,
     down: migration_20261014_084626_ikinci_tur_sema.down,
-    name: '20261014_084626_ikinci_tur_sema'
+    name: '20261014_084626_ikinci_tur_sema',
   },
   {
     up: migration_20261014_090000_ikinci_tur_veri.up,
@@ -191,5 +192,10 @@ export const migrations = [
     up: migration_20261016_120000_sss_altinci.up,
     down: migration_20261016_120000_sss_altinci.down,
     name: '20261016_120000_sss_altinci',
+  },
+  {
+    up: migration_20261016_121751_cep_telefonu.up,
+    down: migration_20261016_121751_cep_telefonu.down,
+    name: '20261016_121751_cep_telefonu'
   },
 ];

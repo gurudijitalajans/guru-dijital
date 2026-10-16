@@ -23,6 +23,8 @@ export const site = {
   instagram: "https://www.instagram.com/gurudijital",
   email: "info@gurudijital.com",
   phone: "0850 308 34 57",
+  /* Doğrudan arama için cep hattı (panel: Site Ayarları > Cep telefonu) */
+  mobile: "+90 534 348 44 17",
   /* wa.me biçimi: ülke koduyla, başında sıfır ve + olmadan */
   whatsapp: "908503083457",
   address: "",

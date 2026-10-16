@@ -79,6 +79,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
             email={info.email}
             instagram={info.instagram}
             phone={info.phone}
+            mobile={info.mobile}
             whatsapp={info.whatsapp}
             showBlog={showBlog}
             services={footerServices}
@@ -87,7 +88,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
           />
           <ContactTab />
           <WhatsAppButton number={info.whatsapp} chat={Boolean(chat)} />
-          <MobileCtaBar />
+          <MobileCtaBar mobile={info.mobile} />
           <PanelBar preview={preview} />
           {chat && <ChatWidget info={chat} />}
           <CookieConsentBanner />
