@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Btn } from "@/components/site/Btn";
 import { ClosingCta } from "@/components/site/ClosingCta";
+import { Glyph, GlyphChip } from "@/components/site/Glyph";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import { TeamRoleCard } from "@/components/site/TeamRoleCard";
-import { cardCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
+import { cardCls, cardTextCls, cardTitleCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { LinkedinIcon } from "@/components/ui/icons";
 import { getAbout, getProducts, getReferences, getServices, getTeam } from "@/lib/content";
-import { IconByName, iconFor } from "@/lib/icons";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -148,14 +148,11 @@ export default async function HakkimizdaPage() {
             </Reveal>
             <StaggerGroup className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
               {story.values.map((v, i) => {
-                const Icon = iconFor(v.icon);
                 return (
                   <StaggerItem key={v.title} className="h-full">
                     <article className={cn(cardCls, "flex h-full flex-col p-5 md:p-6")}>
                       <div className="flex items-center justify-between">
-                        <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                          <Icon className="size-5" strokeWidth={1.8} />
-                        </span>
+                        <GlyphChip name={v.icon} />
                         <span className="text-[13px] font-medium tabular-nums text-muted" aria-hidden>
                           {String(i + 1).padStart(2, "0")}
                         </span>
@@ -180,7 +177,6 @@ export default async function HakkimizdaPage() {
           </Reveal>
           <StaggerGroup className="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
             {awards.items.map((a) => {
-              const Icon = iconFor(a.icon);
               return (
                 <StaggerItem key={a.title} className="h-full">
                   <article className={cn(cardCls, "flex h-full flex-col overflow-hidden")}>
@@ -196,7 +192,7 @@ export default async function HakkimizdaPage() {
                     )}
                     <div className="flex flex-1 flex-col p-5 md:p-7">
                       <p className="inline-flex items-center gap-2 text-[13px] font-medium text-brand">
-                        <Icon className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                        <Glyph name={a.icon} className="size-[18px]" strokeWidth={2} />
                         {[a.year, a.badge].filter(Boolean).join(" · ")}
                       </p>
                       <h3 className={cn(cardTitleCls, "mt-2 text-[20px] md:text-[22px]")}>{a.title}</h3>
@@ -253,7 +249,7 @@ export default async function HakkimizdaPage() {
                         className="grid size-16 place-items-center rounded-full bg-white/75 text-[22px] font-light tracking-[-0.02em] text-navy shadow-[0_10px_30px_-14px_rgb(1_20_65/0.5)] sm:size-20 sm:text-[26px]"
                       >
                         {/* İsim girilmediyse baş harf yerine role uygun ikon */}
-                        {m.placeholder ? <IconByName name={m.icon} className="size-7 sm:size-8" strokeWidth={1.6} /> : initials(m.name)}
+                        {m.placeholder ? <Glyph name={m.icon} className="size-7 sm:size-8" strokeWidth={1.6} /> : initials(m.name)}
                       </span>
                     )}
                     {m.linkedin && (

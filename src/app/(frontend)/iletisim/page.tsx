@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { CalendarClock, Mail, MapPin, Phone } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { Glyph } from "@/components/site/Glyph";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import { sectionY } from "@/components/site/styles";
@@ -38,7 +38,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
       event: "e-posta",
       value: site.email,
       href: `mailto:${site.email}`,
-      icon: <Mail className="size-4" strokeWidth={2} />,
+      icon: <Glyph name="mail" className="size-[18px]" />,
     },
     {
       label: "Instagram",
@@ -57,7 +57,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
       event: "telefon",
       value: site.phone,
       href: `tel:${site.phone.replace(/\s/g, "")}`,
-      icon: <Phone className="size-4" strokeWidth={2} />,
+      icon: <Glyph name="phone" className="size-[18px]" />,
     });
   }
   if (site.whatsapp) {
@@ -77,7 +77,7 @@ function buildContactItems(site: SiteInfo): ContactItem[] {
       value: site.address,
       href: `https://maps.google.com/?q=${encodeURIComponent(site.address)}`,
       external: true,
-      icon: <MapPin className="size-4" strokeWidth={2} />,
+      icon: <Glyph name="map-pin" className="size-[18px]" />,
     });
   }
 
@@ -132,7 +132,7 @@ export default async function IletisimPage() {
                 <li>
                   <a href="#toplanti" className="group flex min-h-14 items-center gap-3.5 rounded-2xl bg-white/[0.07] px-4 py-3 transition-colors hover:bg-white/[0.14]">
                     <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-brand" aria-hidden>
-                      <CalendarClock className="size-4" strokeWidth={2} />
+                      <Glyph name="calendar-clock" className="size-[18px]" />
                     </span>
                     <span className="leading-tight">
                       <span className="block text-[12.5px] text-white/60">Görüntülü görüşme</span>

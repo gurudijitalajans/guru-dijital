@@ -5,7 +5,7 @@ import { SectionHead } from "@/components/site/SectionHead";
 import { TeamRoleCard } from "@/components/site/TeamRoleCard";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { cardCls, sectionY } from "@/components/site/styles";
-import { IconByName } from "@/lib/icons";
+import { Glyph } from "@/components/site/Glyph";
 import { cn } from "@/lib/utils";
 
 /* Fotoğraf gelene kadar marka mavisi tonlarında soyut portre yer tutucusu */
@@ -60,7 +60,7 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                   /* Fotoğraf gelene kadar: marka tonunda zemin, ortada role uygun ikon */
                   <div className={cn("relative grid aspect-[4/5] place-items-center bg-gradient-to-br", TONES[i % TONES.length])} aria-hidden>
                     <span className="grid size-16 place-items-center rounded-full bg-white/80 text-navy shadow-[0_12px_30px_-14px_rgb(1_20_65/0.5)]">
-                      <IconByName name={m.icon} className="size-7" strokeWidth={1.6} />
+                      <Glyph name={m.icon} className="size-7" strokeWidth={1.6} />
                     </span>
                   </div>
                 )}

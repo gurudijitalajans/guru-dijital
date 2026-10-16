@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Headset, Layers, ShieldCheck, UserCheck } from "lucide-react";
+import { GlyphChip } from "@/components/site/Glyph";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import { ClosingCta } from "@/components/site/ClosingCta";
 import { ProductsShowcase } from "@/components/pages/ProductsShowcase";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { cardCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
+import { cardCls, cardTextCls, cardTitleCls, sectionY } from "@/components/site/styles";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -23,22 +23,22 @@ export const metadata: Metadata = pageMetadata({
    eğitim, şifreli saklama ve rol bazlı yetki, Türkçe destek. */
 const reasons = [
   {
-    icon: Layers,
+    icon: "layers",
     title: "Birlikte Çalışan Modüller",
     desc: "Her ürün tek başına çalışır; birlikte kullandığınızda aynı veri tabanını paylaşır. Bir modüle giren kayıt diğerinde hazır bekler.",
   },
   {
-    icon: UserCheck,
+    icon: "user-check",
     title: "Kurulum ve Eğitim Bizden",
     desc: "Kurulumu sizinle birlikte yapar, ekibinize canlı eğitim verir ve ilk haftalarda kullanımı yakından izleriz.",
   },
   {
-    icon: ShieldCheck,
+    icon: "shield",
     title: "Verileriniz Güvende",
     desc: "Veriler şifreli olarak saklanır; rol bazlı yetkiyle kimin neyi göreceğini siz belirlersiniz. KVKK akışlarını birlikte kurgularız.",
   },
   {
-    icon: Headset,
+    icon: "headset",
     title: "Türkçe Destek",
     desc: "Türkçe teknik destek ve düzenli güncellemeler aboneliğinize dahildir; sorularınız için ayrı bir ücret ödemezsiniz.",
   },
@@ -69,14 +69,11 @@ export default function UrunlerPage() {
           />
           <StaggerGroup className="mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-4">
             {reasons.map((r) => {
-              const Icon = r.icon;
               return (
                 <StaggerItem key={r.title} className="h-full">
                   <div className={cn(cardCls, "h-full p-5 sm:p-6")}>
                     <div className="flex items-center gap-3.5 sm:flex-col sm:items-start sm:gap-5">
-                      <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                        <Icon className="size-5" strokeWidth={1.8} />
-                      </span>
+                      <GlyphChip name={r.icon} />
                       <h3 className={cardTitleCls}>{r.title}</h3>
                     </div>
                     <p className={cn(cardTextCls, "mt-3")}>{r.desc}</p>

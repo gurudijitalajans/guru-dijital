@@ -21,8 +21,9 @@ export const cardCls = "rounded-2xl bg-white shadow-[0_0_0_1px_rgb(1_20_65/0.08)
 export const cardHoverCls =
   "transition-[box-shadow,translate] duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.35),0_18px_40px_-24px_rgb(1_20_65/0.35)]";
 
-/** Kart içindeki ikon kutusu: menüdeki ikonlarla aynı marka mavisi */
-export const iconBoxCls = "grid size-11 place-items-center rounded-xl bg-chip text-brand";
+/* Kart içindeki ikon kutusu: açık degrade zemin, çift ton ikon (Glyph) lacivert çizgiyle */
+export const iconBoxCls =
+  "grid size-11 place-items-center rounded-xl bg-[linear-gradient(160deg,#f3f8ff,#e3efff)] text-[#0a2463] shadow-[inset_0_0_0_1px_rgb(42_106_202/0.12)]";
 
 /** Küçük hap rozet */
 export const pillCls =

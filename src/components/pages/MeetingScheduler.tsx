@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CalendarClock, Check, ChevronRight, Copy } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
-import { iconBoxCls, pillCls } from "@/components/site/styles";
+import { GlyphChip } from "@/components/site/Glyph";
+import { pillCls } from "@/components/site/styles";
 import {
   FieldError,
   FormNotice,
@@ -313,13 +314,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
           aria-busy="true"
           aria-live="polite"
         >
-          <span className={iconBoxCls}>
-            <CalendarClock
-              className="size-5 text-brand"
-              strokeWidth={2}
-              aria-hidden
-            />
-          </span>
+          <GlyphChip name="calendar-clock" />
           <p className="text-[14px] font-medium text-muted">
             Günler yükleniyor
           </p>

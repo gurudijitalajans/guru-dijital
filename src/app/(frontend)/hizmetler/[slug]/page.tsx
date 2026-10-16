@@ -7,15 +7,15 @@ import { join } from "path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ArrowUpRight, Check, LayoutGrid } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { site, webProjects } from "@/lib/data";
 import { getAbout, getCases, getService, getServices } from "@/lib/content";
 import { CaseCard } from "@/components/home/CasesBlock";
-import { iconFor } from "@/lib/icons";
 import { cn, countWord, sentenceStart } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 import { Btn } from "@/components/site/Btn";
 import { FaqGrid } from "@/components/site/FaqGrid";
+import { GlyphChip, ServiceIcon } from "@/components/site/Glyph";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import {
@@ -23,7 +23,6 @@ import {
   cardHoverCls,
   cardTextCls,
   cardTitleCls,
-  iconBoxCls,
   sectionY,
 } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
@@ -244,13 +243,10 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
             </StaggerGroup>
             <StaggerGroup className="mt-4 grid gap-4 md:mt-5 md:grid-cols-2 md:gap-5">
               {awards.map((a) => {
-                const AwardIcon = iconFor(a.icon);
                 return (
                 <StaggerItem key={a.title} className="h-full">
                   <article className={cn(cardCls, "flex h-full items-start gap-4 p-6")}>
-                    <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                      <AwardIcon className="size-5" strokeWidth={1.8} />
-                    </span>
+                    <GlyphChip name={a.icon} />
                     <div>
                       <h3 className={cardTitleCls}>
                         {a.title} <span className="font-normal text-muted">{a.year}</span>
@@ -332,7 +328,6 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
           <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
           <StaggerGroup className="fill-odd-sm mt-10 grid auto-rows-fr gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {others.map((s) => {
-              const Icon = iconFor(s.icon);
               return (
                 <StaggerItem key={s.slug} className="h-full">
                   {/* items-start: açıklaması iki satıra inen kartta da başlıklar aynı hizada */}
@@ -340,9 +335,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                     href={`/hizmetler/${s.slug}`}
                     className={cn(cardCls, cardHoverCls, "group flex h-full items-start gap-4 p-5")}
                   >
-                    <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                      <Icon className="size-5" strokeWidth={1.8} />
-                    </span>
+                    <ServiceIcon name={s.icon} />
                     <span className="min-w-0 flex-1">
                       <span className="block text-[16px] font-medium leading-snug text-heading">{s.title}</span>
                       <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{s.menuDesc}</span>
@@ -360,9 +353,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                 href="/hizmetler"
                 className={cn(cardCls, cardHoverCls, "group flex h-full items-start gap-4 p-5")}
               >
-                <span className={cn(iconBoxCls, "shrink-0 bg-navy text-white")} aria-hidden>
-                  <LayoutGrid className="size-5" strokeWidth={1.8} />
-                </span>
+                <ServiceIcon name="layout-grid" />
                 <span className="min-w-0 flex-1">
                   <span className="block text-[16px] font-medium leading-snug text-heading">Tüm Hizmetler</span>
                   <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{`${countWord(services.length).replace(/^./, (c) => c.toLocaleUpperCase("tr-TR"))} hizmeti bir arada inceleyin`}</span>

@@ -1,7 +1,7 @@
 import { LinkedinIcon } from "@/components/ui/icons";
 import { cardCls } from "@/components/site/styles";
 import type { TeamView } from "@/lib/content";
-import { IconByName } from "@/lib/icons";
+import { GlyphChip } from "./Glyph";
 import { cn } from "@/lib/utils";
 
 /**
@@ -12,9 +12,7 @@ import { cn } from "@/lib/utils";
 export function TeamRoleCard({ member: m }: { member: TeamView }) {
   return (
     <article className={cn(cardCls, "flex h-full items-start gap-4 p-5")}>
-      <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-xl bg-chip text-brand">
-        <IconByName name={m.icon} className="size-5" strokeWidth={1.8} />
-      </span>
+      <GlyphChip name={m.icon} className="size-12" />
       <div className="min-w-0 flex-1 pt-0.5">
         <h3 className="text-balance text-[16px] font-medium leading-snug text-heading">{m.placeholder ? m.role : m.name}</h3>
         <p className="mt-1 text-pretty text-[13.5px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>

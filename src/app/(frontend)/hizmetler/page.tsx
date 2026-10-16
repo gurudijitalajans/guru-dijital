@@ -4,10 +4,10 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { process } from "@/lib/data";
 import { getServices } from "@/lib/content";
-import { iconFor } from "@/lib/icons";
 import { pageMetadata } from "@/lib/seo";
 import { cn, countWord } from "@/lib/utils";
 import { Btn } from "@/components/site/Btn";
+import { ServiceIcon } from "@/components/site/Glyph";
 import { PageIntro } from "@/components/site/PageIntro";
 import { SectionHead } from "@/components/site/SectionHead";
 import {
@@ -15,7 +15,6 @@ import {
   cardHoverCls,
   cardTextCls,
   cardTitleCls,
-  iconBoxCls,
   sectionY,
 } from "@/components/site/styles";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
@@ -55,7 +54,6 @@ export default async function HizmetlerPage() {
         <div className="container-g">
           <StaggerGroup className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
             {services.map((s, i) => {
-              const Icon = iconFor(s.icon);
               const img = s.card;
               const lone = services.length % 2 === 1 && i === services.length - 1;
               return (
@@ -79,9 +77,7 @@ export default async function HizmetlerPage() {
                     )}
                     <div className="flex flex-1 flex-col gap-3 px-3.5 pb-4 pt-5 md:px-4">
                       <div className="flex items-center justify-between">
-                        <span className={iconBoxCls} aria-hidden>
-                          <Icon className="size-5" strokeWidth={1.8} />
-                        </span>
+                        <ServiceIcon name={s.icon} />
                         <span className="text-[13px] font-medium tabular-nums text-muted" aria-hidden>
                           {s.no}
                         </span>

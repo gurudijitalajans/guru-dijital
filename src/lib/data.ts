@@ -390,7 +390,8 @@ export const navLinks = [
 /* ------------------------------------------------------------------ */
 
 /** product: ürün öğelerinde uygulama simgesi için slug */
-export type NavItem = { label: string; href: string; desc: string; icon: IconName; product?: string };
+/** product: ürün simgesi (slug), service: hizmet karosu; ikisi de yoksa genel ikon kutusu */
+export type NavItem = { label: string; href: string; desc: string; icon: IconName; product?: string; service?: boolean };
 /** Açılır menü: her öğe ikon + başlık + tek satır açıklama; altta aynı biçimde bir bağlantı satırı */
 export type NavGroup = { label: string; href: string; items?: NavItem[]; footer?: { hint: string; label: string; href: string } };
 
@@ -423,7 +424,7 @@ export function buildNavMenu(
     {
       label: "Hizmetlerimiz",
       href: "/hizmetler",
-      items: svc.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}`, desc: s.menuDesc, icon: s.icon })),
+      items: svc.map((s) => ({ label: s.title, href: `/hizmetler/${s.slug}`, desc: s.menuDesc, icon: s.icon, service: true })),
       footer: { hint: "Tek ekip, uçtan uca hizmet", label: "Tüm Hizmetler", href: "/hizmetler" },
     },
     {

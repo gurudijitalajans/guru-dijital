@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Minus } from "lucide-react";
 import type { ProductView } from "@/lib/content";
-import { IconByName } from "@/lib/icons";
 import { Btn } from "@/components/site/Btn";
+import { GlyphChip } from "@/components/site/Glyph";
 import { ProductIcon } from "@/components/site/ProductIcon";
 import { SectionHead } from "@/components/site/SectionHead";
-import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
+import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
 import { zoomCls, zoomProps } from "@/components/ui/zoom";
 import { cn } from "@/lib/utils";
@@ -154,9 +154,7 @@ export function FeatureGrid({ product }: { product: ProductView }) {
           <StaggerItem key={f.title} className="h-full">
             <article className={cn(cardCls, "h-full p-5 sm:p-6 md:p-7")}>
               <div className="flex items-center gap-3.5 sm:flex-col sm:items-start sm:gap-5">
-                <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                  <IconByName name={f.icon} className="size-5" strokeWidth={1.8} />
-                </span>
+                <GlyphChip name={f.icon} />
                 <h3 className={cardTitleCls}>{f.title}</h3>
               </div>
               <p className={cn(cardTextCls, "mt-3")}>{f.desc}</p>
@@ -232,9 +230,7 @@ export function IncludedGrid({ product }: { product: ProductView }) {
           <StaggerItem key={x.title} className="h-full">
             <div className={cn(cardCls, "h-full p-5 sm:p-6")}>
               <div className="flex items-center gap-3.5 sm:flex-col sm:items-start sm:gap-5">
-                <span className={cn(iconBoxCls, "shrink-0")} aria-hidden>
-                  <IconByName name={x.icon} className="size-5" strokeWidth={1.8} />
-                </span>
+                <GlyphChip name={x.icon} />
                 <h3 className={cardTitleCls}>{x.title}</h3>
               </div>
               <p className={cn(cardTextCls, "mt-3")}>{x.desc}</p>
