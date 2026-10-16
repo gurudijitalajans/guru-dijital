@@ -10,8 +10,10 @@ URUNLER = {
     # renkler: üst, orta, alt (ürün temalarından)
     "guru-chatbot": (("#5fb0fb", "#2f7be6", "#1846b8"), "".join(f'<circle cx="{x}" cy="264" r="6.4" fill="#000"/>' for x in (166, 187, 208))),
     "guru-crm": (("#9aa6ff", "#5f6ef2", "#2b3aa8"), '<circle cx="187" cy="252.5" r="9.2" fill="#000"/><path d="M167.5 283.5c0-11.2 8.7-17.5 19.5-17.5s19.5 6.3 19.5 17.5z" fill="#000"/>'),
-    "guru-operation": (("#5fdbea", "#1aa9c4", "#0b5f8a"), '<path d="M170.5 264.5l11 11 22-24" fill="none" stroke="#000" stroke-width="8.6" stroke-linecap="round" stroke-linejoin="round"/>'),
-    "guru-business": (("#4f8ff0", "#1d4fb0", "#0a2463"), "".join(f'<rect x="{x}" y="{y}" width="16.5" height="16.5" rx="4.6" fill="#000"/>' for x, y in ((168.5, 245.5), (189, 245.5), (168.5, 266), (189, 266)))),
+    # ilerleme halkası: süreç kontrol altında
+    "guru-operation": (("#5fdbea", "#1aa9c4", "#0b5f8a"), '<path d="M187 246.5A17.5 17.5 0 1 1 169.5 264" fill="none" stroke="#000" stroke-width="7" stroke-linecap="round"/><circle cx="187" cy="264" r="5" fill="#000"/>'),
+    # iş çantası: işletme
+    "guru-business": (("#4f8ff0", "#1d4fb0", "#0a2463"), '<path d="M179 253v-5a3.5 3.5 0 0 1 3.5-3.5h9a3.5 3.5 0 0 1 3.5 3.5v5" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><rect x="164.5" y="252.5" width="45" height="30" rx="7" fill="#000"/><rect x="164.5" y="265" width="45" height="3.6" fill="#fff"/>'),
 }
 for slug, ((c1, c2, c3), cut) in URUNLER.items():
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">

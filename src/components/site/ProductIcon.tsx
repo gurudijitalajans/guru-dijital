@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils";
 
 /* Ürünlerin uygulama simgeleri (public/products/icons): aynı g silueti, başında ürüne özgü oyuk */
 const ICONS = new Set(["guru-chatbot", "guru-crm", "guru-operation", "guru-business"]);
-export const productIconSrc = (slug: string) => (ICONS.has(slug) ? `/products/icons/${slug}.svg` : null);
+/* v: simge değişince artır (tarayıcı önbelleği eskisini göstermesin) */
+const V = 2;
+export const productIconSrc = (slug: string) => (ICONS.has(slug) ? `/products/icons/${slug}.svg?v=${V}` : null);
 
 /**
  * Ürün simgesi; simgesi olmayan (panelden yeni eklenen) üründe genel ikon kutusuna düşer.
