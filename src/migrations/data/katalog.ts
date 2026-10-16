@@ -112,9 +112,9 @@ const GALLERY_ALTS: Record<string, string[]> = {
   ],
   'e-ticaret-yonetimi': [
     'BK Collection: masada çekilen ham ürün fotoğrafı ve aynı ceketin mağaza görseli',
-    "BK Collection: Bahçeşehir Yeni Sezon Sweatshirt'ün stant ve model görseli",
-    'BK Collection mağazasında indirim rozetli ürün listesi',
-    "BK Collection ürün kartları; sweatshirt'te 2.400 TL yerine 1.199 TL kampanya fiyatı",
+    'Pazar yeri mağaza kurulumu: Trendyol, Hepsiburada, n11, Amazon ve Etsy',
+    'Pazar yeri ürün sayfası optimizasyonu: başlık, görsel, varyant, kampanya ve reklam',
+    'E-ticaret altyapıları: Shopify Partner ve ikas İş Ortağı olarak kurulum ve yönetim',
     "E-ticaret reklam vakaları: ROAS 3,41'den 8,62'ye, kampanya döneminde ciro %96 arttı",
     'E-ticaret SEO vakaları: organik trafikte %325, organik gelirde %215 artış',
   ],
@@ -139,7 +139,7 @@ const GALLERY_ALTS: Record<string, string[]> = {
 const HERO_ALTS: Record<string, string> = {
   'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
-  'e-ticaret-yonetimi': 'BK Collection mağaza vitrini, ham ürün fotoğrafı ve mağaza görseli',
+  'e-ticaret-yonetimi': 'Pazar yerleri ve e-ticaret altyapıları: Trendyol, Hepsiburada, n11, Amazon, Etsy, Shopify ve ikas',
   'marka-tescil': 'Cam kum saatinin içinde kumdan tescil işareti: Marka Tescil',
   'mobil-uygulama': 'Guru Panel telefonda: ana ekran, uygulama ve mağaza sayfası görünümü',
 }
@@ -180,7 +180,7 @@ export async function galeriGorseliYenile(payload: Payload, req: PayloadRequest,
   const s = await one(ctx, 'services', { slug: { equals: slug } }, true)
   if (!s) return
   const idx = ['hero', 'kapak', '1', '2', '3', '4', '5', '6'].indexOf(key)
-  const alt = key === 'hero' ? HERO_ALTS[slug] : GALLERY_ALTS[slug]?.[idx - 2]
+  const alt = key === 'hero' ? HERO_ALTS[slug] : key === 'kapak' ? `${String(s.title)}: kapak görseli` : GALLERY_ALTS[slug]?.[idx - 2]
   const id = await upload(ctx, `services/v4/${slug}-${key}.webp`, alt ?? `${String(s.title)}: ${key}`, 'Hizmetler', prefix)
   if (!id) return
   /* Eski görsel adıyla değil galerideki sırasıyla bulunur (hero, kapak, 1-6): ad çakışmasında -1 eki alabilir */
@@ -188,7 +188,9 @@ export async function galeriGorseliYenile(payload: Payload, req: PayloadRequest,
   const oldId = items[idx]
   if (oldId === undefined || oldId === id) return
   const gallery = items.map((gid, i) => ({ image: i === idx ? id : gid }))
-  await ctx.payload.update({ collection: 'services', id: s.id, data: { gallery, _status: 'published' } as never, req: ctx.req, ...ok })
+  /* Hero hizmet kartında da kullanılır: kart görseli eskisi silinmeden yenisine geçer */
+  const card = key === 'hero' ? { cardImage: id } : {}
+  await ctx.payload.update({ collection: 'services', id: s.id, data: { gallery, ...card, _status: 'published' } as never, req: ctx.req, ...ok })
   await ctx.payload.delete({ collection: 'media', id: oldId, req: ctx.req, ...ok }).catch(() => null)
   ctx.log(`${slug}-${key}: yenilendi (${prefix})`)
 }
