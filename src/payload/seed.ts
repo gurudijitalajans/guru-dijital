@@ -19,7 +19,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement, caseStudies, products, references, services, site, team, testimonials, umami } from "@/lib/data";
+import { announcement, caseStudies, products, references, services, site, team, testimonials } from "@/lib/data";
 import { ABOUT_DEFAULTS } from "@/lib/about-defaults";
 import { HOME_DEFAULTS } from "@/lib/home-defaults";
 import { productExtrasData } from "./product-extras-data";
@@ -67,7 +67,6 @@ if (!settings.contact?.email) {
     data: {
       announcement: { enabled: true, text: announcement },
       contact: { email: site.email, instagram: site.instagram },
-      analytics: { enabled: true, ...umami },
     },
   });
   log("site ayarları yazıldı");

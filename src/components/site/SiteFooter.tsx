@@ -143,8 +143,8 @@ export function SiteFooter({ email, instagram, phone, mobile, whatsapp, showBlog
               <a
                 href={c.href}
                 {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                data-umami-event={c.event}
-                data-umami-event-konum="footer"
+                data-olay={c.event}
+                data-olay-konum="footer"
                 className="group flex min-h-16 items-center gap-3.5 rounded-2xl bg-white p-3 pr-4 shadow-[0_0_0_1px_rgb(1_20_65/0.07)] transition-shadow duration-300 hover:shadow-[0_0_0_1px_rgb(42_106_202/0.35),0_14px_30px_-20px_rgb(1_20_65/0.35)]"
               >
                 <span aria-hidden className={cn(iconBoxCls, "size-10 shrink-0")}>

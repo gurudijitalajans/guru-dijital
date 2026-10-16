@@ -125,8 +125,8 @@ export function MobileCtaBar({ mobile }: { mobile?: string }) {
               /* Çubuğun boyu değişmez (tek satır, aynı düğme boyu): yüzen düğmelerin floatPos değerleri geçerli */
               <a
                 href={`tel:${mobile.replace(/[^\d+]/g, "")}`}
-                data-umami-event="telefon-cep"
-                data-umami-event-konum="mobil-bar"
+                data-olay="telefon-cep"
+                data-olay-konum="mobil-bar"
                 className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 text-[15px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.14)]"
               >
                 <Glyph name="phone" className="size-[18px] text-[#0a2463]" strokeWidth={1.8} />
@@ -135,7 +135,7 @@ export function MobileCtaBar({ mobile }: { mobile?: string }) {
             ) : (
               <span className="min-w-0 text-[13px] font-medium text-muted">Aynı gün dönüş</span>
             )}
-            <Btn href={href} variant="primary" size="md" className={mobile ? "flex-1 justify-center" : "shrink-0"} data-umami-event="teklif-al" data-umami-event-konum="mobil-bar">
+            <Btn href={href} variant="primary" size="md" className={mobile ? "flex-1 justify-center" : "shrink-0"} data-olay="teklif-al" data-olay-konum="mobil-bar">
               Teklif Al
             </Btn>
           </div>

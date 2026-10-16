@@ -39,8 +39,6 @@ Vercel > guru-dijital > **Settings** > **Environment Variables**, ortam: **Produ
 | `NEXT_PUBLIC_SERVER_URL` | `https://guru-dijital-pied.vercel.app` (alan adı bağlanınca `https://www.gurudijital.com.tr`) |
 | `RESEND_API_KEY` | Resend'de oluşturduğunuz anahtar |
 | `BILDIRIM_EPOSTA` | `gurudijitalajans@gmail.com` |
-| `UMAMI_API_URL` | `https://api.umami.is/v1` |
-| `UMAMI_API_KEY` | Umami > Settings > API keys'te oluşturduğunuz anahtar |
 
 `DATABASE_URL` ve `BLOB_READ_WRITE_TOKEN` a ve b adımlarında kendiliğinden eklenir.
 `PAYLOAD_SECRET` isteğe bağlı: girilmezse panel anahtarını gizli veritabanı

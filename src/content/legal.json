@@ -59,11 +59,6 @@
       "İşlem güvenliği",
       "IP adresi, tarayıcı ve cihaz bilgisi, istek tarihi ve saati gibi teknik kayıtlar",
       "Siteyi ziyaret ettiğinizde sunucu tarafından otomatik olarak"
-     ],
-     [
-      "Ziyaret istatistiği",
-      "Görüntülenen sayfalar, yönlendiren site, cihaz türü, ülke gibi kimliğinizi belirlemeyen toplu ölçüm verileri",
-      "Çerez kullanmayan analitik aracı (Umami) aracılığıyla otomatik olarak"
      ]
     ]
    },
@@ -122,7 +117,7 @@
    },
    {
     "type": "p",
-    "text": "Kişisel verileriniz; sitedeki iletişim/teklif ve randevu formlarını doldurmanız, sohbet asistanına yazmanız ve bize e-posta, telefon veya WhatsApp üzerinden ulaşmanız yoluyla kısmen otomatik yollarla; siteyi ziyaret etmeniz sırasında sunucu kayıtları ve çerezsiz analitik aracı ile otomatik yollarla elektronik ortamda toplanır."
+    "text": "Kişisel verileriniz; sitedeki iletişim/teklif ve randevu formlarını doldurmanız, sohbet asistanına yazmanız ve bize e-posta, telefon veya WhatsApp üzerinden ulaşmanız yoluyla kısmen otomatik yollarla; siteyi ziyaret etmeniz sırasında sunucu kayıtları ile otomatik yollarla elektronik ortamda toplanır."
    },
    {
     "type": "h2",
@@ -159,11 +154,6 @@
       "Anthropic PBC (yapay zekâ modeli sağlayıcısı)",
       "Sohbet asistanına yazdığınız mesajların yanıt üretilmesi için işlenmesi",
       "ABD"
-     ],
-     [
-      "Umami Cloud (çerezsiz ziyaretçi analitiği)",
-      "Kimliğinizi belirlemeyen toplu ziyaret istatistikleri",
-      "Yurt dışı"
      ],
      [
       "Yetkili kamu kurum ve kuruluşları, mahkemeler",
@@ -269,7 +259,7 @@
    },
    {
     "type": "p",
-    "text": "Ziyaretçilerin siteyi nasıl kullandığını ölçmeye yarar. Sitemizde şu anda analitik çerez kullanılmamaktadır: Ziyaret istatistiklerini, çerez kullanmayan ve cihazınıza bilgi kaydetmeyen Umami aracıyla, kimliğinizi belirlemeyen toplu veriler olarak tutuyoruz. İleride analitik çerez kullanılmaya başlanırsa yalnızca onayınızla çalıştırılır."
+    "text": "Ziyaretçilerin siteyi nasıl kullandığını ölçmeye yarar. Sitemizde şu anda analitik çerez ya da ziyaretçi ölçüm aracı kullanılmamaktadır. İleride kullanılmaya başlanırsa yalnızca onayınızla çalıştırılır ve bu politika güncellenir."
    },
    {
     "type": "h3",
@@ -299,13 +289,6 @@
       "Zorunlu",
       "Çerez onay penceresinde yaptığınız seçimi hatırlar, pencerenin her sayfada yeniden açılmasını önler",
       "180 gün"
-     ],
-     [
-      "umami.disabled",
-      "Yerel depolama",
-      "Zorunlu",
-      "Analitik ölçümü reddettiğinizde bu tercihi ölçüm aracına bildirir; yalnız ret durumunda oluşturulur",
-      "Siz silene veya tercihinizi değiştirene kadar"
      ],
      [
       "guru-sohbet",
@@ -391,8 +374,7 @@
      "İletişim/teklif formunda paylaştığınız ad, e-posta, telefon, ilgilendiğiniz hizmet ve mesajınız,",
      "Toplantı randevu formunda paylaştığınız bilgiler ile seçtiğiniz tarih ve saat,",
      "Sohbet asistanına yazdığınız mesajlar ve verilen yanıtlar,",
-     "Siteyi ziyaret ettiğinizde sunucunun otomatik tuttuğu IP adresi, tarayıcı bilgisi, tarih ve saat gibi teknik kayıtlar,",
-     "Çerez kullanmayan analitik aracımızın tuttuğu, kimliğinizi belirlemeyen toplu ziyaret istatistikleri."
+     "Siteyi ziyaret ettiğinizde sunucunun otomatik tuttuğu IP adresi, tarayıcı bilgisi, tarih ve saat gibi teknik kayıtlar."
     ]
    },
    {
@@ -446,11 +428,6 @@
       "Anthropic",
       "Sohbet asistanının yanıtlarını üreten yapay zekâ modeli",
       "ABD"
-     ],
-     [
-      "Umami Cloud",
-      "Çerez kullanmayan ziyaretçi istatistikleri",
-      "Yurt dışı"
      ]
     ]
    },
@@ -650,7 +627,7 @@
  },
  "_banner": {
   "title": "Çerez tercihleriniz",
-  "text": "Sitenin çalışması için zorunlu depolama araçlarını kullanıyoruz. Ziyaretçi ölçümü ve ileride eklenebilecek reklam ölçümü için onayınızı istiyoruz; seçiminizi sayfanın altındaki Çerez tercihleri bağlantısından istediğiniz zaman değiştirebilirsiniz.",
+  "text": "Sitenin çalışması için zorunlu depolama araçlarını kullanıyoruz. İleride eklenebilecek ziyaretçi ve reklam ölçümü için onayınızı istiyoruz; seçiminizi sayfanın altındaki Çerez tercihleri bağlantısından istediğiniz zaman değiştirebilirsiniz.",
   "acceptAll": "Tümünü kabul et",
   "rejectAll": "Yalnız zorunlu",
   "prefs": "Tercihler",
@@ -666,7 +643,7 @@
    },
    "analitik": {
     "title": "Analitik",
-    "desc": "Siteyi nasıl kullandığınızı anonim olarak ölçer; kullandığımız ölçüm aracı çerez bırakmaz ve kişisel veri toplamaz."
+    "desc": "Siteyi nasıl kullandığınızı ölçmek için kullanılır; şu anda etkin değildir."
    },
    "pazarlama": {
     "title": "Pazarlama",

@@ -1,8 +1,9 @@
 /**
- * Umami özel olayları (istemci). Betik yüklü değilse (sayım kapalı, reklam
- * engelleyici, yerel ortam) sessizce hiçbir şey yapmaz.
- *
- * Olay adları panelde "Olaylar" listesinde bu adlarla görünür.
+ * Sitenin olay sözlüğü (istemci). track() olayı tarayıcıda "guru-olay"
+ * adlı bir CustomEvent olarak yayınlar; bir ölçüm aracı bağlandığında bu
+ * olayı dinler. Şu an dinleyen yok, çağrı sessizce hiçbir şey yapmaz.
+ * Tıklama olayları bileşenlerde data-olay (+ data-olay-<özellik>) özniteliğiyle
+ * işaretlidir.
  */
 export const EVENTS = {
   leadSent: "talep-gonderildi",
@@ -14,17 +15,17 @@ export const EVENTS = {
   phoneClick: "telefon",
 } as const;
 
-type UmamiWindow = Window & { umami?: { track: (event: string, data?: Record<string, string | number>) => void } };
+export type OlayDetail = { name: string; data?: Record<string, string | number> };
 
 export function track(event: string, data?: Record<string, string | number>) {
   try {
-    (window as UmamiWindow).umami?.track(event, data);
+    window.dispatchEvent(new CustomEvent<OlayDetail>("guru-olay", { detail: { name: event, data } }));
   } catch {
-    /* sayım yoksa yok say */
+    /* tarayıcı dışında yok say */
   }
 }
 
-/** Paneldeki "Olaylar" listesinde okunur adlar (data-umami-event değerleri dahil) */
+/** Olayların okunur adları (data-olay değerleri dahil) */
 export const EVENT_LABELS: Record<string, string> = {
   "talep-gonderildi": "Talep gönderildi",
   "randevu-alindi": "Randevu alındı",

@@ -12,9 +12,8 @@ import { Glyph } from "./Glyph";
  * "Tümünü kabul et" ile "Yalnız zorunlu" aynı ağırlıkta, tercih her zaman alt bilgideki
  * "Çerez tercihleri" bağlantısından değiştirilebilir. Seçim "guru-cerez-tercihi" çerezinde
  * 180 gün saklanır (eski vanilla-cookieconsent kaydı da okunur: categories + revision).
- * Ziyaretçi analitiği (Umami) çerez kullanmaz; analitik reddedilirse sayım yine kapatılır
- * (umami.disabled). Pazarlama etiketi şu an yok; eklendiğinde yalnız "pazarlama" onayıyla
- * yüklenmeli (consentOf().includes("pazarlama")).
+ * Şu an sitede ölçüm ya da pazarlama etiketi yok; eklendiğinde yalnız ilgili onayla
+ * yüklenmeli (consentOf().includes("analitik") / includes("pazarlama")).
  */
 type Banner = { title: string; text: string; acceptAll: string; rejectAll: string; prefs: string; save: string; categories: Record<string, { title: string; desc: string }> };
 const B = (legal as unknown as { _banner: Banner })._banner;
@@ -43,12 +42,6 @@ export function consentOf(): Cat[] | null {
 function save(cats: Cat[]) {
   const value = encodeURIComponent(JSON.stringify({ categories: cats, revision: REVISION, consentTimestamp: new Date().toISOString() }));
   document.cookie = `${COOKIE}=${value}; Max-Age=${DAYS * 86400}; Path=/; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
-  try {
-    if (cats.includes("analitik")) localStorage.removeItem("umami.disabled");
-    else localStorage.setItem("umami.disabled", "1");
-  } catch {
-    /* depolama kapalı */
-  }
 }
 
 const btn = "inline-flex min-h-11 items-center justify-center rounded-full px-5 text-[14.5px] font-medium transition-colors";

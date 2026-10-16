@@ -1,7 +1,7 @@
 import type { GlobalConfig } from "payload";
-import { isAdminField, isLoggedIn } from "../access";
+import { isLoggedIn } from "../access";
 import { revalidate } from "../utils";
-import { announcement, announcementMore, site, umami } from "@/lib/data";
+import { announcement, announcementMore, site } from "@/lib/data";
 
 /**
  * Sitenin her sayfasında görünen ayarlar. Boş bırakılan alanda data.ts'teki
@@ -70,55 +70,6 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         { name: "address", type: "textarea", label: "Adres" },
-      ],
-    },
-    {
-      name: "analytics",
-      type: "group",
-      label: "Ziyaretçi analizi (Umami)",
-      admin: {
-        description:
-          "Çerezsiz, kişisel veri toplamayan ziyaretçi sayımı. Bu alanlar sitenin her sayfasına bir betik eklediği için yalnız yöneticiler düzenleyebilir. API bağlantısı (panel istatistikleri) sunucu ortam değişkenlerindedir.",
-      },
-      access: { update: isAdminField },
-      fields: [
-        { name: "enabled", type: "checkbox", label: "Sitede ziyaretçi sayımını aç", defaultValue: true },
-        {
-          type: "row",
-          fields: [
-            {
-              name: "websiteId",
-              type: "text",
-              label: "Site kimliği (Website ID)",
-              defaultValue: umami.websiteId,
-              admin: { placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" },
-              validate: (v: string | null | undefined) =>
-                !v || /^[0-9a-f-]{36}$/i.test(v) || "Umami'deki 36 karakterlik site kimliğini yapıştırın.",
-            },
-            {
-              name: "scriptUrl",
-              type: "text",
-              label: "Betik adresi",
-              defaultValue: umami.scriptUrl,
-              /* Canlıda yalnız https; geliştirmede yerel test sunucusuna (localhost) izin verilir */
-              validate: (v: string | null | undefined) =>
-                !v ||
-                /^https:\/\/[^\s"'<>]+\.js$/i.test(v) ||
-                (process.env.NODE_ENV !== "production" && /^http:\/\/localhost(:\d+)?\/[^\s"'<>]+\.js$/i.test(v)) ||
-                "https:// ile başlayıp .js ile biten bir adres girin.",
-            },
-          ],
-        },
-        {
-          name: "domains",
-          type: "text",
-          label: "Sayılacak alan adları",
-          defaultValue: umami.domains,
-          admin: {
-            placeholder: "gurudijital.com,www.gurudijital.com",
-            description: "Virgülle ayırın. Doluysa önizleme ve yerel adresler sayılmaz.",
-          },
-        },
       ],
     },
   ],

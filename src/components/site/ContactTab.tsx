@@ -20,8 +20,8 @@ export function ContactTab() {
       data-float=""
       aria-label="Teklif alın: ücretsiz ön görüşme, aynı gün dönüş"
       className="group fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 min-[1360px]:block"
-      data-umami-event="teklif-al"
-      data-umami-event-konum="yan-sekme"
+      data-olay="teklif-al"
+      data-olay-konum="yan-sekme"
     >
       {/* Açılan bilgi kartı */}
       <span

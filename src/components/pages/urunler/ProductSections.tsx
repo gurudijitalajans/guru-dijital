@@ -49,7 +49,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
           </h1>
           <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-muted md:text-[17px]">{product.hero.sub}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Btn href="#demo" variant="primary" size="lg" arrow data-umami-event="teklif-al" data-umami-event-konum="urun-giris">
+            <Btn href="#demo" variant="primary" size="lg" arrow data-olay="teklif-al" data-olay-konum="urun-giris">
               {product.hero.ctaLabel}
             </Btn>
             {hasTour && (

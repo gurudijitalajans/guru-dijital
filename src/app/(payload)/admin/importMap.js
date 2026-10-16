@@ -42,6 +42,7 @@ import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { PanelNav as PanelNav_7e914adafbf74ff8c71060cac18a9bc0 } from '../../../payload/components/PanelNav'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { Dashboard as Dashboard_85b72bc5c0d30238d51de444df4399a6 } from '../../../payload/components/Dashboard'
 import { SalesPipeline as SalesPipeline_be5e74d62e9619266690e4e014d9e83d } from '../../../payload/components/crm/SalesPipeline'
 import { TaskBoardView as TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8 } from '../../../payload/components/ops/TaskBoardView'
@@ -51,9 +52,7 @@ import { ReportView as ReportView_780ba89690aaf5e760fe730e08f7a2fd } from '../..
 import { ExecutiveView as ExecutiveView_cb886b5cdd931825476f0f22eb2b1c34 } from '../../../payload/components/business/ExecutiveView'
 import { ImportView as ImportView_09bdd1e9ea7c3f678ef8fd15e8914b6a } from '../../../payload/components/setup/ImportView'
 import { TeamView as TeamView_0e583cf3681b32b90612d6af16666695 } from '../../../payload/components/setup/TeamView'
-import { AnalyticsView as AnalyticsView_e82a66e171163cfda89984b1174b76e8 } from '../../../payload/components/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
-import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -101,6 +100,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "/payload/components/PanelNav#PanelNav": PanelNav_7e914adafbf74ff8c71060cac18a9bc0,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
+  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "/payload/components/Dashboard#Dashboard": Dashboard_85b72bc5c0d30238d51de444df4399a6,
   "/payload/components/crm/SalesPipeline#SalesPipeline": SalesPipeline_be5e74d62e9619266690e4e014d9e83d,
   "/payload/components/ops/TaskBoardView#TaskBoardView": TaskBoardView_f1b7e9e13bccf5ed26515ef138284ca8,
@@ -110,7 +110,5 @@ export const importMap = {
   "/payload/components/business/ExecutiveView#ExecutiveView": ExecutiveView_cb886b5cdd931825476f0f22eb2b1c34,
   "/payload/components/setup/ImportView#ImportView": ImportView_09bdd1e9ea7c3f678ef8fd15e8914b6a,
   "/payload/components/setup/TeamView#TeamView": TeamView_0e583cf3681b32b90612d6af16666695,
-  "/payload/components/AnalyticsView#AnalyticsView": AnalyticsView_e82a66e171163cfda89984b1174b76e8,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

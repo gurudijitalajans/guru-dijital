@@ -23,7 +23,7 @@ export const metadata: Metadata = pageMetadata({
 
 type ContactItem = {
   label: string;
-  /** Umami olay adı (src/lib/analytics.ts EVENTS) */
+  /** Olay adı (src/lib/analytics.ts EVENTS) */
   event: string;
   value: string;
   href: string;
@@ -125,8 +125,8 @@ export default async function IletisimPage() {
                     <a
                       href={item.href}
                       {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      data-umami-event={item.event}
-                      data-umami-event-konum="iletisim"
+                      data-olay={item.event}
+                      data-olay-konum="iletisim"
                       className="group flex min-h-14 items-center gap-3.5 rounded-2xl bg-white/[0.07] px-4 py-3 transition-colors hover:bg-white/[0.14]"
                     >
                       <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-brand" aria-hidden>

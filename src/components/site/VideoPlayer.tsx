@@ -11,7 +11,7 @@ export type VideoPlayerProps = {
   poster?: string | null;
   /** Oynat düğmesinin erişilebilir adı, ör. "Guru CRM ürün turunu oynat" */
   label: string;
-  /** Umami olayında hangi video olduğu */
+  /** Olayda hangi video olduğu */
   trackName?: string;
   className?: string;
 };

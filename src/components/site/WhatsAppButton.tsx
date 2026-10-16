@@ -31,8 +31,8 @@ export function WhatsAppButton({ number, chat }: { number: string; chat: boolean
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp'tan yazın"
-      data-umami-event="whatsapp"
-      data-umami-event-konum="balon"
+      data-olay="whatsapp"
+      data-olay-konum="balon"
       data-float=""
       className={cn(
         "group fixed z-[45] inline-flex h-14 items-center overflow-hidden rounded-full bg-[#25D366] text-white shadow-[0_14px_32px_-12px_rgb(18_140_74/0.7)] transition-[bottom,background-color,transform,opacity] duration-300 hover:bg-[#1ebe5b] active:scale-95",

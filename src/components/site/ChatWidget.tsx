@@ -199,7 +199,7 @@ export function ChatWidget({ info, embed }: { info: ChatInfo; embed?: Embed }) {
           type="button"
           onClick={openChat}
           aria-label={`${info.botName} ile sohbet edin`}
-          data-umami-event="sohbet-ac"
+          data-olay="sohbet-ac"
           style={paint}
           className={cn(
             "fixed z-[45] inline-flex size-14 items-center justify-center rounded-full bg-navy text-white shadow-[0_14px_32px_-12px_rgb(1_20_65/0.55)] transition-[bottom,background-color,transform,opacity] duration-300 hover:bg-brand",

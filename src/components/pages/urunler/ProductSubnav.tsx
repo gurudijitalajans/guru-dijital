@@ -97,8 +97,8 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
                 <a
                   href={`#${i.id}`}
                   aria-current={active === i.id ? "true" : undefined}
-                  data-umami-event="urun-menu"
-                  data-umami-event-bolum={i.label}
+                  data-olay="urun-menu"
+                  data-olay-bolum={i.label}
                   className={cn(
                     "inline-flex min-h-11 items-center rounded-full px-4 text-[14.5px] font-medium transition-colors",
                     active === i.id ? "bg-chip text-heading" : "text-muted hover:text-heading"
@@ -113,14 +113,14 @@ export function ProductSubnav({ items, ctaLabel }: { items: SubnavItem[]; ctaLab
             <a
               href={`#${cta.id}`}
               aria-current={active === cta.id ? "true" : undefined}
-              data-umami-event="urun-menu"
-              data-umami-event-bolum={cta.label}
+              data-olay="urun-menu"
+              data-olay-bolum={cta.label}
               className="-ml-2 inline-flex min-h-11 shrink-0 items-center rounded-full bg-navy px-4 text-[14.5px] font-medium text-white transition-colors hover:bg-brand lg:hidden"
             >
               {cta.label}
             </a>
           )}
-          <Btn href="#demo" variant="primary" size="md" arrow className="hidden shrink-0 lg:inline-flex" data-umami-event="teklif-al" data-umami-event-konum="urun-menu">
+          <Btn href="#demo" variant="primary" size="md" arrow className="hidden shrink-0 lg:inline-flex" data-olay="teklif-al" data-olay-konum="urun-menu">
             {ctaLabel}
           </Btn>
         </nav>

@@ -161,11 +161,6 @@ export default buildConfig({
           path: "/ekip",
           meta: { title: "Ekibim" },
         },
-        analiz: {
-          Component: "/payload/components/AnalyticsView#AnalyticsView",
-          path: "/analiz",
-          meta: { title: "Ziyaretçi Analizi" },
-        },
       },
     },
   },

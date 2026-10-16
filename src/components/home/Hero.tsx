@@ -78,10 +78,10 @@ export async function Hero({ hero }: { hero: HomeContent["hero"]; referenceCount
           )}
           {/* relative z-10: küre kutusu yukarı çekildiği için düğmelerin altına biner, tıklamayı kapmasın */}
           <div className="relative z-10 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:mt-9">
-            <Btn href={hero.primaryHref} variant="primary" size="lg" arrow className="w-full max-w-xs sm:w-auto" data-umami-event="giris-ana-buton" data-umami-event-metin={hero.primaryLabel}>
+            <Btn href={hero.primaryHref} variant="primary" size="lg" arrow className="w-full max-w-xs sm:w-auto" data-olay="giris-ana-buton" data-olay-metin={hero.primaryLabel}>
               {hero.primaryLabel}
             </Btn>
-            <Btn href={hero.secondaryHref} variant="light" size="lg" className="w-full max-w-xs sm:w-auto" data-umami-event="giris-ikinci-buton" data-umami-event-metin={hero.secondaryLabel}>
+            <Btn href={hero.secondaryHref} variant="light" size="lg" className="w-full max-w-xs sm:w-auto" data-olay="giris-ikinci-buton" data-olay-metin={hero.secondaryLabel}>
               {hero.secondaryLabel}
             </Btn>
           </div>

@@ -81,8 +81,6 @@ async function settings(ctx: Ctx) {
         more: list(ANNOUNCE),
       },
       contact: { ...s.contact, email: 'info@gurudijital.com', phone: '0850 308 34 57', whatsapp: '908503083457' },
-      /* Alan adı .com: ziyaretçi sayımı yeni adreste de çalışsın */
-      ...(s.analytics ? { analytics: { ...s.analytics, domains: String(s.analytics.domains ?? '').replace(/gurudijital\.com\.tr/g, 'gurudijital.com') } } : {}),
     } as never,
     req: ctx.req,
     ...ok,

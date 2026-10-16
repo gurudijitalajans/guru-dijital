@@ -50,8 +50,8 @@ export function ClosingCta({
                 size="lg"
                 arrow
                 className="w-full max-w-xs sm:w-auto"
-                data-umami-event="kapanis-ana-buton"
-                data-umami-event-metin={primary.label}
+                data-olay="kapanis-ana-buton"
+                data-olay-metin={primary.label}
               >
                 {primary.label}
               </Btn>
@@ -60,8 +60,8 @@ export function ClosingCta({
                 variant="ghost"
                 size="lg"
                 className="w-full max-w-xs sm:w-auto"
-                data-umami-event="kapanis-ikinci-buton"
-                data-umami-event-metin={secondary.label}
+                data-olay="kapanis-ikinci-buton"
+                data-olay-metin={secondary.label}
               >
                 {secondary.label}
               </Btn>

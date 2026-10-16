@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { announcement as defaultAnnouncement, announcementMore, site, umami } from "@/lib/data";
+import { announcement as defaultAnnouncement, announcementMore, site } from "@/lib/data";
 
 /**
  * Site tarafının panelle tek temas noktası. Veritabanına ulaşılamazsa
@@ -21,8 +21,6 @@ export type SiteInfo = {
   whatsapp: string;
   address: string;
   instagram: string;
-  /** Umami betiği: yalnız açık ve site kimliği doluysa */
-  analytics: { websiteId: string; scriptUrl: string; domains: string } | null;
 };
 
 export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
@@ -34,8 +32,6 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
     whatsapp: site.whatsapp,
     address: site.address,
     instagram: site.instagram,
-    /* Panele ulaşılamazsa sayım canlı sitedeki gibi sürer */
-    analytics: { ...umami },
   };
   try {
     const payload = await cms();
@@ -55,10 +51,6 @@ export const getSiteInfo = cache(async (): Promise<SiteInfo> => {
       whatsapp: c.whatsapp?.trim() || fallback.whatsapp,
       address: c.address?.trim() || fallback.address,
       instagram: c.instagram?.trim() || fallback.instagram,
-      analytics:
-        s.analytics?.enabled && s.analytics.websiteId && s.analytics.scriptUrl
-          ? { websiteId: s.analytics.websiteId, scriptUrl: s.analytics.scriptUrl, domains: s.analytics.domains?.trim() ?? "" }
-          : null,
     };
   } catch {
     return fallback;

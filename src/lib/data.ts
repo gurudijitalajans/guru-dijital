@@ -33,15 +33,6 @@ export const site = {
 /* Müşterinin teyit ettiği iş ortaklıkları (2026-10-16): alt bilgide Google Partner rozetinin yanında */
 export const partnerBadges = ["Shopify Partner", "ikas İş Ortağı", "Trendyol Çözüm Ortağı"];
 
-/* Umami: çerezsiz, kişisel veri toplamayan ziyaretçi sayımı (Umami Cloud, Guru
-   hesabı). Site kimliği gizli değildir, betikte herkese açık görünür. Yalnız
-   aşağıdaki alan adları sayılır: önizleme ve yerel adresler sayıma girmez. */
-export const umami = {
-  websiteId: "fb72f8f5-2e67-4ed6-9b06-6e5b8bb7f26a",
-  scriptUrl: "https://cloud.umami.is/script.js",
-  domains: "guru-dijital-pied.vercel.app,gurudijital.com,www.gurudijital.com",
-};
-
 /* ------------------------------------------------------------------ */
 /*  Hizmetler                                                          */
 /* ------------------------------------------------------------------ */
