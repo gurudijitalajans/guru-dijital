@@ -8,6 +8,7 @@ import { GlyphChip } from "@/components/site/Glyph";
 import { pillCls } from "@/components/site/styles";
 import {
   FieldError,
+  FormActions,
   FormNotice,
   Honeypot,
   Opt,
@@ -311,33 +312,21 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
       <Honeypot value={trap} onChange={setTrap} />
       <FormNotice message={notice} />
 
-      <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
-        <Btn
-          type="submit"
-          variant="primary"
-          size="lg"
-          arrow={!sending}
-          disabled={sending}
-          className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
-        >
-          {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
-        </Btn>
-        <p className="text-[13px] leading-relaxed text-muted">
-          Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır.
-        </p>
-      </div>
-      <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
-        Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için
-        kullanılır. Ayrıntılar:{" "}
-        <a
-          href="/yasal/kvkk-aydinlatma-metni"
-          target="_blank"
-          className="text-brand underline-offset-2 hover:underline"
-        >
-          KVKK Aydınlatma Metni
-        </a>
-        .
-      </p>
+      <FormActions
+        note="Görüşmeler yaklaşık 30 dakika sürer ve çevrim içi yapılır."
+        button={
+          <Btn
+            type="submit"
+            variant="primary"
+            size="lg"
+            arrow={!sending}
+            disabled={sending}
+            className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          >
+            {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
+          </Btn>
+        }
+      />
     </>
   );
 

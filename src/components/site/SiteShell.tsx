@@ -7,6 +7,7 @@ import { ContactTab } from "@/components/site/ContactTab";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { CookieConsentBanner } from "@/components/site/CookieConsent";
 import { ScrollReset } from "@/components/site/ScrollReset";
+import { HyphenGuard } from "@/components/site/HyphenGuard";
 import { MobileCtaBar } from "@/components/layout/MobileCtaBar";
 import { PanelBar } from "@/components/site/PanelBar";
 import { ChatWidget } from "@/components/site/ChatWidget";
@@ -38,7 +39,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
   /* Blog üst menüde yok (kullanıcı isteği): alt bilgide yasal bağlantıların solunda */
   const menu = buildNavMenu(services, products);
   const footerServices = services.map((s) => ({ title: s.title, slug: s.slug }));
-  const footerProducts = products.map((p) => ({ name: p.name, slug: p.slug, icon: p.icon }));
+  const footerProducts = products.map((p) => ({ name: p.name, slug: p.slug }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -91,6 +92,7 @@ export async function SiteShell({ children }: { children: React.ReactNode }) {
           {chat && <ChatWidget info={chat} />}
           <CookieConsentBanner />
           <ScrollReset />
+          <HyphenGuard />
         </MotionConfig>
         {/* Umami: çerezsiz ziyaretçi sayımı (Site Ayarları > Ziyaretçi analizi). Tarayıcıda
             "takip etme" tercihi açıksa sayılmaz; alan adı listesi doluysa yalnız o adresler sayılır. */}

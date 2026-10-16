@@ -198,7 +198,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                       </div>
                       <p
                         className={cn(
-                          "text-pretty font-medium leading-snug tracking-[-0.01em] text-white",
+                          "text-balance font-medium leading-snug tracking-[-0.01em] text-white",
                           lead ? "text-[19px] md:text-[22px]" : "text-[16px] md:text-[17px]"
                         )}
                       >
@@ -344,7 +344,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
                   >
                     <ServiceIcon name={s.icon} />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[16px] font-medium leading-snug text-heading">{s.title}</span>
+                      <span className="block text-balance text-[16px] font-medium leading-snug text-heading">{s.title}</span>
                       <span className="mt-0.5 block text-[13.5px] leading-snug text-muted">{s.menuDesc}</span>
                     </span>
                     <ArrowRight

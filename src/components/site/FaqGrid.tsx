@@ -44,7 +44,7 @@ export function FaqGrid({ items, className }: { items: FaqItem[]; className?: st
                     /* md'de sütunlar dar: iki satırlık soru ile tek satırlık soru aynı boyda dursun */
                     className="flex min-h-12 w-full items-center justify-between gap-4 rounded-xl px-4 py-3 text-left text-[14.5px] font-normal text-body sm:px-5 md:min-h-[74px] lg:min-h-12"
                   >
-                    <span className={cn("text-pretty transition-colors", isOpen ? "text-heading" : "group-hover:text-heading")}>{it.q}</span>
+                    <span className={cn("text-balance transition-colors", isOpen ? "text-heading" : "group-hover:text-heading")}>{it.q}</span>
                     <Plus
                       aria-hidden
                       className={cn("size-[18px] shrink-0 text-heading transition-transform duration-300", isOpen && "rotate-45")}

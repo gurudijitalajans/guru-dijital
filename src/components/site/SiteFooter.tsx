@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { IconName } from "@/lib/icon-names";
 import { LEGAL_PAGES } from "@/lib/legal";
 import { InstagramIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { partnerBadges, site } from "@/lib/data";
@@ -9,7 +8,6 @@ import { cn, shortServiceTitle } from "@/lib/utils";
 import { CookiePrefsButton } from "./CookieConsent";
 import { Glyph } from "./Glyph";
 import { Logo } from "./Logo";
-import { ProductIcon } from "./ProductIcon";
 import { iconBoxCls } from "./styles";
 
 const headCls = "mb-3 text-[15px] font-medium text-heading";
@@ -27,7 +25,7 @@ type SiteFooterProps = {
   whatsapp?: string;
   showBlog?: boolean;
   services: { title: string; slug: string }[];
-  products: { name: string; slug: string; icon: IconName }[];
+  products: { name: string; slug: string }[];
   /** Hakkımızda > Ödüller listesindeki ilk ödül, ör. "2025 Google Partner" */
   badge?: string;
 };
@@ -36,7 +34,7 @@ type Channel = { label: string; value: string; href: string; event: string; exte
 
 /**
  * Alt bilgi: solda marka ve iş ortaklıkları, sağda dengeli bağlantı sütunları (hizmetler iki
- * alt sütunda, ürünler uygulama simgeleriyle), altında iletişim kanalları şeridi ve en altta
+ * alt sütunda), altında iletişim kanalları şeridi ve en altta
  * telif + Blog + yasal bağlantılar. İletişim bilgileri, hizmet ve ürün listeleri panelden gelir.
  */
 export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false, services, products, badge }: SiteFooterProps) {
@@ -58,18 +56,18 @@ export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false
   return (
     <footer className="bg-soft pb-8 pt-12 md:pt-16">
       <div className="container-g">
-        {/* Geniş ekranda marka solda; daha darda üstte (hizmet adları kırılmasın) */}
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,2.6fr)] xl:gap-14">
-          {/* Marka bloğu: dar ekranda tek sütun, tablette rozetler sağda, geniş ekranda sol sütun */}
-          <div className="md:flex md:items-start md:justify-between md:gap-10 xl:block">
+        {/* 12 sütunluk ızgara, sütun araları eşit: geniş ekranda marka 4 + hizmetler 4 + ürünler 2 + kurumsal 2;
+            tablette marka üstte tam satır (rozetler sağda), altında 6 + 3 + 3 */}
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-12">
+          <div className="col-span-2 md:col-span-12 md:flex md:items-start md:justify-between md:gap-10 xl:col-span-4 xl:block">
             <div>
-            <Logo height={30} />
-            <p className="mt-4 max-w-[300px] text-pretty text-[14px] leading-relaxed text-muted">
-              Markanızı dijitalde büyüten entegre ajans hizmetleri ve işletme yazılımları.
-            </p>
+              <Logo height={30} />
+              <p className="mt-4 max-w-[320px] text-pretty text-[14px] leading-relaxed text-muted">
+                Markanızı dijitalde büyüten entegre ajans hizmetleri ve işletme yazılımları.
+              </p>
             </div>
             {badges.length > 0 && (
-              <ul className="mt-6 flex max-w-[360px] flex-wrap gap-2 md:mt-1 md:max-w-[420px] md:justify-end xl:mt-6 xl:max-w-none xl:justify-start" aria-label="İş ortaklıkları">
+              <ul className="mt-6 flex max-w-[360px] flex-wrap gap-2 md:mt-1 md:max-w-[420px] md:justify-end xl:mt-6 xl:max-w-[360px] xl:justify-start" aria-label="İş ortaklıkları">
                 {badges.map((b) => (
                   <li
                     key={b}
@@ -83,58 +81,55 @@ export function SiteFooter({ email, instagram, phone, whatsapp, showBlog = false
             )}
           </div>
 
-          {/* Hizmetler iki alt sütunda (sütun sütun dolar), ürünler simgeli: üç sütun aynı boyda biter */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1.15fr)_minmax(0,1fr)] md:gap-x-10">
-            <nav aria-label="Hizmetler" className="col-span-2 md:col-span-1">
-              <h2 className={headCls}>Hizmetler</h2>
-              <ul className="grid grid-flow-col grid-cols-2 gap-x-6" style={{ gridTemplateRows: `repeat(${rows}, auto)` }}>
-                {services.map((s) => (
-                  <li key={s.slug} className="min-w-0">
-                    <Link href={`/hizmetler/${s.slug}`} className={linkCls}>
-                      {shortServiceTitle(s.title)}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link href="/hizmetler" className={allCls}>
-                    Tüm Hizmetler
-                    <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+          {/* Hizmetler iki alt sütunda (sütun sütun dolar); "Tüm …" satırlarıyla üç sütun aynı satırda biter */}
+          <nav aria-label="Hizmetler" className="col-span-2 md:col-span-6 xl:col-span-4">
+            <h2 className={headCls}>Hizmetler</h2>
+            <ul className="grid grid-flow-col grid-cols-2 gap-x-8" style={{ gridTemplateRows: `repeat(${rows}, auto)` }}>
+              {services.map((s) => (
+                <li key={s.slug} className="min-w-0">
+                  <Link href={`/hizmetler/${s.slug}`} className={linkCls}>
+                    {shortServiceTitle(s.title)}
                   </Link>
                 </li>
-              </ul>
-            </nav>
+              ))}
+              <li>
+                <Link href="/hizmetler" className={allCls}>
+                  Tüm Hizmetler
+                  <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
-            <nav aria-label="Ürünler">
-              <h2 className={headCls}>Ürünler</h2>
-              <ul>
-                {products.map((p) => (
-                  <li key={p.slug}>
-                    <Link href={`/urunler/${p.slug}`} className={cn(linkCls, "flex items-center gap-2.5 md:py-1.5")}>
-                      <ProductIcon slug={p.slug} icon={p.icon} size={24} className="shadow-[0_3px_8px_-4px_rgb(1_20_65/0.5)]" />
-                      {p.name}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link href="/urunler" className={allCls}>
-                    Tüm Ürünler
-                    <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+          <nav aria-label="Ürünler" className="md:col-span-3 xl:col-span-2">
+            <h2 className={headCls}>Ürünler</h2>
+            <ul>
+              {products.map((p) => (
+                <li key={p.slug}>
+                  <Link href={`/urunler/${p.slug}`} className={linkCls}>
+                    {p.name}
                   </Link>
                 </li>
-              </ul>
-            </nav>
+              ))}
+              <li>
+                <Link href="/urunler" className={allCls}>
+                  Tüm Ürünler
+                  <ArrowRight aria-hidden className="size-3.5" strokeWidth={2.2} />
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
-            <nav aria-label="Kurumsal">
-              <h2 className={headCls}>Kurumsal</h2>
-              <ul>
-                <li><Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link></li>
-                <li><Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link></li>
-                <li><Link href="/hakkimizda#oduller" className={linkCls}>Ödüllerimiz</Link></li>
-                <li><Link href="/referanslar" className={linkCls}>Referanslarımız</Link></li>
-                <li><Link href="/iletisim" className={linkCls}>İletişim</Link></li>
-              </ul>
-            </nav>
-          </div>
+          <nav aria-label="Kurumsal" className="md:col-span-3 xl:col-span-2">
+            <h2 className={headCls}>Kurumsal</h2>
+            <ul>
+              <li><Link href="/hakkimizda" className={linkCls}>Hakkımızda</Link></li>
+              <li><Link href="/hakkimizda#ekip" className={linkCls}>Ekibimiz</Link></li>
+              <li><Link href="/hakkimizda#oduller" className={linkCls}>Ödüllerimiz</Link></li>
+              <li><Link href="/referanslar" className={linkCls}>Referanslarımız</Link></li>
+              <li><Link href="/iletisim" className={linkCls}>İletişim</Link></li>
+            </ul>
+          </nav>
         </div>
 
         {/* İletişim kanalları: tek satırda kartlar (mobilde alt alta) */}

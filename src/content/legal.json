@@ -1,7 +1,7 @@
 {
  "kvkk-aydinlatma-metni": {
   "title": "KVKK Aydınlatma Metni",
-  "updated": "2026-10-14",
+  "updated": "2026-10-16",
   "blocks": [
    {
     "type": "p",
@@ -147,7 +147,7 @@
      [
       "Neon (veritabanı hizmeti)",
       "Form başvuruları, randevular ve sohbet kayıtlarının saklanması",
-      "Avrupa Birliği (Frankfurt, Almanya)"
+      "ABD"
      ],
      [
       "Resend (e-posta gönderimi)",
@@ -236,7 +236,7 @@
  },
  "cerez-politikasi": {
   "title": "Çerez Politikası",
-  "updated": "2026-10-14",
+  "updated": "2026-10-16",
   "blocks": [
    {
     "type": "p",
@@ -261,14 +261,6 @@
    {
     "type": "p",
     "text": "Sitenin çalışması ve sizin açıkça istediğiniz bir hizmetin sunulabilmesi için kesinlikle gereklidir. Bu çerezler için onay alınmaz; tarayıcı ayarlarından engellerseniz sitenin bazı bölümleri çalışmayabilir."
-   },
-   {
-    "type": "h3",
-    "text": "Tercih çerezleri"
-   },
-   {
-    "type": "p",
-    "text": "Tema (açık veya koyu görünüm) gibi seçimlerinizi hatırlayarak siteyi size göre ayarlar. Yalnızca onay verirseniz kullanılır."
    },
    {
     "type": "h3",
@@ -301,10 +293,17 @@
     ],
     "rows": [
      [
-      "Çerez tercihi kaydı",
-      "Yerel depolama",
+      "guru-cerez-tercihi",
+      "Çerez (birinci taraf)",
       "Zorunlu",
       "Çerez onay penceresinde yaptığınız seçimi hatırlar, pencerenin her sayfada yeniden açılmasını önler",
+      "180 gün"
+     ],
+     [
+      "umami.disabled",
+      "Yerel depolama",
+      "Zorunlu",
+      "Analitik ölçümü reddettiğinizde bu tercihi ölçüm aracına bildirir; yalnız ret durumunda oluşturulur",
       "Siz silene veya tercihinizi değiştirene kadar"
      ],
      [
@@ -312,13 +311,6 @@
       "Yerel depolama",
       "Zorunlu",
       "Sohbet asistanını kullandığınızda konuşmanızın anahtarını tutar; pencereyi kapatıp açtığınızda konuşmanız kaldığı yerden sürer. Sohbet penceresini açmazsanız oluşturulmaz.",
-      "Siz silene kadar"
-     ],
-     [
-      "Tema tercihi",
-      "Yerel depolama",
-      "Tercih",
-      "Açık veya koyu görünüm seçiminizi hatırlar",
       "Siz silene kadar"
      ],
      [
@@ -358,7 +350,7 @@
     "items": [
      "Siteye ilk girişinizde açılan pencerede Tümünü kabul et, Yalnız zorunlu veya Tercihler seçeneklerinden birini seçebilirsiniz. Tümünü kabul etmek ile reddetmek aynı kolaylıkta sunulur.",
      "Verdiğiniz onayı istediğiniz zaman, sayfanın alt bölümündeki Çerez tercihleri bağlantısından değiştirebilir veya geri alabilirsiniz. Onayınızı geri almanız, geri almadan önceki işlemleri etkilemez.",
-     "Tarayıcınızın ayarlarından çerezleri ve yerel depolamayı silebilir veya engelleyebilirsiniz. Bu durumda tema seçiminiz ve sohbet geçmişiniz gibi bilgiler kaybolur.",
+     "Tarayıcınızın ayarlarından çerezleri ve yerel depolamayı silebilir veya engelleyebilirsiniz. Bu durumda çerez tercihiniz ve sohbet geçmişiniz gibi bilgiler kaybolur.",
      "Tarayıcınızın gizli pencere özelliğini kullanırsanız, pencere kapandığında yerel depolama bilgileri silinir."
     ]
    },
@@ -382,7 +374,7 @@
  },
  "gizlilik-politikasi": {
   "title": "Gizlilik Politikası",
-  "updated": "2026-10-14",
+  "updated": "2026-10-16",
   "blocks": [
    {
     "type": "p",
@@ -442,7 +434,7 @@
      [
       "Neon",
       "Form, randevu ve sohbet kayıtlarının saklandığı veritabanı",
-      "AB (Frankfurt)"
+      "ABD"
      ],
      [
       "Resend",

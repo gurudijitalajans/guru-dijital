@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Check, ChevronDown, Clock, Copy } from "lucide-react";
 import { Btn } from "@/components/site/Btn";
@@ -133,6 +133,27 @@ export function FormNotice({ message }: { message?: string }) {
     <p role="alert" className="mt-5 rounded-xl bg-[#fdecec] px-4 py-3 text-[14px] font-medium text-[#a51b1b]">
       {message}
     </p>
+  );
+}
+
+/**
+ * Formun alt satırı: solda gönder düğmesi, sağında iki satırlık not (ne olacağı + KVKK).
+ * Not düğmenin yanında tek blok durur; ayrı satıra düşüp tek kelime kalmaz.
+ */
+export function FormActions({ button, note }: { button: ReactNode; note: string }) {
+  return (
+    <div className="mt-auto flex flex-col gap-4 pt-7 sm:flex-row sm:items-center sm:gap-5">
+      {button}
+      <div className="min-w-0 space-y-1 text-pretty leading-relaxed text-muted">
+        <p className="text-[13px]">{note}</p>
+        <p className="text-[12.5px]">
+          Bilgileriniz yalnız talebinize dönüş için kullanılır:{" "}
+          <a href="/yasal/kvkk-aydinlatma-metni" target="_blank" className="whitespace-nowrap text-brand underline-offset-2 hover:underline">
+            KVKK Aydınlatma Metni
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -483,28 +504,21 @@ export function ContactForm({
             <Honeypot value={trap} onChange={setTrap} />
             <FormNotice message={notice} />
 
-            <div className="mt-auto flex flex-col gap-3 pt-7 sm:flex-row sm:items-center sm:gap-5">
-              <Btn
-                type="submit"
-                variant="primary"
-                size="lg"
-                arrow={!sending}
-                disabled={sending}
-                className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
-              >
-                {sending ? "Gönderiliyor" : "Mesajı Gönder"}
-              </Btn>
-              <p className="text-[13px] leading-relaxed text-muted">
-                Mesajınız doğrudan ekibimize iletilir; size e-posta ya da telefonla dönüş yaparız.
-              </p>
-            </div>
-            <p className="mt-4 text-[12.5px] leading-relaxed text-muted">
-              Paylaştığınız bilgiler yalnız talebinize dönüş yapmak için kullanılır. Ayrıntılar:{" "}
-              <a href="/yasal/kvkk-aydinlatma-metni" target="_blank" className="text-brand underline-offset-2 hover:underline">
-                KVKK Aydınlatma Metni
-              </a>
-              .
-            </p>
+            <FormActions
+              note="Mesajınız doğrudan ekibimize iletilir; size e-posta ya da telefonla dönüş yaparız."
+              button={
+                <Btn
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  arrow={!sending}
+                  disabled={sending}
+                  className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+                >
+                  {sending ? "Gönderiliyor" : "Mesajı Gönder"}
+                </Btn>
+              }
+            />
           </motion.form>
         )}
       </AnimatePresence>

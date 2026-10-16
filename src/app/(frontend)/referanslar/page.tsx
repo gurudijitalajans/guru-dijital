@@ -110,7 +110,7 @@ export default async function ReferanslarPage() {
 
       {/* Vaka çalışmaları */}
       {cases.length > 0 && (
-        <div id="vakalar" className="scroll-mt-24">
+        <div id="vakalar" className="scroll-mt-(--header-h)">
           <CasesBlock title="Vaka Çalışmaları" lead="Ölçülebilir hedeflerle başlayıp sonuçlarını rakamlarla paylaştığımız projeler." cases={cases} byService />
         </div>
       )}

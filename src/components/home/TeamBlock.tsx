@@ -68,7 +68,7 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                   <div className="min-w-0">
                     {/* İsim girilmediyse rol başlık olur; uydurma isim yazılmaz */}
                     <h3 className="text-[15.5px] font-medium leading-snug text-heading">{m.placeholder ? m.role : m.name}</h3>
-                    <p className="text-[13px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>
+                    <p className="text-balance text-[13px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>
                   </div>
                   {m.linkedin && (
                     <a

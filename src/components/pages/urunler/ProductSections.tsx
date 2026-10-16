@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils";
 /* Ürün sayfası bölümleri. Hepsi sunucu bileşeni; içerik getProducts() ile gelir. */
 
 /** Bölümler yapışkan menünün altında kalmasın */
-export const anchorCls = "scroll-mt-[124px] lg:scroll-mt-[140px]";
+/* Bölüm başı üst menü + yapışkan alt menünün (64px) hemen altına gelir */
+export const anchorCls = "scroll-mt-[calc(var(--header-h)+64px)]";
 
 /** Başlıktaki *yıldızlı* kelime bir kademe kalın yazılır (renk yok) */
 export function renderHeadline(text: string) {

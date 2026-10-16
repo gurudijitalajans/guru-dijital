@@ -50,10 +50,13 @@ body {
 /* Sabit header altında çapa hedefleri görünür kalsın. Bölümlerde payı her zaman (menüden
    istemci içi geçişte :target eşleşmez) menü yüksekliği: bölümün üst kenarı menünün hemen
    altına gelir, önceki bölümden şerit görünmez. Sınıflı scroll-mt-* bu iki kuralı ezer. */
-:root { --header-h: 68px; }
-@media (min-width: 1024px) { :root { --header-h: 76px; } }
-:where(:target) { scroll-margin-top: 120px; }
-:where(section[id]) { scroll-margin-top: var(--header-h); }
+/* base katmanında: sınıflı scroll-mt-* (utilities) bunları ezebilsin (ürün sayfası alt menüsü 140px) */
+@layer base {
+  :root { --header-h: 68px; }
+  @media (min-width: 1024px) { :root { --header-h: 76px; } }
+  :target { scroll-margin-top: 120px; }
+  section[id] { scroll-margin-top: var(--header-h); }
+}
 
 /* ---- düzen ---- */
 .container-g {
@@ -75,6 +78,15 @@ body {
       #1a4fae 0deg, #0b2e7c 9deg, #011648 17deg, #011648 36deg, #072560 39deg,
       #2a72d9 41deg, #bfeaff 42.8deg, #b0e5ff 45deg, #6cc0f8 49.5deg, #3383e2 54.5deg,
       #1a52b4 60deg, #0d3787 67deg, #04205e 76deg, #011649 84deg, #001341 90deg);
+}
+
+/* ---- Satır kırılması ----
+   Paragraf ve listelerde son satır tek kelime kalmaz (pretty), başlıklar dengeli kırılır.
+   Sınıflı text-balance/text-pretty (utilities) bunları ezer. Tireli kelimelerin tireden
+   bölünmesini HyphenGuard önler (yazı tipinde bölünmez tire yok). */
+@layer base {
+  p, li, dd, dt, figcaption, blockquote, label, td, th, span { text-wrap: pretty; }
+  h1, h2, h3, h4 { text-wrap: balance; }
 }
 
 /* ---- Tıklanabilir öğelerde el işaretçisi ----
@@ -224,30 +236,6 @@ body {
   .marquee-track { animation: none; }
 }
 
-/* ---- Çerez onayı (vanilla-cookieconsent) marka teması ---- */
-#cc-main {
-  --cc-font-family: var(--font-sans), system-ui, sans-serif;
-  --cc-primary-color: #011441;
-  --cc-secondary-color: #475069;
-  --cc-btn-primary-bg: #2a6aca;
-  --cc-btn-primary-hover-bg: #011441;
-  --cc-btn-primary-border-color: #2a6aca;
-  --cc-btn-primary-hover-border-color: #011441;
-  --cc-btn-secondary-bg: #eef3fb;
-  --cc-btn-secondary-hover-bg: #dde8f8;
-  --cc-btn-secondary-border-color: #eef3fb;
-  --cc-btn-secondary-hover-border-color: #dde8f8;
-  --cc-btn-border-radius: 999px;
-  --cc-modal-border-radius: 20px;
-  --cc-link-color: #2a6aca;
-  --cc-toggle-on-bg: #2a6aca;
-  --cc-cookie-category-block-bg: #f4f6fa;
-  --cc-cookie-category-block-hover-bg: #eaeff7;
-  --cc-overlay-bg: rgb(1 20 65 / 0.45);
-}
-#cc-main .cm, #cc-main .pm { box-shadow: 0 24px 60px -24px rgb(1 20 65 / 0.45), 0 0 0 1px rgb(1 20 65 / 0.06); }
-#cc-main button, #cc-main a { cursor: pointer; }
-
 /* Tıklanabilir öğelerde el imleci (Tailwind v4 düğmelerde varsayılanı "default" yapar) */
 @layer base {
   button:not(:disabled),
@@ -296,10 +284,11 @@ html[data-chat-open] [data-float] { display: none !important; }
   .fill-odd-2 > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 
-/* ---- Yasal metinler: düz belge biçimi ---- */
-.legal h2 { margin: 2.25rem 0 0.6rem; font-size: 20px; font-weight: 600; line-height: 1.35; color: var(--color-heading); letter-spacing: -0.01em; }
-.legal h3 { margin: 1.5rem 0 0.4rem; font-size: 16.5px; font-weight: 600; color: var(--color-heading); }
-.legal p { margin: 0 0 0.9rem; }
-.legal ul { margin: 0 0 1rem; padding-left: 1.25rem; list-style: disc; }
-.legal li { margin: 0.25rem 0; }
-.legal h2:first-child { margin-top: 0; }
+/* ---- Yasal metinler: gövde (bölüm başlıkları sayfada sınıflarla; components katmanında, sınıflar ezebilir) ---- */
+@layer components {
+  .legal h3 { margin: 1.6rem 0 0.4rem; font-size: 17px; font-weight: 600; color: var(--color-heading); }
+  .legal p { margin: 0 0 0.95rem; }
+  .legal ul { margin: 0 0 1.1rem; padding-left: 1.25rem; list-style: disc; }
+  .legal li { margin: 0.3rem 0; padding-left: 0.15rem; }
+  .legal li::marker { color: var(--color-brand); }
+}

@@ -267,7 +267,7 @@ export default async function HakkimizdaPage() {
                   </div>
                   <div className="p-4 md:p-5">
                     <h3 className="text-[15.5px] font-medium leading-snug text-heading md:text-[16.5px]">{m.placeholder ? m.role : m.name}</h3>
-                    <p className="mt-0.5 text-[13px] leading-snug text-muted md:text-[14px]">{m.placeholder ? m.focus : m.role}</p>
+                    <p className="mt-0.5 text-balance text-[13px] leading-snug text-muted md:text-[14px]">{m.placeholder ? m.focus : m.role}</p>
                   </div>
                 </article>
               </StaggerItem>
