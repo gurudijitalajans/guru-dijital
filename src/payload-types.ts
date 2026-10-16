@@ -93,9 +93,12 @@ export interface Config {
     users: User;
     tenants: Tenant;
     'business-config': BusinessConfig;
+    'work-calendar': WorkCalendar;
+    leaves: Leaf;
     'site-connection': SiteConnection;
     usage: Usage;
     'audit-log': AuditLog;
+    notifications: Notification;
     'payload-kv': PayloadKv;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -134,9 +137,12 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     'business-config': BusinessConfigSelect<false> | BusinessConfigSelect<true>;
+    'work-calendar': WorkCalendarSelect<false> | WorkCalendarSelect<true>;
+    leaves: LeavesSelect<false> | LeavesSelect<true>;
     'site-connection': SiteConnectionSelect<false> | SiteConnectionSelect<true>;
     usage: UsageSelect<false> | UsageSelect<true>;
     'audit-log': AuditLogSelect<false> | AuditLogSelect<true>;
+    notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -515,7 +521,10 @@ export interface Booking {
   email: string;
   phone?: string | null;
   date: string;
-  time: '10:00' | '11:00' | '13:00' | '14:00' | '15:00' | '16:00';
+  /**
+   * Saatler Ayarlar > Çalışma saatleri ve tatiller'den gelir.
+   */
+  time: string;
   topic?: string | null;
   note?: string | null;
   status: 'bekliyor' | 'onaylandi' | 'tamamlandi' | 'iptal';
@@ -1529,6 +1538,118 @@ export interface BusinessConfig {
   createdAt: string;
 }
 /**
+ * Açık günler ve saatler, resmi tatiller, randevu kuralları.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "work-calendar".
+ */
+export interface WorkCalendar {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Kapalı günlerde randevu alınmaz; asistan mesai dışında olduğunu söyler. Öğle arası boş bırakılabilir.
+   */
+  hafta?: {
+    pzt?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    sal?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    car?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    per?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    cum?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    cmt?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+    paz?: {
+      acik?: boolean | null;
+      bas?: string | null;
+      bit?: string | null;
+      araBas?: string | null;
+      araBit?: string | null;
+    };
+  };
+  randevu?: {
+    sure?: ('30' | '45' | '60' | '90') | null;
+    tampon?: number | null;
+    /**
+     * Ör. 12: şimdiden en az 12 saat sonrası
+     */
+    enErkenSaat?: number | null;
+    enGecGun?: number | null;
+  };
+  resmiTatiller?: boolean | null;
+  arifeYarim?: boolean | null;
+  /**
+   * Ofis tatili, etkinlik, köprü günü. Yarım işaretliyse 13:00'ten sonra kapalı.
+   */
+  kapaliGunler?:
+    | {
+        tarih: string;
+        ad?: string | null;
+        yarim?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Resmi tatil ya da hafta sonu olduğu hâlde çalışacağınız günler.
+   */
+  acikGunler?:
+    | {
+        tarih: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leaves".
+ */
+export interface Leaf {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  kisi: number | User;
+  baslangic: string;
+  bitis: string;
+  tur?: ('yillik' | 'rapor' | 'yarim' | 'etkinlik' | 'diger') | null;
+  not?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * İşletmenin kendi web sitesine sohbet balonu ve talep formu eklemek için kod ve ayarlar.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1614,6 +1735,22 @@ export interface AuditLog {
   target?: string | null;
   docId?: string | null;
   fields?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications".
+ */
+export interface Notification {
+  id: number;
+  user: number | User;
+  tenant?: number | null;
+  kind?: string | null;
+  title: string;
+  body?: string | null;
+  href?: string | null;
+  read?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1746,6 +1883,14 @@ export interface PayloadLockedDocument {
         value: number | BusinessConfig;
       } | null)
     | ({
+        relationTo: 'work-calendar';
+        value: number | WorkCalendar;
+      } | null)
+    | ({
+        relationTo: 'leaves';
+        value: number | Leaf;
+      } | null)
+    | ({
         relationTo: 'site-connection';
         value: number | SiteConnection;
       } | null)
@@ -1756,6 +1901,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'audit-log';
         value: number | AuditLog;
+      } | null)
+    | ({
+        relationTo: 'notifications';
+        value: number | Notification;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -2585,6 +2734,120 @@ export interface BusinessConfigSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "work-calendar_select".
+ */
+export interface WorkCalendarSelect<T extends boolean = true> {
+  tenant?: T;
+  hafta?:
+    | T
+    | {
+        pzt?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        sal?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        car?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        per?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        cum?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        cmt?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+        paz?:
+          | T
+          | {
+              acik?: T;
+              bas?: T;
+              bit?: T;
+              araBas?: T;
+              araBit?: T;
+            };
+      };
+  randevu?:
+    | T
+    | {
+        sure?: T;
+        tampon?: T;
+        enErkenSaat?: T;
+        enGecGun?: T;
+      };
+  resmiTatiller?: T;
+  arifeYarim?: T;
+  kapaliGunler?:
+    | T
+    | {
+        tarih?: T;
+        ad?: T;
+        yarim?: T;
+        id?: T;
+      };
+  acikGunler?:
+    | T
+    | {
+        tarih?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leaves_select".
+ */
+export interface LeavesSelect<T extends boolean = true> {
+  tenant?: T;
+  kisi?: T;
+  baslangic?: T;
+  bitis?: T;
+  tur?: T;
+  not?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-connection_select".
  */
 export interface SiteConnectionSelect<T extends boolean = true> {
@@ -2647,6 +2910,21 @@ export interface AuditLogSelect<T extends boolean = true> {
   target?: T;
   docId?: T;
   fields?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications_select".
+ */
+export interface NotificationsSelect<T extends boolean = true> {
+  user?: T;
+  tenant?: T;
+  kind?: T;
+  title?: T;
+  body?: T;
+  href?: T;
+  read?: T;
   updatedAt?: T;
   createdAt?: T;
 }

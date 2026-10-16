@@ -9,6 +9,8 @@ import { DoneToggle } from "@/panel/calendar/DoneToggle";
 import { dayOf, mondayOf, shiftDays } from "@/payload/ops/dates";
 import { activityLabel } from "@/payload/crm/stages";
 import { cn } from "@/lib/utils";
+import { cms } from "@/lib/cms";
+import { gunDurumu, kurallarOf } from "@/payload/takvim";
 
 export const metadata: Metadata = { title: "Takvim" };
 export const dynamic = "force-dynamic";
@@ -23,15 +25,16 @@ const istDay = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ 
 const nameOf = (v: unknown) => (v && typeof v === "object" ? ((v as { name?: string; title?: string }).name ?? (v as { title?: string }).title ?? "") : "");
 const idOf = (v: unknown) => (v && typeof v === "object" ? ((v as { id?: number }).id ?? null) : ((v as number | null | undefined) ?? null));
 
-type Kind = "randevu" | "crm" | "teslim" | "proje";
+type Kind = "randevu" | "crm" | "teslim" | "proje" | "tatil";
 type Ev = { key: string; day: string; time: string; title: string; detail: string; href: string; kind: Kind; activity?: { id: number; done: boolean } };
 const STYLE: Record<Kind, string> = {
   randevu: "border-l-accent bg-accent-soft",
   crm: "border-l-good bg-good-soft",
   teslim: "border-l-warn bg-warn-soft",
   proje: "border-l-bad bg-bad-soft",
+  tatil: "border-l-line bg-sunken",
 };
-const KIND_LABEL: Record<Kind, string> = { randevu: "Randevu", crm: "CRM görevi", teslim: "Görev teslimi", proje: "Proje teslimi" };
+const KIND_LABEL: Record<Kind, string> = { randevu: "Randevu", crm: "CRM görevi", teslim: "Görev teslimi", proje: "Proje teslimi", tatil: "Tatil ve izin" };
 
 /**
  * Takvim: haftanın randevuları (CRM), arama ve toplantılar (CRM), görev ve
@@ -52,12 +55,14 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
   const noonTo = `${days[6]}T23:59:59.000Z`;
   const none = Promise.resolve({ docs: [] as unknown[] });
 
-  const [books, acts, tasks, projects, who] = await Promise.all([
+  const [books, acts, tasks, projects, who, leaves, k] = await Promise.all([
     crm ? ctx.find("bookings", { where: { and: [{ date: { greater_than_equal: noonFrom } }, { date: { less_than_equal: noonTo } }, { status: { in: ["bekliyor", "onaylandi", "tamamlandi"] } }] }, sort: "date", limit: 300 }) : none,
     crm ? ctx.find("activities", { where: { and: [{ dueAt: { greater_than_equal: from } }, { dueAt: { less_than_equal: to } }, { type: { not_in: ["not", "sistem"] } }, { booking: { exists: false } }] }, sort: "dueAt", limit: 300, depth: 1 }) : none,
     ops ? ctx.find("tasks", { where: { and: [{ dueDate: { greater_than_equal: noonFrom } }, { dueDate: { less_than_equal: noonTo } }] }, limit: 300, depth: 1 }) : none,
     ops ? ctx.find("projects", { where: { and: [{ dueDate: { greater_than_equal: noonFrom } }, { dueDate: { less_than_equal: noonTo } }, { status: { in: ["aktif", "beklemede"] } }] }, limit: 100, depth: 1 }) : none,
     ctx.names(),
+    ctx.find("leaves", { where: { and: [{ baslangic: { less_than_equal: noonTo } }, { bitis: { greater_than_equal: noonFrom } }] }, limit: 200 }),
+    kurallarOf(await cms(), ctx.tenant.id),
   ]);
 
   const events: Ev[] = [
@@ -75,6 +80,14 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
     ...(projects.docs as { id: number; title: string; dueDate: string; company?: unknown }[]).map((p) => ({
       key: `p${p.id}`, day: dayOf(p.dueDate), time: "Proje", title: p.title, detail: nameOf(p.company) || "Proje teslimi", href: `/panel/projeler?proje=${p.id}`, kind: "proje" as const,
     })),
+    /* Resmi tatil, özel kapalı gün ve yarım günler (çalışma takvimi) ile kişi izinleri */
+    ...days.flatMap((d) => {
+      const g = gunDurumu(d, k);
+      return g.neden && g.neden !== "Hafta sonu" ? [{ key: `h${d}`, day: d, time: g.acik ? `${g.kapanis} sonrası` : "Tüm gün", title: g.neden, detail: g.acik ? "Yarım gün" : "Kapalı", href: "/panel/duzenle/work-calendar", kind: "tatil" as const }] : [];
+    }),
+    ...(leaves.docs as { id: number; kisi?: unknown; baslangic: string; bitis: string; tur?: string | null }[]).flatMap((l) =>
+      days.filter((d) => d >= dayOf(l.baslangic) && d <= dayOf(l.bitis)).map((d) => ({ key: `l${l.id}${d}`, day: d, time: l.tur === "yarim" ? "Yarım gün" : "Tüm gün", title: `${who(l.kisi) || "Ekip üyesi"} izinde`, detail: l.tur === "rapor" ? "Rapor" : "İzin", href: `/panel/duzenle/leaves/${l.id}`, kind: "tatil" as const })),
+    ),
   ].sort((a, b) => a.time.localeCompare(b.time, "tr"));
 
   const byDay = new Map(days.map((d) => [d, events.filter((e) => e.day === d)]));

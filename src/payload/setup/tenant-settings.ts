@@ -13,6 +13,8 @@ export async function ensureTenantSettings(payload: Payload, tenant: number | st
   await chatConfigOf(payload, tenant, req);
   await businessConfigOf(payload, tenant, req);
   await siteConnectionOf(payload, tenant, req);
+  const cal = await payload.find({ collection: "work-calendar", where: { tenant: { equals: tenant } }, limit: 1, depth: 0, req, overrideAccess: true });
+  if (!cal.docs.length) await payload.create({ collection: "work-calendar", data: { tenant: Number(tenant) } as never, req, overrideAccess: true });
 }
 
 /**
@@ -21,7 +23,7 @@ export async function ensureTenantSettings(payload: Payload, tenant: number | st
  * sıfırlamasında sahipsiz kayıtlar birikiyordu).
  */
 export async function deleteTenantSettings(payload: Payload, tenant: number | string, req?: PayloadRequest) {
-  for (const collection of ["chatbot-config", "business-config", "site-connection"] as const) {
+  for (const collection of ["chatbot-config", "business-config", "site-connection", "work-calendar", "leaves"] as const) {
     await payload.delete({ collection, where: { tenant: { equals: tenant } }, req, overrideAccess: true });
   }
 }

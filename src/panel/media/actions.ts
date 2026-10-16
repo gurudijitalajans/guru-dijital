@@ -43,7 +43,7 @@ export async function updateMedia(id: number, d: { alt: string; folder: number |
 export async function moveMedia(ids: number[], folder: number | null): Promise<Result> {
   try {
     const { payload, opts } = await site();
-    const list = ids.filter((n) => Number.isInteger(n)).slice(0, 200);
+    const list = ids.filter((n) => Number.isInteger(n)).slice(0, 500);
     if (!list.length) return { ok: false, error: "Görsel seçilmedi." };
     await payload.update({ collection: "media", where: { id: { in: list } }, data: { folder: folder || null }, ...opts });
     return { ok: true };
@@ -54,12 +54,12 @@ export async function moveMedia(ids: number[], folder: number | null): Promise<R
   }
 }
 
-export async function createFolder(name: string): Promise<Result> {
+export async function createFolder(name: string, parent: number | null = null): Promise<Result> {
   try {
     const { payload, opts } = await site();
     const n = name.trim().slice(0, 80);
     if (!n) return { ok: false, error: "Klasör adı yazın." };
-    const doc = await payload.create({ collection: "payload-folders", data: { name: n, folderType: ["media"] }, ...opts });
+    const doc = await payload.create({ collection: "payload-folders", data: { name: n, folderType: ["media"], ...(parent ? { folder: parent } : {}) } as never, ...opts });
     return { ok: true, id: doc.id };
   } catch (e) {
     const lost = sessionLost(e);
@@ -103,6 +103,54 @@ export async function discardOriginal(id: number, pathname: string): Promise<Res
     const { del } = await import("@vercel/blob");
     await del(new URL(`/${pathname}`, doc.url).toString(), { token });
     return { ok: true };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+export async function renameFolder(id: number, name: string): Promise<Result> {
+  try {
+    const { payload, opts } = await site();
+    const n = name.trim().slice(0, 80);
+    if (!n) return { ok: false, error: "Klasör adı yazın." };
+    await payload.update({ collection: "payload-folders", id, data: { name: n } as never, ...opts });
+    return { ok: true, id };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Klasörü siler; içindeki görseller ve alt klasörler bir üst klasöre taşınır (hiçbir görsel kaybolmaz) */
+export async function deleteFolder(id: number): Promise<Result> {
+  try {
+    const { payload, opts } = await site();
+    const f = (await payload.findByID({ collection: "payload-folders", id, depth: 0, ...opts })) as unknown as { folder?: number | { id: number } | null };
+    const parent = f.folder && typeof f.folder === "object" ? f.folder.id : (f.folder ?? null);
+    await payload.update({ collection: "media", where: { folder: { equals: id } }, data: { folder: parent }, ...opts });
+    await payload.update({ collection: "payload-folders", where: { folder: { equals: id } }, data: { folder: parent } as never, ...opts });
+    await payload.delete({ collection: "payload-folders", id, ...opts });
+    return { ok: true, id: parent ?? undefined };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Seçilen görselleri "Arşiv" klasörüne taşır (silmez); klasör yoksa açılır */
+export async function archiveMedia(ids: number[]): Promise<Result> {
+  try {
+    const { payload, opts } = await site();
+    const list = ids.filter((n) => Number.isInteger(n)).slice(0, 500);
+    if (!list.length) return { ok: false, error: "Görsel seçilmedi." };
+    const found = await payload.find({ collection: "payload-folders", where: { and: [{ name: { equals: "Arşiv" } }, { folder: { exists: false } }] }, limit: 1, depth: 0, ...opts });
+    const arsiv = found.docs[0]?.id ?? (await payload.create({ collection: "payload-folders", data: { name: "Arşiv", folderType: ["media"] } as never, ...opts })).id;
+    await payload.update({ collection: "media", where: { id: { in: list } }, data: { folder: arsiv }, ...opts });
+    return { ok: true, id: arsiv };
   } catch (e) {
     const lost = sessionLost(e);
     if (lost) return lost as never;

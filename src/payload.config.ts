@@ -35,6 +35,8 @@ import { Projects, Tasks, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
 import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
 import { AuditLog, BusinessSettings, withAudit } from "./payload/business/collections";
+import { Leaves, WorkCalendar } from "./payload/takvim";
+import { Notifications } from "./payload/collections/Notifications";
 import { businessEndpoints } from "./payload/business/endpoints";
 import { SiteConnections, Usage } from "./payload/channels/collections";
 
@@ -220,10 +222,15 @@ export default buildConfig({
       },
     },
     tenanted(BusinessSettings),
+    tenanted(WorkCalendar),
+    tenanted(Leaves),
     tenanted(SiteConnections),
     tenanted(Usage),
     tenanted(AuditLog),
-  ].map(withAudit),
+  ]
+    .map(withAudit)
+    /* Bildirimler işlem geçmişine yazılmaz (gürültü) */
+    .concat([Notifications]),
   /* Yönetici ay sonu raporu ve sabah özeti (Vercel Cron, vercel.json) */
   endpoints: businessEndpoints,
   globals: [guardGlobal(HomePage, "site"), guardGlobal(AboutPage, "site"), guardGlobal(SiteSettings, "site")],
@@ -274,7 +281,7 @@ export default buildConfig({
          yalnız oturumlu kullanıcıda kullan, gerisini fillTenant üst kayıttan ya da Guru Dijital'den doldurur */
       tenantField: { defaultValue: ({ req }: { req: PayloadRequest }) => (req.user ? Number(selectedTenant(req)) || undefined : undefined) },
       /* İşletme başına tek kayıt olanlar ("isGlobal"): ayarlar ve site bağlantısı */
-      collections: Object.fromEntries([...TENANT_COLLECTIONS].map((slug) => [slug, ["chatbot-config", "business-config", "site-connection"].includes(slug) ? { isGlobal: true } : {}])),
+      collections: Object.fromEntries([...TENANT_COLLECTIONS].map((slug) => [slug, ["chatbot-config", "business-config", "site-connection", "work-calendar"].includes(slug) ? { isGlobal: true } : {}])),
       i18n: {
         translations: {
           tr: {

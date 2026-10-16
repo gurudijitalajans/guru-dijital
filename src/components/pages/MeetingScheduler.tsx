@@ -26,8 +26,21 @@ import { cn } from "@/lib/utils";
 const EASE = [0.22, 1, 0.36, 1] as const;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/* Öğle arası hariç sabit saat dilimleri. */
+/* Panel yokken (yedek) kullanılan saatler; panel varsa gün ve saatler işletmenin çalışma takviminden gelir. */
 const TIME_SLOTS = ["10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
+
+/** Sunucudaki çalışma takviminden randevu planı (GET /api/bookings/dolu → takvim) */
+type PlanDay = { gun: string; not?: string; saatler: { s: string; dolu: boolean }[] };
+
+function dayFromKey(key: string): Day {
+  const d = new Date(`${key}T12:00:00Z`);
+  return {
+    key,
+    weekday: new Intl.DateTimeFormat("tr-TR", { weekday: "short", timeZone: "UTC" }).format(d),
+    short: new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "UTC" }).format(d),
+    full: new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }).format(d),
+  };
+}
 
 type Day = {
   key: string;
@@ -165,7 +178,9 @@ export type MeetingSchedulerProps = {
 };
 
 export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps = {}) {
-  const days = useBusinessDays();
+  const localDays = useBusinessDays();
+  const [plan, setPlan] = useState<PlanDay[] | null>(null);
+  const days = plan && plan.length ? plan.map((p) => dayFromKey(p.gun)) : localDays;
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -193,8 +208,10 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
     let alive = true;
     fetch("/api/bookings/dolu")
       .then((r) => (r.ok ? r.json() : { slots: [] }))
-      .then((j: { slots?: string[] }) => {
-        if (alive) setBusy(new Set(j.slots ?? []));
+      .then((j: { slots?: string[]; takvim?: { gunler?: PlanDay[] } }) => {
+        if (!alive) return;
+        setBusy(new Set(j.slots ?? []));
+        if (j.takvim?.gunler?.length) setPlan(j.takvim.gunler);
       })
       .catch(() => {});
     return () => {
@@ -202,8 +219,14 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
     };
   }, []);
 
-  const isBusy = (day: string | null, t: string) =>
-    Boolean(day && (busy.has(`${day} ${t}`) || !isOpenSlot(day, t)));
+  const isBusy = (day: string | null, t: string) => {
+    if (!day) return false;
+    if (busy.has(`${day} ${t}`)) return true;
+    if (plan) return !plan.find((p) => p.gun === day)?.saatler.some((x) => x.s === t && !x.dolu);
+    return !isOpenSlot(day, t);
+  };
+  /* Seçili günün saatleri: takvimden (yoksa yedek sabit saatler) */
+  const timeSlots = plan ? (plan.find((p) => p.gun === dayKey) ?? plan[0])?.saatler.map((x) => x.s) ?? [] : TIME_SLOTS;
 
   useEffect(() => {
     // Yalnız unmount temizliği: bekleyen "kopyalandı" zamanlayıcısını iptal et.
@@ -525,7 +548,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                       }
                       className="grid grid-cols-3 gap-2 sm:grid-cols-6"
                     >
-                      {TIME_SLOTS.map((t) => {
+                      {timeSlots.map((t) => {
                         const selected = t === time;
                         const taken = isBusy(dayKey, t);
                         return (

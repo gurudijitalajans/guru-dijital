@@ -5,8 +5,6 @@ import { dayKey } from "../utils";
 import { kaynakField } from "../kaynak";
 import { bookingToCrm, CRM_SKIP, syncBookingActivity } from "../crm/automation";
 
-/* Sitedeki toplantı planlayıcısıyla aynı saatler (öğle arası hariç). */
-export const TIME_SLOTS = ["10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
 
 export const BOOKING_STATUS = [
   { label: "Onay bekliyor", value: "bekliyor" },
@@ -99,10 +97,11 @@ export const Bookings: CollectionConfig = {
         },
         {
           name: "time",
-          type: "select",
+          type: "text",
           label: "Saat",
           required: true,
-          options: TIME_SLOTS.map((t) => ({ label: t, value: t })),
+          admin: { placeholder: "14:00", description: "Saatler Ayarlar > Çalışma saatleri ve tatiller'den gelir." },
+          validate: (v: string | null | undefined) => (v && /^([01]\d|2[0-3]):[0-5]\d$/.test(v)) || "Saati 14:00 biçiminde yazın.",
         },
       ],
     },

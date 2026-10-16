@@ -35,27 +35,50 @@ async function recipient(req: PayloadRequest, tenant?: number | string): Promise
 type Notice = { subject: string; intro: string; rows: [string, string | null | undefined][]; replyTo?: string; /** Panelde açılacak yol (ör. /panel/gelen?...) */ path: string; tenant?: number | string };
 
 export async function notifyTeam(req: PayloadRequest, opts: Notice) {
+  await inApp(req, opts).catch((err) => req.payload.logger.warn({ err }, "Panel bildirimi yazılamadı"));
   const to = await recipient(req, opts.tenant);
   if (!to) return;
-  await sendNotice(req, to, opts);
+  await sendNotice(req, to, opts, { skipInApp: true });
 }
 
-/** Tek kişiye bildirim (ör. görev atanınca sorumluya) */
-export async function sendNotice(req: PayloadRequest, to: string, opts: Notice) {
+/**
+ * Panel içi bildirim (zil). Alıcı verilmezse işletmenin ekibi: o işletmeye bağlı
+ * herkes; Guru Dijital'de ayrıca Guru yöneticileri. Bildirimi tetikleyen kişiye yazılmaz.
+ */
+export async function inApp(req: PayloadRequest, opts: Pick<Notice, "subject" | "intro" | "path" | "tenant">, users?: (number | string)[]) {
+  let ids = users;
+  const tenant = opts.tenant !== undefined ? Number(opts.tenant) : undefined;
+  if (!ids) {
+    const guru = tenant === undefined || (await isGuruTenant(req, tenant));
+    const r = await req.payload.find({
+      collection: "users",
+      where: { or: [...(tenant !== undefined ? [{ "tenants.tenant": { equals: tenant } }] : []), ...(guru ? [{ role: { equals: "admin" } }] : [])] },
+      depth: 0,
+      limit: 200,
+      pagination: false,
+      select: { email: true },
+      req,
+      overrideAccess: true,
+    });
+    ids = r.docs.map((u) => u.id);
+  }
+  const me = req.user?.id;
+  for (const id of new Set(ids.map(String))) {
+    if (me !== undefined && String(me) === id) continue;
+    await req.payload.create({ collection: "notifications", data: { user: Number(id), tenant, title: opts.subject.slice(0, 160), body: opts.intro.slice(0, 300), href: opts.path, read: false } as never, req, overrideAccess: true });
+  }
+}
+
+/** Tek kişiye bildirim (ör. görev atanınca sorumluya); panelde de zile düşer */
+export async function sendNotice(req: PayloadRequest, to: string, opts: Notice, o: { skipInApp?: boolean } = {}) {
+  if (!o.skipInApp && !to.includes(",")) {
+    const u = await req.payload.find({ collection: "users", where: { email: { equals: to.toLowerCase() } }, limit: 1, depth: 0, req, overrideAccess: true }).catch(() => null);
+    if (u?.docs[0]) await inApp(req, opts, [u.docs[0].id]).catch(() => null);
+  }
   const rows = opts.rows.filter((r): r is [string, string] => Boolean(r[1]?.trim()));
   const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
   const link = `${base}${opts.path}`;
-
-  const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#111">
-<p>${esc(opts.intro)}</p>
-<table cellpadding="6" style="border-collapse:collapse">${rows
-    .map(
-      ([k, v]) =>
-        `<tr><td style="color:#555;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="white-space:pre-wrap">${esc(v)}</td></tr>`
-    )
-    .join("")}</table>
-${base ? `<p><a href="${esc(link)}" style="color:#12419b">Panelde aç</a></p>` : ""}
-</div>`;
+  const html = brandedEmail({ title: opts.subject, intro: opts.intro, rows, link: base ? link : null, base });
   const text = [opts.intro, "", ...rows.map(([k, v]) => `${k}: ${v}`), ...(base ? ["", `Panelde aç: ${link}`] : [])].join("\n");
 
   /* E-posta servisi yoksa Payload iletiyi yalnız günlüğe yazar: bunu "gönderildi" saymıyoruz */
@@ -71,3 +94,30 @@ ${base ? `<p><a href="${esc(link)}" style="color:#12419b">Panelde aç</a></p>` :
 
 /** Gerçek e-posta servisi (Resend) bağlı mı */
 export const emailConfigured = () => Boolean(process.env.RESEND_API_KEY);
+
+/**
+ * Markalı e-posta: üstte markanın ışık bandı ve beyaz logo (PNG; e-posta
+ * istemcileri gradyan ve SVG göstermez), başlık, açıklama, bilgi satırları,
+ * lacivert "Panelde aç" düğmesi. Tablo düzeni: Outlook dahil her istemcide aynı.
+ */
+export function brandedEmail({ title, intro, rows = [], link, base, button = "Panelde aç" }: { title: string; intro: string; rows?: [string, string][]; link: string | null; base: string; button?: string }) {
+  const header = base ? `<tr><td style="padding:0"><img src="${esc(base)}/brand/eposta-baslik.png" width="560" height="100" alt="Guru Dijital" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:14px 14px 0 0"></td></tr>` : "";
+  const table = rows.length
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin:18px 0 6px">${rows
+        .map(([k, v]) => `<tr><td style="padding:8px 12px 8px 0;color:#646d80;font-size:14px;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="padding:8px 0;color:#011441;font-size:15px;white-space:pre-wrap">${esc(v)}</td></tr>`)
+        .join("")}</table>`
+    : "";
+  const btn = link ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:22px 0 4px"><tr><td style="background:#011441;border-radius:999px"><a href="${esc(link)}" style="display:inline-block;padding:13px 26px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif">${esc(button)}</a></td></tr></table>` : "";
+  return `<!doctype html><html lang="tr"><body style="margin:0;padding:0;background:#f5f7fb">
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f5f7fb;padding:24px 12px"><tr><td align="center">
+<table role="presentation" cellpadding="0" cellspacing="0" width="560" style="max-width:560px;width:100%;background:#ffffff;border-radius:14px;font-family:Arial,Helvetica,sans-serif">
+${header}
+<tr><td style="padding:26px 28px 28px">
+<h1 style="margin:0 0 10px;font-size:21px;line-height:1.3;color:#011441">${esc(title)}</h1>
+<p style="margin:0;font-size:15px;line-height:1.6;color:#33405e">${esc(intro)}</p>
+${table}${btn}
+</td></tr>
+</table>
+<p style="margin:16px 0 0;font-size:12px;color:#8a93a6;font-family:Arial,Helvetica,sans-serif">Guru Panel · Guru Dijital Ajans</p>
+</td></tr></table></body></html>`;
+}

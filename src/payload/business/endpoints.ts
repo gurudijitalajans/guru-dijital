@@ -5,6 +5,7 @@ import { canReq, isAdminUser, isTenantAdminReq } from "./roles";
 import { businessConfigOf } from "./collections";
 import { currentTenantId, defaultTenantId } from "../crm/tenant";
 import { brandOf } from "../crm/brand";
+import { gunDurumu, kurallarOf } from "../takvim";
 import { change, money, periodMetrics, periodOf, snapshot } from "./metrics";
 
 /**
@@ -147,7 +148,12 @@ const morning: PayloadHandler = async (req) => {
     /* Zamanlayıcı: Guru Dijital ve Business modülü açık her işletme */
     const tenants = await req.payload.find({ collection: "tenants", where: { or: [{ slug: { equals: "guru" } }, { modules: { contains: "business" } }] }, depth: 0, limit: 500, pagination: false, req, overrideAccess: true });
     let sent = 0;
-    for (const t of tenants.docs) sent += (await sendMorningSummary(req, t.id, { cron: true })).sent;
+    const today = new Date(Date.now() + 3 * 3600000).toISOString().slice(0, 10);
+    for (const t of tenants.docs) {
+      /* İşletmenin kapalı günü (tatil, bayram, hafta sonu) özet gönderilmez */
+      if (!gunDurumu(today, await kurallarOf(req.payload, t.id, req)).acik) continue;
+      sent += (await sendMorningSummary(req, t.id, { cron: true })).sent;
+    }
     return Response.json({ ok: true, sent });
   }
   if (!isAdminUser(req.user) && !(isTenantAdminReq(req) && canReq(req, "business"))) return Response.json({ ok: false, error: "Yetki yok." }, { status: 401 });

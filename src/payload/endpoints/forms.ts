@@ -6,13 +6,12 @@ import { defaultTenantId } from "../crm/tenant";
 import { connectionByKey } from "../channels/collections";
 import { addUsage } from "../channels/usage";
 import { clientIp, dayKey, rateLimited } from "../utils";
-import { closedReason, isOpenSlot } from "../../lib/tatiller";
+import { gunDurumu, kurallarOf, plan } from "../takvim";
 import { kaynakOf } from "../kaynak";
 
 /* Sitedeki formlarla aynı kurallar; istemci doğrulaması atlatılsa da geçerli. */
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
-const SLOTS = new Set(["10:00", "11:00", "13:00", "14:00", "15:00", "16:00"]);
 
 type Body = Record<string, unknown>;
 export const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -104,18 +103,18 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
     note: str(input.note, 2000),
     source: str(input.source, 200),
   };
-  if (!DAY_RE.test(day) || !SLOTS.has(time) || !data.name || !EMAIL_RE.test(data.email)) {
+  if (!DAY_RE.test(day) || !/^\d{2}:\d{2}$/.test(time) || !data.name || !EMAIL_RE.test(data.email)) {
     return { ok: false, status: 400, error: "Lütfen gün, saat, ad ve geçerli bir e-posta girin." };
   }
   /* Öğlen UTC: Türkiye saatinde de aynı güne düşer */
   const date = new Date(`${day}T12:00:00.000Z`);
-  if (Number.isNaN(date.getTime()) || dayKey(date) <= dayKey(new Date())) {
-    return { ok: false, status: 400, error: "Lütfen yarın ya da daha ileri bir gün seçin." };
-  }
-  /* Takvim yalnız açık günleri gösterir; doğrudan istekle hafta sonu, tatil ya da arife öğleden sonrası alınamaz */
-  if (!isOpenSlot(day, time)) {
-    const why = closedReason(day);
-    return { ok: false, status: 400, error: why ? `${why} nedeniyle bu gün kapalıyız; lütfen başka bir gün seçin.` : "Bu saatte kapalıyız; lütfen daha erken bir saat seçin." };
+  if (Number.isNaN(date.getTime())) return { ok: false, status: 400, error: "Lütfen geçerli bir gün seçin." };
+  /* İşletmenin çalışma takvimi: kapalı gün, tatil, mesai dışı saat, en erken/en geç kuralı */
+  const k = await kurallarOf(req.payload, tenant, req);
+  const durum = gunDurumu(day, k);
+  if (!durum.acik) return { ok: false, status: 400, error: `${durum.neden ?? "Kapalı gün"} nedeniyle bu gün kapalıyız; lütfen başka bir gün seçin.` };
+  if (!plan(k).some((g) => g.gun === day && g.saatler.includes(time))) {
+    return { ok: false, status: 400, error: "Bu saat randevuya açık değil; lütfen listedeki saatlerden birini seçin." };
   }
 
   const kaynak = await resolveKaynak(req, input.atif);
@@ -123,7 +122,7 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
   try {
     const booking = await req.payload.create({
       collection: "bookings",
-      data: { ...data, date: date.toISOString(), time: time as Booking["time"], status: "bekliyor", tenant, ...(kaynak ? { kaynak } : {}) },
+      data: { ...data, date: date.toISOString(), time, status: "bekliyor", tenant, ...(kaynak ? { kaynak } : {}) },
       overrideAccess: true,
     });
     bookingId = booking.id;
@@ -205,10 +204,17 @@ export async function busySlotList(req: PayloadRequest, tenantId?: number | stri
   return res.docs.map((d) => (d as { slot?: string | null }).slot).filter((v): v is string => Boolean(v));
 }
 
-export const SLOT_TIMES = [...SLOTS];
 
-/** GET /api/bookings/dolu: önümüzdeki dolu saatler, kişisel veri olmadan. */
+/** Randevu verilebilecek günler ve saatler (dolu olanlar işaretli), işletmenin çalışma takvimine göre */
+export async function bookingPlan(req: PayloadRequest, tenantId?: number | string) {
+  const tenant = tenantId ?? (await defaultTenantId(req));
+  const [busy, k] = await Promise.all([busySlotList(req, tenant), kurallarOf(req.payload, tenant, req)]);
+  const set = new Set(busy);
+  return { sure: k.sure, gunler: plan(k).map((g) => ({ gun: g.gun, ...(g.not ? { not: g.not } : {}), saatler: g.saatler.map((s) => ({ s, dolu: set.has(`${g.gun} ${s}`) })) })), busy };
+}
+
+/** GET /api/bookings/dolu: randevu planı ve dolu saatler, kişisel veri olmadan. */
 export const busySlots: PayloadHandler = async (req) => {
-  const slots = await busySlotList(req);
-  return Response.json({ slots }, { headers: { "Cache-Control": "no-store" } });
+  const p = await bookingPlan(req);
+  return Response.json({ slots: p.busy, takvim: { sure: p.sure, gunler: p.gunler } }, { headers: { "Cache-Control": "no-store" } });
 };

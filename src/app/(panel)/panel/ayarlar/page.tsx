@@ -27,6 +27,8 @@ export default async function SettingsPage() {
       items: [
         ctx.isTenantAdmin && { title: "Ekip ve yetkiler", detail: "Kişi davet edin, rol ve modül verin.", href: "/panel/ayarlar/ekip" },
         ctx.isGuruAdmin && { title: "İşletme bilgileri", detail: "Unvan, logo, teklif belgesinde görünen bilgiler, açık modüller.", href: `/panel/duzenle/tenants/${ctx.tenant.id}` },
+        (ctx.has("crm") || ctx.has("chat") || ctx.has("ops")) && ctx.isTenantAdmin && { title: "Çalışma saatleri ve tatiller", detail: "Açık günler ve saatler, öğle arası, resmi tatiller, randevu süresi ve kuralları.", href: "/panel/duzenle/work-calendar" },
+        (ctx.has("ops") || ctx.has("crm")) && { title: "İzinler", detail: "Yıllık izin, rapor ve yarım günler; ekip yükü ve takvim bunlara göre hesaplanır.", href: "/panel/kayitlar/leaves" },
         ctx.has("business") && ctx.isTenantAdmin && { title: "Yönetim özeti ayarları", detail: "Aylık hedef ve sabah özeti e-postası.", href: "/panel/duzenle/business-config" },
       ],
     },

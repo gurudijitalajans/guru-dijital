@@ -33,19 +33,36 @@ export default async function TeamLoadPage({ searchParams }: { searchParams: Pro
   const startDay = sp.hafta && /^\d{4}-\d{2}-\d{2}$/.test(sp.hafta) ? sp.hafta : today;
   const weeks = weeksFrom(startDay, WEEKS);
 
-  const [team, open, done30, lateOpen] = await Promise.all([
+  const first = weeks[0].monday;
+  const last = shiftDays(weeks[WEEKS - 1].monday, 6);
+  const [team, open, done30, lateOpen, leaves] = await Promise.all([
     ctx.team(),
     ctx.find("tasks", { where: { stage: { not_equals: "tamam" } }, limit: 2000, depth: 1 }),
     ctx.find("tasks", { where: { completedAt: { greater_than_equal: daysAgoIso(30) } }, limit: 2000, select: { completedAt: true, dueDate: true } }),
     ctx.count("tasks", { and: [{ stage: { not_equals: "tamam" } }, { dueDate: { less_than: `${today}T00:00:00.000Z` } }] }),
+    ctx.find("leaves", { where: { and: [{ baslangic: { less_than_equal: `${last}T23:59:59.000Z` } }, { bitis: { greater_than_equal: `${first}T00:00:00.000Z` } }] }, limit: 500 }),
   ]);
+  /* Kapasite: haftalık saat × (o haftanın iş günü − izin günü) / 5. İş günleri resmi tatilleri zaten düşer. */
+  const leaveDays = new Map<string, number>();
+  for (const l of leaves.docs as { kisi?: unknown; baslangic: string; bitis: string; tur?: string | null }[]) {
+    const who = typeof l.kisi === "object" && l.kisi ? (l.kisi as { id: number }).id : (l.kisi as number);
+    for (const w of weeks) {
+      const n = w.days.filter((d) => d >= dayOf(l.baslangic) && d <= dayOf(l.bitis)).length * (l.tur === "yarim" ? 0.5 : 1);
+      if (n) leaveDays.set(`${who}:${w.monday}`, (leaveDays.get(`${who}:${w.monday}`) ?? 0) + n);
+    }
+  }
+  const capOf = (m: { id: number; weeklyHours: number }, i: number) => {
+    const w = weeks[i];
+    const off = leaveDays.get(`${m.id}:${w.monday}`) ?? 0;
+    return Math.max(0, Math.round(((m.weeklyHours * Math.max(0, w.days.length - off)) / 5) * 10) / 10);
+  };
   const { byPerson, unassigned } = computeLoad(open.docs as LoadTask[], weeks, today);
 
   const withDue = (done30.docs as { completedAt?: string | null; dueDate?: string | null }[]).filter((t) => t.dueDate && t.completedAt);
   const onTime = withDue.filter((t) => dayOf(t.completedAt!) <= dayOf(t.dueDate!)).length;
   const rate = withDue.length ? Math.round((onTime / withDue.length) * 100) : null;
   const noEstimate = [...byPerson.values()].reduce((a, p) => a + p.noEstimate, 0);
-  const over = team.filter((m) => (byPerson.get(m.id)?.hours[0] ?? 0) > m.weeklyHours).length;
+  const over = team.filter((m) => (byPerson.get(m.id)?.hours[0] ?? 0) > capOf(m, 0)).length;
 
   const prev = shiftDays(weeks[0].monday, -7);
   const next = shiftDays(weeks[0].monday, 7);
@@ -55,13 +72,16 @@ export default async function TeamLoadPage({ searchParams }: { searchParams: Pro
     <>
       <PageHeader
         title="Ekip yükü"
-        description="Görevin tahmini saati başlangıç ile teslim arasındaki iş günlerine eşit dağıtılır. Kapasite kişinin haftalık çalışma saatidir."
+        description="Görevin tahmini saati başlangıç ile teslim arasındaki iş günlerine eşit dağıtılır. Kapasite haftalık çalışma saatinden resmi tatil ve izin günleri düşülerek hesaplanır."
         actions={
           <>
             <Button asChild size="sm">
               <Link href={`/panel/ekip-yuku?hafta=${prev}`} aria-label="Önceki hafta">
                 <ChevronLeft /> Önceki
               </Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/panel/kayitlar/leaves">İzinler</Link>
             </Button>
             {!isCurrent ? (
               <Button asChild size="sm">
@@ -111,13 +131,16 @@ export default async function TeamLoadPage({ searchParams }: { searchParams: Pro
                     </div>
                     {weeks.map((w, i) => {
                       const h = row?.hours[i] ?? 0;
-                      const ratio = m.weeklyHours ? h / m.weeklyHours : 0;
+                      const cap = capOf(m, i);
+                      const off = leaveDays.get(`${m.id}:${w.monday}`) ?? 0;
+                      const ratio = cap ? h / cap : h ? 2 : 0;
                       const t = tone(ratio);
                       return (
                         <div key={w.monday} className="px-3 py-3">
                           <span className="tabular text-[13px] text-ink">
-                            {nf.format(h)} <span className="text-muted">/ {m.weeklyHours} sa</span>
+                            {nf.format(h)} <span className="text-muted">/ {nf.format(cap)} sa</span>
                           </span>
+                          {off ? <span className="ml-1.5 text-[12px] text-warn">{nf.format(off)} gün izin</span> : w.days.length < 5 ? <span className="ml-1.5 text-[12px] text-muted">{5 - w.days.length} gün tatil</span> : null}
                           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-sunken" role="img" aria-label={`%${Math.round(ratio * 100)} dolu`}>
                             <div className={cn("h-full rounded-full", BAR[t])} style={{ width: `${Math.min(100, ratio * 100)}%` }} />
                           </div>

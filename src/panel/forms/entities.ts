@@ -41,6 +41,16 @@ export const ENTITIES: Record<string, EntityDef> = {
   /* Ayarlar */
   "chatbot-config": { type: "collection", label: "Sohbet asistanı", modules: ["chat"], back: "/panel/ayarlar", tenanted: true, singleton: true },
   "business-config": { type: "collection", label: "Yönetim özeti ayarları", modules: ["business"], tenantAdmin: true, back: "/panel/ayarlar", tenanted: true, singleton: true },
+  "work-calendar": { type: "collection", label: "Çalışma saatleri ve tatiller", modules: ["crm", "chat", "ops"], tenantAdmin: true, back: "/panel/ayarlar", tenanted: true, singleton: true },
+  leaves: {
+    type: "collection",
+    label: "İzin",
+    modules: ["ops", "crm"],
+    back: "/panel/kayitlar/leaves",
+    titleField: "not",
+    tenanted: true,
+    list: { title: "İzinler", description: "Yıllık izin, rapor ve yarım günler. Ekip yükü bu günlerde kapasiteyi düşürür.", columns: ["kisi", "baslangic", "bitis", "tur"], sort: "-baslangic", canCreate: true },
+  },
   "site-connection": { type: "collection", label: "Site bağlantısı", modules: ["crm", "chat"], back: "/panel/ayarlar", tenanted: true, singleton: true },
   knowledge: {
     type: "collection",

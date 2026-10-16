@@ -12,6 +12,7 @@ import type { NavGroup } from "../nav";
 import { NavGlyph } from "../ui/icons";
 import { selectTenant } from "../actions";
 import { CommandMenu } from "./CommandMenu";
+import { Zil } from "../bildirim/Zil";
 
 export type ShellTenant = { id: number; name: string; detail: string };
 type Props = {
@@ -243,6 +244,8 @@ export function Shell(props: Props) {
             </span>
             <kbd className="hidden rounded-[5px] border border-line bg-surface px-1.5 font-mono text-[11px] sm:inline pointer-coarse:hidden">⌘K</kbd>
           </button>
+          <span className="flex-1" />
+          <Zil />
         </header>
         <main id="icerik" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-12 focus:outline-none lg:px-7 lg:pt-6">
           {props.children}
