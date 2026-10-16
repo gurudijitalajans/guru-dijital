@@ -59,6 +59,19 @@ export const PRODUCT_SLUG = { Chatbot: "guru-chatbot", CRM: "guru-crm", Operatio
 export const appIcon = (slug, s = 40, extra = "") =>
   `<img src="${fileUrl(`${ROOT}/public/products/icons/${slug}.svg`)}" style="width:${s}px;height:${s}px;border-radius:${(s * 0.226).toFixed(2)}px;display:block;flex-shrink:0;${extra}">`;
 
+/* Sitedeki çift ton ikonlar (src/lib/glyphs.ts; üretimi ikon/glifler.mjs): aynı şekil ve dolgu */
+const GLYPH_SRC = readFileSync(`${ROOT}/src/lib/glyphs.ts`, "utf8");
+const GLYPHS = Function(`return ${GLYPH_SRC.slice(GLYPH_SRC.indexOf("export const GLYPHS = ") + 22, GLYPH_SRC.indexOf("} satisfies") + 1)}`)();
+const svgAttrs = (a) => Object.entries(a).map(([k, v]) => `${k}="${v}"`).join(" ");
+export function glyph(name, { size = 24, stroke = "#0a2463", fill = "#3f8cf0", fillOp = 0.42, sw = 1.7, style = "" } = {}) {
+  const parts = GLYPHS[name];
+  if (!parts) throw new Error(`glif yok: ${name}`);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="flex-shrink:0;${style}">${parts.filter((p) => p[2]).map(([t, a]) => `<${t} ${svgAttrs(a)} fill="${fill}" fill-opacity="${fillOp}" stroke="none"/>`).join("")}<g fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${parts.map(([t, a]) => `<${t} ${svgAttrs(a)}/>`).join("")}</g></svg>`;
+}
+/* Hizmet karosu: sitedeki ServiceIcon ile aynı (lacivert degrade, beyaz çizgi + açık mavi dolgu) */
+export const serviceTile = (name, s = 44, extra = "") =>
+  `<span style="width:${s}px;height:${s}px;border-radius:${(s * 0.226).toFixed(2)}px;display:grid;place-items:center;flex-shrink:0;background-image:radial-gradient(75% 75% at 25% 8%, rgb(255 255 255 / .42), rgb(255 255 255 / 0) 55%),radial-gradient(70% 70% at 70% 105%, rgb(1 20 65 / .4), rgb(1 20 65 / 0)),linear-gradient(162deg,#3d7fe8 0%,#12419b 55%,#011441 100%);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .2),0 ${Math.round(s * 0.07)}px ${Math.round(s * 0.14)}px -${Math.round(s * 0.04)}px rgb(1 20 65 / .4);${extra}">${glyph(name, { size: Math.round(s * 0.53), stroke: "#fff", fill: "#9fd3ff", fillOp: 0.45, sw: 2, style: "filter:drop-shadow(0 1px 1.5px rgb(1 20 65 / .3))" })}</span>`;
+
 /* ---------------- Zeminler ---------------- */
 const GRAIN = `url("data:image/svg+xml;utf8,${encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>`

@@ -1,6 +1,6 @@
 // Gerçek iş görselleri: katalog PSD katmanlarından ve yayındaki sitelerden çıkarılan HAM malzeme,
 // ürün görselleriyle aynı tasarım diliyle (lacivert ışık zemini, cihazlar, yüzen kartlar) sıfırdan kurulur.
-import { brandIcon, fileUrl, floatCard, grainLayer, icon, iphone, macbook, mark, page, ROOT, THEME, themeBg } from "../lib.mjs";
+import { brandIcon, fileUrl, floatCard, grainLayer, icon, iphone, macbook, page, ROOT, serviceTile, THEME, themeBg } from "../lib.mjs";
 
 const K = (f) => fileUrl(`${ROOT}/tools/gorsel-studyo/kaynak/katalog/${f}`);
 const T = THEME.business;
@@ -8,8 +8,10 @@ const glow = (x, y, w, h, c = "rgb(68 161 241 / .45)") =>
   `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:50%;background:radial-gradient(closest-side,${c},transparent);filter:blur(10px)"></div>`;
 const floor = (x, y, w, h, op = 0.55) =>
   `<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:50%;background:radial-gradient(closest-side,rgb(0 6 26 / ${op}),transparent);filter:blur(6px)"></div>`;
+/* Hizmet imzası: sitedeki hizmet karosu + hizmet adı (ürünlerde uygulama simgesi) */
+const SERVICE_GLYPH = { "Web Tasarım": "monitor", "Dijital Reklam": "megaphone", SEO: "search", "Özel Yazılım": "code", "Mobil Uygulama": "smartphone", "Marka Tescil": "badge-check", "E-Ticaret": "cart", "Grafik Tasarım": "palette", "Sosyal Medya Yönetimi": "share" };
 const lockup = (name, size = 30) =>
-  `<div class="row" style="gap:${size * 0.42}px;color:#fff">${mark("white", size * 1.3)}<span style="font-size:${size}px;font-weight:500;letter-spacing:-.02em;line-height:1">${name}</span></div>`;
+  `<div class="row" style="gap:${size * 0.46}px;color:#fff">${serviceTile(SERVICE_GLYPH[name], Math.round(size * 1.6), "box-shadow:inset 0 0 0 1px rgb(255 255 255/.2),0 0 0 1px rgb(255 255 255/.14),0 14px 28px -12px rgb(0 6 26/.7)")}<span style="font-size:${size}px;font-weight:500;letter-spacing:-.02em;line-height:1">${name}</span></div>`;
 /* Ekran: ham ekran görüntüsü cihaz ekranını doldurur */
 const shot = (f, w, h) => `<div style="width:${w}px;height:${h}px;background:#fff url('${K(f)}') 50% 0/100% auto no-repeat"></div>`;
 const siteCard = (domain, what) =>
