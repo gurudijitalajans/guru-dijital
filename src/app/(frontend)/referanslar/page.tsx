@@ -66,7 +66,8 @@ export default async function ReferanslarPage() {
             <SectionHead center title="Birlikte Çalıştığımız Markalar" lead="Her biriyle aynı hedefe bakan tek bir ekip olarak çalışıyoruz." />
           </Reveal>
           <Reveal className="mt-10" delay={0.05}>
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-5" aria-label="Referans markalar">
+            {/* Esnek satırlar: sütun genişlikleri ızgarayla aynı, eksik kalan son satır ortalanır */}
+            <ul className="flex flex-wrap justify-center gap-3 md:gap-4 [&>li]:basis-[calc((100%-0.75rem)/2)] sm:[&>li]:basis-[calc((100%-1.5rem)/3)] md:[&>li]:basis-[calc((100%-2rem)/3)] lg:[&>li]:basis-[calc((100%-4rem)/5)]" aria-label="Referans markalar">
               {references.map((r, i) => (
                 <BrandTile key={r.name} brand={r} index={i} />
               ))}
@@ -83,27 +84,30 @@ export default async function ReferanslarPage() {
               <SectionHead title="Seçili İşler" lead="Markalarımız için hazırladığımız tasarım, web ve reklam işlerinden örnekler." />
             </Reveal>
             <StaggerGroup className="fill-odd-sm mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-              {works.map(({ service, image }, i) => (
+              {works.map(({ service, image }, i) => {
+                /* Tek kalan son kart 640-1023'te iki sütunu kaplar: yatay dizilir, görsel yarım genişlik */
+                const lone = works.length % 2 === 1 && i === works.length - 1;
+                return (
                 <StaggerItem key={service.slug} className="h-full">
-                  <Link href={`/hizmetler/${service.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
-                    <div className="relative overflow-hidden bg-soft" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
+                  <Link href={`/hizmetler/${service.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden", lone && "sm:max-lg:flex-row")}>
+                    <div className={cn("relative overflow-hidden bg-soft", lone && "sm:max-lg:w-1/2 sm:max-lg:shrink-0 sm:max-lg:self-start")} style={{ aspectRatio: `${image.w} / ${image.h}` }}>
                       <Image
                         src={image.src}
                         alt={image.alt}
                         fill
-                        /* Tek kalan son kart 640-1023 arasında iki sütunu kaplar (fill-odd-sm) */
-                        sizes={works.length % 2 === 1 && i === works.length - 1 ? "(min-width: 1024px) 390px, 100vw" : "(min-width: 1024px) 390px, (min-width: 640px) 50vw, 100vw"}
+                        sizes="(min-width: 1024px) 390px, (min-width: 640px) 50vw, 100vw"
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         style={{ objectPosition: image.position ?? "50% 50%" }}
                       />
                     </div>
-                    <div className="flex items-center justify-between gap-3 p-5">
+                    <div className="flex flex-1 items-center justify-between gap-3 p-5">
                       <span className="text-[16px] font-medium text-heading">{service.title}</span>
                       <ArrowUpRight aria-hidden className="size-4 shrink-0 text-muted transition-colors group-hover:text-brand" strokeWidth={2} />
                     </div>
                   </Link>
                 </StaggerItem>
-              ))}
+                );
+              })}
             </StaggerGroup>
           </div>
         </section>

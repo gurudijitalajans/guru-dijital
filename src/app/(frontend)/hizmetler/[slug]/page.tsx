@@ -173,7 +173,8 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
             <StaggerGroup
               className={cn(
                 "mt-10 grid gap-3 sm:grid-cols-2 md:mt-12 md:gap-4",
-                service.offerings.length % 3 === 0 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+                /* 7 kalemde 4 sütun yalnız xl+: 1024-1279 arasında metin sıkışmasın */
+                service.offerings.length % 3 === 0 ? "lg:grid-cols-3" : "xl:grid-cols-4"
               )}
             >
               {service.offerings.map((offering, i) => {
@@ -333,7 +334,7 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
       <section className={cn(sectionY, "bg-soft")}>
         <div className="container-g">
           <SectionHead title="Diğer Hizmetlerimiz" lead="Hizmetlerimiz birbirini tamamlar; ihtiyacınıza göre birlikte ya da ayrı ayrı planlanabilir." />
-          <StaggerGroup className="fill-odd-sm mt-10 grid auto-rows-fr gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          <StaggerGroup className="fill-odd-sm mt-10 grid gap-3 sm:auto-rows-fr sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {others.map((s) => {
               return (
                 <StaggerItem key={s.slug} className="h-full">

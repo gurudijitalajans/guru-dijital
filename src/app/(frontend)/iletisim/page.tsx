@@ -104,7 +104,7 @@ export default async function IletisimPage() {
         {/* İki kart geniş ekranda eşit boyda: form kutusu uzar, metin alanı boşluğu doldurur */}
         <div className="container-g grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
           <Reveal className="h-full min-w-0">
-            <aside className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-navy p-6 text-white sm:p-8">
+            <aside className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-navy p-6 text-white md:p-8">
               <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand/40 blur-3xl" />
               <h2 className="relative text-[22px] font-medium leading-snug tracking-[-0.02em] md:text-[26px]">Doğrudan ulaşın</h2>
               <p className="relative mt-2 text-[15px] leading-relaxed text-white/75">

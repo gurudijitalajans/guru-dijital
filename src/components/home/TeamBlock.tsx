@@ -64,7 +64,7 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                     </span>
                   </div>
                 )}
-                {/* 360px altında ad, rol ve LinkedIn alt alta: iki sütunlu ızgarada metne yer kalsın */}
+                {/* 640px altında ad, rol ve LinkedIn alt alta: iki sütunlu ızgarada metne yer kalsın */}
                 <div className="flex min-h-[72px] flex-col items-start gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
                   <div className="min-w-0">
                     {/* İsim girilmediyse rol başlık olur; uydurma isim yazılmaz */}

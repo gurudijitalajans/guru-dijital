@@ -58,9 +58,11 @@ function split(blocks: Block[]) {
 
 /* Metindeki **kalın** ve e-posta adreslerini işler */
 function Inline({ text }: { text: string }) {
+  /* "(c bendi)" ve "md. 5" satır sonunda bölünmesin */
+  const t = text.replace(/\((\p{L}) bendi\)/gu, "($1\u00a0bendi)").replace(/md\. (\d)/g, "md.\u00a0$1");
   return (
     <>
-      {text.split(/(\*\*[^*]+\*\*|[\w.+-]+@[\w-]+\.[\w.]+)/g).map((part, i) =>
+      {t.split(/(\*\*[^*]+\*\*|[\w.+-]+@[\w-]+\.[\w.]+)/g).map((part, i) =>
         part.startsWith("**") ? (
           <b key={i} className="font-semibold text-heading">
             {part.slice(2, -2)}
@@ -244,7 +246,7 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
           <h2 id="diger-yasal" className="text-[22px] font-medium tracking-[-0.02em] text-heading md:text-[26px]">
             Diğer Yasal Metinler
           </h2>
-          <ul className="mt-6 grid gap-3 md:grid-cols-3 md:gap-4">
+          <ul className="mt-6 grid gap-3 md:gap-4 lg:grid-cols-3">
             {others.map((p) => (
               <li key={p.slug}>
                 <Link

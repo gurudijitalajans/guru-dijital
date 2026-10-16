@@ -195,7 +195,7 @@ export default async function HakkimizdaPage() {
                         <Glyph name={a.icon} className="size-[18px]" strokeWidth={2} />
                         {[a.year, a.badge].filter(Boolean).join(" · ")}
                       </p>
-                      <h3 className={cn(cardTitleCls, "mt-2 text-[20px] md:text-[22px]")}>{a.title}</h3>
+                      <h3 className={cn(cardTitleCls, "mt-2 text-[20px] leading-snug md:text-[22px]")}>{a.title}</h3>
                       <p className={cn(cardTextCls, "mt-2")}>{a.desc}</p>
                     </div>
                   </article>

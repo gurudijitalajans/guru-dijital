@@ -507,11 +507,11 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
 
                   {/* Adım 2: saat seçimi */}
                   <div className="mt-6 space-y-2.5">
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                       <StepLabel id="ms-time-label" n={2}>
                         Saat seçin <Req />
                       </StepLabel>
-                      <span className="text-[12.5px] font-medium text-muted">
+                      <span className="whitespace-nowrap text-[12.5px] font-medium text-muted">
                         Türkiye saati (GMT+3)
                       </span>
                     </div>

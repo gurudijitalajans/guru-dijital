@@ -139,15 +139,15 @@ export function CookieConsentBanner() {
         <section
           aria-label={B.title}
           data-float=""
-          className="fixed inset-x-3 bottom-3 z-[70] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-[22px] bg-white p-5 sm:max-h-[calc(100dvh-3rem)] shadow-[0_0_0_1px_rgb(1_20_65/0.07),0_30px_70px_-24px_rgb(1_20_65/0.5)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[420px] sm:p-6"
+          className="fixed inset-x-3 bottom-3 z-[70] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-[22px] bg-white p-5 sm:max-h-[calc(100dvh-3rem)] shadow-[0_0_0_1px_rgb(1_20_65/0.07),0_30px_70px_-24px_rgb(1_20_65/0.5)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[420px] sm:p-6 [@media(max-height:480px)]:p-4 [@media(max-height:480px)]:sm:w-[560px]"
         >
           <div className="flex items-center gap-3">
-            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-[linear-gradient(160deg,#f3f8ff,#e3efff)] text-[#0a2463]">
+            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-[linear-gradient(160deg,#f3f8ff,#e3efff)] text-[#0a2463] [@media(max-height:480px)]:hidden">
               <Glyph name="shield" className="size-[22px]" strokeWidth={1.7} />
             </span>
             <h2 className="text-[17px] font-medium tracking-[-0.01em] text-heading">{B.title}</h2>
           </div>
-          <p className="mt-3 text-[14px] leading-relaxed text-muted">
+          <p className="mt-3 text-[14px] leading-relaxed text-muted [@media(max-height:480px)]:mt-2 [@media(max-height:480px)]:text-[13px]">
             {B.text}{" "}
             <Link href="/yasal/cerez-politikasi" className="font-medium text-brand underline-offset-2 hover:underline">
               Çerez Politikası
