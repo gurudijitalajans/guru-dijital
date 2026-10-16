@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { getProducts } from "@/lib/content";
-import { iconFor } from "@/lib/icons";
 import { Btn } from "@/components/site/Btn";
+import { ProductIcon } from "@/components/site/ProductIcon";
 import { StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
-import { cardCls, cardTextCls, iconBoxCls } from "@/components/site/styles";
+import { cardCls, cardTextCls } from "@/components/site/styles";
 import { cn } from "@/lib/utils";
 
 /**
@@ -22,7 +22,6 @@ export async function ProductsShowcase() {
   return (
     <StaggerGroup stagger={0.08} className="grid gap-5 md:grid-cols-2 md:gap-6">
       {products.map((p, i) => {
-        const Icon = iconFor(p.icon);
         const href = `/urunler/${p.slug}`;
         return (
           <StaggerItem key={p.slug} className="h-full">
@@ -44,9 +43,7 @@ export async function ProductsShowcase() {
 
               <div className="flex flex-1 flex-col p-6 md:p-7">
                 <div className="flex items-center gap-3.5">
-                  <span className={iconBoxCls} aria-hidden>
-                    <Icon className="size-5" strokeWidth={1.8} />
-                  </span>
+                  <ProductIcon slug={p.slug} icon={p.icon} size={48} />
                   <div className="min-w-0">
                     <h2 lang="en" className="text-[22px] font-medium leading-tight tracking-[-0.02em] text-heading">
                       {p.name}

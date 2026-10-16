@@ -389,7 +389,8 @@ export const navLinks = [
 /*  Ana menü (açılır gruplar) ve duyuru bandı                          */
 /* ------------------------------------------------------------------ */
 
-export type NavItem = { label: string; href: string; desc: string; icon: IconName };
+/** product: ürün öğelerinde uygulama simgesi için slug */
+export type NavItem = { label: string; href: string; desc: string; icon: IconName; product?: string };
 /** Açılır menü: her öğe ikon + başlık + tek satır açıklama; altta aynı biçimde bir bağlantı satırı */
 export type NavGroup = { label: string; href: string; items?: NavItem[]; footer?: { hint: string; label: string; href: string } };
 
@@ -428,7 +429,7 @@ export function buildNavMenu(
     {
       label: "Ürünlerimiz",
       href: "/urunler",
-      items: prd.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline, icon: p.icon })),
+      items: prd.map((p) => ({ label: p.name, href: `/urunler/${p.slug}`, desc: p.tagline, icon: p.icon, product: p.slug })),
       footer: { hint: "Aynı veri tabanında çalışan yazılımlar", label: "Tüm Ürünler", href: "/urunler" },
     },
     { label: "Referanslarımız", href: "/referanslar" },

@@ -4,6 +4,7 @@ import { ArrowRight, Check, Minus } from "lucide-react";
 import type { ProductView } from "@/lib/content";
 import { IconByName } from "@/lib/icons";
 import { Btn } from "@/components/site/Btn";
+import { ProductIcon } from "@/components/site/ProductIcon";
 import { SectionHead } from "@/components/site/SectionHead";
 import { cardCls, cardHoverCls, cardTextCls, cardTitleCls, iconBoxCls, sectionY } from "@/components/site/styles";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
@@ -39,9 +40,7 @@ export function ProductHero({ product, hasTour }: { product: ProductView; hasTou
       <div className="container-g grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)] lg:gap-14">
         <Reveal>
           <p className="inline-flex items-center gap-2.5 rounded-full bg-chip py-1.5 pl-1.5 pr-4 text-[14px] font-medium text-heading">
-            <span className="grid size-7 place-items-center rounded-full bg-white text-brand shadow-[0_0_0_1px_rgb(1_20_65/0.06)]" aria-hidden>
-              <IconByName name={product.icon} className="size-4" strokeWidth={2} />
-            </span>
+            <ProductIcon slug={product.slug} icon={product.icon} size={28} className="rounded-[8px] shadow-none" />
             <span lang="en">{product.hero.eyebrow}</span>
           </p>
           <h1 className="mt-5 text-balance text-[34px] font-normal leading-[1.12] tracking-[-0.035em] text-heading sm:text-[44px] lg:text-[50px]">
@@ -262,7 +261,7 @@ export function ProductCardLink({ product, cta = "İncele" }: { product: Product
       </div>
       <div className="flex flex-1 flex-col p-5 md:p-6">
         <h3 lang="en" className="flex items-center gap-2 text-[18px] font-medium text-heading">
-          <IconByName name={product.icon} aria-hidden className="size-[18px] text-brand" strokeWidth={1.9} />
+          <ProductIcon slug={product.slug} icon={product.icon} size={26} />
           {product.name}
         </h3>
         <p className="mt-1 text-[14px] text-muted">{product.tagline}</p>

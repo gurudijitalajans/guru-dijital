@@ -8,6 +8,7 @@ import type { NavGroup } from "@/lib/data";
 import { IconByName } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
+import { ProductIcon } from "./ProductIcon";
 
 function TalkLink({ className, onClick }: { className?: string; onClick?: () => void }) {
   return (
@@ -132,12 +133,16 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
                   onClick={() => setOpen(false)}
                   className="group/item flex items-center gap-3.5 rounded-2xl p-3 transition-colors hover:bg-soft"
                 >
-                  <span
-                    aria-hidden
-                    className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand transition-colors group-hover/item:bg-white"
-                  >
-                    <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
-                  </span>
+                  {it.product ? (
+                    <ProductIcon slug={it.product} icon={it.icon} size={40} />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand transition-colors group-hover/item:bg-white"
+                    >
+                      <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
+                    </span>
+                  )}
                   <span className="min-w-0">
                     <span className="block text-[14.5px] font-medium leading-snug text-heading">{it.label}</span>
                     <span className="mt-0.5 block line-clamp-2 text-[13px] leading-snug text-muted">{it.desc}</span>
@@ -320,9 +325,13 @@ export function SiteHeader({ menu }: { menu: NavGroup[] }) {
                       {g.items.map((it) => (
                         <li key={it.href}>
                           <Link href={it.href} onClick={close} className="flex min-h-14 items-center gap-3.5 rounded-2xl px-1 py-2">
-                            <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand">
-                              <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
-                            </span>
+                            {it.product ? (
+                              <ProductIcon slug={it.product} icon={it.icon} size={40} />
+                            ) : (
+                              <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-chip text-brand">
+                                <IconByName name={it.icon} className="size-[18px]" strokeWidth={1.9} />
+                              </span>
+                            )}
                             <span className="min-w-0">
                               <span className="block text-[16px] font-medium leading-snug text-heading">{it.label}</span>
                               <span className="mt-0.5 block line-clamp-2 text-[13.5px] leading-snug text-muted">{it.desc}</span>
