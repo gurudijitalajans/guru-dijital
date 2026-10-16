@@ -34,8 +34,8 @@ import * as migration_20261016_121751_cep_telefonu from './20261016_121751_cep_t
 import * as migration_20261016_130000_umami_kaldir from './20261016_130000_umami_kaldir';
 import * as migration_20261016_140000_analiz from './20261016_140000_analiz';
 import * as migration_20261016_150000_calisma_takvimi from './20261016_150000_calisma_takvimi';
+import * as migration_20261016_155000_bildirimler from './20261016_155000_bildirimler';
 import * as migration_20261016_160000_medya_agaci from './20261016_160000_medya_agaci';
-import * as migration_20261016_170000_bildirimler from './20261016_170000_bildirimler';
 
 export const migrations = [
   {
@@ -219,13 +219,13 @@ export const migrations = [
     name: '20261016_150000_calisma_takvimi',
   },
   {
+    up: migration_20261016_155000_bildirimler.up,
+    down: migration_20261016_155000_bildirimler.down,
+    name: '20261016_155000_bildirimler',
+  },
+  {
     up: migration_20261016_160000_medya_agaci.up,
     down: migration_20261016_160000_medya_agaci.down,
     name: '20261016_160000_medya_agaci',
-  },
-  {
-    up: migration_20261016_170000_bildirimler.up,
-    down: migration_20261016_170000_bildirimler.down,
-    name: '20261016_170000_bildirimler',
   },
 ];
