@@ -33,7 +33,7 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
 
   return (
     <div className={cn("grid gap-3 md:gap-4", className)}>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-12 md:grid-rows-2 md:gap-4">
+      <div className={cn("grid grid-cols-2 gap-3 md:grid-cols-12 md:gap-4", !wide && "md:grid-rows-2")}>
         {video ? (
           <div className={cn("col-span-2", wide ? "md:col-span-12" : "md:col-span-8 md:row-span-2")}>
             <VideoPlayer
@@ -78,7 +78,8 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
               frameCls,
               zoomCls,
               "aspect-(--ar) md:col-span-4 md:aspect-auto",
-              sides.length === 1 && "col-span-2 md:row-span-2"
+              /* Tek dikey kapak md altında tam genişlik; yatay telefonda ekran yüksekliğinin %85'ini aşmaz */
+              sides.length === 1 && "col-span-2 md:row-span-2 max-md:w-[min(100%,calc(85svh*var(--ar)))] max-md:justify-self-center"
             )}
             style={{ "--ar": `${img.w} / ${img.h}` } as CSSProperties}
           >
@@ -88,7 +89,7 @@ export function ServiceGallery({ images, video, className }: { images: WorkImage
               alt={img.alt}
               fill
               loading="eager"
-              sizes="(min-width: 1280px) 400px, (min-width: 768px) 34vw, 50vw"
+              sizes={sides.length === 1 ? "(min-width: 1280px) 400px, (min-width: 768px) 34vw, 100vw" : "(min-width: 1280px) 400px, (min-width: 768px) 34vw, 50vw"}
               className="object-cover"
               style={img.position ? { objectPosition: img.position } : undefined}
             />

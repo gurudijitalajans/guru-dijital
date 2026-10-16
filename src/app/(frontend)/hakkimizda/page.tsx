@@ -240,7 +240,7 @@ export default async function HakkimizdaPage() {
                         src={m.photo.src}
                         alt={m.photo.alt}
                         fill
-                        sizes="(min-width: 768px) 380px, 45vw"
+                        sizes="(min-width: 1280px) 290px, (min-width: 1024px) 24vw, (min-width: 768px) 380px, 45vw"
                         className="object-cover"
                         style={{ objectPosition: m.photo.position ?? "50% 25%" }}
                       />

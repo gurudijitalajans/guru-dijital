@@ -63,10 +63,15 @@ body {
   margin-inline: auto;
   width: 100%;
   max-width: 1248px;            /* 1200 içerik + 2 x 24 iç boşluk */
-  padding-inline: 1.25rem;
+  /* Yatay çentikli telefonda içerik çentik bandına girmesin (viewport-fit=cover) */
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
 }
 @media (min-width: 768px) {
-  .container-g { padding-inline: 1.5rem; }
+  .container-g {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
 }
 
 /* ---- marka ışık yelpazesi (logo anahtar görseli) ---- */
@@ -160,6 +165,8 @@ body {
   font-size: 17px;
   line-height: 1.8;
   color: var(--color-body);
+  /* Çıplak adres ya da uzun tireli dizgi (HyphenGuard tireyi kilitler) dar ekranda taşmasın */
+  overflow-wrap: anywhere;
 }
 .prose-guru > * + * { margin-top: 1.1em; }
 .prose-guru h2 {

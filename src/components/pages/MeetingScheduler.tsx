@@ -321,7 +321,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
             size="lg"
             arrow={!sending}
             disabled={sending}
-            className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+            className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 @md:w-auto"
           >
             {sending ? "Gönderiliyor" : "Toplantı Talebi Gönder"}
           </Btn>
@@ -489,7 +489,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                           >
                             <span
                               className={cn(
-                                "text-[11.5px] font-medium uppercase leading-tight tracking-[0.08em]",
+                                "text-[12px] font-medium uppercase leading-tight tracking-[0.06em]",
                                 selected ? "text-white/80" : "text-muted",
                               )}
                             >
@@ -547,7 +547,7 @@ export function MeetingScheduler({ topic, wide = false }: MeetingSchedulerProps 
                           >
                             <span>{t}</span>
                             {taken && (
-                              <span className="text-[11px] font-medium leading-none">
+                              <span className="text-[12px] font-medium leading-none">
                                 Dolu
                               </span>
                             )}

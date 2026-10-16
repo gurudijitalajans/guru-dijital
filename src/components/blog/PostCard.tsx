@@ -48,7 +48,7 @@ export function PostCard({ post, priority = false, eager = false, layout = "card
             preload={priority}
             /* Next 16: preload ile loading birlikte verilmez */
             loading={priority ? undefined : eager ? "eager" : "lazy"}
-            sizes={wide ? "(min-width: 1024px) 600px, (min-width: 768px) 55vw, 100vw" : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
+            sizes={wide ? "(min-width: 1024px) 600px, (min-width: 768px) 55vw, 100vw" : "(min-width: 1024px) 400px, 100vw"}
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
         ) : (

@@ -107,7 +107,7 @@ function BlockView({ b }: { b: Block }) {
             </p>
             <dl className="grid gap-1.5 text-[14px] leading-relaxed">
               {r.slice(1).map((c, k) => (
-                <div key={k} className="grid grid-cols-[92px_minmax(0,1fr)] gap-3">
+                <div key={k} className="grid gap-0.5 min-[400px]:grid-cols-[92px_minmax(0,1fr)] min-[400px]:gap-3">
                   <dt className="text-muted">{b.head[k + 1]}</dt>
                   <dd>
                     <Inline text={c} />
@@ -167,8 +167,8 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
           <p className="text-[13.5px] font-medium text-muted">Yasal metinler</p>
           <h1 className="mt-2 text-[32px] font-normal leading-[1.1] tracking-[-0.03em] text-heading md:text-[44px]">{doc.title}</h1>
           <p className="mt-3 text-[14px] text-muted">Son güncelleme: {fmt.format(new Date(doc.updated))}</p>
-          <nav aria-label="Yasal metinler" className="-mx-4 mt-7 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <ul className="flex w-max gap-2">
+          <nav aria-label="Yasal metinler" className="mt-7">
+            <ul className="flex flex-wrap gap-2">
               {LEGAL_PAGES.map((p) => (
                 <li key={p.slug}>
                   <Link
@@ -207,8 +207,8 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
               id={s.id}
               className="mt-10 scroll-mt-[calc(var(--header-h)+28px)] border-t border-[rgb(1_20_65/0.08)] pt-9 first:mt-6"
             >
-              <h2 className="mb-4 flex items-baseline gap-3 text-[21px] font-medium leading-snug tracking-[-0.015em] text-heading md:text-[23px]">
-                <span aria-hidden className="grid size-8 shrink-0 translate-y-[-2px] place-items-center self-center rounded-full bg-chip text-[13.5px] font-semibold tabular-nums text-brand">
+              <h2 className="mb-4 flex items-start gap-3 text-[21px] font-medium leading-snug tracking-[-0.015em] text-heading md:text-[23px]">
+                <span aria-hidden className="-mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-chip md:mt-0 text-[13.5px] font-semibold tabular-nums text-brand">
                   {s.n}
                 </span>
                 {s.label}
@@ -230,7 +230,7 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
             </div>
             <a
               href={`mailto:${info.email}`}
-              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-navy px-5 text-[14.5px] font-medium text-white transition-colors hover:bg-brand"
+              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-navy px-5 text-[14.5px] font-medium text-white transition-colors hover:bg-brand"
             >
               {info.email}
             </a>

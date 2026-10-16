@@ -64,11 +64,12 @@ export function TeamBlock({ title, lead, members, limit = 4 }: TeamBlockProps) {
                     </span>
                   </div>
                 )}
-                <div className="flex min-h-[72px] items-center justify-between gap-3 p-4">
+                {/* 360px altında ad, rol ve LinkedIn alt alta: iki sütunlu ızgarada metne yer kalsın */}
+                <div className="flex min-h-[72px] flex-col items-start gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-4">
                   <div className="min-w-0">
                     {/* İsim girilmediyse rol başlık olur; uydurma isim yazılmaz */}
-                    <h3 className="text-[15.5px] font-medium leading-snug text-heading">{m.placeholder ? m.role : m.name}</h3>
-                    <p className="text-balance text-[13px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>
+                    <h3 className="break-words text-[15.5px] font-medium leading-snug text-heading">{m.placeholder ? m.role : m.name}</h3>
+                    <p className="text-balance break-words text-[13px] leading-snug text-muted">{m.placeholder ? m.focus : m.role}</p>
                   </div>
                   {m.linkedin && (
                     <a

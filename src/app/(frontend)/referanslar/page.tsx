@@ -83,7 +83,7 @@ export default async function ReferanslarPage() {
               <SectionHead title="Seçili İşler" lead="Markalarımız için hazırladığımız tasarım, web ve reklam işlerinden örnekler." />
             </Reveal>
             <StaggerGroup className="fill-odd-sm mt-10 grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
-              {works.map(({ service, image }) => (
+              {works.map(({ service, image }, i) => (
                 <StaggerItem key={service.slug} className="h-full">
                   <Link href={`/hizmetler/${service.slug}`} className={cn(cardCls, cardHoverCls, "group flex h-full flex-col overflow-hidden")}>
                     <div className="relative overflow-hidden bg-soft" style={{ aspectRatio: `${image.w} / ${image.h}` }}>
@@ -91,7 +91,8 @@ export default async function ReferanslarPage() {
                         src={image.src}
                         alt={image.alt}
                         fill
-                        sizes="(min-width: 1024px) 390px, (min-width: 640px) 50vw, 100vw"
+                        /* Tek kalan son kart 640-1023 arasında iki sütunu kaplar (fill-odd-sm) */
+                        sizes={works.length % 2 === 1 && i === works.length - 1 ? "(min-width: 1024px) 390px, 100vw" : "(min-width: 1024px) 390px, (min-width: 640px) 50vw, 100vw"}
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         style={{ objectPosition: image.position ?? "50% 50%" }}
                       />

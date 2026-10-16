@@ -61,7 +61,7 @@ export function LegalToc({ items }: { items: TocItem[] }) {
         <div className="pb-1 pt-1">{list}</div>
       </details>
       <nav aria-label="Bu sayfada" className="sticky top-[calc(var(--header-h)+24px)] hidden rounded-2xl bg-soft p-2 lg:block">
-        <p className="px-3 pb-2 pt-2.5 text-[12.5px] font-medium uppercase tracking-[0.08em] text-muted">Bu sayfada</p>
+        <p className="px-3 pb-2 pt-2.5 text-[13px] font-medium text-muted">Bu sayfada</p>
         {list}
       </nav>
     </>

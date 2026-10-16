@@ -138,7 +138,8 @@ export function CookieConsentBanner() {
       {banner && !prefs && (
         <section
           aria-label={B.title}
-          className="fixed inset-x-3 bottom-3 z-[70] rounded-[22px] bg-white p-5 shadow-[0_0_0_1px_rgb(1_20_65/0.07),0_30px_70px_-24px_rgb(1_20_65/0.5)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[420px] sm:p-6"
+          data-float=""
+          className="fixed inset-x-3 bottom-3 z-[70] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-[22px] bg-white p-5 sm:max-h-[calc(100dvh-3rem)] shadow-[0_0_0_1px_rgb(1_20_65/0.07),0_30px_70px_-24px_rgb(1_20_65/0.5)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[420px] sm:p-6"
         >
           <div className="flex items-center gap-3">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-xl bg-[linear-gradient(160deg,#f3f8ff,#e3efff)] text-[#0a2463]">
@@ -153,11 +154,11 @@ export function CookieConsentBanner() {
             </Link>
           </p>
           {/* Kabul ve ret aynı ağırlıkta (KVKK Çerez Rehberi) */}
-          <div className="mt-5 grid grid-cols-2 gap-2">
-            <button type="button" className={solid} onClick={() => decide(all)}>
+          <div className="mt-5 grid grid-cols-1 gap-2 min-[340px]:grid-cols-2">
+            <button type="button" className={cn(solid, "max-[374px]:px-3")} onClick={() => decide(all)}>
               {B.acceptAll}
             </button>
-            <button type="button" className={solid} onClick={() => decide(["zorunlu"])}>
+            <button type="button" className={cn(solid, "max-[374px]:px-3")} onClick={() => decide(["zorunlu"])}>
               {B.rejectAll}
             </button>
           </div>
@@ -172,7 +173,7 @@ export function CookieConsentBanner() {
       )}
 
       {prefs && (
-        <div className="fixed inset-0 z-[80] grid place-items-end bg-[rgb(1_20_65/0.45)] p-3 backdrop-blur-[2px] sm:place-items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && closePrefs()}>
+        <div className="fixed inset-0 z-[140] grid place-items-end bg-[rgb(1_20_65/0.45)] p-3 backdrop-blur-[2px] sm:place-items-center sm:p-6" onMouseDown={(e) => e.target === e.currentTarget && closePrefs()}>
           <div
             ref={dialogRef}
             role="dialog"
@@ -197,13 +198,13 @@ export function CookieConsentBanner() {
               </p>
               <ul className="mt-5 grid gap-2.5">
                 {all.map((c) => (
-                  <li key={c} className="flex items-start gap-4 rounded-2xl bg-soft p-4">
+                  <li key={c} className={cn("flex items-start gap-4 rounded-2xl bg-soft p-4", c === "zorunlu" && "max-[399px]:flex-col max-[399px]:gap-2")}>
                     <div className="min-w-0 flex-1">
                       <p className="text-[15.5px] font-medium text-heading">{B.categories[c].title}</p>
                       <p className="mt-1 text-[13.5px] leading-relaxed text-muted">{B.categories[c].desc}</p>
                     </div>
                     {c === "zorunlu" ? (
-                      <span className="mt-0.5 shrink-0 rounded-full bg-white px-3 py-1 text-[12.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.08)]">Her zaman açık</span>
+                      <span className="mt-0.5 shrink-0 rounded-full bg-white px-3 py-1 max-[399px]:mt-0 text-[12.5px] font-medium text-heading shadow-[0_0_0_1px_rgb(1_20_65/0.08)]">Her zaman açık</span>
                     ) : (
                       <Switch on={choice[c]} onChange={(v) => setChoice((s) => ({ ...s, [c]: v }))} label={B.categories[c].title} />
                     )}

@@ -102,8 +102,8 @@ export default async function IletisimPage() {
       {/* Form ve doğrudan iletişim: sayfanın tam genişliğinde, geniş ekranda yan yana */}
       <section id="iletisim-form" className="pb-16 md:pb-[72px]">
         {/* İki kart geniş ekranda eşit boyda: form kutusu uzar, metin alanı boşluğu doldurur */}
-        <div className="container-g grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
-          <Reveal className="h-full">
+        <div className="container-g grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
+          <Reveal className="h-full min-w-0">
             <aside className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-navy p-6 text-white sm:p-8">
               <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand/40 blur-3xl" />
               <h2 className="relative text-[22px] font-medium leading-snug tracking-[-0.02em] md:text-[26px]">Doğrudan ulaşın</h2>
@@ -125,7 +125,8 @@ export default async function IletisimPage() {
                       </span>
                       <span className="min-w-0 leading-tight">
                         <span className="block text-[12.5px] text-white/60">{item.label}</span>
-                        <span className="block truncate text-[15.5px] font-medium">{item.value}</span>
+                        {/* Adres uzun olabilir: kırılır; diğer kanallar tek satır */}
+                        <span className={cn("block text-[15.5px] font-medium", item.label === "Adres" ? "break-words" : "truncate")}>{item.value}</span>
                       </span>
                     </a>
                   </li>

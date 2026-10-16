@@ -138,11 +138,12 @@ export function FormNotice({ message }: { message?: string }) {
 
 /**
  * Formun alt satırı: solda gönder düğmesi, sağında iki satırlık not (ne olacağı + KVKK).
- * Not düğmenin yanında tek blok durur; ayrı satıra düşüp tek kelime kalmaz.
+ * Not düğmenin yanında tek blok durur; ayrı satıra düşüp tek kelime kalmaz. Yan yana geçiş
+ * ekran değil kart genişliğine göre (@container): ürün sayfasındaki dar demo kartında alt alta.
  */
 export function FormActions({ button, note }: { button: ReactNode; note: string }) {
   return (
-    <div className="mt-auto flex flex-col gap-4 pt-7 sm:flex-row sm:items-center sm:gap-5">
+    <div className="mt-auto flex flex-col gap-4 pt-7 @md:flex-row @md:items-center @md:gap-5">
       {button}
       <div className="min-w-0 space-y-1 text-pretty leading-relaxed text-muted">
         <p className="text-[13px]">{note}</p>
@@ -157,10 +158,10 @@ export function FormActions({ button, note }: { button: ReactNode; note: string 
   );
 }
 
-/** Form kartı: beyaz, ince halka, hafif derinlik */
+/** Form kartı: beyaz, ince halka, hafif derinlik; içindekiler kart genişliğine göre dizilir (@container) */
 export const formCardCls = cn(
   cardCls,
-  "p-6 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_30px_60px_-40px_rgb(1_20_65/0.4)] md:p-8"
+  "@container p-6 shadow-[0_0_0_1px_rgb(1_20_65/0.08),0_30px_60px_-40px_rgb(1_20_65/0.4)] md:p-8"
 );
 
 export type ContactFormProps = {
@@ -513,7 +514,7 @@ export function ContactForm({
                   size="lg"
                   arrow={!sending}
                   disabled={sending}
-                  className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+                  className="w-full shrink-0 disabled:cursor-wait disabled:opacity-70 @md:w-auto"
                 >
                   {sending ? "Gönderiliyor" : "Mesajı Gönder"}
                 </Btn>
