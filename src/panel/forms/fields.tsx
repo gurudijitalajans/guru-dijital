@@ -39,8 +39,10 @@ function Shell({ f, path, children, inline }: { f: CField; path: string; childre
   const err = errors[path];
   const required = "required" in f && f.required;
   if (inline) return <div>{children}{err ? <p className="mt-1 mb-0 text-[13px] text-bad">{err}</p> : null}</div>;
+  /* content-start: yan yana alanlarda komşu alan (açıklamalı) daha uzunsa boşluk etiketin altına
+     dağılıp kutuyu aşağı itmesin; kutular aynı hizada kalır */
   return (
-    <div className="grid min-w-0 gap-1">
+    <div className="grid min-w-0 content-start gap-1">
       {f.label ? (
         <label htmlFor={domId(path)} className="text-[14px] text-muted">
           {f.label}

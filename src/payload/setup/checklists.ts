@@ -4,6 +4,7 @@ import { siteConnectionOf } from "../channels/collections";
 import { aiConfigured } from "../chat/ai";
 import type { Module } from "../business/roles";
 import { redisConfigured } from "../../lib/analiz/tampon";
+import legal from "../../content/legal.json";
 
 /**
  * Kurulum listeleri: her madde verinin kendisinden ya da ortam ayarından
@@ -52,7 +53,16 @@ export async function siteChecklist(payload: Payload, guruTenant: number): Promi
   const logos = refDocs.filter((r) => Boolean(r.logo)).length;
   const realAdmin = (users.docs as { email?: string }[]).some((u) => u.email && !/\.test$/i.test(u.email));
   const serverURL = process.env.NEXT_PUBLIC_SERVER_URL ?? "";
-  const domain = /gurudijital\.com\.tr/.test(serverURL);
+  /* Site kendi alan adında mı (vercel.app ya da yerel adres değil) */
+  const host = (() => {
+    try {
+      return new URL(serverURL).host;
+    } catch {
+      return "";
+    }
+  })();
+  const domain = Boolean(host) && !/vercel\.app$|localhost|127\.0\.0\.1/.test(host);
+  const kvkk = Boolean((legal as Record<string, unknown>)["kvkk-aydinlatma-metni"]);
   return [
     { done: teamDocs.length > 0 && named === teamDocs.length, title: "Ekip isimleri", detail: `${named}/${teamDocs.length} kişinin adı girildi`, href: "/panel/icerik?tur=ekip" },
     { done: teamDocs.length > 0 && photos === teamDocs.length, title: "Ekip fotoğrafları", detail: `${photos}/${teamDocs.length} fotoğraf yüklendi`, href: "/panel/icerik?tur=ekip" },
@@ -68,7 +78,7 @@ export async function siteChecklist(payload: Payload, guruTenant: number): Promi
     },
     { done: redisConfigured(), title: "Ziyaretçi ölçümü", detail: redisConfigured() ? "Çerezsiz sayaç çalışıyor; sonuçlar Analiz ekranında" : "Vercel > Storage > Upstash for Redis eklenince site ziyaret saymaya başlar", href: "/panel/analiz" },
     { done: Boolean(process.env.CRON_SECRET), title: "Sabah özeti", detail: process.env.CRON_SECRET ? "Hafta içi her sabah yöneticilere özet e-postası gidiyor" : "Vercel'e CRON_SECRET eklenince hafta içi her sabah özet e-postası gider", href: "/panel/duzenle/business-config" },
-    { done: domain, title: "Alan adı", detail: domain ? "gurudijital.com bağlı" : "Site şimdilik vercel.app adresinde", href: null },
-    { done: false, title: "KVKK aydınlatma metni", detail: "Metin gelince formların altına bağlantısı eklenir", href: null },
+    { done: domain, title: "Alan adı", detail: domain ? `${host.replace(/^www\./, "")} bağlı` : "Site şimdilik vercel.app adresinde", href: null },
+    { done: kvkk, title: "KVKK aydınlatma metni", detail: kvkk ? "Yayında; iletişim ve toplantı formlarında bağlantısı var" : "Metin gelince formların altına bağlantısı eklenir", href: kvkk ? "/yasal/kvkk-aydinlatma-metni" : null },
   ];
 }

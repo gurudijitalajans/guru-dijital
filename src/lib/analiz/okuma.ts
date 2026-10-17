@@ -9,7 +9,8 @@ import { poolOf } from "./depo";
  */
 export type Range = { from: string; to: string };
 export type Totals = { sessions: number; visitors: number; pageviews: number; bounces: number; duration: number };
-export type CRM = { leads: number; bookings: number; won: number; wonValue: number };
+/** site: yalnız site formlarından gelenler (kaynak bilgisi olan); oran oturuma bununla bölünür */
+export type CRM = { leads: number; bookings: number; site: number; won: number; wonValue: number };
 export type Funnel = { sessions: number; offer: number; cta: number; form: number; conv: number };
 export type Row = { k: string; n: number; m?: number };
 
@@ -45,11 +46,13 @@ export async function report(payload: Payload, cur: Range, prev: Range, tenant: 
     const [x] = await q(
       `SELECT (SELECT count(*) FROM leads WHERE tenant_id = $3 AND created_at >= $1 AND created_at < $2) leads,
               (SELECT count(*) FROM bookings WHERE tenant_id = $3 AND created_at >= $1 AND created_at < $2) bookings,
+              (SELECT count(*) FROM leads WHERE tenant_id = $3 AND created_at >= $1 AND created_at < $2 AND kaynak_kanal IS NOT NULL)
+                + (SELECT count(*) FROM bookings WHERE tenant_id = $3 AND created_at >= $1 AND created_at < $2 AND kaynak_kanal IS NOT NULL) site,
               (SELECT count(*) FROM deals WHERE tenant_id = $3 AND stage = 'kazanildi' AND closed_at >= $1 AND closed_at < $2) won,
               (SELECT coalesce(sum(value),0) FROM deals WHERE tenant_id = $3 AND stage = 'kazanildi' AND closed_at >= $1 AND closed_at < $2) won_value`,
       [r.from, r.to, tenant],
     );
-    return { leads: n(x.leads), bookings: n(x.bookings), won: n(x.won), wonValue: n(x.won_value) };
+    return { leads: n(x.leads), bookings: n(x.bookings), site: n(x.site), won: n(x.won), wonValue: n(x.won_value) };
   };
   const series = async (r: Range) =>
     (await q(`SELECT to_char(ts AT TIME ZONE ${TZ}, 'YYYY-MM-DD') d, count(DISTINCT sid) s, count(*) FILTER (WHERE kind='pv') p FROM ga_events WHERE ts >= $1 AND ts < $2 GROUP BY 1 ORDER BY 1`, [r.from, r.to])).map((x) => ({ d: String(x.d), s: n(x.s), p: n(x.p) }));

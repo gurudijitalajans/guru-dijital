@@ -137,10 +137,10 @@ export default async function TeamLoadPage({ searchParams }: { searchParams: Pro
                       const t = tone(ratio);
                       return (
                         <div key={w.monday} className="px-3 py-3">
-                          <span className="tabular text-[13px] text-ink">
+                          <span className="tabular text-[13px] whitespace-nowrap text-ink">
                             {nf.format(h)} <span className="text-muted">/ {nf.format(cap)} sa</span>
                           </span>
-                          {off ? <span className="ml-1.5 text-[12px] text-warn">{nf.format(off)} gün izin</span> : w.days.length < 5 ? <span className="ml-1.5 text-[12px] text-muted">{5 - w.days.length} gün tatil</span> : null}
+                          {off ? <span className="ml-1.5 inline-block text-[12px] whitespace-nowrap text-warn">{nf.format(off)} gün izin</span> : w.days.length < 5 ? <span className="ml-1.5 inline-block text-[12px] whitespace-nowrap text-muted">{5 - w.days.length} gün tatil</span> : null}
                           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-sunken" role="img" aria-label={`%${Math.round(ratio * 100)} dolu`}>
                             <div className={cn("h-full rounded-full", BAR[t])} style={{ width: `${Math.min(100, ratio * 100)}%` }} />
                           </div>

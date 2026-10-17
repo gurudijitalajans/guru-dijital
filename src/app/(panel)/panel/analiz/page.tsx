@@ -30,6 +30,8 @@ const regionName = (() => {
   }
 })();
 const pct = (a: number, b: number) => (b > 0 ? (a / b) * 100 : 0);
+/* Oranlar: sayaç ile CRM ayrı kaynaktan sayıldığı için pay paydayı aşabilir; %100'de kesilir */
+const share = (a: number, b: number) => Math.min(100, pct(a, b));
 const fmtPct = (v: number) => `%${v.toLocaleString("tr-TR", { maximumFractionDigits: 1 })}`;
 const fmtDur = (s: number) => (Math.round(s) >= 60 ? `${Math.floor(s / 60)} dk ${Math.round(s) % 60} sn` : `${Math.round(s)} sn`);
 const istDay = (d: Date) => new Date(d.getTime() + 3 * 3600000).toISOString().slice(0, 10);
@@ -73,10 +75,13 @@ function DailyChart({ days, cur, prev }: { days: string[]; cur: Map<string, numb
   const H = 180;
   const pad = { l: 34, r: 8, t: 10, b: 24 };
   const vals = days.map((d) => cur.get(d) ?? 0);
-  const max = Math.max(4, ...vals, ...prev);
+  /* Eksenin üstü yuvarlak, ikiye bölünebilen sayıya çıkar (21 değil 40, ara çizgi 20) */
+  const raw = Math.max(4, ...vals, ...prev);
+  const unit = 10 ** Math.floor(Math.log10(raw));
+  const max = [2, 4, 6, 8, 10].map((m) => m * unit).find((m) => m >= raw) ?? 10 * unit;
   const step = (W - pad.l - pad.r) / days.length;
   const y = (v: number) => pad.t + (H - pad.t - pad.b) * (1 - v / max);
-  const ticks = [0, Math.round(max / 2), max];
+  const ticks = [0, max / 2, max];
   const every = Math.ceil(days.length / 8);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={`Günlük oturum: ${days.map((d, i) => `${d} ${vals[i]}`).join(", ")}`}>
@@ -106,13 +111,13 @@ function DailyChart({ days, cur, prev }: { days: string[]; cur: Map<string, numb
 }
 
 function FunnelCard({ r }: { r: Report }) {
-  const conv = r.crmNow.leads + r.crmNow.bookings;
+  const all = r.crmNow.leads + r.crmNow.bookings;
   const steps = [
     { label: "Oturum", v: r.funnel.sessions, hint: "Siteye gelen her ziyaret" },
     { label: "Hizmet ya da ürün sayfası", v: r.funnel.offer, hint: "En az bir hizmet veya ürün sayfası açıldı" },
     { label: "Harekete geçti", v: r.funnel.cta, hint: "Teklif Al, Toplantı Planla, WhatsApp, telefon, sohbet" },
     { label: "Form başlatıldı", v: r.funnel.form, hint: "Bir formun alanına yazmaya başladı" },
-    { label: "Talep ya da randevu", v: conv, hint: "CRM'e düşen kayıt (sayaçtan bağımsız)" },
+    { label: "Talep ya da randevu", v: r.crmNow.site, hint: all > r.crmNow.site ? `Site formlarından; panel ve kanallarla birlikte ${nf.format(all)}` : "Site formlarından gelen kayıt" },
     { label: "Kazanılan iş", v: r.crmNow.won, hint: r.crmNow.wonValue ? money.format(r.crmNow.wonValue) : "Dönemde kapanan fırsat" },
   ];
   const top = Math.max(1, steps[0].v);
@@ -122,17 +127,17 @@ function FunnelCard({ r }: { r: Report }) {
       <ol className="m-0 grid list-none gap-3 p-4">
         {steps.map((s, i) => {
           const prevV = i ? steps[i - 1].v : 0;
-          const drop = i && prevV ? 100 - pct(s.v, prevV) : 0;
+          const drop = i && prevV ? 100 - share(s.v, prevV) : 0;
           return (
             <li key={s.label} className="grid gap-1">
               <div className="flex items-baseline justify-between gap-3 text-[14px]">
                 <span className="min-w-0 text-ink">{s.label}</span>
                 <span className="tabular shrink-0 font-semibold text-ink">
-                  {nf.format(s.v)} <span className="font-normal text-muted">{i ? fmtPct(pct(s.v, top)) : ""}</span>
+                  {nf.format(s.v)} <span className="font-normal text-muted">{i ? fmtPct(share(s.v, top)) : ""}</span>
                 </span>
               </div>
               <div className="h-2.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
-                <div className="h-full rounded-full bg-accent" style={{ width: `${Math.max(s.v ? 1.5 : 0, pct(s.v, top))}%` }} />
+                <div className="h-full rounded-full bg-accent" style={{ width: `${Math.max(s.v ? 1.5 : 0, share(s.v, top))}%` }} />
               </div>
               <div className="flex justify-between gap-3 text-[12px] text-muted">
                 <span>{s.hint}</span>
@@ -170,7 +175,7 @@ function ChannelTable({ r }: { r: Report }) {
               <td className="px-4 py-2 text-ink">{x.k === "bilinmiyor" ? "Kaynağı bilinmeyen (eski ya da sayaçsız)" : kanalAdi(x.k)}</td>
               <td className="tabular px-3 py-2 text-right">{nf.format(x.s)}</td>
               <td className="tabular px-3 py-2 text-right">{nf.format(x.l)}</td>
-              <td className="tabular px-3 py-2 text-right text-muted">{x.s ? fmtPct(pct(x.l, x.s)) : "-"}</td>
+              <td className="tabular px-3 py-2 text-right text-muted">{x.s ? fmtPct(share(x.l, x.s)) : "-"}</td>
               <td className="tabular px-4 py-2 text-right">{x.rev ? money.format(x.rev) : "-"}</td>
             </tr>
           ))}
@@ -317,10 +322,10 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   const dayList = Array.from({ length: days }, (_, i) => istDay(new Date(new Date(`${fromDay}T12:00:00Z`).getTime() + i * 86400000))).filter((d) => d <= today);
   const curMap = new Map(r.daily.map((d) => [d.d, d.s]));
   const prevVals = r.dailyPrev.map((d) => d.s);
-  const conv = r.crmNow.leads + r.crmNow.bookings;
-  const convPrev = r.crmBefore.leads + r.crmBefore.bookings;
-  const rate = pct(conv, r.now.sessions);
-  const ratePrev = pct(convPrev, r.before.sessions);
+  /* Oran: siteden gelen talep ve randevu / oturum. Panelden, WhatsApp'tan ya da elle girilen kayıtlar
+     sayılmaz (yoksa oran %100'ü aşar); sayaç tamponu gecikirse diye %100'de kesilir */
+  const rate = share(r.crmNow.site, r.now.sessions);
+  const ratePrev = share(r.crmBefore.site, r.before.sessions);
   const bounce = pct(r.now.bounces, r.now.sessions);
   const bouncePrev = pct(r.before.bounces, r.before.sessions);
   const kiyas = yoy ? "geçen yılın aynı dönemi" : "önceki dönem";

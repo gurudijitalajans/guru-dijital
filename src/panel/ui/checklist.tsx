@@ -32,11 +32,11 @@ export function Checklist({ title, items, note }: { title: string; items: CheckI
           return (
             <li key={i.title}>
               {i.href ? (
-                <a href={i.href} className="flex min-h-14 items-start gap-2.5 rounded-[9px] border border-line px-3 py-2.5 no-underline hover:border-accent">
+                <a href={i.href} className="flex h-full min-h-14 items-start gap-2.5 rounded-[9px] border border-line px-3 py-2.5 no-underline hover:border-accent">
                   {body}
                 </a>
               ) : (
-                <div className="flex min-h-14 items-start gap-2.5 rounded-[9px] border border-line px-3 py-2.5">{body}</div>
+                <div className="flex h-full min-h-14 items-start gap-2.5 rounded-[9px] border border-line px-3 py-2.5">{body}</div>
               )}
             </li>
           );
