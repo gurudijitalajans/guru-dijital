@@ -268,9 +268,9 @@ export default buildConfig({
   email: process.env.RESEND_API_KEY
     ? resendAdapter({
         apiKey: process.env.RESEND_API_KEY,
-        /* Alan adı Resend'de doğrulanana kadar yalnız onboarding@resend.dev gönderebilir */
-        defaultFromAddress: process.env.EMAIL_FROM || "onboarding@resend.dev",
-        defaultFromName: "Guru Panel",
+        /* gurudijital.com Resend'de doğrulandı (us-east-1; DKIM, send/rsend, DMARC); gelen posta ImprovMX ile Gmail'e yönlenir */
+        defaultFromAddress: process.env.EMAIL_FROM || "bildirim@gurudijital.com",
+        defaultFromName: "Guru Dijital",
       })
     : undefined,
   plugins: [
