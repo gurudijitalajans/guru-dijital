@@ -205,7 +205,8 @@ async function userEmail(req: PayloadRequest, id: unknown) {
   const uid = idOf(id);
   if (!uid) return null;
   const u = await req.payload.findByID({ collection: "users", id: uid, depth: 0, req, overrideAccess: true }).catch(() => null);
-  return u?.email && !/\.test$/i.test(u.email) ? u : null;
+  /* .test adreslerine e-posta gitmez (sendNotice atlar); panel bildirimi yine yazılır */
+  return u?.email ? u : null;
 }
 
 export const Tasks: CollectionConfig = {
@@ -262,6 +263,8 @@ export const Tasks: CollectionConfig = {
               intro: `${req.user?.name ?? "Guru Panel"} size bir görev atadı.`,
               rows: [["Görev", `${code} ${doc.title}`], ["Teslim", doc.dueDate ? new Date(doc.dueDate).toLocaleDateString("tr-TR", { timeZone: "Europe/Istanbul" }) : null]],
               path,
+              tenant: idOf(doc.tenant) ?? undefined,
+              kind: "gorev",
             });
           }
         }
@@ -275,6 +278,8 @@ export const Tasks: CollectionConfig = {
               intro: "Bir görev Kontrol aşamasına geldi; onaylayınca Tamam'a alabilirsiniz.",
               rows: [["Görev", `${code} ${doc.title}`], ["İş", project?.title]],
               path,
+              tenant: idOf(doc.tenant) ?? undefined,
+              kind: "kontrol",
             });
           }
         }

@@ -135,8 +135,9 @@ export async function sendMorningSummary(req: PayloadRequest, tenant: number | s
       rows,
       path: "/panel/ozet",
     });
-    if (r?.ok) sent++;
-    else failed.push(email);
+    /* Tercihle ya da deneme adresi olduğu için atlanan sayılmaz */
+    if (r?.ok && !("skipped" in r && r.skipped)) sent++;
+    else if (!r?.ok) failed.push(email);
   }
   return { sent, ...(failed.length ? { reason: `${failed.length} adrese gönderilemedi: ${failed.join(", ")}` } : {}) };
 }

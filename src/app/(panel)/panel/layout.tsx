@@ -1,3 +1,4 @@
+import type { Where } from "payload";
 import { getPanelContext, type TenantOption } from "@/panel/context";
 import { visibleNav } from "@/panel/nav";
 import { Shell, type ShellTenant } from "@/panel/shell/Shell";
@@ -16,10 +17,12 @@ const initials = (name: string) =>
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const ctx = await getPanelContext();
   const nav = visibleNav({ has: ctx.has, isTenantAdmin: ctx.isTenantAdmin });
-  /* Gelen kutusunda bekleyen: yanıt bekleyen sohbet, yeni talep, onay bekleyen randevu */
+  /* Bekleyen sayısı gelen kutusundaki Bekleyen süzgeciyle aynı: spam ve ertelenmiş kayıt sayılmaz */
+  const now = new Date().toISOString();
+  const waiting: Where = { and: [{ or: [{ spam: { equals: false } }, { spam: { exists: false } }] }, { or: [{ snoozedUntil: { exists: false } }, { snoozedUntil: { less_than_equal: now } }] }] };
   const [convs, leads, books] = await Promise.all([
-    ctx.has("chat") ? ctx.count("conversations", { needsReply: { equals: true } }) : 0,
-    ctx.has("crm") ? ctx.count("leads", { status: { equals: "yeni" } }) : 0,
+    ctx.has("chat") ? ctx.count("conversations", { and: [{ needsReply: { equals: true } }, waiting] }) : 0,
+    ctx.has("crm") ? ctx.count("leads", { and: [{ status: { equals: "yeni" } }, waiting] }) : 0,
     ctx.has("crm") ? ctx.count("bookings", { status: { equals: "bekliyor" } }) : 0,
   ]);
   for (const g of nav) for (const it of g.items) if (it.id === "inbox") it.count = convs + leads + books;

@@ -249,6 +249,7 @@ export const Activities: CollectionConfig = {
       ],
     },
     { name: "booking", type: "relationship", relationTo: "bookings", label: "Randevu", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.booking) } },
+    { name: "lead", type: "relationship", relationTo: "leads", label: "Talep", index: true, admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.lead) } },
     ownerField,
   ],
 };

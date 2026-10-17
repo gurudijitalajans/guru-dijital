@@ -47,6 +47,8 @@ export type PanelContext = {
   update: (collection: CollectionSlug, id: number | string, data: Record<string, unknown>) => Promise<unknown | null>;
   /** Yalnız seçili işletmenin kaydı ve yalnız işletme yöneticisi siler; silindiyse true */
   remove: (collection: CollectionSlug, id: number | string) => Promise<boolean>;
+  /** Sistem temizliği (spam talebin otomatik açılan fırsatı, birleşen kişinin boş kaydı): yalnız seçili işletmenin kaydı, rol aranmaz */
+  purge: (collection: CollectionSlug, id: number | string) => Promise<boolean>;
 };
 
 const toOption = (t: Tenant): TenantOption => ({ id: t.id, name: t.name, slug: t.slug, modules: (t.modules ?? []) as string[] });
@@ -167,6 +169,11 @@ export const getPanelContext = cache(async (): Promise<PanelContext> => {
     /* Koleksiyon kuralı silmeyi Guru yöneticisine bırakır; işletme yöneticisi kendi kaydını burada siler */
     remove: async (collection, id) => {
       if (!isTenantAdmin(u, guruAdmin ? undefined : tenant.id) || !(await own(collection, id, 0))) return false;
+      await payload.delete({ collection, id, user: u, req, overrideAccess: true });
+      return true;
+    },
+    purge: async (collection, id) => {
+      if (!(await own(collection, id, 0))) return false;
       await payload.delete({ collection, id, user: u, req, overrideAccess: true });
       return true;
     },

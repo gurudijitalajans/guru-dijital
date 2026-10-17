@@ -56,7 +56,8 @@ async function byToken(req: PayloadRequest, token: unknown): Promise<Conversatio
 async function messagesOf(req: PayloadRequest, conv: Conversation, after?: string): Promise<Out[]> {
   const res = await req.payload.find({
     collection: "chat-messages",
-    where: { and: [{ conversation: { equals: conv.id } }, ...(after ? [{ createdAt: { greater_than: after } }] : [])] },
+    /* İç notlar ziyaretçiye hiç gitmez */
+    where: { and: [{ conversation: { equals: conv.id } }, { role: { not_equals: "not" } }, ...(after ? [{ createdAt: { greater_than: after } }] : [])] },
     sort: "createdAt",
     limit: 200,
     depth: 1,
@@ -122,6 +123,8 @@ export const chatSend: PayloadHandler = async (req) => {
       ...(reopen ? { status: "bot" } : {}),
       /* Ekipteki sohbette her ziyaretçi mesajı yanıt bekler */
       ...(conv.status === "ekip" ? { needsReply: true } : {}),
+      /* Yeni mesaj ertelemeyi kaldırır */
+      snoozedUntil: null,
     },
     req,
     overrideAccess: true,

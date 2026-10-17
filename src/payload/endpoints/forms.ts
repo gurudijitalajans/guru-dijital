@@ -86,6 +86,7 @@ export async function createLead(req: PayloadRequest, input: LeadInput, via: "fo
     replyTo: data.email,
     path: `/panel/gelen?f=tumu&s=t${lead.id}`,
     tenant,
+    kind: "talep",
   });
   return { ok: true, id: lead.id };
 }
@@ -147,6 +148,7 @@ export async function createBooking(req: PayloadRequest, input: BookingInput, te
     replyTo: data.email,
     path: `/panel/gelen?f=tumu&s=r${bookingId}`,
     tenant,
+    kind: "randevu",
   });
   return { ok: true, id: bookingId };
 }

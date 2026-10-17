@@ -23,5 +23,7 @@ export const Notifications: CollectionConfig = {
     { name: "body", type: "text" },
     { name: "href", type: "text" },
     { name: "read", type: "checkbox", defaultValue: false, index: true },
+    /* Aynı kayıt için okunmamış bildirim varsa yenisi açılmaz, bu sayı artar */
+    { name: "count", type: "number", defaultValue: 1 },
   ],
 };

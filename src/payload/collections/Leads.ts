@@ -71,6 +71,8 @@ export const Leads: CollectionConfig = {
       options: LEAD_STATUS,
       admin: { position: "sidebar" },
     },
+    { name: "snoozedUntil", type: "date", label: "Ertelendi (şu zamana kadar)", index: true, admin: { position: "sidebar", date: { pickerAppearance: "dayAndTime", displayFormat: "dd.MM.yyyy HH:mm" }, description: "Bu zamana kadar Bekleyen listesinde görünmez." } },
+    { name: "spam", type: "checkbox", label: "Spam", defaultValue: false, index: true, admin: { position: "sidebar" } },
     {
       name: "source",
       type: "text",

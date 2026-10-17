@@ -78,7 +78,10 @@ export function Zil() {
                   >
                     <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", n.read ? "bg-transparent" : "bg-accent")} aria-hidden />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[14px] font-medium text-ink">{n.title}</span>
+                      <span className="block text-[14px] font-medium text-ink">
+                        {n.title}
+                        {n.count > 1 ? <span className="tabular ml-1.5 rounded-full bg-sunken px-1.5 text-[11px] font-normal text-muted">×{n.count}</span> : null}
+                      </span>
                       {n.body ? <span className="line-clamp-2 block text-[13px] text-muted">{n.body}</span> : null}
                       <span className="block text-[12px] text-muted">{rel(n.at)}</span>
                     </span>
@@ -97,6 +100,9 @@ export function Zil() {
           ) : (
             <p className="m-0 px-4 pb-4 text-[14px] text-muted">Henüz bildirim yok. Yeni talep, randevu, ekibe aktarılan sohbet ve size atanan görevler burada görünür.</p>
           )}
+          <Link href="/panel/bildirimler" onClick={() => setOpen(false)} className="block border-t border-line px-4 py-2.5 text-center text-[13px] font-medium text-accent no-underline hover:bg-sunken">
+            Tüm bildirimler ve tercihler
+          </Link>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

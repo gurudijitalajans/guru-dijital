@@ -112,6 +112,20 @@ export const Users: CollectionConfig = {
   },
   fields: [
     { name: "name", type: "text", label: "Ad Soyad", required: true },
+    {
+      name: "notifyPrefs",
+      type: "group",
+      label: "Bildirim tercihleri",
+      admin: { description: "Panelde Hesabım > Bildirimler ekranından değiştirilir." },
+      fields: [
+        { type: "row", fields: [{ name: "talepPanel", type: "checkbox", label: "Yeni talep: panel", defaultValue: true }, { name: "talepEposta", type: "checkbox", label: "Yeni talep: e-posta", defaultValue: true }] },
+        { type: "row", fields: [{ name: "randevuPanel", type: "checkbox", label: "Yeni randevu: panel", defaultValue: true }, { name: "randevuEposta", type: "checkbox", label: "Yeni randevu: e-posta", defaultValue: true }] },
+        { type: "row", fields: [{ name: "sohbetPanel", type: "checkbox", label: "Ekibe aktarılan sohbet: panel", defaultValue: true }, { name: "sohbetEposta", type: "checkbox", label: "Ekibe aktarılan sohbet: e-posta", defaultValue: true }] },
+        { type: "row", fields: [{ name: "gorevPanel", type: "checkbox", label: "Bana atanan görev: panel", defaultValue: true }, { name: "gorevEposta", type: "checkbox", label: "Bana atanan görev: e-posta", defaultValue: true }] },
+        { type: "row", fields: [{ name: "kontrolPanel", type: "checkbox", label: "Kontrol bekleyen iş: panel", defaultValue: true }, { name: "kontrolEposta", type: "checkbox", label: "Kontrol bekleyen iş: e-posta", defaultValue: true }] },
+        { type: "row", fields: [{ name: "bahsetmePanel", type: "checkbox", label: "Notta benden bahsedilmesi: panel", defaultValue: true }, { name: "bahsetmeEposta", type: "checkbox", label: "Notta benden bahsedilmesi: e-posta", defaultValue: true }] },
+      ],
+    },
     { name: "invitePending", type: "checkbox", label: "Davet bekliyor", defaultValue: false, access: { create: () => false, update: () => false }, admin: { position: "sidebar", readOnly: true, condition: (d) => Boolean(d?.invitePending), description: "Henüz giriş yapmadı. Ekibim ekranından daveti yeniden gönderebilirsiniz." } },
     {
       name: "weeklyHours",

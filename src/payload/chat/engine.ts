@@ -147,6 +147,7 @@ export async function handoff(req: PayloadRequest, conv: Conversation, settings:
       ],
       path: `/panel/gelen?f=tumu&s=s${conv.id}`,
       tenant: idOf(conv.tenant),
+      kind: "sohbet",
     });
   }
 }
@@ -221,7 +222,8 @@ export async function botReply(req: PayloadRequest, conv: Conversation, settings
     return;
   }
 
-  const rows = await req.payload.find({ collection: "chat-messages", where: { conversation: { equals: conv.id } }, sort: "-createdAt", limit: 30, depth: 0, req, overrideAccess: true });
+  /* Asistan iç notları görmez */
+  const rows = await req.payload.find({ collection: "chat-messages", where: { and: [{ conversation: { equals: conv.id } }, { role: { not_equals: "not" } }] }, sort: "-createdAt", limit: 30, depth: 0, req, overrideAccess: true });
   const history = (rows.docs as Row[]).reverse();
   const lastVisitorId = [...history].reverse().find((r) => r.role === "ziyaretci")?.id;
   const { text: knowledge, topics } = await getKnowledge(req, idOf(conv.tenant)!);

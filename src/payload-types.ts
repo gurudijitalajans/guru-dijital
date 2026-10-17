@@ -205,6 +205,11 @@ export interface Lead {
   subject?: string | null;
   message: string;
   status: 'yeni' | 'iletisim' | 'teklif' | 'kazanildi' | 'kaybedildi';
+  /**
+   * Bu zamana kadar Bekleyen listesinde görünmez.
+   */
+  snoozedUntil?: string | null;
+  spam?: boolean | null;
   source?: string | null;
   /**
    * Ziyaretin geldiği kanal (siteden otomatik).
@@ -434,6 +439,23 @@ export interface User {
   id: number;
   name: string;
   /**
+   * Panelde Hesabım > Bildirimler ekranından değiştirilir.
+   */
+  notifyPrefs?: {
+    talepPanel?: boolean | null;
+    talepEposta?: boolean | null;
+    randevuPanel?: boolean | null;
+    randevuEposta?: boolean | null;
+    sohbetPanel?: boolean | null;
+    sohbetEposta?: boolean | null;
+    gorevPanel?: boolean | null;
+    gorevEposta?: boolean | null;
+    kontrolPanel?: boolean | null;
+    kontrolEposta?: boolean | null;
+    bahsetmePanel?: boolean | null;
+    bahsetmeEposta?: boolean | null;
+  };
+  /**
    * Henüz giriş yapmadı. Ekibim ekranından daveti yeniden gönderebilirsiniz.
    */
   invitePending?: boolean | null;
@@ -635,6 +657,7 @@ export interface Activity {
   contact?: (number | null) | Contact;
   company?: (number | null) | Company;
   booking?: (number | null) | Booking;
+  lead?: (number | null) | Lead;
   owner?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -773,6 +796,11 @@ export interface Conversation {
   status: 'bot' | 'ekip' | 'kapali';
   needsReply?: boolean | null;
   assignee?: (number | null) | User;
+  /**
+   * Bu zamana kadar Bekleyen listesinde görünmez; yeni mesaj gelince erteleme kalkar.
+   */
+  snoozedUntil?: string | null;
+  spam?: boolean | null;
   contact?: (number | null) | Contact;
   lead?: (number | null) | Lead;
   booking?: (number | null) | Booking;
@@ -861,10 +889,14 @@ export interface ChatMessage {
   id: number;
   tenant?: (number | null) | Tenant;
   conversation: number | Conversation;
-  role: 'ziyaretci' | 'bot' | 'ekip' | 'sistem';
+  role: 'ziyaretci' | 'bot' | 'ekip' | 'sistem' | 'not';
   text: string;
   author?: (number | null) | User;
   unanswered?: boolean | null;
+  /**
+   * WhatsApp ya da Instagram mesajı iletmediyse sebebi.
+   */
+  deliveryError?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1751,6 +1783,7 @@ export interface Notification {
   body?: string | null;
   href?: string | null;
   read?: boolean | null;
+  count?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1965,6 +1998,8 @@ export interface LeadsSelect<T extends boolean = true> {
   subject?: T;
   message?: T;
   status?: T;
+  snoozedUntil?: T;
+  spam?: T;
   source?: T;
   kaynak?:
     | T
@@ -2137,6 +2172,7 @@ export interface ActivitiesSelect<T extends boolean = true> {
   contact?: T;
   company?: T;
   booking?: T;
+  lead?: T;
   owner?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2236,6 +2272,8 @@ export interface ConversationsSelect<T extends boolean = true> {
   status?: T;
   needsReply?: T;
   assignee?: T;
+  snoozedUntil?: T;
+  spam?: T;
   contact?: T;
   lead?: T;
   booking?: T;
@@ -2302,6 +2340,7 @@ export interface ChatMessagesSelect<T extends boolean = true> {
   text?: T;
   author?: T;
   unanswered?: T;
+  deliveryError?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2659,6 +2698,22 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  notifyPrefs?:
+    | T
+    | {
+        talepPanel?: T;
+        talepEposta?: T;
+        randevuPanel?: T;
+        randevuEposta?: T;
+        sohbetPanel?: T;
+        sohbetEposta?: T;
+        gorevPanel?: T;
+        gorevEposta?: T;
+        kontrolPanel?: T;
+        kontrolEposta?: T;
+        bahsetmePanel?: T;
+        bahsetmeEposta?: T;
+      };
   invitePending?: T;
   weeklyHours?: T;
   role?: T;
@@ -2925,6 +2980,7 @@ export interface NotificationsSelect<T extends boolean = true> {
   body?: T;
   href?: T;
   read?: T;
+  count?: T;
   updatedAt?: T;
   createdAt?: T;
 }

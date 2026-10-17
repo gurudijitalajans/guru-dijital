@@ -30,6 +30,7 @@ export const MSG_ROLES = [
   { label: "Asistan", value: "bot" },
   { label: "Ekip", value: "ekip" },
   { label: "Sistem", value: "sistem" },
+  { label: "İç not", value: "not" },
 ];
 
 /* İşletme başına tek kayıt (çok kiracılı eklentide "isGlobal"): her işletmenin kendi asistan ayarı */
@@ -219,6 +220,8 @@ export const Conversations: CollectionConfig = {
     { name: "status", type: "select", label: "Durum", required: true, defaultValue: "bot", options: CONV_STATUS, index: true, admin: { position: "sidebar" } },
     { name: "needsReply", type: "checkbox", label: "Yanıt bekliyor", defaultValue: false, index: true, admin: { position: "sidebar" } },
     { name: "assignee", type: "relationship", relationTo: "users", label: "Sorumlu", admin: { position: "sidebar" } },
+    { name: "snoozedUntil", type: "date", label: "Ertelendi (şu zamana kadar)", index: true, admin: { position: "sidebar", date: { pickerAppearance: "dayAndTime", displayFormat: "dd.MM.yyyy HH:mm" }, description: "Bu zamana kadar Bekleyen listesinde görünmez; yeni mesaj gelince erteleme kalkar." } },
+    { name: "spam", type: "checkbox", label: "Spam", defaultValue: false, index: true, admin: { position: "sidebar" } },
     { name: "contact", type: "relationship", relationTo: "contacts", label: "Kişi", admin: { position: "sidebar", readOnly: true } },
     { name: "lead", type: "relationship", relationTo: "leads", label: "Talep", admin: { position: "sidebar", readOnly: true } },
     { name: "booking", type: "relationship", relationTo: "bookings", label: "Randevu", admin: { position: "sidebar", readOnly: true } },
@@ -239,9 +242,9 @@ export const ChatMessages: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data, operation, req }) => {
-        /* Panelden yazılan mesaj her zaman ekip mesajıdır, yazarı oturumdaki kullanıcı */
+        /* Panelden yazılan mesaj ekip mesajı ya da iç nottur (müşteriye gitmez), yazarı oturumdaki kullanıcı */
         if (operation === "create" && req.user) {
-          data.role = "ekip";
+          data.role = data.role === "not" ? "not" : "ekip";
           data.author = req.user.id;
         }
         return data;
@@ -283,6 +286,7 @@ export const ChatMessages: CollectionConfig = {
     { name: "text", type: "textarea", label: "Mesaj", required: true, maxLength: 4000 },
     { name: "author", type: "relationship", relationTo: "users", label: "Ekip üyesi" },
     { name: "unanswered", type: "checkbox", label: "Asistan yanıtlayamadı", defaultValue: false, index: true },
+    { name: "deliveryError", type: "text", label: "Kanala gönderilemedi", admin: { readOnly: true, description: "WhatsApp ya da Instagram mesajı iletmediyse sebebi." } },
   ],
 };
 

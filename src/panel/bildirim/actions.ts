@@ -6,7 +6,17 @@ import { cms } from "@/lib/cms";
 import { getPanelContext } from "../context";
 import { sessionLost } from "../errors";
 
-export type Bildirim = { id: number; title: string; body: string; href: string; read: boolean; at: string };
+export type Bildirim = { id: number; title: string; body: string; href: string; read: boolean; at: string; kind: string; count: number };
+const toItem = (n: { id: number; title: string; body?: string | null; href?: string | null; read?: boolean | null; updatedAt: string; kind?: string | null; count?: number | null }): Bildirim => ({
+  id: n.id,
+  title: n.title,
+  body: n.body ?? "",
+  href: n.href ?? "/panel",
+  read: Boolean(n.read),
+  at: n.updatedAt,
+  kind: n.kind ?? "",
+  count: n.count ?? 1,
+});
 
 async function me() {
   const ctx = await getPanelContext();
@@ -22,12 +32,12 @@ export async function listNotifications(): Promise<{ unread: number; items: Bild
   try {
     const { payload, scope, opts } = await me();
     const [list, unread] = await Promise.all([
-      payload.find({ collection: "notifications", where: scope, sort: "-createdAt", limit: 30, depth: 0, ...opts }),
+      payload.find({ collection: "notifications", where: scope, sort: "-updatedAt", limit: 30, depth: 0, ...opts }),
       payload.count({ collection: "notifications", where: { and: [scope, { read: { equals: false } }] }, ...opts }),
     ]);
     return {
       unread: unread.totalDocs,
-      items: list.docs.map((n) => ({ id: n.id, title: n.title, body: n.body ?? "", href: n.href ?? "/panel", read: Boolean(n.read), at: n.createdAt })),
+      items: list.docs.map(toItem),
     };
   } catch (e) {
     if (sessionLost(e)) return { unread: 0, items: [] };
@@ -54,5 +64,55 @@ export async function removeNotifications(id?: number): Promise<{ ok: boolean }>
     return { ok: true };
   } catch {
     return { ok: false };
+  }
+}
+
+/** Bildirim merkezi sayfası: sayfa sayfa, isteğe göre yalnız okunmamışlar */
+export async function pageNotifications(page = 1, onlyUnread = false): Promise<{ items: Bildirim[]; more: boolean; unread: number; total: number }> {
+  try {
+    const { payload, scope, opts } = await me();
+    const where = onlyUnread ? { and: [scope, { read: { equals: false } }] } : scope;
+    const [list, unread] = await Promise.all([
+      payload.find({ collection: "notifications", where, sort: "-updatedAt", limit: 30, page: Math.max(1, page), depth: 0, ...opts }),
+      payload.count({ collection: "notifications", where: { and: [scope, { read: { equals: false } }] }, ...opts }),
+    ]);
+    return { items: list.docs.map(toItem), more: list.hasNextPage, unread: unread.totalDocs, total: list.totalDocs };
+  } catch {
+    return { items: [], more: false, unread: 0, total: 0 };
+  }
+}
+
+/** Okunmadı olarak işaretle */
+export async function markUnreadNotification(id: number): Promise<{ ok: boolean }> {
+  try {
+    const { payload, opts } = await me();
+    await payload.update({ collection: "notifications", where: { id: { equals: id } }, data: { read: false }, ...opts });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+export type NotifyPrefs = Record<string, boolean>;
+
+/** Kişinin bildirim tercihleri (Hesabım): tür başına panel ve e-posta */
+export async function getNotifyPrefs(): Promise<NotifyPrefs> {
+  const { payload, ctx } = await me();
+  const u = await payload.findByID({ collection: "users", id: ctx.user.id, depth: 0, overrideAccess: true });
+  const p = (u.notifyPrefs ?? {}) as Record<string, boolean | null | undefined>;
+  return Object.fromEntries(Object.entries(p).filter(([k]) => /^(talep|randevu|sohbet|gorev|kontrol|bahsetme)(Panel|Eposta)$/.test(k)).map(([k, v]) => [k, v !== false]));
+}
+
+export async function saveNotifyPrefs(prefs: NotifyPrefs): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { payload, ctx } = await me();
+    const clean = Object.fromEntries(Object.entries(prefs).filter(([k]) => /^(talep|randevu|sohbet|gorev|kontrol|bahsetme)(Panel|Eposta)$/.test(k)).map(([k, v]) => [k, Boolean(v)]));
+    /* Yalnız kendi hesabının bu grubu yazılır; rol ve işletme alanlarına dokunulmaz */
+    await payload.update({ collection: "users", id: ctx.user.id, data: { notifyPrefs: clean }, overrideAccess: true, context: { tenantSync: true } });
+    return { ok: true };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return { ok: false, error: "Kaydedilemedi." };
   }
 }

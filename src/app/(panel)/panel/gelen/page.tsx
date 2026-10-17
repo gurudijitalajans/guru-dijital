@@ -20,6 +20,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
     ...(chat ? [{ key: "benim" as const, label: "Bana atanan" }, { key: "sohbet" as const, label: "Sohbetler" }] : []),
     ...(crm ? [{ key: "talep" as const, label: "Talepler" }, { key: "randevu" as const, label: "Randevular" }] : []),
     { key: "kapanan", label: "Kapanan" },
+    { key: "ertelenen", label: "Ertelenen" },
+    { key: "spam", label: "Spam" },
     { key: "tumu", label: "Tümü" },
   ];
   const filter = (filters.some((f) => f.key === sp.f) ? sp.f : "bekleyen") as InboxFilter;

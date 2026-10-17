@@ -2,15 +2,36 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Bot, CalendarCheck, FileText, Info, MessageCircle, Search, Send, Trash2, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { DropdownMenu } from "radix-ui";
+import { ArrowLeft, Ban, Bot, CalendarCheck, Clock, FileText, Info, Mail, MailOpen, MessageCircle, RotateCcw, Search, Send, StickyNote, Trash2, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Fields } from "../ui/sheet";
 import { contactValue } from "../ui/contact-link";
-import { assignConversation, deleteInboxItem, getThread, listInbox, replyChat, setConversation, setStatus, type InboxFilter, type InboxKind, type InboxPage, type Thread } from "./actions";
+import {
+  addInternalNote,
+  assignConversation,
+  bulkInbox,
+  deleteInboxItem,
+  getThread,
+  linkToContact,
+  listInbox,
+  markUnread,
+  replyByEmail,
+  replyChat,
+  retryDelivery,
+  setConversation,
+  setSpam,
+  setStatus,
+  snoozeItems,
+  type InboxFilter,
+  type InboxKind,
+  type InboxPage,
+  type Thread,
+} from "./actions";
 
 /* Sunucudaki sayfa boyuyla aynı (actions.ts) */
 const INBOX_PAGE = 40;
@@ -25,6 +46,51 @@ const KIND_ICON: Record<InboxKind, React.ComponentType<{ className?: string }>> 
 const KIND_LABEL: Record<InboxKind, string> = { sohbet: "Sohbet", talep: "Site formu", randevu: "Randevu" };
 
 export type FilterDef = { key: InboxFilter; label: string };
+
+/** Erteleme kısayolları (tarayıcı saatiyle): 1 saat, yarın 09:00, gelecek pazartesi 09:00 */
+function snoozePresets(): [string, string][] {
+  const now = new Date();
+  const at9 = (d: Date) => {
+    d.setHours(9, 0, 0, 0);
+    return d;
+  };
+  const tomorrow = at9(new Date(now.getTime() + 86400000));
+  const monday = at9(new Date(now.getTime() + (((8 - now.getDay()) % 7 || 7) * 86400000)));
+  return [
+    ["1 saat sonra", new Date(now.getTime() + 3600000).toISOString()],
+    ["Yarın 09:00", tomorrow.toISOString()],
+    ["Gelecek hafta (Pzt 09:00)", monday.toISOString()],
+  ];
+}
+
+const menuItem = "flex min-h-9 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-[14px] text-ink outline-none data-[highlighted]:bg-sunken";
+const menuBox = "z-50 min-w-[200px] rounded-[10px] border border-line bg-surface p-1.5 shadow-pop";
+
+function SnoozeMenu({ disabled, snoozed, onPick }: { disabled?: boolean; snoozed?: string | null; onPick: (iso: string | null) => void }) {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <Button size="sm" disabled={disabled}>
+          <Clock /> Ertele
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content align="end" sideOffset={6} className={menuBox}>
+          {snoozePresets().map(([l, iso]) => (
+            <DropdownMenu.Item key={l} className={menuItem} onSelect={() => onPick(iso)}>
+              {l}
+            </DropdownMenu.Item>
+          ))}
+          {snoozed ? (
+            <DropdownMenu.Item className={menuItem} onSelect={() => onPick(null)}>
+              Ertelemeyi kaldır
+            </DropdownMenu.Item>
+          ) : null}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
 
 /** Adres satırı: seçili kayıt ve süzgeç paylaşılabilir, sayfa sunucuya yeniden gitmeden güncellenir */
 const writeUrl = (filter: InboxFilter, key: string) => {
@@ -46,6 +112,10 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
   const [reply, setReply] = useState("");
   const [pending, start] = useTransition();
   const [confirm, setConfirm] = useState(false);
+  /* Toplu seçim */
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkConfirm, setBulkConfirm] = useState(false);
+  const router = useRouter();
   const endRef = useRef<HTMLDivElement>(null);
 
   /* Liste her zaman güncel süzgeç, arama ve sayfa boyuyla okunur (yoklama da) */
@@ -75,8 +145,16 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
     endRef.current?.scrollIntoView({ block: "end" });
   }, [thread?.key, thread?.messages.length]);
 
+  const toggleSel = (k: string) =>
+    setSelected((cur) => {
+      const next = new Set(cur);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
   const pickFilter = (f: InboxFilter) => {
     setFilter(f);
+    setSelected(new Set());
     setLimit(INBOX_PAGE);
     params.current = { q, limit: INBOX_PAGE };
     writeUrl(f, key);
@@ -128,13 +206,28 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
     setThread(null);
     writeUrl(filter, "");
   };
+  /* Her işlemden sonra kayıt, liste ve menüdeki bekleyen sayısı tazelenir */
   const run = (job: () => Promise<{ ok: boolean; error?: string }>, done: string) =>
     start(async () => {
       const r = await job();
       if (!r.ok) return void toast.error(r.error ?? "İşlem yapılamadı.");
       toast.success(done);
       await Promise.all([reloadThread(key), reloadList(filter)]);
+      router.refresh();
     });
+  const bulk = (job: (keys: string[]) => Promise<{ ok: boolean; error?: string }>, done: string) => {
+    const keys = [...selected];
+    run(async () => {
+      const r = await job(keys);
+      if (r.ok) {
+        setSelected(new Set());
+        setBulkConfirm(false);
+        if (keys.includes(key)) back();
+      }
+      return r;
+    }, done);
+  };
+  const selKinds = new Set(items.filter((it) => selected.has(it.key)).map((it) => it.kind));
   const remove = () =>
     thread &&
     start(async () => {
@@ -145,21 +238,6 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
       back();
       await reloadList(filter);
     });
-  /* Metin, gönderim başarılı olana kadar kutuda kalır; hata olursa geri yazılır */
-  const send = () => {
-    if (!thread || !reply.trim()) return;
-    const text = reply;
-    setReply("");
-    start(async () => {
-      const r = await replyChat(thread.id, text);
-      if (!r.ok) {
-        setReply((cur) => cur || text);
-        return void toast.error(r.error ?? "Yanıt gönderilemedi; metniniz kutuda duruyor.");
-      }
-      toast.success("Yanıt gönderildi.");
-      await Promise.all([reloadThread(key), reloadList(filter)]);
-    });
-  };
   const assign = (v: string) => thread && run(() => assignConversation(thread.id, v ? Number(v) : null), v ? "Sohbet atandı." : "Atama kaldırıldı.");
 
   return (
@@ -180,20 +258,93 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
             />
           </label>
         </div>
-        <div className="flex flex-wrap gap-1.5 border-b border-line p-3" role="group" aria-label="Süzgeç">
+        <div className="flex gap-1.5 overflow-x-auto border-b border-line p-3 [scrollbar-width:none] md:flex-wrap" role="group" aria-label="Süzgeç">
           {filters.map((f) => (
-            <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => pickFilter(f.key)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", filter === f.key ? "border-accent bg-accent-soft text-accent" : "text-text hover:border-accent")}>
+            <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => pickFilter(f.key)} className={cn("min-h-8.5 shrink-0 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", filter === f.key ? "border-accent bg-accent-soft text-accent" : "text-text hover:border-accent")}>
               {f.label}
             </button>
           ))}
         </div>
+        {selected.size ? (
+          <div className="grid gap-2 border-b border-line bg-accent-soft/60 px-3 py-2.5" role="toolbar" aria-label="Seçili kayıtlar">
+            <div className="flex items-center justify-between gap-2 text-[13px]">
+              <span className="font-medium text-ink">{selected.size} seçili</span>
+              <span className="flex gap-3">
+                <button type="button" className="text-accent" onClick={() => setSelected(new Set(items.map((it) => it.key)))}>
+                  Tümünü seç
+                </button>
+                <button type="button" className="text-muted hover:text-ink" onClick={() => setSelected(new Set())}>
+                  Seçimi kaldır
+                </button>
+              </span>
+            </div>
+            {bulkConfirm ? (
+              <div className="flex flex-wrap items-center gap-2 text-[13px] text-ink">
+                {selected.size} kayıt kalıcı olarak silinsin mi?
+                <Button size="sm" variant="danger" disabled={pending} onClick={() => bulk((k) => bulkInbox(k, "sil"), `${selected.size} kayıt silindi.`)}>
+                  Evet, sil
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setBulkConfirm(false)}>
+                  Vazgeç
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {selKinds.has("sohbet") ? (
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <Button size="sm" disabled={pending}>
+                        <UserPlus /> Ata
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content align="start" sideOffset={6} className={menuBox}>
+                        <DropdownMenu.Item className={menuItem} onSelect={() => bulk((k) => bulkInbox(k, "ata", me), "Sohbetler size atandı.")}>
+                          Bana ata
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item className={menuItem} onSelect={() => bulk((k) => bulkInbox(k, "ata", null), "Atamalar kaldırıldı.")}>
+                          Atamayı kaldır
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+                ) : null}
+                {selKinds.has("sohbet") ? (
+                  <Button size="sm" disabled={pending} onClick={() => bulk((k) => bulkInbox(k, "kapat"), "Sohbetler kapatıldı.")}>
+                    Kapat
+                  </Button>
+                ) : null}
+                {selKinds.has("sohbet") || selKinds.has("talep") ? <SnoozeMenu disabled={pending} onPick={(iso) => bulk((k) => snoozeItems(k, iso), iso ? "Ertelendi." : "Erteleme kaldırıldı.")} /> : null}
+                {selKinds.has("sohbet") ? (
+                  <Button size="sm" disabled={pending} onClick={() => bulk((k) => markUnread(k), "Okunmadı olarak işaretlendi.")}>
+                    <MailOpen /> Okunmadı
+                  </Button>
+                ) : null}
+                {selKinds.has("sohbet") || selKinds.has("talep") ? (
+                  <Button size="sm" disabled={pending} onClick={() => bulk((k) => setSpam(k, filter !== "spam"), filter === "spam" ? "Spam'den çıkarıldı." : "Spam olarak işaretlendi.")}>
+                    <Ban /> {filter === "spam" ? "Spam değil" : "Spam"}
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button size="sm" variant="danger" disabled={pending} onClick={() => setBulkConfirm(true)}>
+                    <Trash2 /> Sil
+                  </Button>
+                ) : null}
+              </div>
+            )}
+          </div>
+        ) : null}
         <ul className="m-0 min-h-0 flex-1 list-none overflow-y-auto p-0">
           {items.length ? (
             items.map((it) => {
               const Icon = KIND_ICON[it.kind];
               return (
-                <li key={it.key} className="border-b border-line">
-                  <button type="button" onClick={() => open(it.key)} aria-current={it.key === key ? "true" : undefined} className={cn("block w-full px-3.5 py-3 text-left hover:bg-sunken", it.key === key && "bg-accent-soft hover:bg-accent-soft")}>
+                <li key={it.key} className={cn("flex border-b border-line", selected.has(it.key) && "bg-accent-soft/40")}>
+                  <label className="grid w-10 shrink-0 cursor-pointer place-items-start justify-center pt-3.5" title="Seç">
+                    <span className="sr-only">{it.title} kaydını seç</span>
+                    <input type="checkbox" checked={selected.has(it.key)} onChange={() => toggleSel(it.key)} className="size-4 accent-[var(--accent)]" />
+                  </label>
+                  <button type="button" onClick={() => open(it.key)} aria-current={it.key === key ? "true" : undefined} className={cn("block min-w-0 flex-1 py-3 pr-3.5 text-left hover:bg-sunken", it.key === key && "bg-accent-soft hover:bg-accent-soft")}>
                     <span className="flex items-center gap-2">
                       <Icon className="size-4 shrink-0 text-muted" aria-label={KIND_LABEL[it.kind]} />
                       <span className="min-w-0 flex-1 truncate font-medium text-ink">{it.title}</span>
@@ -204,6 +355,11 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
                       <Badge tone={it.tone} dot={it.waiting}>
                         {it.label}
                       </Badge>
+                      {it.snoozed ? (
+                        <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-muted">
+                          <Clock className="size-3" aria-hidden /> {it.snoozed}
+                        </span>
+                      ) : null}
                       {it.assignee ? <span className="truncate text-[12px] text-muted">{it.assignee}</span> : null}
                     </span>
                   </button>
@@ -211,7 +367,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
               );
             })
           ) : (
-            <li className="px-4 py-6 text-[14px] text-muted">{q.trim() ? `"${q.trim()}" için kayıt bulunamadı.` : filter === "bekleyen" ? "Bekleyen bir şey yok. Yeni sohbet, talep ya da randevu geldiğinde burada görünür." : filter === "benim" ? "Size atanmış sohbet yok." : "Bu süzgeçte kayıt yok."}</li>
+            <li className="px-4 py-6 text-[14px] text-muted">{q.trim() ? `"${q.trim()}" için kayıt bulunamadı.` : filter === "bekleyen" ? "Bekleyen bir şey yok. Yeni sohbet, talep ya da randevu geldiğinde burada görünür." : filter === "benim" ? "Size atanmış sohbet yok." : filter === "ertelenen" ? "Ertelenmiş kayıt yok." : filter === "spam" ? "Spam yok." : "Bu süzgeçte kayıt yok."}</li>
           )}
           {more ? (
             <li className="p-3">
@@ -300,6 +456,17 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
                     onPick={(v, l) => run(() => setStatus("randevu", thread.id, v), `Randevu: ${l}.`)}
                   />
                 )}
+                {thread.kind !== "randevu" ? <SnoozeMenu disabled={pending} snoozed={thread.snoozedUntil} onPick={(iso) => run(() => snoozeItems([thread.key], iso), iso ? "Ertelendi; zamanı gelince Bekleyen'e döner." : "Erteleme kaldırıldı.")} /> : null}
+                {thread.kind === "sohbet" ? (
+                  <Button size="sm" disabled={pending} onClick={() => run(() => markUnread([thread.key]), "Okunmadı olarak işaretlendi.")}>
+                    <MailOpen /> Okunmadı
+                  </Button>
+                ) : null}
+                {thread.kind !== "randevu" ? (
+                  <Button size="sm" variant="ghost" disabled={pending} onClick={() => run(() => setSpam([thread.key], !thread.spam), thread.spam ? "Spam'den çıkarıldı." : thread.kind === "talep" ? "Spam olarak işaretlendi; otomatik açılan fırsat silindi." : "Spam olarak işaretlendi.")}>
+                    <Ban /> {thread.spam ? "Spam değil" : "Spam"}
+                  </Button>
+                ) : null}
                 {canDelete && !confirm ? (
                   <Button size="sm" variant="ghost" disabled={pending} onClick={() => setConfirm(true)} aria-label={`${KIND_LABEL[thread.kind]} kaydını sil`}>
                     <Trash2 /> Sil
@@ -324,6 +491,22 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
               ) : null}
             </header>
 
+            {thread.duplicates.length ? (
+              <div className="grid gap-1.5 border-b border-line bg-warn-soft/60 px-4 py-2.5 text-[13px] text-ink" role="note">
+                {thread.duplicates.map((d) => (
+                  <div key={d.id} className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="min-w-0 flex-1">
+                      Bu kişi CRM&apos;de zaten olabilir: <b className="font-semibold">{d.name}</b>
+                      {d.detail ? <span className="text-muted"> · {d.detail}</span> : null}
+                    </span>
+                    <Button size="sm" disabled={pending} onClick={() => run(() => linkToContact(thread.key, d.id), `${d.name} ile birleştirildi.`)}>
+                      Bu kişiye bağla
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
             <div className="min-h-0 flex-1 overflow-y-auto bg-bg px-4 py-4" aria-live="polite">
               <div className="flex flex-col gap-2.5">
                 {thread.messages.map((m) => (
@@ -335,67 +518,33 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
                       m.role === "bot" && "self-start bg-sunken text-ink",
                       m.role === "ekip" && "self-end bg-accent text-accent-ink",
                       m.role === "sistem" && "self-center bg-transparent py-0.5 text-center text-[12px] text-muted",
+                      m.role === "not" && "self-end border border-dashed border-warn/50 bg-warn-soft text-ink",
                     )}
                   >
                     {m.role !== "sistem" ? (
-                      <span className={cn("mb-0.5 block text-[11px]", m.role === "ekip" ? "opacity-80" : "text-muted")}>
+                      <span className={cn("mb-0.5 flex items-center gap-1 text-[11px]", m.role === "ekip" ? "opacity-80" : "text-muted")}>
+                        {m.role === "not" ? <StickyNote className="size-3" aria-hidden /> : null}
                         {m.role === "ziyaretci" ? thread.title : m.role === "bot" ? "Asistan" : (m.author ?? "Ekip")} · {stamp(m.at)}
+                        {m.role === "not" ? " · iç not, müşteri görmez" : ""}
                         {m.unanswered ? " · asistan yanıtlayamadı" : ""}
                       </span>
                     ) : null}
                     {m.text}
+                    {m.deliveryError ? (
+                      <span className="mt-1.5 flex flex-wrap items-center gap-2 rounded-[8px] bg-surface/90 px-2 py-1 text-[12px] text-bad">
+                        Gönderilemedi: {m.deliveryError}
+                        <button type="button" className="inline-flex items-center gap-1 font-medium text-accent" disabled={pending} onClick={() => run(() => retryDelivery(Number(m.id)), "Mesaj yeniden gönderildi.")}>
+                          <RotateCcw className="size-3" aria-hidden /> Tekrar dene
+                        </button>
+                      </span>
+                    ) : null}
                   </div>
                 ))}
                 <div ref={endRef} />
               </div>
             </div>
 
-            {thread.kind === "sohbet" ? (
-              <form
-                className="border-t border-line p-3"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  send();
-                }}
-              >
-                {thread.canned.length ? (
-                  <div className="mb-2 flex flex-wrap gap-1.5">
-                    {thread.canned.map((c) => (
-                      <button key={c.label} type="button" onClick={() => setReply((r) => (r ? `${r} ${c.text}` : c.text))} className="min-h-8 rounded-full border border-line px-3 text-[13px] hover:border-accent">
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-                <div className="flex items-end gap-2">
-                  <label className="min-w-0 flex-1">
-                    <span className="sr-only">Yanıt</span>
-                    <textarea
-                      id="gelen-yanit"
-                      rows={2}
-                      value={reply}
-                      onChange={(e) => setReply(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          send();
-                        }
-                      }}
-                      placeholder={thread.status === "kapali" ? "Sohbet kapandı; yazarsanız yeniden açılır." : "Yanıt yazın (Enter gönderir, Shift+Enter yeni satır)"}
-                      className="block max-h-40 w-full resize-y rounded-[9px] border border-line bg-surface px-3 py-2 text-[14px] text-ink placeholder:text-muted focus:border-accent focus:outline-none"
-                    />
-                  </label>
-                  <Button type="submit" variant="primary" disabled={pending || !reply.trim()} aria-label="Gönder">
-                    <Send /> <span className="hidden sm:inline">Gönder</span>
-                  </Button>
-                </div>
-                <p className="mt-1.5 mb-0 text-[12px] text-muted">Yazdığınızda asistan bu sohbette susar; ziyaretçi yanıtı birkaç saniye içinde görür.</p>
-              </form>
-            ) : (
-              <div className="border-t border-line px-4 py-3 text-[13px] text-muted">
-                {thread.kind === "talep" ? "Talebe e-posta ya da telefonla dönün, sonra durumunu güncelleyin. Durum, bağlı fırsatın aşamasını da değiştirir." : "Randevuyu onaylayın ya da iptal edin; takvim ve CRM kaydı birlikte güncellenir."}
-              </div>
-            )}
+            <Composer key={thread.key} thread={thread} me={me} pending={pending} reply={reply} setReply={setReply} run={run} />
           </>
         ) : (
           <div className="grid flex-1 place-items-center p-6 text-center text-muted">Soldan bir kayıt seçin.</div>
@@ -484,5 +633,158 @@ function StatusPicker({ value, options, disabled, onPick }: { value: string; opt
           </Button>
         ))}
     </div>
+  );
+}
+
+type Mode = "yanit" | "not" | "eposta";
+type Popup = { type: "/" | "@"; query: string; from: number; to: number } | null;
+const firstName = (s: string) => s.trim().split(/\s+/)[0] ?? "";
+
+/**
+ * Yazı kutusu. Sohbette Yanıt (müşteriye) ya da İç not; talep ve randevuda
+ * E-posta ya da İç not. "/" hazır yanıtları açar ({ad} müşterinin adıyla
+ * dolar), iç notta "@" ekip arkadaşını seçer ve ona bildirim gider.
+ */
+function Composer({ thread, me, pending, reply, setReply, run }: { thread: Thread; me: number; pending: boolean; reply: string; setReply: (v: string | ((cur: string) => string)) => void; run: (job: () => Promise<{ ok: boolean; error?: string }>, done: string) => void }) {
+  const chat = thread.kind === "sohbet";
+  const [mode, setMode] = useState<Mode>(chat ? "yanit" : "eposta");
+  const [subject, setSubject] = useState(thread.kind === "talep" ? "Talebiniz hakkında" : "Randevunuz hakkında");
+  const [mentions, setMentions] = useState<{ id: number; name: string }[]>([]);
+  const [popup, setPopup] = useState<Popup>(null);
+  const [hi, setHi] = useState(0);
+  const box = useRef<HTMLTextAreaElement>(null);
+
+  const fill = (t: string) => t.replace(/\{ad\}/gi, firstName(thread.title)).replace(/\{adsoyad\}/gi, thread.title);
+  const options =
+    popup?.type === "/"
+      ? thread.canned.filter((c) => `${c.label} ${c.text}`.toLocaleLowerCase("tr").includes(popup.query.toLocaleLowerCase("tr"))).map((c) => ({ key: c.label, label: c.label, detail: fill(c.text), value: fill(c.text) }))
+      : popup?.type === "@"
+        ? thread.team.filter((t) => t.id !== me && t.name.toLocaleLowerCase("tr").includes(popup.query.toLocaleLowerCase("tr"))).map((t) => ({ key: String(t.id), label: t.name, detail: "", value: `@${t.name} `, id: t.id }))
+        : [];
+
+  const onType = (v: string, caret: number) => {
+    setReply(v);
+    const m = /(^|\s)([/@])([^\s/@]*)$/.exec(v.slice(0, caret));
+    if (m && (m[2] === "/" ? thread.canned.length > 0 : mode === "not")) {
+      setPopup({ type: m[2] as "/" | "@", query: m[3], from: caret - m[3].length - 1, to: caret });
+      setHi(0);
+    } else setPopup(null);
+  };
+  const pick = (o: { value: string; label: string; id?: number }) => {
+    if (!popup) return;
+    const next = reply.slice(0, popup.from) + o.value + reply.slice(popup.to);
+    setReply(next);
+    if (o.id) setMentions((cur) => (cur.some((x) => x.id === o.id) ? cur : [...cur, { id: o.id!, name: o.label }]));
+    setPopup(null);
+    requestAnimationFrame(() => {
+      const pos = popup.from + o.value.length;
+      box.current?.focus();
+      box.current?.setSelectionRange(pos, pos);
+    });
+  };
+
+  const send = () => {
+    const text = reply.trim();
+    if (!text || pending) return;
+    setReply("");
+    setPopup(null);
+    const restore = <T extends { ok: boolean }>(r: T) => {
+      if (!r.ok) setReply((cur) => cur || text);
+      return r;
+    };
+    if (mode === "yanit") run(async () => restore(await replyChat(thread.id, text)), "Yanıt gönderildi.");
+    else if (mode === "not") {
+      const ids = mentions.filter((m) => text.includes(`@${m.name}`)).map((m) => m.id);
+      run(async () => restore(await addInternalNote(thread.key, text, ids)), ids.length ? "Not eklendi; bahsettiğiniz kişilere bildirim gitti." : "Not eklendi.");
+      setMentions([]);
+    } else run(async () => restore(await replyByEmail(thread.key, subject, text)), `E-posta ${thread.replyTo} adresine gönderildi.`);
+  };
+
+  const modes: [Mode, string, React.ComponentType<{ className?: string }>][] = chat
+    ? [["yanit", "Yanıt", Send], ["not", "İç not", StickyNote]]
+    : [["eposta", "E-posta", Mail], ["not", "İç not", StickyNote]];
+  const hint =
+    mode === "not"
+      ? "Not yalnız ekipte görünür. @ ile ekip arkadaşınızı anın, bildirim alır."
+      : mode === "eposta"
+        ? `Markalı e-posta ${thread.replyTo || "kişinin adresine"} gider; yanıtlar sizin adresinize gelir.`
+        : "Yazdığınızda asistan bu sohbette susar; ziyaretçi yanıtı birkaç saniye içinde görür.";
+
+  return (
+    <form
+      className={cn("relative border-t border-line p-3", mode === "not" && "bg-warn-soft/40")}
+      onSubmit={(e) => {
+        e.preventDefault();
+        send();
+      }}
+    >
+      <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        <div className="flex rounded-[9px] border border-line bg-surface p-0.5" role="tablist" aria-label="Yazı türü">
+          {modes.map(([k, l, Icon]) => (
+            <button key={k} type="button" role="tab" aria-selected={mode === k} onClick={() => setMode(k)} className={cn("inline-flex min-h-8 items-center gap-1.5 rounded-[7px] px-2.5 text-[13px]", mode === k ? "bg-accent-soft font-medium text-accent" : "text-text hover:text-ink")}>
+              <Icon className="size-3.5" /> {l}
+            </button>
+          ))}
+        </div>
+        {mode !== "not"
+          ? thread.canned.map((c) => (
+              <button key={c.label} type="button" title={fill(c.text)} onClick={() => setReply((r) => (r ? `${r} ${fill(c.text)}` : fill(c.text)))} className="min-h-8 rounded-full border border-line bg-surface px-3 text-[13px] hover:border-accent">
+                {c.label}
+              </button>
+            ))
+          : null}
+        {thread.canned.length && mode !== "not" ? <span className="text-[12px] text-muted">ya da &quot;/&quot; yazın</span> : null}
+      </div>
+      {mode === "eposta" ? (
+        <label className="mb-2 block">
+          <span className="sr-only">Konu</span>
+          <input id="gelen-konu" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Konu" className="block min-h-9 w-full rounded-[9px] border border-line bg-surface px-3 text-[14px] text-ink focus:border-accent focus:outline-none pointer-coarse:text-[16px]" />
+        </label>
+      ) : null}
+      {popup && options.length ? (
+        <ul className="absolute right-3 bottom-[calc(100%-8px)] left-3 z-10 m-0 max-h-56 list-none overflow-y-auto rounded-[10px] border border-line bg-surface p-1 shadow-pop" role="listbox" aria-label={popup.type === "/" ? "Hazır yanıtlar" : "Ekip"}>
+          {options.map((o, i) => (
+            <li key={o.key} role="option" aria-selected={i === hi}>
+              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(o)} className={cn("block w-full rounded-[7px] px-2.5 py-1.5 text-left", i === hi ? "bg-sunken" : "hover:bg-sunken")}>
+                <span className="block text-[14px] font-medium text-ink">{popup.type === "@" ? `@${o.label}` : o.label}</span>
+                {o.detail ? <span className="line-clamp-2 block text-[12px] text-muted">{o.detail}</span> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <div className="flex items-end gap-2">
+        <label className="min-w-0 flex-1">
+          <span className="sr-only">{mode === "not" ? "İç not" : mode === "eposta" ? "E-posta" : "Yanıt"}</span>
+          <textarea
+            id="gelen-yanit"
+            ref={box}
+            rows={mode === "eposta" ? 4 : 2}
+            value={reply}
+            onChange={(e) => onType(e.target.value, e.target.selectionStart ?? e.target.value.length)}
+            onBlur={() => setTimeout(() => setPopup(null), 150)}
+            onKeyDown={(e) => {
+              if (popup && options.length) {
+                if (e.key === "ArrowDown") return void (e.preventDefault(), setHi((h) => (h + 1) % options.length));
+                if (e.key === "ArrowUp") return void (e.preventDefault(), setHi((h) => (h - 1 + options.length) % options.length));
+                if (e.key === "Enter" || e.key === "Tab") return void (e.preventDefault(), pick(options[Math.min(hi, options.length - 1)]));
+                if (e.key === "Escape") return void (e.preventDefault(), setPopup(null));
+              }
+              /* Sohbet ve notta Enter gönderir; e-postada Cmd/Ctrl+Enter */
+              if (e.key === "Enter" && !e.shiftKey && (mode !== "eposta" || e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            placeholder={mode === "not" ? "İç not yazın; @ ile ekip arkadaşını anın" : mode === "eposta" ? "E-posta metni (Cmd+Enter gönderir)" : thread.status === "kapali" ? "Sohbet kapandı; yazarsanız yeniden açılır." : "Yanıt yazın (Enter gönderir, Shift+Enter yeni satır)"}
+            className="block max-h-48 w-full resize-y rounded-[9px] border border-line bg-surface px-3 py-2 text-[14px] text-ink placeholder:text-muted focus:border-accent focus:outline-none pointer-coarse:text-[16px]"
+          />
+        </label>
+        <Button type="submit" variant="primary" disabled={pending || !reply.trim() || (mode === "eposta" && !subject.trim())} aria-label={mode === "not" ? "Notu ekle" : "Gönder"}>
+          {mode === "not" ? <StickyNote /> : <Send />} <span className="hidden sm:inline">{mode === "not" ? "Not ekle" : "Gönder"}</span>
+        </Button>
+      </div>
+      <p className="mt-1.5 mb-0 text-[12px] text-muted">{hint}</p>
+    </form>
   );
 }

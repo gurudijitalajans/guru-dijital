@@ -123,6 +123,8 @@ async function receive(req: PayloadRequest, m: Inbound) {
       visitorMessages: (conv.visitorMessages ?? 0) + 1,
       ...(conv.status === "kapali" ? { status: "bot" } : {}),
       ...(conv.status === "ekip" ? { needsReply: true } : {}),
+      /* Yeni mesaj ertelemeyi kaldırır */
+      snoozedUntil: null,
     },
     req,
     overrideAccess: true,
@@ -162,11 +164,20 @@ export const metaWebhook: PayloadHandler = async (req) => {
 };
 
 /** chat-messages afterChange: dış kanaldaki sohbete giden yanıtı ilet */
-export async function deliverOutbound(req: PayloadRequest, doc: { role?: string | null; text?: string | null; conversation?: unknown }) {
+export async function deliverOutbound(req: PayloadRequest, doc: { id?: number | string; role?: string | null; text?: string | null; conversation?: unknown }) {
   if (!metaEnabled() || !doc.text || !["bot", "ekip", "sistem"].includes(doc.role ?? "")) return;
   const id = idOf(doc.conversation as never);
   if (!id) return;
   const conv = (await req.payload.findByID({ collection: "conversations", id, depth: 0, req, overrideAccess: true }).catch(() => null)) as (Conversation & { channel?: string; externalId?: string }) | null;
   if (!conv?.externalId || !conv.channel || conv.channel === "web") return;
-  await sendToChannel(conv.channel, conv.externalId, doc.text).catch((e) => req.payload.logger.error({ err: e }, "Kanala gönderilemedi"));
+  /* Gönderilemezse (ör. 24 saatlik pencere doldu) sebep mesaja yazılır; panelde "gönderilemedi" ve "Tekrar dene" görünür */
+  const error = await sendToChannel(conv.channel, conv.externalId, doc.text).then(
+    () => null,
+    (e: unknown) => {
+      req.payload.logger.error({ err: e }, "Kanala gönderilemedi");
+      return e instanceof Error && e.message ? e.message.slice(0, 300) : "Gönderilemedi.";
+    },
+  );
+  if (doc.id !== undefined) await req.payload.update({ collection: "chat-messages", id: doc.id, data: { deliveryError: error }, req, overrideAccess: true }).catch(() => null);
+  return error;
 }
