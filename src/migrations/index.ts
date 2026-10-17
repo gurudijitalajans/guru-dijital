@@ -38,6 +38,7 @@ import * as migration_20261016_155000_bildirimler from './20261016_155000_bildir
 import * as migration_20261016_160000_medya_agaci from './20261016_160000_medya_agaci';
 import * as migration_20261017_100000_mobil_v5 from './20261017_100000_mobil_v5';
 import * as migration_20261017_140000_mobil_v6 from './20261017_140000_mobil_v6';
+import * as migration_20261017_170000_mobil_v7 from './20261017_170000_mobil_v7';
 
 export const migrations = [
   {
@@ -239,5 +240,10 @@ export const migrations = [
     up: migration_20261017_140000_mobil_v6.up,
     down: migration_20261017_140000_mobil_v6.down,
     name: '20261017_140000_mobil_v6',
+  },
+  {
+    up: migration_20261017_170000_mobil_v7.up,
+    down: migration_20261017_170000_mobil_v7.down,
+    name: '20261017_170000_mobil_v7',
   },
 ];

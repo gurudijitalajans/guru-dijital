@@ -28,7 +28,7 @@ def screen_mat(name, img):
     """Ekran: görüntü dokusu ışık verir, üstünde ince parlak cam katmanı (yansımalar)."""
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; N = nt.nodes; L = nt.links
     b = N["Principled BSDF"]
-    b.inputs["Base Color"].default_value = (0, 0, 0, 1); b.inputs["Roughness"].default_value = 0.05
+    b.inputs["Base Color"].default_value = (0, 0, 0, 1); b.inputs["Roughness"].default_value = 0.05; b.inputs["Specular IOR Level"].default_value = f("spec", 0.5)
     b.inputs["Coat Weight"].default_value = f("coat", 0.35); b.inputs["Coat Roughness"].default_value = 0.02
     tx = N.new("ShaderNodeTexImage"); tx.image = bpy.data.images.load(img); tx.interpolation = "Cubic"
     uv = N.new("ShaderNodeUVMap"); uv.uv_map = "UV"; L.new(uv.outputs["UV"], tx.inputs["Vector"])  # UV: unwrap() ekranın sınır kutusundan
@@ -117,9 +117,9 @@ elif SCENE == "kapak":
     phone("android", AND, (0.55, 0.45, 0), yaw=-12, scale=S)
     phone("ios", IOS, (-0.45, -0.2, 0), yaw=10, scale=S * 1.06)
     tgt = (0, 0, 1.2)
-    softbox("PanoUst", (0, -2.4, 5.2), tgt, size=(4.0, 1.2), strength=4)
-    softbox("PanoSol", (-3.0, -2.6, 2.2), tgt, size=(0.7, 4.0), strength=3.2, color=SKY)
-    softbox("PanoSag", (3.2, -1.2, 2.6), tgt, size=(0.6, 3.6), strength=4.5)
+    softbox("PanoUst", (0, -2.4, 5.2), tgt, size=(4.0, 1.2), strength=f("sb1", 4))
+    softbox("PanoSol", (-3.0, -2.6, 2.2), tgt, size=(0.7, 4.0), strength=f("sb2", 3.2), color=SKY)
+    softbox("PanoSag", (3.2, -1.2, 2.6), tgt, size=(0.6, 3.6), strength=f("sb3", 4.5))
     area("Anahtar", (-2.0, -4.0, 4.0), tgt, size=(3, 3), energy=f("key", 260), color=ICE)
     if f("fog", 0.035) > 0: fog(density=f("fog", 0.035))
     camera((0, -9.0, f("camz", 2.6)), (0, 0, f("tz", 2.15)), lens=f("lens", 44))
