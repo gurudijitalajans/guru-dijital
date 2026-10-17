@@ -15,6 +15,7 @@ import { CommandMenu } from "./CommandMenu";
 import { Zil } from "../bildirim/Zil";
 import { KayitPaneli } from "../crm/KayitPaneli";
 import { AltMenu } from "./AltMenu";
+import { NAV_COOKIE, RAIL_COOKIE } from "./prefs";
 
 export type ShellTenant = { id: number; name: string; detail: string };
 type Props = {
@@ -22,6 +23,8 @@ type Props = {
   tenant: ShellTenant;
   tenants: ShellTenant[];
   user: { name: string; initials: string; role: string };
+  /** Sunucunun çerezden okuduğu menü tercihleri (ilk çizim) */
+  prefs: { rail: boolean; closed: string };
   children: React.ReactNode;
 };
 
@@ -96,68 +99,64 @@ function TenantSwitcher({ tenant, tenants, rail = false }: { tenant: ShellTenant
   );
 }
 
-/* Daraltılan menü bölümleri tarayıcıda hatırlanır (sunucu çizimi hepsini açık gösterir) */
-const NAV_KEY = "guru-menu-kapali";
-const navListeners = new Set<() => void>();
-const readClosed = () => {
+/* Menü tercihleri (dar menü, kapalı bölümler) çerezde tutulur: sunucu ilk çizimi doğru genişlik ve
+   bölümlerle yapar, tam yenilemede menü geniş gelip sonra daralmaz */
+const readCookie = (key: string) => {
+  const hit = document.cookie.split("; ").find((c) => c.startsWith(key + "="));
+  if (!hit) return null;
   try {
-    return localStorage.getItem(NAV_KEY) ?? "";
+    return decodeURIComponent(hit.slice(key.length + 1));
   } catch {
-    return "";
+    return null;
   }
 };
-function useClosedGroups(): [Set<string>, (label: string) => void] {
-  const raw = useSyncExternalStore(
-    (cb) => {
-      navListeners.add(cb);
-      return () => navListeners.delete(cb);
-    },
-    readClosed,
-    () => "",
-  );
+const writeCookie = (key: string, value: string) => {
+  document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=lax`;
+};
+const prefListeners = new Set<() => void>();
+const subscribePrefs = (cb: () => void) => {
+  prefListeners.add(cb);
+  return () => prefListeners.delete(cb);
+};
+const notifyPrefs = () => prefListeners.forEach((f) => f());
+
+/** Eski sürüm tercihleri localStorage'daydı: bir kez çereze taşınır */
+function migratePrefs() {
+  try {
+    for (const key of [NAV_COOKIE, RAIL_COOKIE]) {
+      const old = localStorage.getItem(key);
+      if (old === null) continue;
+      if (readCookie(key) === null) writeCookie(key, old);
+      localStorage.removeItem(key);
+    }
+  } catch {
+    /* gizli pencere: taşınacak bir şey yok */
+  }
+  notifyPrefs();
+}
+
+function useClosedGroups(initial: string): [Set<string>, (label: string) => void] {
+  const raw = useSyncExternalStore(subscribePrefs, () => readCookie(NAV_COOKIE) ?? "", () => initial);
   const closed = useMemo(() => new Set(raw ? raw.split("|") : []), [raw]);
   const toggle = (label: string) => {
     const next = new Set(closed);
     if (next.has(label)) next.delete(label);
     else next.add(label);
-    try {
-      localStorage.setItem(NAV_KEY, [...next].join("|"));
-    } catch {
-      /* gizli pencerede kaydedilmez; bu oturumda yine çalışır */
-    }
-    navListeners.forEach((f) => f());
+    writeCookie(NAV_COOKIE, [...next].join("|"));
+    notifyPrefs();
   };
   return [closed, toggle];
 }
 
-/* Dar menü (ikon şeridi): tercih tarayıcıda hatırlanır; "[" kısayolu ya da menünün başındaki düğme */
-const RAIL_KEY = "guru-menu-dar";
-const railListeners = new Set<() => void>();
-const readRail = () => {
-  try {
-    return localStorage.getItem(RAIL_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
-/** Dar menüyü aç ya da kapat: güncel değer depodan okunur (kısayol eski bir kapanıştan çağrılabilir) */
+/* Dar menü (ikon şeridi): "[" kısayolu ya da menünün başındaki düğme */
+const readRail = () => readCookie(RAIL_COOKIE) === "1";
+/** Dar menüyü aç ya da kapat: güncel değer çerezden okunur (kısayol eski bir kapanıştan çağrılabilir) */
 function flipRail() {
-  try {
-    localStorage.setItem(RAIL_KEY, readRail() ? "0" : "1");
-  } catch {
-    /* gizli pencerede kaydedilmez */
-  }
-  railListeners.forEach((f) => f());
+  writeCookie(RAIL_COOKIE, readRail() ? "0" : "1");
+  notifyPrefs();
 }
-function useRail(): boolean {
-  return useSyncExternalStore(
-    (cb) => {
-      railListeners.add(cb);
-      return () => railListeners.delete(cb);
-    },
-    readRail,
-    () => false,
-  );
+function useRail(initial: boolean): boolean {
+  return useSyncExternalStore(subscribePrefs, readRail, () => initial);
 }
 
 /** Dar menüde öğe adı sağda ipucu olarak çıkar */
@@ -203,8 +202,8 @@ function RailLinks({ nav, path }: { nav: NavGroup[]; path: string }) {
   );
 }
 
-function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; onNavigate?: () => void }) {
-  const [closed, toggle] = useClosedGroups();
+function NavLinks({ nav, path, onNavigate, initialClosed }: { nav: NavGroup[]; path: string; onNavigate?: () => void; initialClosed: string }) {
+  const [closed, toggle] = useClosedGroups(initialClosed);
   return (
     <nav aria-label="Ana menü" className="nav-scroll min-h-0 flex-1 overflow-y-auto px-2.5">
       {nav.map((g) => {
@@ -306,10 +305,10 @@ function UserFoot({ user, rail = false }: { user: Props["user"]; rail?: boolean 
   );
 }
 
-function SidebarBody({ nav, tenant, tenants, user, path, onNavigate, rail = false, onToggleRail }: Omit<Props, "children"> & { path: string; onNavigate?: () => void; rail?: boolean; onToggleRail?: () => void }) {
+function SidebarBody({ nav, tenant, tenants, user, prefs, path, onNavigate, rail = false, onToggleRail }: Omit<Props, "children"> & { path: string; onNavigate?: () => void; rail?: boolean; onToggleRail?: (e: React.MouseEvent) => void }) {
   const toggleBtn = onToggleRail ? (
     <RailTip label={rail ? "Menüyü genişlet  [" : "Menüyü daralt  ["}>
-      <button type="button" onClick={onToggleRail} className="grid size-8 shrink-0 place-items-center rounded-[8px] text-nav-text hover:bg-nav-hover hover:text-nav-strong" aria-label={rail ? "Menüyü genişlet" : "Menüyü daralt"} aria-keyshortcuts="[">
+      <button type="button" data-menu-toggle onClick={onToggleRail} className="grid size-8 shrink-0 place-items-center rounded-[8px] text-nav-text hover:bg-nav-hover hover:text-nav-strong" aria-label={rail ? "Menüyü genişlet" : "Menüyü daralt"} aria-keyshortcuts="[">
         {rail ? <PanelLeftOpen className="size-[18px]" /> : <PanelLeftClose className="size-[18px]" />}
       </button>
     </RailTip>
@@ -334,7 +333,7 @@ function SidebarBody({ nav, tenant, tenants, user, path, onNavigate, rail = fals
         {toggleBtn}
       </div>
       <TenantSwitcher tenant={tenant} tenants={tenants} />
-      <NavLinks nav={nav} path={path} onNavigate={onNavigate} />
+      <NavLinks nav={nav} path={path} onNavigate={onNavigate} initialClosed={prefs.closed} />
       <UserFoot user={user} />
     </>
   );
@@ -344,7 +343,23 @@ export function Shell(props: Props) {
   const path = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [palette, setPalette] = useState(false);
-  const rail = useRail();
+  const rail = useRail(props.prefs.rail);
+  useEffect(migratePrefs, []);
+  /* Düğme dar ve geniş menüde ayrı yerde durur: klavyeyle basıldıysa odak yeni düğmeye geçer
+     (yoksa sayfanın başına düşer). Fareyle basınca odak verilmez, ipucu açık kalmasın. */
+  const toggleRail = (e: React.MouseEvent) => {
+    const keyboard = e.detail === 0;
+    flipRail();
+    if (keyboard) requestAnimationFrame(() => document.querySelector<HTMLElement>("aside [data-menu-toggle]")?.focus());
+  };
+  /* Telefonda açılan çekmece pencere genişleyince kapanır: aksi halde görünmeyen bir pencere
+     sayfayı tıklanamaz bırakır */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => mq.matches && setDrawer(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
   /* Kayan oturum: sekme açık ve görünürken oturum 30 dakikada bir yenilenir (Payload'un 8 saatlik
      belirteci gün ortasında düşmesin); sekmeye geri dönülünce de hemen yenilenir */
   useEffect(() => {
@@ -377,7 +392,9 @@ export function Shell(props: Props) {
       }
       /* "[": menüyü daralt ya da genişlet (yazı yazılırken değil) */
       const el = e.target as HTMLElement | null;
-      if (e.key === "[" && !e.metaKey && !e.ctrlKey && !e.altKey && !(el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))) {
+      const typing = el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+      const overlay = document.querySelector("[role=dialog][data-state=open], [role=menu][data-state=open], [role=alertdialog][data-state=open]");
+      if (e.key === "[" && !e.metaKey && !e.ctrlKey && !e.altKey && !e.repeat && !typing && !overlay && window.matchMedia("(min-width: 1024px)").matches) {
         e.preventDefault();
         flipRail();
       }
@@ -393,7 +410,11 @@ export function Shell(props: Props) {
       style={{ "--nav-w": rail ? "68px" : "248px" } as React.CSSProperties}
     >
       <aside className="hidden min-h-0 flex-col overflow-hidden bg-nav py-3.5 lg:flex">
-        <SidebarBody {...props} path={path} rail={rail} onToggleRail={flipRail} />
+        {/* İçerik hedef genişlikte sabit durur, yalnız kutu daralıp genişler: geçiş sırasında yazılar
+            sıkışıp satır atlamaz, simgeler kaymaz */}
+        <div className={cn("flex min-h-0 flex-1 shrink-0 flex-col", rail ? "w-[68px]" : "w-[248px]")}>
+          <SidebarBody {...props} path={path} rail={rail} onToggleRail={toggleRail} />
+        </div>
       </aside>
 
       <Dialog.Root open={drawer} onOpenChange={setDrawer}>

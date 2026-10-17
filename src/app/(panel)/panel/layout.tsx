@@ -1,7 +1,9 @@
 import type { Where } from "payload";
+import { cookies } from "next/headers";
 import { getPanelContext, type TenantOption } from "@/panel/context";
 import { visibleNav } from "@/panel/nav";
 import { Shell, type ShellTenant } from "@/panel/shell/Shell";
+import { NAV_COOKIE, RAIL_COOKIE } from "@/panel/shell/prefs";
 import { tenantRow } from "@/payload/business/roles";
 
 const MODULE_NAMES: Record<string, string> = { crm: "CRM", chat: "Sohbet", ops: "Operasyon", business: "Raporlar" };
@@ -36,8 +38,11 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const toShell = (t: TenantOption): ShellTenant => ({ id: t.id, name: t.name, detail: detail(t) });
   const row = tenantRow(ctx.user, ctx.tenant.id);
   const role = ctx.isGuruAdmin ? "Guru yöneticisi" : row?.role === "yonetici" ? "İşletme yöneticisi" : "Ekip üyesi";
+  /* Menü tercihleri: ilk çizim tarayıcıdakiyle aynı olsun */
+  const jar = await cookies();
+  const prefs = { rail: jar.get(RAIL_COOKIE)?.value === "1", closed: jar.get(NAV_COOKIE)?.value ?? "" };
   return (
-    <Shell nav={nav} tenant={toShell(ctx.tenant)} tenants={ctx.tenants.map(toShell)} user={{ name: ctx.user.name, initials: initials(ctx.user.name), role }}>
+    <Shell nav={nav} prefs={prefs} tenant={toShell(ctx.tenant)} tenants={ctx.tenants.map(toShell)} user={{ name: ctx.user.name, initials: initials(ctx.user.name), role }}>
       {children}
     </Shell>
   );
