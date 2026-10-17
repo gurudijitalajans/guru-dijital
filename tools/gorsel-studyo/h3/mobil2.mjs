@@ -12,6 +12,10 @@ const INK = "#101523";
 /* Örnek uygulamanın kendi rengi: lacivert zeminde öne çıkan sıcak mercan */
 const APP = "#ff6a3d";
 const APP2 = "#ff9a62";
+/* Blender işlemeleri (blender/mobil.py): tam sahne (hero, kapak) ve saydam tek telefonlar (tek-*) */
+const BL = (f) => fileUrl(`${ROOT}/tools/gorsel-studyo/blender/out/${f}.png`);
+/* Tek telefon görüntüsü 900x1500; telefon görüntünün yüksekliğinin ~%67'si. h: telefonun kendi boyu */
+const phoneImg = (f, x, y, h, extra = "") => `<img src="${BL(f)}" style="position:absolute;left:${x - h / 0.67 * 0.6 * 0.5}px;top:${y - h / 0.67 * 0.165}px;height:${h / 0.67}px;filter:drop-shadow(0 40px 50px rgb(0 6 26/.55));${extra}">`;
 const logoImg = (f, h, extra = "") => `<img src="${L(f)}" style="height:${h}px;width:auto;display:block;${extra}">`;
 
 /* ---------- Örnek uygulama: stüdyo randevu ve üyelik (markasız) ---------- */
@@ -76,28 +80,24 @@ const push = (title, text, time = "şimdi") => `<div class="row" style="gap:14px
 
 /* ---------- 1) Hero 1600x1000 ---------- */
 export function mobil2Hero({ bare = false } = {}) {
-  /* bare: paylaşım görseli karesi; sol metin bloğu yok, telefonlar ortada */
-  if (bare) return page({ w: 1600, h: 1000, bg: themeBg(TM), body: `${glow(300, 80, 1000, 860, "rgb(125 139 255 / .45)")}${floor(780, 960, 400, 60, 0.6)}<div style="position:absolute;left:880px;top:170px">${android(appScreen("android"), { width: 360, style: "filter:drop-shadow(0 50px 60px rgb(0 6 26/.6)) brightness(.97)" })}</div><div style="position:absolute;left:520px;top:110px">${iphone(appScreen("ios"), { width: 400, style: "filter:drop-shadow(0 60px 70px rgb(0 6 26/.65))" })}</div>${grainLayer(0.06)}` });
+  /* Telefonlar Blender sahnesinde (blender/out/mobil-hero.png); solda metin, rozetler ve bildirim HTML'de */
+  const bg = `background:#011441 url('${BL("mobil-hero")}') 50% 50%/cover no-repeat;`;
+  if (bare) return page({ w: 1600, h: 1000, bg, body: grainLayer(0.04) });
   const body = `
-  ${glow(420, 120, 1000, 860, "rgb(125 139 255 / .45)")}
+  <div style="position:absolute;inset:0 auto 0 0;width:720px;background:linear-gradient(90deg,rgb(1 12 46/.55),rgb(1 12 46/0))"></div>
   <div style="position:absolute;left:68px;top:60px">${lockup("Mobil Uygulama")}</div>
-  <div style="position:absolute;left:68px;top:250px;width:440px;color:#fff;font-family:Outfit">
-    <div style="font-size:54px;line-height:1.04;font-weight:600;letter-spacing:-.04em">Tek uygulama,<br><span style="color:#c3caff">iki mağaza</span></div>
-    <div style="font-size:19px;line-height:1.5;color:rgb(255 255 255/.72);margin-top:20px">iOS ve Android'de aynı deneyim; tasarımdan mağaza onayına kadar tek ekip.</div>
+  <div style="position:absolute;left:68px;top:250px;width:470px;color:#fff;font-family:Outfit">
+    <div style="font-size:58px;line-height:1.03;font-weight:600;letter-spacing:-.04em">Tek uygulama,<br><span style="color:#c3caff">iki mağaza</span></div>
+    <div style="font-size:19px;line-height:1.5;color:rgb(255 255 255/.74);margin-top:20px">iOS ve Android'de aynı deneyim; tasarımdan mağaza onayına kadar tek ekip.</div>
     <div class="row" style="gap:12px;margin-top:30px">${logoImg("appstore", 50)}${logoImg("googleplay", 50)}</div>
-    <div class="row" style="gap:18px;margin-top:34px;padding-top:24px;border-top:1px solid rgb(255 255 255/.16)">
+    <div class="row" style="gap:18px;margin-top:32px;padding-top:22px;border-top:1px solid rgb(255 255 255/.16)">
       <span class="row" style="gap:10px;font:500 16px Outfit;color:rgb(255 255 255/.85)">${logoImg("react", 26)}React Native</span>
       <span style="width:1px;height:22px;background:rgb(255 255 255/.2)"></span>
       <span class="row" style="gap:10px">${logoImg("flutter", 21, "filter:brightness(0) invert(1);opacity:.85")}</span></div></div>
-  ${floor(1060, 935, 380, 56, 0.55)}${floor(700, 960, 400, 60, 0.6)}
-  <div style="position:absolute;left:1075px;top:150px">${android(appScreen("android"), { width: 360, style: "filter:drop-shadow(0 50px 60px rgb(0 6 26/.6)) brightness(.97)" })}</div>
-  <div style="position:absolute;left:700px;top:110px">${iphone(appScreen("ios"), { width: 400, style: "filter:drop-shadow(0 60px 70px rgb(0 6 26/.65))" })}</div>
-  <div class="row" style="position:absolute;left:820px;top:66px;gap:8px;font:600 14px Outfit;color:rgb(255 255 255/.85)">${logoImg("apple", 16, "filter:invert(1)")}iOS</div>
-  <div class="row" style="position:absolute;left:1210px;top:106px;gap:8px;font:600 14px Outfit;color:rgb(255 255 255/.85)">${logoImg("android", 18)}Android</div>
-  ${glass(push("Rezervasyon onaylandı", "Reformer Pilates · Bugün 18:30, Stüdyo 2"), "left:68px;top:690px;width:440px")}
-  <div style="position:absolute;left:68px;bottom:44px">${note}</div>
-  ${grainLayer(0.06)}`;
-  return page({ w: 1600, h: 1000, bg: themeBg(TM), body });
+  ${glass(push("Rezervasyon onaylandı", "Reformer Pilates · Bugün 18:30, Stüdyo 2"), "left:68px;top:700px;width:440px")}
+  <div style="position:absolute;left:68px;bottom:40px">${note}</div>
+  ${grainLayer(0.04)}`;
+  return page({ w: 1600, h: 1000, bg, body });
 }
 
 /* ---------- 2) Tek kod, iki platform 1200x900 ---------- */
@@ -125,9 +125,8 @@ function techTile() {
   <div style="position:absolute;left:60px;top:58px;color:#fff;font-family:Outfit"><div style="font-size:13px;font-weight:600;letter-spacing:.1em;color:#c3caff">TEK KOD TABANI</div><div style="font-size:38px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1">Bir kez yazılır,<br>iki platformda çalışır</div></div>
   ${editor}
   <svg width="1200" height="900" style="position:absolute;inset:0">${arrow(735, 300)}${arrow(955, 640)}</svg>
-  ${floor(745, 545, 200, 30, 0.5)}${floor(965, 850, 200, 30, 0.5)}
-  <div style="position:absolute;left:740px;top:90px">${iphone(appScreen("ios"), { width: 210, style: "filter:drop-shadow(0 30px 40px rgb(0 6 26/.6))" })}</div>
-  <div style="position:absolute;left:965px;top:420px">${android(appScreen("android"), { width: 196, style: "filter:drop-shadow(0 30px 40px rgb(0 6 26/.6))" })}</div>
+  ${phoneImg("tek-ios", 735, 95, 430)}
+  ${phoneImg("tek-android", 965, 415, 420)}
   <div class="row" style="position:absolute;left:60px;top:705px;gap:10px;flex-wrap:wrap;width:600px">${[["flutter", 22, ""], ["swift", 24, ""], ["kotlin", 22, "Kotlin"], ["firebase", 26, ""]].map(([f, h, t]) => `<span class="row" style="gap:10px;height:56px;padding:0 20px;border-radius:16px;background:#fff;box-shadow:0 20px 40px -24px rgb(0 6 26/.7)">${logoImg(f, h)}${t ? `<span style="font:600 17px Outfit;color:${INK}">${t}</span>` : ""}</span>`).join("")}</div>
   <div style="position:absolute;left:62px;top:782px;font:400 14.5px Outfit;color:rgb(255 255 255/.66)">Projeye göre çapraz platform ya da yerel geliştirme; bildirim ve veri için Firebase</div>
   <div style="position:absolute;right:60px;bottom:40px">${note}</div>
@@ -161,17 +160,16 @@ function reviewTile() {
 
 /* ---------- Kapak 1200x1500 ---------- */
 function coverTile() {
+  /* Telefonlar Blender sahnesinde (blender/out/mobil-kapak.png); üstte başlık */
   const body = `
-  <div style="position:absolute;left:150px;top:560px;width:900px;height:1000px;border-radius:50%;background:radial-gradient(closest-side,${TM.hi}88,transparent);filter:blur(20px)"></div>
+  <div style="position:absolute;left:0;right:0;top:0;height:640px;background:linear-gradient(180deg,rgb(1 12 46/.6),rgb(1 12 46/0))"></div>
   <div style="position:absolute;left:0;right:0;top:96px;display:grid;justify-items:center;text-align:center;color:#fff;font-family:Outfit">
     ${lockup("Mobil Uygulama", 30)}
     <h1 style="margin-top:40px;font-size:96px;line-height:1.02;font-weight:600;letter-spacing:-.045em">Cebinizdeki<br><span style="color:${TM.glow}">markanız</span></h1>
-    <div class="row" style="gap:12px;margin-top:34px">${logoImg("appstore", 50)}${logoImg("googleplay", 50)}</div>
+    <div class="row" style="gap:12px;margin-top:30px">${logoImg("appstore", 50)}${logoImg("googleplay", 50)}</div>
   </div>
-  <div style="position:absolute;left:640px;top:760px">${android(appScreen("android"), { width: 390, style: "filter:drop-shadow(0 50px 60px rgb(0 6 26/.6)) brightness(.97)" })}</div>
-  <div style="position:absolute;left:200px;top:700px">${iphone(appScreen("ios"), { width: 440, style: "filter:drop-shadow(0 60px 70px rgb(0 6 26/.65))" })}</div>
-  ${grainLayer(0.06)}`;
-  return page({ w: 1200, h: 1500, bg: themeBg(TM), body });
+  ${grainLayer(0.04)}`;
+  return page({ w: 1200, h: 1500, bg: `background:#011441 url('${BL("mobil-kapak")}') 50% 50%/cover no-repeat;`, body });
 }
 
 const tileHead = (k, t) => `<div style="position:absolute;left:60px;top:58px;color:#fff;font-family:Outfit"><div style="font-size:13px;font-weight:600;letter-spacing:.1em;color:#c3caff">${k}</div><div style="font-size:38px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1">${t}</div></div>`;
@@ -191,8 +189,7 @@ function processTile() {
       ${i < PROCESS.length - 1 ? `<span style="position:absolute;left:23px;top:${i ? 66 : 48}px;width:2px;height:40px;background:#dfe3fb"></span>` : ""}
       <span style="width:48px;height:48px;border-radius:15px;background:${i === 4 ? `linear-gradient(150deg,${APP2},${APP})` : "#eceeff"};display:grid;place-items:center;flex-shrink:0">${icon(ic, { size: 23, color: i === 4 ? "#fff" : ACC, stroke: 2 })}</span>
       <div style="min-width:0;padding-top:2px"><div class="row" style="gap:10px"><span style="font-size:13px;font-weight:600;color:#9aa2b8">0${i + 1}</span><span style="font-size:20px;font-weight:600">${t}</span></div><div style="font-size:15px;color:#6b7590;margin-top:2px">${d}</div></div></div>`).join("")}`, "left:60px;top:190px;width:540px", "28px 30px 30px")}
-  ${floor(760, 860, 330, 40, 0.5)}
-  <div style="position:absolute;left:700px;top:130px">${iphone(appScreen("ios"), { width: 340, style: "filter:drop-shadow(0 50px 60px rgb(0 6 26/.6))" })}</div>
+  ${phoneImg("tek-ios-sol", 690, 120, 690)}
   ${glass(`<div class="row" style="gap:10px;font-size:15px;font-weight:600">${icon("rocket", { size: 18, color: "#fff", stroke: 2 })}Yayında</div><div class="row" style="gap:10px;margin-top:10px">${logoImg("appstore", 34)}${logoImg("googleplay", 34)}</div>`, "left:60px;top:640px;width:330px", "18px 20px")}
   <div style="position:absolute;left:62px;bottom:40px">${note}</div>`;
   return tileBg(body);
@@ -230,8 +227,7 @@ const INTEG = [
 function integTile() {
   const body = `${tileHead("ENTEGRASYONLAR", "Uygulama tek başına kalmaz")}
   ${INTEG.map(([ic, t, d, x, y]) => white(`<div class="row" style="gap:14px"><span style="width:46px;height:46px;border-radius:14px;background:#eceeff;display:grid;place-items:center;flex-shrink:0">${icon(ic, { size: 22, color: ACC, stroke: 2 })}</span><div style="min-width:0"><div style="font-size:17px;font-weight:600">${t}</div><div style="font-size:14px;color:#6b7590;margin-top:2px;line-height:1.35">${d}</div></div></div>`, `left:${x}px;top:${y}px;width:320px`, "18px 18px")).join("")}
-  ${floor(450, 870, 300, 36, 0.5)}
-  <div style="position:absolute;left:440px;top:150px">${iphone(lockScreen(), { width: 320, style: "filter:drop-shadow(0 50px 60px rgb(0 6 26/.65))" })}</div>
+  ${phoneImg("tek-kilit", 600, 160, 660)}
   <div style="position:absolute;left:62px;bottom:40px">${note}</div>`;
   return tileBg(body);
 }
@@ -263,4 +259,11 @@ export const mobil2Scenes = () => [
   { name: "real-mobil-uygulama-ogkare", w: 1600, h: 1000, html: mobil2Hero({ bare: true }) },
   { name: "real-mobil-uygulama-kapak", w: 1200, h: 1500, html: coverTile() },
   ...[techTile(), processTile(), reviewTile(), storeTile(), integTile(), careTile()].map((html, k) => ({ name: `real-mobil-uygulama-${k + 1}`, w: 1200, h: 900, html })),
+];
+
+/* Blender sahnesi için ekran dokuları (390x844, DPR=3 ile 1170x2532) */
+export const mobil2Screens = () => [
+  { name: "ekran-mobil2-ios", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: appScreen("ios") }) },
+  { name: "ekran-mobil2-android", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: appScreen("android") }) },
+  { name: "ekran-mobil2-kilit", w: 390, h: 844, html: page({ w: 390, h: 844, bg: "", body: lockScreen() }) },
 ];
