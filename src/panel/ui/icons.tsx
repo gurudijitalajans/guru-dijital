@@ -1,8 +1,9 @@
-import { BarChart3, CalendarDays, ClipboardCheck, FileText, FolderKanban, Gauge, Globe, Home, Image, Inbox, Kanban, MessageCircle, Settings, Users } from "lucide-react";
+import { BarChart3, CalendarDays, ClipboardCheck, FileText, FolderKanban, Gauge, Globe, Home, Image, Inbox, Kanban, ListTodo, MessageCircle, Settings, Users } from "lucide-react";
 import type { NavIcon } from "../nav";
 
 const MAP: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
   home: Home,
+  todo: ListTodo,
   inbox: Inbox,
   calendar: CalendarDays,
   deals: Kanban,

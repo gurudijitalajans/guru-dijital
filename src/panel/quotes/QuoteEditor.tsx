@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { ArrowLeft, Copy, FileText, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, FileText, Link2, Plus, Send, Trash2 } from "lucide-react";
+import { Dialog } from "radix-ui";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { findContacts } from "../deals/actions";
-import { deleteQuote, duplicateQuote, saveQuote, setQuoteStatus, type QuoteItemInput } from "./actions";
+import { deleteQuote, duplicateQuote, quoteLink, saveQuote, sendQuote, setQuoteStatus, type QuoteItemInput } from "./actions";
 import { QUOTE_STATUS } from "./QuotesList";
 
 export type DealOption = { id: number; title: string; contact: { id: number; name: string } | null; company: { id: number; name: string } | null; value: number; service: string };
@@ -26,6 +27,13 @@ export type EditorQuote = {
   issueDate: string;
   validUntil: string;
   status: string;
+  /** Müşteriye gönderim izi (yeni teklifte yok) */
+  sentAt?: string | null;
+  viewedAt?: string | null;
+  respondedAt?: string | null;
+  customerNote?: string;
+  /** Kişinin ya da firmanın e-postası: gönderim penceresinde hazır gelir */
+  email?: string;
 };
 
 const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", minimumFractionDigits: 2 });
@@ -56,6 +64,9 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
   const [hits, setHits] = useState<{ id: number; name: string; detail: string }[]>([]);
   const [pending, start] = useTransition();
   const [confirm, setConfirm] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [to, setTo] = useState(quote.email ?? "");
+  const [msg, setMsg] = useState("");
   const t = totals(q.items);
   const set = (patch: Partial<EditorQuote>) => setQ((x) => ({ ...x, ...patch }));
   const setItem = (i: number, patch: Partial<QuoteItemInput>) => set({ items: q.items.map((it, k) => (k === i ? { ...it, ...patch } : it)) });
@@ -104,6 +115,42 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
       toast.success("Teklif silindi.");
       router.push("/panel/teklifler");
     });
+  /* Bağlantı panoya kopyalanır; tarayıcı izin vermezse ekranda gösterilir */
+  const copyLink = () =>
+    q.id &&
+    start(async () => {
+      const r = await quoteLink(q.id!);
+      if (!r.ok || !r.url) return void toast.error(r.error ?? "Bağlantı oluşturulamadı.");
+      try {
+        await navigator.clipboard.writeText(r.url);
+        toast.success("Müşteri bağlantısı kopyalandı. WhatsApp ya da e-postayla iletebilirsiniz.");
+      } catch {
+        toast.message(r.url);
+      }
+    });
+  const send = (e: React.FormEvent) => {
+    e.preventDefault();
+    /* Pencere portal içinde ama React olayı dıştaki teklif formuna da taşır: kaydetmeyi tetiklemesin */
+    e.stopPropagation();
+    if (!q.id) return;
+    start(async () => {
+      const r = await sendQuote(q.id!, to, msg);
+      if (!r.ok) {
+        if (r.url) {
+          try {
+            await navigator.clipboard.writeText(r.url);
+          } catch {
+            /* panoya yazılamadı: hata mesajı yeterli */
+          }
+        }
+        return void toast.error(`${r.error ?? "Gönderilemedi."}${r.url ? " Bağlantı panoya kopyalandı." : ""}`);
+      }
+      toast.success(`Teklif ${to} adresine gönderildi; müşteri açınca ve yanıtlayınca haber alacaksınız.`);
+      setSending(false);
+      router.refresh();
+    });
+  };
+  const stampTr = (v?: string | null) => (v ? new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(v)) : "");
   const [tone, label] = QUOTE_STATUS[q.status] ?? ["plain", q.status];
 
   return (
@@ -131,6 +178,12 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
                 <a href={`/api/quotes/${q.id}/yazdir`} target="_blank" rel="noreferrer">
                   <FileText /> Belgeyi aç
                 </a>
+              </Button>
+              <Button type="button" variant="primary" disabled={pending} onClick={() => setSending(true)}>
+                <Send /> Müşteriye gönder
+              </Button>
+              <Button type="button" disabled={pending} onClick={copyLink} title="Müşterinin teklifi görüp kabul edebileceği bağlantı">
+                <Link2 /> Bağlantıyı kopyala
               </Button>
               <Button type="button" disabled={pending} onClick={copy}>
                 <Copy /> Kopyala
@@ -161,6 +214,43 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
           </span>
         </div>
       ) : null}
+
+      {q.id && (quote.sentAt || quote.viewedAt || quote.respondedAt) ? (
+        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-card border border-line bg-surface px-3 py-2.5 text-[13px] text-text">
+          {quote.sentAt ? <span>Gönderildi: <b className="font-medium text-ink">{stampTr(quote.sentAt)}</b></span> : null}
+          {quote.viewedAt ? <span>Müşteri açtı: <b className="font-medium text-ink">{stampTr(quote.viewedAt)}</b></span> : quote.sentAt ? <span className="text-muted">Müşteri henüz açmadı</span> : null}
+          {quote.respondedAt ? <span>Yanıt: <b className="font-medium text-ink">{stampTr(quote.respondedAt)}</b></span> : null}
+          {quote.customerNote ? <span className="basis-full">Müşterinin notu: <span className="text-ink">{quote.customerNote}</span></span> : null}
+        </div>
+      ) : null}
+
+      <Dialog.Root open={sending} onOpenChange={setSending}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-overlay" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[min(500px,calc(100%-32px))] -translate-x-1/2 -translate-y-1/2 rounded-[12px] border border-line bg-surface p-5 shadow-pop focus:outline-none">
+            <Dialog.Title className="m-0 text-[18px] font-semibold text-ink">Teklifi müşteriye gönder</Dialog.Title>
+            <Dialog.Description className="mt-1 mb-3 text-[14px] text-muted">Müşteri markalı bir e-postayla teklif bağlantısını alır; teklifi açıp aynı sayfadan kabul ya da red verir. Açınca ve yanıtlayınca size bildirim gelir.</Dialog.Description>
+            <form onSubmit={send} className="grid gap-3">
+              <label className="grid gap-1 text-[13px] text-muted">
+                Alıcı e-posta
+                <input id="teklif-alici" type="email" required value={to} onChange={(e) => setTo(e.target.value)} className={field} />
+              </label>
+              <label className="grid gap-1 text-[13px] text-muted">
+                Mesaj (isteğe bağlı)
+                <textarea id="teklif-mesaj" rows={4} value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Merhaba, konuştuğumuz işe dair teklifimizi aşağıdaki bağlantıda bulabilirsiniz." className={cn(field, "py-2")} />
+              </label>
+              <div className="flex justify-end gap-2">
+                <Button type="button" onClick={() => setSending(false)}>
+                  Vazgeç
+                </Button>
+                <Button type="submit" variant="primary" disabled={pending}>
+                  <Send /> Gönder
+                </Button>
+              </div>
+            </form>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       {q.id ? (
         <div className="mb-4 flex flex-wrap items-center gap-1.5 rounded-card border border-line bg-surface px-3 py-2.5" role="group" aria-label="Durum">

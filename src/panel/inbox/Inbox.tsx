@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DropdownMenu } from "radix-ui";
-import { ArrowLeft, Ban, Bot, CalendarCheck, Clock, FileText, Info, Mail, MailOpen, MessageCircle, RotateCcw, Search, Send, StickyNote, Trash2, UserPlus, X } from "lucide-react";
+import { Dialog, DropdownMenu } from "radix-ui";
+import { ArrowLeft, Ban, Bot, CalendarCheck, CalendarClock, Clock, FileText, Info, Mail, MailOpen, MessageCircle, RotateCcw, Search, Send, StickyNote, Trash2, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -14,6 +14,7 @@ import { contactValue } from "../ui/contact-link";
 import {
   addInternalNote,
   assignConversation,
+  bookingSlots,
   bulkInbox,
   deleteInboxItem,
   getThread,
@@ -22,6 +23,7 @@ import {
   markUnread,
   replyByEmail,
   replyChat,
+  rescheduleBooking,
   retryDelivery,
   setConversation,
   setSpam,
@@ -453,9 +455,10 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
                     value={thread.status}
                     disabled={pending}
                     options={[["bekliyor", "Onay bekliyor"], ["onaylandi", "Onayla"], ["tamamlandi", "Tamamlandı"], ["iptal", "İptal et"]]}
-                    onPick={(v, l) => run(() => setStatus("randevu", thread.id, v), `Randevu: ${l}.`)}
+                    onPick={(v, l) => run(() => setStatus("randevu", thread.id, v), `Randevu: ${l}.${v === "onaylandi" || v === "iptal" ? " Ziyaretçiye e-posta gitti." : ""}`)}
                   />
                 )}
+                {thread.kind === "randevu" && thread.status !== "iptal" ? <Reschedule id={thread.id} disabled={pending} run={run} /> : null}
                 {thread.kind !== "randevu" ? <SnoozeMenu disabled={pending} snoozed={thread.snoozedUntil} onPick={(iso) => run(() => snoozeItems([thread.key], iso), iso ? "Ertelendi; zamanı gelince Bekleyen'e döner." : "Erteleme kaldırıldı.")} /> : null}
                 {thread.kind === "sohbet" ? (
                   <Button size="sm" disabled={pending} onClick={() => run(() => markUnread([thread.key]), "Okunmadı olarak işaretlendi.")}>
@@ -786,5 +789,77 @@ function Composer({ thread, me, pending, reply, setReply, run }: { thread: Threa
       </div>
       <p className="mt-1.5 mb-0 text-[12px] text-muted">{hint}</p>
     </form>
+  );
+}
+
+/** Randevunun gün ve saatini değiştir: takvimdeki boş saatler; ziyaretçiye yeni saat e-postası gider */
+function Reschedule({ id, disabled, run }: { id: number; disabled: boolean; run: (job: () => Promise<{ ok: boolean; error?: string }>, done: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [plan, setPlan] = useState<Awaited<ReturnType<typeof bookingSlots>> | null>(null);
+  const [day, setDay] = useState("");
+  const [loading, start] = useTransition();
+  const load = () => {
+    setOpen(true);
+    start(async () => {
+      const p = await bookingSlots(id);
+      setPlan(p);
+      setDay(p.gunler?.find((g) => g.saatler.some((x) => !x.dolu))?.gun ?? "");
+    });
+  };
+  const dayFmt = (k: string) => new Intl.DateTimeFormat("tr-TR", { timeZone: "UTC", weekday: "short", day: "numeric", month: "short" }).format(new Date(`${k}T12:00:00Z`));
+  const g = plan?.gunler?.find((x) => x.gun === day);
+  return (
+    <>
+      <Button size="sm" disabled={disabled} onClick={load}>
+        <CalendarClock /> Saati değiştir
+      </Button>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-overlay" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 z-50 max-h-[90dvh] w-[min(520px,calc(100%-32px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[12px] border border-line bg-surface p-5 shadow-pop focus:outline-none">
+            <Dialog.Title className="m-0 text-[18px] font-semibold text-ink">Randevunun saatini değiştir</Dialog.Title>
+            <Dialog.Description className="mt-1 mb-3 text-[14px] text-muted">Çalışma takvimindeki boş saatler. Kaydedince ziyaretçiye yeni saatle e-posta gider.</Dialog.Description>
+            {loading && !plan ? <p className="text-[14px] text-muted">Saatler yükleniyor…</p> : null}
+            {plan && !plan.ok ? <p className="text-[14px] text-bad">{plan.error}</p> : null}
+            {plan?.gunler ? (
+              <>
+                <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1" role="radiogroup" aria-label="Gün">
+                  {plan.gunler.map((x) => (
+                    <button key={x.gun} type="button" role="radio" aria-checked={day === x.gun} onClick={() => setDay(x.gun)} className={cn("min-h-9 shrink-0 rounded-full border px-3 text-[13px]", day === x.gun ? "border-accent bg-accent-soft text-accent" : "border-line text-text hover:border-accent")}>
+                      {dayFmt(x.gun)}
+                    </button>
+                  ))}
+                </div>
+                {g?.not ? <p className="mb-2 text-[13px] text-muted">{g.not}</p> : null}
+                <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
+                  {(g?.saatler ?? []).map((x) => {
+                    const current = plan.current === `${day} ${x.s}`;
+                    return (
+                      <Button
+                        key={x.s}
+                        size="sm"
+                        variant={current ? "primary" : "secondary"}
+                        disabled={x.dolu || current || disabled}
+                        onClick={() => {
+                          setOpen(false);
+                          run(() => rescheduleBooking(id, day, x.s), `Randevu ${dayFmt(day)} ${x.s} olarak değişti.`);
+                        }}
+                        className="justify-center"
+                      >
+                        {x.s}
+                        {x.dolu ? <span className="sr-only"> dolu</span> : null}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </>
+            ) : null}
+            <div className="mt-4 flex justify-end">
+              <Button onClick={() => setOpen(false)}>Kapat</Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   );
 }

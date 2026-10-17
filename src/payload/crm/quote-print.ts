@@ -1,5 +1,6 @@
 import type { PayloadHandler } from "payload";
-import { brandOf } from "./brand";
+import { brandOf, type Brand } from "./brand";
+import type { Quote } from "@/payload-types";
 
 /**
  * GET /api/quotes/:id/yazdir: teklifin müşteriye gidecek belgesi. Tarayıcıda
@@ -26,6 +27,18 @@ export const quotePrint: PayloadHandler = async (req) => {
   if (!q) return new Response("Teklif bulunamadı.", { status: 404 });
   /* Teklifi veren: teklifin işletmesi (Guru Dijital ya da müşteri işletmesi) */
   const brand = await brandOf(req, q.tenant);
+  const html = quoteHtml(q, brand);
+  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+};
+
+/** Müşteriye açık bağlantıda: durum ve Kabul / Red formu */
+export type PublicPart = { token: string; status: string; respondedAt?: string | null; customerNote?: string | null; done?: "kabul" | "red" | null };
+
+/**
+ * Teklif belgesi: panelde yazdırılır (/api/quotes/:id/yazdir), müşteriye
+ * açık bağlantıda (/teklif/<anahtar>) aynı belge Kabul / Red formuyla açılır.
+ */
+export function quoteHtml(q: Quote, brand: Brand, pub?: PublicPart): string {
   const company = obj(q.company as Rel);
   const contact = obj(q.contact as Rel);
   const from = [brand.email, brand.phone, brand.address, brand.tax].filter(Boolean);
@@ -37,7 +50,7 @@ export const quotePrint: PayloadHandler = async (req) => {
     })
     .join("");
 
-  const html = `<!doctype html>
+  return `<!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Teklif ${esc(q.number)} · ${esc(company?.name ?? contact?.name ?? q.title)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
@@ -65,12 +78,23 @@ export const quotePrint: PayloadHandler = async (req) => {
   .block h2 { font-size: 13px; margin: 0 0 4px; }
   footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #dfe5ee; font-size: 11px; color: #6b7487; display: flex; justify-content: space-between; gap: 16px; }
   .bar { max-width: 820px; margin: 16px auto 0; display: flex; gap: 8px; justify-content: flex-end; padding: 0 16px; }
+  .respond { max-width: 820px; margin: 0 auto 32px; background: #fff; border-radius: 12px; padding: 24px 28px; }
+  .respond h2 { margin: 0 0 6px; font-size: 18px; }
+  .respond textarea { width: 100%; min-height: 76px; font: inherit; font-size: 15px; border: 1px solid #d7dfeb; border-radius: 10px; padding: 10px 12px; margin: 10px 0 12px; }
+  .respond .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .respond button { font: inherit; font-weight: 600; border-radius: 999px; padding: 12px 22px; min-height: 46px; cursor: pointer; border: 1px solid #d7dfeb; background: #fff; color: #011441; }
+  .respond button.yes { background: #11743f; border-color: #11743f; color: #fff; }
+  .respond .state { padding: 14px 16px; border-radius: 10px; background: #eef3fa; }
+  .respond .state.ok { background: #e3f4ea; color: #0b5a30; }
+  .respond .state.no { background: #fdecea; color: #8a1c13; }
+  .respond .warn { color: #9a5b00; font-size: 14px; }
+  @media print { .respond { display: none; } }
   .bar button { font: inherit; border: 0; border-radius: 999px; background: #011441; color: #fff; padding: 10px 18px; min-height: 44px; cursor: pointer; }
   @media (max-width: 640px) { .page { padding: 24px 18px; margin: 12px; } .parties { grid-template-columns: 1fr; } header { flex-direction: column; } .meta { text-align: left; } .totals { width: 100%; } table { font-size: 12px; } }
   @media print { body { background: #fff; } .page { margin: 0; padding: 0; max-width: none; border-radius: 0; } .bar { display: none; } }
 </style></head>
 <body>
-<div class="bar"><button onclick="window.print()">Yazdır / PDF olarak kaydet</button></div>
+<div class="bar"><button onclick="window.print()">${pub ? "Yazdır / PDF" : "Yazdır / PDF olarak kaydet"}</button></div>
 <main class="page">
   <header>
     ${brand.logo ? `<img src="${esc(brand.logo)}" alt="${esc(brand.name)}">` : `<b style="font-size:20px">${esc(brand.name)}</b>`}
@@ -100,7 +124,46 @@ export const quotePrint: PayloadHandler = async (req) => {
   ${q.terms ? `<div class="block"><h2>Koşullar</h2><p class="muted">${lines(q.terms)}</p></div>` : ""}
   <footer><span>${esc(brand.name)}</span><span>${esc(brand.website.replace(/^https?:\/\//, ""))}</span></footer>
 </main>
+${pub ? responseSection(pub, q) : ""}
 <script>if (location.search.includes("yazdir=1")) addEventListener("load", () => setTimeout(() => print(), 300));</script>
 </body></html>`;
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
-};
+}
+
+function responseSection(pub: PublicPart, q: Quote): string {
+  if (pub.status === "kabul" || pub.status === "red") {
+    const ok = pub.status === "kabul";
+    return `<section class="respond"><div class="state ${ok ? "ok" : "no"}"><b>${ok ? "Teklifi kabul ettiniz." : "Teklifi reddettiniz."}</b> ${
+      ok ? "Teşekkürler; ekibimiz en kısa sürede sizinle iletişime geçecek." : "Geri bildiriminiz için teşekkürler."
+    }${pub.respondedAt ? ` <span style="opacity:.75">(${date(pub.respondedAt)})</span>` : ""}${pub.customerNote ? `<br><span style="opacity:.85">Notunuz: ${esc(pub.customerNote)}</span>` : ""}</div></section>`;
+  }
+  const expired = q.validUntil && new Date(q.validUntil).getTime() < Date.now();
+  return `<section class="respond">
+  <h2>Teklifi yanıtlayın</h2>
+  <p style="margin:0" class="muted">Kabul ya da red yanıtınız doğrudan ekibimize iletilir. İsterseniz not ekleyin.</p>
+  ${expired ? `<p class="warn">Bu teklifin geçerlilik tarihi geçti; yine de yanıtlayabilirsiniz, ekibimiz güncel teklifle dönecek.</p>` : ""}
+  <form id="yanit">
+    <label for="not" class="muted" style="display:block;margin-top:10px">Notunuz (isteğe bağlı)</label>
+    <textarea id="not" name="not" maxlength="2000"></textarea>
+    <div class="row"><button class="yes" type="submit" name="karar" value="kabul">Teklifi kabul et</button><button type="submit" name="karar" value="red">Reddet</button></div>
+    <p id="durum" class="muted" role="status" style="margin:10px 0 0"></p>
+  </form>
+</section>
+<script>
+document.getElementById("yanit").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const karar = e.submitter && e.submitter.value;
+  if (karar === "red" && !confirm("Teklifi reddetmek istediğinize emin misiniz?")) return;
+  const durum = document.getElementById("durum");
+  durum.textContent = "Gönderiliyor…";
+  e.target.querySelectorAll("button").forEach((b) => (b.disabled = true));
+  try {
+    const r = await fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ karar, not: document.getElementById("not").value }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Gönderilemedi");
+    location.reload();
+  } catch (err) {
+    durum.textContent = err.message + ". Lütfen tekrar deneyin.";
+    e.target.querySelectorAll("button").forEach((b) => (b.disabled = false));
+  }
+});
+</script>`;
+}

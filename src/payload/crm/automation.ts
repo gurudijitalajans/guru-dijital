@@ -205,4 +205,27 @@ export async function dealStageChanged(req: PayloadRequest, deal: { id: Id; stag
   }
 }
 
+/** Fırsatta tutar, sorumlu ve tahmini kapanış değişince akışa "önce → sonra" kaydı */
+export async function logDealChanges(
+  req: PayloadRequest,
+  doc: { id: Id; value?: number | null; owner?: unknown; expectedClose?: string | null; contact?: unknown; company?: unknown },
+  prev?: { value?: number | null; owner?: unknown; expectedClose?: string | null } | null,
+) {
+  if (!prev) return;
+  const tl = (n?: number | null) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(n ?? 0);
+  const day = (v?: string | null) => (v ? new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short", year: "numeric" }).format(new Date(v)) : "yok");
+  const nameOf = async (v: unknown) => {
+    const id = idOf(v as never);
+    if (!id) return "atanmadı";
+    const u = await req.payload.findByID({ collection: "users", id, depth: 0, req, overrideAccess: true }).catch(() => null);
+    return u?.name ?? "atanmadı";
+  };
+  const lines: string[] = [];
+  if ((prev.value ?? 0) !== (doc.value ?? 0)) lines.push(`Tutar: ${tl(prev.value)} → ${tl(doc.value)}`);
+  if (String(idOf(prev.owner as never) ?? "") !== String(idOf(doc.owner as never) ?? "")) lines.push(`Sorumlu: ${await nameOf(prev.owner)} → ${await nameOf(doc.owner)}`);
+  if ((prev.expectedClose ?? "").slice(0, 10) !== (doc.expectedClose ?? "").slice(0, 10)) lines.push(`Tahmini kapanış: ${day(prev.expectedClose)} → ${day(doc.expectedClose)}`);
+  if (!lines.length) return;
+  await logActivity(req, { type: "sistem", title: lines.length === 1 ? lines[0] : "Fırsat güncellendi", body: lines.length > 1 ? lines.join("\n") : undefined, deal: doc.id, contact: idOf(doc.contact as never), company: idOf(doc.company as never) });
+}
+
 export { idOf };

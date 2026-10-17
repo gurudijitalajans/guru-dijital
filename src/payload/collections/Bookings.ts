@@ -45,6 +45,25 @@ export const Bookings: CollectionConfig = {
           await syncBookingActivity(req, doc);
         }
       },
+      /* Ziyaretçiye e-posta: onay, iptal ya da saat değişikliği (siteden gelen ilk talepte değil) */
+      async ({ doc, previousDoc, operation, req, context }) => {
+        if (operation !== "update" || !previousDoc || context.noVisitorEmail) return;
+        const kind =
+          doc.status === "iptal" && previousDoc.status !== "iptal"
+            ? "iptal"
+            : doc.status === "onaylandi" && previousDoc.status !== "onaylandi"
+              ? "onay"
+              : doc.status !== "iptal" && (previousDoc.date !== doc.date || previousDoc.time !== doc.time)
+                ? "degisti"
+                : null;
+        if (!kind) return;
+        const { bookingVisitorEmail } = await import("../notify");
+        const r = await bookingVisitorEmail(req, doc, kind);
+        if (r.ok) {
+          const { logActivity, idOf } = await import("../crm/automation");
+          await logActivity(req, { type: "eposta", title: kind === "onay" ? "Ziyaretçiye onay e-postası gitti" : kind === "iptal" ? "Ziyaretçiye iptal e-postası gitti" : "Ziyaretçiye yeni saat e-postası gitti", body: doc.email, contact: idOf(doc.contact) ?? undefined, booking: doc.id });
+        }
+      },
     ],
     beforeChange: [
       async ({ data, originalDoc, req }) => {

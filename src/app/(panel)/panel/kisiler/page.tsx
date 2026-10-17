@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { buildFeed } from "@/panel/crm/feed";
 import Link from "next/link";
 import type { Where } from "payload";
 import { requireModule } from "@/panel/context";
 import { PageHeader } from "@/panel/ui/page-header";
 import { Button } from "@/panel/ui/button";
 import { PeopleView, type CompanyRow, type PersonRow, type Selected } from "@/panel/people/PeopleView";
-import { SOURCES, stageLabel, activityLabel } from "@/payload/crm/stages";
+import { SOURCES, stageLabel } from "@/payload/crm/stages";
 
 export const metadata: Metadata = { title: "Kişiler ve firmalar" };
 export const dynamic = "force-dynamic";
@@ -47,9 +48,9 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
   if (sp.kisi) {
     const c = (await ctx.findByID("contacts", sp.kisi, 1)) as { id: number; name: string; title?: string | null; email?: string | null; phone?: string | null; company?: unknown; source?: string | null; notes?: string | null; tags?: string[] | null; createdAt: string } | null;
     if (c) {
-      const [deals, acts] = await Promise.all([
+      const [deals, feed] = await Promise.all([
         ctx.find("deals", { where: { contact: { equals: c.id } }, sort: "-updatedAt", limit: 10 }),
-        ctx.find("activities", { where: { contact: { equals: c.id } }, sort: "-createdAt", limit: 8 }),
+        buildFeed({ contact: c.id }),
       ]);
       selected = {
         kind: "person",
@@ -70,19 +71,17 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
           const d = x as { id: number; title: string; stage: string; value?: number | null };
           return { id: d.id, title: d.title, stage: stageLabel(d.stage), value: d.value ?? 0 };
         }),
-        timeline: acts.docs.map((x) => {
-          const a = x as { id: number; title: string; type: string; createdAt: string };
-          return { id: a.id, title: a.title, detail: `${activityLabel(a.type)} · ${dateFmt.format(new Date(a.createdAt))}` };
-        }),
+        feed,
         editHref: `/panel/duzenle/contacts/${c.id}`,
       };
     }
   } else if (sp.firma) {
     const c = (await ctx.findByID("companies", sp.firma, 0)) as { id: number; name: string; sector?: string | null; email?: string | null; phone?: string | null; website?: string | null; address?: string | null; taxOffice?: string | null; taxNumber?: string | null; notes?: string | null } | null;
     if (c) {
-      const [members, deals] = await Promise.all([
+      const [members, deals, feed] = await Promise.all([
         ctx.find("contacts", { where: { company: { equals: c.id } }, sort: "name", limit: 20 }),
         ctx.find("deals", { where: { company: { equals: c.id } }, sort: "-updatedAt", limit: 10 }),
+        buildFeed({ company: c.id }),
       ]);
       selected = {
         kind: "company",
@@ -106,7 +105,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
           const d = x as { id: number; title: string; stage: string; value?: number | null };
           return { id: d.id, title: d.title, stage: stageLabel(d.stage), value: d.value ?? 0 };
         }),
-        timeline: [],
+        feed,
         editHref: `/panel/duzenle/companies/${c.id}`,
       };
     }
@@ -125,6 +124,11 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
                 Excel&apos;den aktar
               </Link>
             </Button>
+            <Button asChild>
+              <a href={`/panel/disa-aktar?tur=${view === "kisiler" ? "kisiler" : "firmalar"}`} download>
+                Dışa aktar
+              </a>
+            </Button>
             <Button asChild variant="primary">
               <Link href={view === "kisiler" ? "/panel/duzenle/contacts" : "/panel/duzenle/companies"} prefetch={false}>
                 {view === "kisiler" ? "Yeni kişi" : "Yeni firma"}
@@ -133,7 +137,7 @@ export default async function PeoplePage({ searchParams }: { searchParams: SP })
           </>
         }
       />
-      <PeopleView view={view} q={q} page={page} pages={Math.max(1, Math.ceil(total / PAGE))} total={total} people={personRows} companies={companyRows} selected={selected} />
+      <PeopleView view={view} q={q} page={page} pages={Math.max(1, Math.ceil(total / PAGE))} total={total} people={personRows} companies={companyRows} selected={selected} team={(await ctx.team()).map((m) => ({ id: m.id, name: m.name }))} me={ctx.user.id} />
     </>
   );
 }

@@ -94,3 +94,79 @@ export async function duplicateQuote(id: number): Promise<Result> {
     status: "taslak",
   });
 }
+
+/* ---------- Müşteriye gönderme: açık bağlantı, e-posta, Kabul / Red ---------- */
+
+const linkOf = (token: string) => `${process.env.NEXT_PUBLIC_SERVER_URL || ""}/teklif/${token}`;
+
+/** Teklifin müşteri bağlantısı: yoksa tahmin edilemez bir anahtar üretilir */
+export async function quoteLink(id: number): Promise<{ ok: boolean; error?: string; url?: string }> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
+  try {
+    const q = (await ctx.findByID("quotes", id, 0)) as { id: number; publicToken?: string | null } | null;
+    if (!q) return { ok: false, error: "Teklif bulunamadı." };
+    let token = q.publicToken;
+    if (!token) {
+      const { randomBytes } = await import("node:crypto");
+      token = randomBytes(24).toString("base64url");
+      await ctx.update("quotes", id, { publicToken: token });
+    }
+    return { ok: true, url: linkOf(token) };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return { ok: false, error: e instanceof Error ? e.message : "Bağlantı oluşturulamadı." };
+  }
+}
+
+/**
+ * Müşteriye gönder: markalı e-posta ve "Teklifi görüntüle" düğmesi. Teklif
+ * Gönderildi olur (fırsat Teklif aşamasına geçer), akışa yazılır. E-posta
+ * gidemezse bağlantı yine döner; kullanıcı kopyalayıp WhatsApp'tan iletebilir.
+ */
+export async function sendQuote(id: number, to: string, message: string): Promise<{ ok: boolean; error?: string; url?: string }> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
+  const email = to.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { ok: false, error: "Geçerli bir e-posta adresi yazın." };
+  const link = await quoteLink(id);
+  if (!link.ok || !link.url) return link;
+  try {
+    const q = (await ctx.findByID("quotes", id, 1)) as { id: number; number?: string | null; title: string; total?: number | null; validUntil?: string | null; status: string; deal?: unknown; contact?: unknown; company?: unknown } | null;
+    if (!q) return { ok: false, error: "Teklif bulunamadı." };
+    const { cms } = await import("@/lib/cms");
+    const { brandedEmail, emailConfigured } = await import("@/payload/notify");
+    if (!emailConfigured()) return { ok: false, error: "E-posta servisi bağlı değil; bağlantıyı kopyalayıp iletebilirsiniz.", url: link.url };
+    const payload = await cms();
+    const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
+    const day = (v?: string | null) => (v ? new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", year: "numeric" }).format(new Date(v)) : "");
+    const total = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(q.total ?? 0);
+    const html = brandedEmail({
+      title: `Teklifimiz: ${q.title}`,
+      intro: message.trim() || "Merhaba, konuştuğumuz işe dair teklifimizi aşağıdaki bağlantıda bulabilirsiniz. Teklifi inceleyip aynı sayfadan kabul edebilir ya da sorularınızı iletebilirsiniz.",
+      rows: [
+        ["Teklif no", q.number ?? ""],
+        ["Genel toplam", total],
+        ...(q.validUntil ? ([["Geçerlilik", day(q.validUntil)]] as [string, string][]) : []),
+      ],
+      link: link.url,
+      base,
+      button: "Teklifi görüntüle",
+    });
+    try {
+      await payload.sendEmail({ to: email, subject: `Teklif ${q.number ?? ""}: ${q.title}`.replace(/\s+/g, " "), html, text: `${message.trim()}\n\nTeklif: ${link.url}`, replyTo: ctx.user.email });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      return { ok: false, url: link.url, error: /verify a domain|testing emails|own email/i.test(msg) ? "Gönderen alan adı Resend'de doğrulanmadığı için e-posta müşteriye gidemedi; bağlantıyı kopyalayıp iletebilirsiniz." : msg || "E-posta gönderilemedi." };
+    }
+    await ctx.update("quotes", id, { sentAt: new Date().toISOString(), ...(q.status === "taslak" ? { status: "gonderildi" } : {}) });
+    const rel = (v: unknown) => (v && typeof v === "object" ? (v as { id: number }).id : (v as number | null | undefined)) ?? null;
+    await ctx.create("activities", { type: "eposta", title: `Teklif gönderildi: ${q.number ?? q.title}`, body: `${email}\n${message.trim()}`.trim(), deal: rel(q.deal), contact: rel(q.contact), company: rel(q.company), done: true, owner: ctx.user.id });
+    return { ok: true, url: link.url };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return { ok: false, error: e instanceof Error ? e.message : "Gönderilemedi.", url: link.url };
+  }
+}

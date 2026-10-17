@@ -588,3 +588,32 @@ export async function linkToContact(key: string, targetId: number): Promise<Resu
     return { ok: true };
   });
 }
+
+/* ---------- Randevu: panelden saat değiştirme ---------- */
+
+/** Seçili işletmenin randevu planı (boş ve dolu saatler); bu randevunun kendi saati boş sayılır */
+export async function bookingSlots(id: number): Promise<{ ok: boolean; error?: string; sure?: number; gunler?: { gun: string; not?: string; saatler: { s: string; dolu: boolean }[] }[]; current?: string }> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
+  const b = (await ctx.findByID("bookings", id, 0)) as Booking | null;
+  if (!b) return { ok: false, error: "Randevu bulunamadı." };
+  const payload = await cms();
+  const req = { payload, user: ctx.user, headers: await headers() } as unknown as PayloadRequest;
+  const { bookingPlan } = await import("@/payload/endpoints/forms");
+  const p = await bookingPlan(req, ctx.tenant.id);
+  const current = `${new Date(b.date).toISOString().slice(0, 10)} ${b.time}`;
+  return { ok: true, sure: p.sure, current, gunler: p.gunler.map((g) => ({ ...g, saatler: g.saatler.map((x) => ({ ...x, dolu: x.dolu && `${g.gun} ${x.s}` !== current })) })) };
+}
+
+/** Randevunun gün ve saatini değiştirir: yalnız plandaki boş saatlere; ziyaretçiye yeni saat e-postası gider */
+export async function rescheduleBooking(id: number, day: string, time: string): Promise<Result> {
+  return guard(async () => {
+    const plan = await bookingSlots(id);
+    if (!plan.ok || !plan.gunler) return { ok: false, error: plan.error ?? "Plan okunamadı." };
+    const slot = plan.gunler.find((g) => g.gun === day)?.saatler.find((x) => x.s === time);
+    if (!slot) return { ok: false, error: "Bu saat randevuya açık değil." };
+    if (slot.dolu) return { ok: false, error: "Bu saat dolu; başka bir saat seçin." };
+    const ctx = await getPanelContext();
+    return (await ctx.update("bookings", id, { date: new Date(`${day}T12:00:00.000Z`).toISOString(), time })) ? { ok: true } : { ok: false, error: "Randevu bulunamadı." };
+  });
+}

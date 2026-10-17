@@ -11,6 +11,8 @@ import { Button } from "../ui/button";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
 import { contactValue } from "../ui/contact-link";
 import { cn } from "@/lib/utils";
+import { Akis } from "../crm/Akis";
+import type { FeedItem } from "../crm/feed";
 
 export type PersonRow = { id: number; name: string; title: string; email: string; phone: string; company: string; source: string };
 export type CompanyRow = { id: number; name: string; sector: string; email: string; phone: string; website: string };
@@ -25,7 +27,7 @@ export type Selected = {
   companyId: number | null;
   deals: DealLine[];
   people?: { id: number; name: string; title: string }[];
-  timeline: { id: number; title: string; detail: string }[];
+  feed: FeedItem[];
   editHref: string;
 };
 
@@ -74,7 +76,7 @@ function useParams() {
   );
 }
 
-export function PeopleView({ view, q, page, pages, total, people, companies, selected }: { view: "kisiler" | "firmalar"; q: string; page: number; pages: number; total: number; people: PersonRow[]; companies: CompanyRow[]; selected: Selected | null }) {
+export function PeopleView({ view, q, page, pages, total, people, companies, selected, team = [], me = 0 }: { view: "kisiler" | "firmalar"; q: string; page: number; pages: number; total: number; people: PersonRow[]; companies: CompanyRow[]; selected: Selected | null; team?: { id: number; name: string }[]; me?: number }) {
   const set = useParams();
   const [term, setTerm] = useState(q);
   useEffect(() => {
@@ -185,19 +187,7 @@ export function PeopleView({ view, q, page, pages, total, people, companies, sel
                 <p className="m-0 whitespace-pre-wrap text-[14px] text-ink">{selected.notes}</p>
               </SheetSection>
             ) : null}
-            {selected.timeline.length ? (
-              <SheetSection title="Geçmiş">
-                <ul className="m-0 ml-1.5 list-none border-l-2 border-line p-0">
-                  {selected.timeline.map((t) => (
-                    <li key={t.id} className="relative pb-3.5 pl-4 text-[14px] before:absolute before:top-1.5 before:-left-[7px] before:size-3 before:rounded-full before:border-2 before:border-accent before:bg-surface">
-                      <span className="text-ink">{t.title}</span>
-                      <span className="block text-[13px] text-muted">{t.detail}</span>
-                    </li>
-                  ))}
-                </ul>
-              </SheetSection>
-            ) : null}
-            <p className="mt-6 text-[13px] text-muted">Düzenleme şimdilik mevcut ekranda açılır.</p>
+            <Akis items={selected.feed} target={selected.kind === "person" ? { contact: selected.id } : { company: selected.id }} team={team} me={me} />
           </>
         ) : null}
       </Sheet>

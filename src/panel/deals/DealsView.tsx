@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Dialog } from "radix-ui";
-import { AlertTriangle, Phone, Plus, Search, Trash2, X } from "lucide-react";
+import { AlertTriangle, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -15,9 +15,11 @@ import { Input } from "../ui/input";
 import { DataTable } from "../ui/data-table";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
 import { contactValue } from "../ui/contact-link";
-import { addNote, createDeal, deleteDeal, findCompanies, findContacts, moveDeal, scheduleCall, updateDeal } from "./actions";
+import { createDeal, deleteDeal, findCompanies, findContacts, moveDeal, updateDeal } from "./actions";
+import { Akis } from "../crm/Akis";
+import type { FeedItem } from "../crm/feed";
 
-export type BoardDeal = { id: number; title: string; stage: string; value: number; order: number | null; who: string; owner: number | null; ownerName: string; expectedClose: string | null; updatedAt: string; closedAt: string | null; lateTask: boolean };
+export type BoardDeal = { id: number; title: string; stage: string; value: number; order: number | null; who: string; owner: number | null; ownerName: string; expectedClose: string | null; updatedAt: string; closedAt: string | null; lateTask: boolean; noTask: boolean; stageSince: string };
 export type DealDetail = {
   id: number;
   title: string;
@@ -35,16 +37,18 @@ export type DealDetail = {
   ownerId: number | null;
   created: string;
   leadKey: string | null;
-  timeline: { id: number; title: string; body: string; detail: string; open: boolean }[];
+  feed: FeedItem[];
   quotes: { id: number; number: string; title: string; total: number; status: string }[];
   projects: { id: number; title: string }[];
 };
 
 const OPEN = [
-  { id: "aday", label: "Aday" },
-  { id: "gorusme", label: "Görüşme" },
-  { id: "teklif", label: "Teklif" },
+  { id: "aday", label: "Aday", dot: "bg-muted" },
+  { id: "gorusme", label: "Görüşme", dot: "bg-warn" },
+  { id: "teklif", label: "Teklif", dot: "bg-accent" },
 ];
+/* Kayıp sebepleri: sonradan sayılabilsin diye hazır liste; yanına açıklama yazılabilir */
+const LOST_REASONS = ["Bütçe yetersiz", "Rakibi seçti", "Zamanlama uymadı", "Yanıt vermedi", "İhtiyaç değişti", "Kapsam uymadı"];
 const ALL = [...OPEN, { id: "kazanildi", label: "Kazanıldı" }, { id: "kaybedildi", label: "Kaybedildi" }];
 const LABEL = Object.fromEntries(ALL.map((s) => [s.id, s.label]));
 const STALE_DAYS = 7;
@@ -180,7 +184,12 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
         <span className="text-[13px] text-muted">
           <span className="tabular">{open.length}</span> açık · <span className="tabular">{money.format(total)}</span>
         </span>
-        <Button variant="primary" className="ml-auto" onClick={() => setCreating(true)}>
+        <Button asChild className="ml-auto">
+          <a href="/panel/disa-aktar?tur=firsatlar" download>
+            Dışa aktar
+          </a>
+        </Button>
+        <Button variant="primary" onClick={() => setCreating(true)}>
           <Plus /> Yeni fırsat
         </Button>
       </div>
@@ -206,14 +215,18 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
                   className={cn("flex min-h-40 min-w-0 flex-col rounded-card border border-line bg-sunken", over === s.id && "outline-2 outline-dashed outline-offset-[-4px] outline-accent")}
                 >
                   <header className="px-3 pt-3 pb-2">
-                    <h2 className="m-0 text-[15px] font-semibold text-ink">{s.label}</h2>
+                    <h2 className="m-0 flex items-center gap-2 text-[15px] font-semibold text-ink">
+                      <span className={cn("size-2.5 rounded-full", s.dot)} aria-hidden />
+                      {s.label}
+                    </h2>
                     <p className="m-0 text-[13px] text-muted">
                       <span className="tabular">{col.length}</span> fırsat · <span className="tabular">{money.format(col.reduce((a, d) => a + d.value, 0))}</span>
                     </p>
                   </header>
                   <div className="grid flex-1 content-start gap-2 px-2.5 pb-2.5">
                     {col.map((d) => {
-                      const idle = idleDays(d.updatedAt);
+                      /* Aşamada bekleme: 7 gün ve üstü uyarı (Kommo ve Krayin'deki "çürüme") */
+                      const idle = idleDays(d.stageSince);
                       const stale = idle >= STALE_DAYS;
                       return (
                         <button
@@ -247,16 +260,16 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
                             <span className="min-w-0 truncate">{d.who || "Kişi yok"}</span>
                             <span className="tabular shrink-0">{money.format(d.value)}</span>
                           </span>
-                          {stale || d.lateTask ? (
-                            <span className="mt-1.5 flex flex-wrap gap-1">
-                              {stale ? <Badge tone="warn">{idle} gündür dokunulmadı</Badge> : null}
-                              {d.lateTask ? (
-                                <Badge tone="bad">
-                                  <AlertTriangle className="size-3" aria-hidden /> Geciken görev
-                                </Badge>
-                              ) : null}
-                            </span>
-                          ) : null}
+                          <span className="mt-1.5 flex flex-wrap items-center gap-1">
+                            {stale ? <Badge tone="warn">{idle} gündür {s.label}&apos;da</Badge> : <span className="text-[12px] text-muted">{idle ? `${idle} gündür bu aşamada` : "Bugün bu aşamaya geldi"}</span>}
+                            {d.lateTask ? (
+                              <Badge tone="bad">
+                                <AlertTriangle className="size-3" aria-hidden /> Geciken görev
+                              </Badge>
+                            ) : d.noTask ? (
+                              <Badge tone="warn">Görev yok</Badge>
+                            ) : null}
+                          </span>
                         </button>
                       );
                     })}
@@ -267,8 +280,8 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
             })}
           </div>
 
-          {/* Kapanış alanları: sürüklerken görünür, telefonda karttaki düğmeler kullanılır */}
-          <div className={cn("mt-3 grid grid-cols-2 gap-3", dragId === null && "hidden md:grid")}>
+          {/* Kapanış alanları: yalnız sürüklerken ekranın altında belirir; telefonda karttaki aşama düğmeleri kullanılır */}
+          <div className={cn("fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-3 bg-gradient-to-t from-bg via-bg/95 to-transparent px-[max(16px,env(safe-area-inset-left))] pt-8 pb-[max(16px,env(safe-area-inset-bottom))] lg:left-[248px]", dragId === null && "hidden")}>
             {(["kazanildi", "kaybedildi"] as const).map((st) => (
               <div
                 key={st}
@@ -281,9 +294,10 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
                   e.preventDefault();
                   onDrop(st, null);
                 }}
-                className={cn("rounded-card border-2 border-dashed border-line px-3 py-4 text-center text-[14px] font-medium", st === "kazanildi" ? "text-good" : "text-bad", over === st && "border-current bg-surface")}
+                className={cn("rounded-card border-2 border-dashed bg-surface px-3 py-6 text-center text-[15px] font-semibold shadow-pop", st === "kazanildi" ? "border-good/50 text-good" : "border-bad/50 text-bad", over === st && "border-current bg-sunken")}
               >
-                {st === "kazanildi" ? "Kazanıldı olarak işaretlemek için buraya bırakın" : "Kaybedildi olarak işaretlemek için buraya bırakın"}
+                {st === "kazanildi" ? "Kazanıldı" : "Kaybedildi"}
+                <span className="block text-[12px] font-normal text-muted">buraya bırakın</span>
               </div>
             ))}
           </div>
@@ -336,28 +350,37 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
         }}
       />
       <NewDealDialog open={creating} onOpenChange={setCreating} onCreated={(id) => setParam("firsat", String(id))} />
-      <DealSheet canDelete={canDelete} team={team} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
+      <DealSheet canDelete={canDelete} team={team} me={me} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
     </>
   );
 }
 
 function LostDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: () => void; onConfirm: (reason: string) => void }) {
   const [reason, setReason] = useState("");
+  const [pick, setPick] = useState("");
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onCancel()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-overlay" />
         <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[min(460px,calc(100%-32px))] -translate-x-1/2 -translate-y-1/2 rounded-[12px] border border-line bg-surface p-5 shadow-pop focus:outline-none">
           <Dialog.Title className="m-0 text-[18px] font-semibold text-ink">Fırsat neden kaybedildi?</Dialog.Title>
-          <Dialog.Description className="mt-1 mb-3 text-[14px] text-muted">Fiyat, zamanlama, rakip… Sonraki teklifler için ipucu olur. Boş bırakabilirsiniz.</Dialog.Description>
-          <textarea id="kayip-neden" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} className="block w-full rounded-[9px] border border-line bg-surface px-3 py-2 text-[14px] text-ink focus:border-accent focus:outline-none" />
+          <Dialog.Description className="mt-1 mb-3 text-[14px] text-muted">Bir sebep seçin; isterseniz açıklama ekleyin. Sonraki teklifler için ipucu olur.</Dialog.Description>
+          <div className="mb-3 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Sebep">
+            {LOST_REASONS.map((r) => (
+              <button key={r} type="button" role="radio" aria-checked={pick === r} onClick={() => setPick(pick === r ? "" : r)} className={cn("min-h-8 rounded-full border px-3 text-[13px]", pick === r ? "border-bad bg-bad-soft text-bad" : "border-line text-text hover:border-bad")}>
+                {r}
+              </button>
+            ))}
+          </div>
+          <textarea id="kayip-neden" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Açıklama (isteğe bağlı)" className="block w-full rounded-[9px] border border-line bg-surface px-3 py-2 text-[14px] text-ink focus:border-accent focus:outline-none" />
           <div className="mt-4 flex justify-end gap-2">
             <Button onClick={onCancel}>Vazgeç</Button>
             <Button
               variant="danger"
               onClick={() => {
-                onConfirm(reason);
+                onConfirm([pick, reason.trim()].filter(Boolean).join(": "));
                 setReason("");
+                setPick("");
               }}
             >
               Kaybedildi olarak işaretle
@@ -536,10 +559,9 @@ function RecordPicker({ id, label, value, onChange, search }: { id: string; labe
   );
 }
 
-function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; canDelete: boolean; team: { id: number; name: string }[]; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
+function DealSheet({ detail, hasOps, canDelete, team, me, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; canDelete: boolean; team: { id: number; name: string }[]; me: number; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
-  const [note, setNote] = useState("");
   const [busy, start] = useTransition();
   const [form, setForm] = useState<{ title: string; value: string; expectedClose: string; service: string; notes: string; contact: Picked; company: Picked; owner: string } | null>(null);
   const [forId, setForId] = useState<number | null>(null);
@@ -548,7 +570,6 @@ function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }
   if ((detail?.id ?? null) !== forId) {
     setForId(detail?.id ?? null);
     setEditing(false);
-    setNote("");
     setConfirm(false);
   }
   const startEdit = () => {
@@ -567,25 +588,6 @@ function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }
       router.refresh();
     });
   };
-  const doNote = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!detail || !note.trim()) return;
-    start(async () => {
-      const r = await addNote(detail.id, note);
-      if (!r.ok) return void toast.error(r.error ?? "Not eklenemedi.");
-      setNote("");
-      toast.success("Not eklendi.");
-      router.refresh();
-    });
-  };
-  const doCall = () =>
-    detail &&
-    start(async () => {
-      const r = await scheduleCall(detail.id);
-      if (!r.ok) return void toast.error(r.error ?? "Planlanamadı.");
-      toast.success("Arama bir sonraki iş günü 10:00 için planlandı; o gün ana sayfada görünür.");
-      router.refresh();
-    });
   const remove = () =>
     detail &&
     start(async () => {
@@ -616,9 +618,6 @@ function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }
           </SheetSection>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button size="sm" onClick={doCall} disabled={busy}>
-              <Phone /> Arama planla
-            </Button>
             <Button size="sm" asChild>
               <a href={`/panel/teklifler/yeni?firsat=${detail.id}`}>Teklif hazırla</a>
             </Button>
@@ -741,34 +740,7 @@ function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }
             </SheetSection>
           ) : null}
 
-          <SheetSection title="Not ekle">
-            <form onSubmit={doNote} className="flex items-end gap-2">
-              <label className="min-w-0 flex-1">
-                <span className="sr-only">Not</span>
-                <textarea id="firsat-not" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Görüşmede ne konuşuldu?" className={cn(field, "py-2")} />
-              </label>
-              <Button type="submit" size="sm" variant="primary" disabled={busy || !note.trim()}>
-                Ekle
-              </Button>
-            </form>
-          </SheetSection>
-
-          <SheetSection title="Geçmiş">
-            {detail.timeline.length ? (
-              <ul className="m-0 ml-1.5 list-none border-l-2 border-line p-0">
-                {detail.timeline.map((t) => (
-                  <li key={t.id} className={cn("relative pb-3.5 pl-4 text-[14px] before:absolute before:top-1.5 before:-left-[7px] before:size-3 before:rounded-full before:border-2 before:bg-surface", t.open ? "before:border-warn" : "before:border-accent")}>
-                    <span className="text-ink">{t.title}</span>
-                    {t.open ? <Badge tone="warn" className="ml-2">Yapılacak</Badge> : null}
-                    {t.body ? <span className="block whitespace-pre-wrap text-[13px] text-text">{t.body}</span> : null}
-                    <span className="block text-[13px] text-muted">{t.detail}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="m-0 text-[14px] text-muted">Henüz kayıt yok.</p>
-            )}
-          </SheetSection>
+          <Akis items={detail.feed} target={{ deal: detail.id }} team={team} me={me} />
 
           {canDelete ? (
             <SheetSection title="Fırsatı sil">

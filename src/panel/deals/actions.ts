@@ -92,40 +92,7 @@ export async function createDeal(d: DealInput): Promise<Result> {
   }
 }
 
-export async function addNote(dealId: number, text: string): Promise<Result> {
-  try {
-    const ctx = await crm();
-    const body = text.trim().slice(0, 4000);
-    if (!body) return { ok: false, error: "Not boş." };
-    const deal = (await ctx.findByID("deals", dealId, 0)) as { id: number; contact?: unknown } | null;
-    if (!deal) return { ok: false, error: "Fırsat bulunamadı." };
-    await ctx.create("activities", { type: "not", title: body.split("\n")[0].slice(0, 120), body, deal: deal.id, done: true, owner: ctx.user.id });
-    return { ok: true };
-  } catch (e) {
-    const lost = sessionLost(e);
-    if (lost) return lost as never;
-    return fail(e);
-  }
-}
 
-/** Ertesi iş günü 10:00 (İstanbul) için arama görevi */
-export async function scheduleCall(dealId: number): Promise<Result> {
-  try {
-    const ctx = await crm();
-    const deal = (await ctx.findByID("deals", dealId, 0)) as { id: number; title: string } | null;
-    if (!deal) return { ok: false, error: "Fırsat bulunamadı." };
-    const d = new Date();
-    do d.setUTCDate(d.getUTCDate() + 1);
-    while (d.getUTCDay() === 0 || d.getUTCDay() === 6);
-    d.setUTCHours(7, 0, 0, 0);
-    await ctx.create("activities", { type: "arama", title: `Ara: ${deal.title}`.slice(0, 120), deal: deal.id, dueAt: d.toISOString(), done: false, owner: ctx.user.id });
-    return { ok: true };
-  } catch (e) {
-    const lost = sessionLost(e);
-    if (lost) return lost as never;
-    return fail(e);
-  }
-}
 
 export async function findContacts(q: string): Promise<{ id: number; name: string; detail: string }[]> {
   const ctx = await getPanelContext();

@@ -1,7 +1,7 @@
 import type { CollectionConfig, Field } from "payload";
 import { isLoggedIn } from "../access";
 import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
-import { CRM_SKIP, dealStageChanged, idOf, logActivity } from "./automation";
+import { CRM_SKIP, logDealChanges, dealStageChanged, idOf, logActivity } from "./automation";
 import { quotePrint } from "./quote-print";
 import { importContacts } from "../setup/import";
 import { tenantAdminAccess } from "../business/roles";
@@ -143,6 +143,8 @@ export const Deals: CollectionConfig = {
     beforeChange: [
       async ({ data, originalDoc, req }) => {
         const stage = data.stage ?? originalDoc?.stage;
+        /* Aşamaya giriş zamanı: panodaki "N gündür bu aşamada" rozeti */
+        if (!originalDoc || (data.stage && data.stage !== originalDoc.stage)) data.stageChangedAt = new Date().toISOString();
         const closed = stage === "kazanildi" || stage === "kaybedildi";
         if (closed && (originalDoc?.stage !== stage || !originalDoc?.closedAt)) data.closedAt = new Date().toISOString();
         if (!closed) data.closedAt = null;
@@ -160,8 +162,9 @@ export const Deals: CollectionConfig = {
         if (context[CRM_SKIP]) return;
         if (operation === "create") {
           await logActivity(req, { type: "sistem", title: "Fırsat açıldı", deal: doc.id, contact: idOf(doc.contact), company: idOf(doc.company) });
-        } else if (previousDoc?.stage && previousDoc.stage !== doc.stage) {
-          await dealStageChanged(req, doc, previousDoc.stage);
+        } else {
+          if (previousDoc?.stage && previousDoc.stage !== doc.stage) await dealStageChanged(req, doc, previousDoc.stage);
+          await logDealChanges(req, doc, previousDoc);
         }
       },
     ],
@@ -203,6 +206,7 @@ export const Deals: CollectionConfig = {
     { name: "lead", type: "relationship", relationTo: "leads", label: "Geldiği talep", admin: { position: "sidebar", readOnly: true, condition: (data) => Boolean(data?.lead) } },
     { name: "closedAt", type: "date", label: "Kapanış", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (data) => Boolean(data?.closedAt) } },
     { name: "order", type: "number", admin: { hidden: true } },
+    { name: "stageChangedAt", type: "date", label: "Aşamaya giriş", index: true, admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" } } },
   ],
 };
 
@@ -227,6 +231,7 @@ export const Activities: CollectionConfig = {
       ],
     },
     { name: "body", type: "textarea", label: "Ayrıntı" },
+    { name: "result", type: "textarea", label: "Sonuç", admin: { description: "Görev tamamlanınca ne oldu: arandı, ulaşılamadı, teklif istendi…" } },
     {
       type: "row",
       fields: [
@@ -389,6 +394,12 @@ export const Quotes: CollectionConfig = {
     { name: "actions", type: "ui", admin: { position: "sidebar", components: { Field: "/payload/components/crm/QuoteActions#QuoteActions" } } },
     { name: "number", type: "text", label: "Teklif no", index: true, admin: { position: "sidebar", readOnly: true, description: "Kaydedince verilir (GD-yıl-sıra)." } },
     { name: "status", type: "select", label: "Durum", required: true, defaultValue: "taslak", options: QUOTE_STATUS, admin: { position: "sidebar" } },
+    /* Müşteriye giden bağlantı (/teklif/<anahtar>): tahmin edilemez anahtar; yalnız panel kullanıcısı okur */
+    { name: "publicToken", type: "text", index: true, admin: { hidden: true } },
+    { name: "sentAt", type: "date", label: "Müşteriye gönderildi", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.sentAt) } },
+    { name: "viewedAt", type: "date", label: "Müşteri açtı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.viewedAt) } },
+    { name: "respondedAt", type: "date", label: "Müşteri yanıtladı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.respondedAt) } },
+    { name: "customerNote", type: "textarea", label: "Müşterinin notu", admin: { position: "sidebar", readOnly: true, condition: (d) => Boolean(d?.customerNote) } },
     {
       name: "issueDate",
       type: "date",

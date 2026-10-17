@@ -140,3 +140,49 @@ ${table}${btn}
 <p style="margin:16px 0 0;font-size:12px;color:#8a93a6;font-family:Arial,Helvetica,sans-serif">Guru Panel · Guru Dijital Ajans</p>
 </td></tr></table></body></html>`;
 }
+
+/**
+ * Ziyaretçiye randevu e-postası: onaylandı, iptal edildi ya da saati değişti.
+ * Google Takvim'e ekleme bağlantısı içerir. Deneme adresleri (.test) ve
+ * e-posta servisi yoksa gönderilmez; hata randevuyu bozmaz.
+ */
+export async function bookingVisitorEmail(
+  req: PayloadRequest,
+  b: { id: number | string; name: string; email: string; date: string; time: string; topic?: string | null; tenant?: unknown },
+  kind: "onay" | "iptal" | "degisti",
+): Promise<{ ok: boolean; error?: string }> {
+  if (!b.email || /\.test$/i.test(b.email) || !emailConfigured()) return { ok: false, error: "gönderilmedi" };
+  try {
+    const { brandOf } = await import("./crm/brand");
+    const { meetingAt } = await import("./crm/automation");
+    const { kurallarOf } = await import("./takvim");
+    const tenantId = b.tenant && typeof b.tenant === "object" ? (b.tenant as { id: number }).id : (b.tenant as number | undefined);
+    const brand = await brandOf(req, tenantId);
+    const sure = tenantId ? (await kurallarOf(req.payload, tenantId, req)).sure : 30;
+    const start = new Date(meetingAt(b.date, b.time));
+    const end = new Date(start.getTime() + sure * 60000);
+    const g = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+    const cal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`${brand.name} görüşmesi`)}&dates=${g(start)}/${g(end)}&details=${encodeURIComponent(b.topic ?? "")}`;
+    const when = start.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul", weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+    const first = b.name.trim().split(/\s+/)[0] ?? "";
+    const copy = {
+      onay: { subject: `Randevunuz onaylandı: ${when}`, intro: `Merhaba ${first}, ${brand.name} ile görüşmeniz onaylandı. Görüşme bağlantısını ve ayrıntıları bu e-postaya yanıt vererek de sorabilirsiniz.` },
+      degisti: { subject: `Randevunuzun saati değişti: ${when}`, intro: `Merhaba ${first}, ${brand.name} ile görüşmenizin zamanı güncellendi. Yeni zaman size uymuyorsa bu e-postaya yanıt verin.` },
+      iptal: { subject: "Randevunuz iptal edildi", intro: `Merhaba ${first}, ${brand.name} ile görüşmeniz iptal edildi. Yeni bir zaman için sitemizden tekrar randevu alabilir ya da bu e-postaya yanıt verebilirsiniz.` },
+    }[kind];
+    const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
+    const html = brandedEmail({
+      title: copy.subject,
+      intro: copy.intro,
+      rows: [["Zaman", when], ["Süre", `${sure} dakika`], ...(b.topic ? ([["Konu", b.topic]] as [string, string][]) : [])],
+      link: kind === "iptal" ? (base ? `${base}/iletisim` : null) : cal,
+      base,
+      button: kind === "iptal" ? "Yeni randevu al" : "Takvime ekle",
+    });
+    await req.payload.sendEmail({ to: b.email, subject: copy.subject, html, text: `${copy.intro}\n\nZaman: ${when}`, ...(brand.email ? { replyTo: brand.email } : {}) });
+    return { ok: true };
+  } catch (err) {
+    req.payload.logger.error({ err, msg: "Randevu e-postası gönderilemedi" });
+    return { ok: false, error: err instanceof Error ? err.message : "Gönderilemedi." };
+  }
+}

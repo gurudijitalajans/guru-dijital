@@ -51,7 +51,7 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
     };
   } else {
     const q = (await ctx.findByID("quotes", id, 1)) as {
-      id: number; number?: string | null; title: string; deal?: unknown; contact?: unknown; company?: unknown; items?: { description: string; qty: number; unit?: string | null; unitPrice: number; vatRate: string }[] | null; notes?: string | null; terms?: string | null; issueDate?: string | null; validUntil?: string | null; status: string;
+      id: number; number?: string | null; title: string; deal?: unknown; contact?: unknown; company?: unknown; items?: { description: string; qty: number; unit?: string | null; unitPrice: number; vatRate: string }[] | null; notes?: string | null; terms?: string | null; issueDate?: string | null; validUntil?: string | null; status: string; sentAt?: string | null; viewedAt?: string | null; respondedAt?: string | null; customerNote?: string | null;
     } | null;
     if (!q) notFound();
     quote = {
@@ -67,6 +67,11 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
       issueDate: day(q.issueDate),
       validUntil: day(q.validUntil),
       status: q.status,
+      sentAt: q.sentAt ?? null,
+      viewedAt: q.viewedAt ?? null,
+      respondedAt: q.respondedAt ?? null,
+      customerNote: q.customerNote ?? "",
+      email: (q.contact && typeof q.contact === "object" ? (q.contact as { email?: string | null }).email : null) || (q.company && typeof q.company === "object" ? (q.company as { email?: string | null }).email : null) || "",
     };
     /* Kapanmış fırsata bağlı teklif: seçenekte de görünsün */
     if (quote.deal && !dealOptions.some((d) => d.id === quote.deal) && q.deal && typeof q.deal === "object") dealOptions.unshift({ id: quote.deal, title: (q.deal as { title: string }).title, contact: quote.contact, company: quote.company, value: 0, service: "" });

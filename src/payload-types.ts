@@ -529,6 +529,7 @@ export interface Deal {
   lead?: (number | null) | Lead;
   closedAt?: string | null;
   order?: number | null;
+  stageChangedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -627,6 +628,11 @@ export interface Quote {
    */
   number?: string | null;
   status: 'taslak' | 'gonderildi' | 'kabul' | 'red';
+  publicToken?: string | null;
+  sentAt?: string | null;
+  viewedAt?: string | null;
+  respondedAt?: string | null;
+  customerNote?: string | null;
   issueDate?: string | null;
   validUntil?: string | null;
   subtotal?: number | null;
@@ -648,6 +654,10 @@ export interface Activity {
   type: 'not' | 'arama' | 'eposta' | 'toplanti' | 'gorev' | 'sistem';
   title: string;
   body?: string | null;
+  /**
+   * Görev tamamlanınca ne oldu: arandı, ulaşılamadı, teklif istendi…
+   */
+  result?: string | null;
   /**
    * Görev ve toplantılarda.
    */
@@ -2084,6 +2094,7 @@ export interface DealsSelect<T extends boolean = true> {
   lead?: T;
   closedAt?: T;
   order?: T;
+  stageChangedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2148,6 +2159,11 @@ export interface QuotesSelect<T extends boolean = true> {
   terms?: T;
   number?: T;
   status?: T;
+  publicToken?: T;
+  sentAt?: T;
+  viewedAt?: T;
+  respondedAt?: T;
+  customerNote?: T;
   issueDate?: T;
   validUntil?: T;
   subtotal?: T;
@@ -2166,6 +2182,7 @@ export interface ActivitiesSelect<T extends boolean = true> {
   type?: T;
   title?: T;
   body?: T;
+  result?: T;
   dueAt?: T;
   done?: T;
   deal?: T;

@@ -20,12 +20,19 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   /* Bekleyen sayısı gelen kutusundaki Bekleyen süzgeciyle aynı: spam ve ertelenmiş kayıt sayılmaz */
   const now = new Date().toISOString();
   const waiting: Where = { and: [{ or: [{ spam: { equals: false } }, { spam: { exists: false } }] }, { or: [{ snoozedUntil: { exists: false } }, { snoozedUntil: { less_than_equal: now } }] }] };
-  const [convs, leads, books] = await Promise.all([
+  /* Yapılacaklar: bana ait, bugün bitmesi gereken ya da geciken açık işler (İstanbul günü) */
+  const endOfToday = `${new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date())}T23:59:59+03:00`;
+  const [convs, leads, books, todo] = await Promise.all([
     ctx.has("chat") ? ctx.count("conversations", { and: [{ needsReply: { equals: true } }, waiting] }) : 0,
     ctx.has("crm") ? ctx.count("leads", { and: [{ status: { equals: "yeni" } }, waiting] }) : 0,
     ctx.has("crm") ? ctx.count("bookings", { status: { equals: "bekliyor" } }) : 0,
+    ctx.has("crm") ? ctx.count("activities", { and: [{ done: { equals: false } }, { owner: { equals: ctx.user.id } }, { type: { in: ["gorev", "arama", "toplanti", "eposta"] } }, { dueAt: { less_than_equal: new Date(endOfToday).toISOString() } }] }) : 0,
   ]);
-  for (const g of nav) for (const it of g.items) if (it.id === "inbox") it.count = convs + leads + books;
+  for (const g of nav)
+    for (const it of g.items) {
+      if (it.id === "inbox") it.count = convs + leads + books;
+      if (it.id === "todo") it.count = todo;
+    }
   const toShell = (t: TenantOption): ShellTenant => ({ id: t.id, name: t.name, detail: detail(t) });
   const row = tenantRow(ctx.user, ctx.tenant.id);
   const role = ctx.isGuruAdmin ? "Guru yöneticisi" : row?.role === "yonetici" ? "İşletme yöneticisi" : "Ekip üyesi";

@@ -5,7 +5,7 @@ import type { Module } from "@/payload/business/roles";
  * ekranında (/admin) açılan bir öğe olursa `legacy` ile küçük bir ok
  * işaretiyle görünür.
  */
-export type NavIcon = "home" | "inbox" | "calendar" | "deals" | "people" | "quotes" | "projects" | "tasks" | "load" | "report" | "chat" | "web" | "media" | "settings";
+export type NavIcon = "home" | "todo" | "inbox" | "calendar" | "deals" | "people" | "quotes" | "projects" | "tasks" | "load" | "report" | "chat" | "web" | "media" | "settings";
 export type NavItem = {
   id: string;
   label: string;
@@ -30,6 +30,7 @@ export const NAV: NavGroup[] = [
     items: [
       { id: "home", label: "Ana sayfa", href: "/panel", icon: "home", keywords: "pano özet" },
       { id: "inbox", label: "Gelen kutusu", href: "/panel/gelen", icon: "inbox", modules: ["chat", "crm"], keywords: "sohbet mesaj talep form başvuru randevu" },
+      { id: "todo", label: "Yapılacaklar", href: "/panel/yapilacaklar", icon: "todo", modules: ["crm"], keywords: "görev arama toplantı geciken bugün yarın hatırlatma takip" },
       { id: "calendar", label: "Takvim", href: "/panel/takvim", icon: "calendar", modules: ["crm", "ops"], keywords: "randevu toplantı arama teslim ajanda" },
     ],
   },
