@@ -14,6 +14,11 @@ import { tenantAdminAccess } from "../business/roles";
  */
 
 const GROUP = "Guru Operation";
+export const REPEATS = [
+  { label: "Her hafta", value: "haftalik" },
+  { label: "İki haftada bir", value: "iki-haftalik" },
+  { label: "Her ay", value: "aylik" },
+];
 const access = { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: tenantAdminAccess };
 const dayField = (name: string, label: string, extra: Partial<Field> = {}): Field =>
   ({
@@ -248,6 +253,37 @@ export const Tasks: CollectionConfig = {
       },
     ],
     afterChange: [
+      /* Tekrarlayan görev: Tamam'a geçince bir sonraki açılır (teslim tarihi aralık kadar ileri) */
+      async ({ doc, previousDoc, operation, req, context }) => {
+        if (context[CRM_SKIP] || operation !== "update" || doc.stage !== "tamam" || previousDoc?.stage === "tamam" || !doc.repeat) return;
+        const next = (iso?: string | null) => {
+          if (!iso) return null;
+          const d = new Date(iso);
+          if (doc.repeat === "haftalik") d.setUTCDate(d.getUTCDate() + 7);
+          else if (doc.repeat === "iki-haftalik") d.setUTCDate(d.getUTCDate() + 14);
+          else d.setUTCMonth(d.getUTCMonth() + 1);
+          return d.toISOString();
+        };
+        await req.payload.create({
+          collection: "tasks",
+          data: {
+            title: doc.title,
+            project: idOf(doc.project),
+            assignee: idOf(doc.assignee),
+            priority: doc.priority,
+            description: doc.description,
+            hours: doc.hours,
+            repeat: doc.repeat,
+            startDate: next(doc.startDate),
+            dueDate: next(doc.dueDate) ?? next(new Date().toISOString()),
+            checklist: (doc.checklist ?? []).map((c: ChecklistItem) => ({ text: c.text, done: false })),
+            stage: "yapilacak",
+            tenant: idOf(doc.tenant),
+          } as never,
+          req,
+          overrideAccess: true,
+        });
+      },
       /* Bildirimler: görev atanınca sorumluya, Kontrol'e gelince işin sorumlusuna */
       async ({ doc, previousDoc, operation, req, context }) => {
         if (context[CRM_SKIP]) return;
@@ -301,6 +337,13 @@ export const Tasks: CollectionConfig = {
         dayField("startDate", "Başlangıç"),
         dayField("dueDate", "Teslim", { index: true }),
         { name: "hours", type: "number", label: "Tahmini saat", min: 0, admin: { description: "Ekip planındaki doluluk bununla hesaplanır." } },
+        {
+          name: "repeat",
+          type: "select",
+          label: "Tekrar",
+          options: REPEATS,
+          admin: { description: "Tamam'a geçince bir sonraki görev aynı sorumlu ve kontrol listesiyle kendiliğinden açılır." },
+        },
       ],
     },
     { name: "description", type: "textarea", label: "Ayrıntı" },
@@ -326,5 +369,53 @@ export const Tasks: CollectionConfig = {
     { name: "startedAt", type: "date", label: "Başlandı", admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.startedAt) } },
     { name: "completedAt", type: "date", label: "Tamamlandı", index: true, admin: { position: "sidebar", readOnly: true, date: { displayFormat: "dd.MM.yyyy HH:mm" }, condition: (d) => Boolean(d?.completedAt) } },
     { name: "order", type: "number", admin: { hidden: true } },
+  ],
+};
+
+/**
+ * Görev yorumları: ekip görev üzerinde konuşur; bahsedilen kişilere ve
+ * görevin sorumlusuna panel bildirimi gider. Yorumu yalnız yazan düzenler.
+ */
+export const TaskComments: CollectionConfig = {
+  slug: "task-comments",
+  labels: { singular: "Görev yorumu", plural: "Görev yorumları" },
+  admin: { useAsTitle: "text", group: GROUP, hidden: true },
+  defaultSort: "createdAt",
+  access: {
+    read: isLoggedIn,
+    create: isLoggedIn,
+    update: ({ req }) => (req.user ? { author: { equals: req.user.id } } : false),
+    delete: (args) => (tenantAdminAccess(args) ? true : args.req.user ? { author: { equals: args.req.user.id } } : false),
+  },
+  hooks: {
+    beforeChange: [
+      ({ data, operation, req }) => {
+        if (operation === "create" && req.user) data.author = req.user.id;
+        return data;
+      },
+    ],
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation !== "create") return;
+        const taskId = idOf(doc.task);
+        if (!taskId) return;
+        const task = await req.payload.findByID({ collection: "tasks", id: taskId, depth: 0, req, overrideAccess: true }).catch(() => null);
+        if (!task) return;
+        const { inApp } = await import("../notify");
+        const me = req.user?.id;
+        const path = `/panel/gorevler?gorev=${taskId}`;
+        const who = req.user?.name ?? "Bir ekip arkadaşınız";
+        const mentions = ((doc.mentions ?? []) as unknown[]).map((v) => Number(idOf(v as never))).filter((x) => Boolean(x) && x !== me);
+        if (mentions.length) await inApp(req, { subject: `${who} sizden bahsetti: ${taskCode(task.seq)} ${task.title}`.trim(), intro: String(doc.text).slice(0, 280), path, tenant: idOf(task.tenant) ?? undefined, kind: "bahsetme" }, mentions);
+        const assignee = Number(idOf(task.assignee)) || null;
+        if (assignee && assignee !== me && !mentions.includes(assignee)) await inApp(req, { subject: `Görevinize yorum: ${taskCode(task.seq)} ${task.title}`.trim(), intro: `${who}: ${String(doc.text).slice(0, 240)}`, path, tenant: idOf(task.tenant) ?? undefined, kind: "gorev" }, [assignee]);
+      },
+    ],
+  },
+  fields: [
+    { name: "task", type: "relationship", relationTo: "tasks", required: true, index: true },
+    { name: "text", type: "textarea", required: true, maxLength: 4000 },
+    { name: "author", type: "relationship", relationTo: "users", admin: { readOnly: true } },
+    { name: "mentions", type: "relationship", relationTo: "users", hasMany: true },
   ],
 };

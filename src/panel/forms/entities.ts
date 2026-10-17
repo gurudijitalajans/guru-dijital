@@ -51,6 +51,23 @@ export const ENTITIES: Record<string, EntityDef> = {
     tenanted: true,
     list: { title: "İzinler", description: "Yıllık izin, rapor ve yarım günler. Ekip yükü bu günlerde kapasiteyi düşürür.", columns: ["kisi", "baslangic", "bitis", "tur"], sort: "-baslangic", canCreate: true },
   },
+  automations: {
+    type: "collection",
+    label: "Otomasyon",
+    modules: ["crm"],
+    tenantAdmin: true,
+    back: "/panel/kayitlar/automations",
+    titleField: "name",
+    tenanted: true,
+    list: {
+      title: "Aşama otomasyonları",
+      description: "Fırsat bir aşamaya girince görev açılır, sorumlu değişir, kişiye e-posta ya da ekibe bildirim gider. Siteden gelen yeni talepler Aday aşamasında başlar.",
+      columns: ["name", "stage", "action", "active"],
+      search: ["name"],
+      sort: "stage",
+      canCreate: true,
+    },
+  },
   "site-connection": { type: "collection", label: "Site bağlantısı", modules: ["crm", "chat"], back: "/panel/ayarlar", tenanted: true, singleton: true },
   knowledge: {
     type: "collection",

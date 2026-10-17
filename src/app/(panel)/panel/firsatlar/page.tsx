@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { requireModule } from "@/panel/context";
 import { PageHeader } from "@/panel/ui/page-header";
@@ -82,7 +83,15 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader title="Fırsatlar" description="Kartı sürükleyerek aşamasını değiştirin. Pano ve liste aynı kayıtları gösterir." />
+      <PageHeader
+        title="Fırsatlar"
+        description="Kartı sürükleyerek aşamasını değiştirin. Pano ve liste aynı kayıtları gösterir."
+        actions={
+          <Link href="/panel/firsatlar/analiz" className="text-[14px] font-medium text-accent">
+            Kazanma ve kaybetme analizi
+          </Link>
+        }
+      />
       <DealsView deals={deals} detail={detail} me={ctx.user.id} hasOps={ctx.has("ops")} canDelete={ctx.isTenantAdmin} team={(await ctx.team()).map((m) => ({ id: m.id, name: m.name }))} initialView={sp.gorunum === "liste" ? "liste" : "pano"} />
     </>
   );

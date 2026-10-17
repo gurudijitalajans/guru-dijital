@@ -22,7 +22,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
     ctx.names(),
   ]);
   const today = dayOf(new Date());
-  type Raw = { id: number; seq?: number | null; title: string; stage: string; order?: number | null; priority: string; dueDate?: string | null; startDate?: string | null; hours?: number | null; assignee?: unknown; project?: unknown; checklist?: { text?: string; done?: boolean | null }[] | null; updatedAt: string; completedAt?: string | null };
+  type Raw = { id: number; seq?: number | null; title: string; stage: string; order?: number | null; priority: string; dueDate?: string | null; startDate?: string | null; hours?: number | null; assignee?: unknown; project?: unknown; checklist?: { text?: string; done?: boolean | null }[] | null; updatedAt: string; completedAt?: string | null; repeat?: string | null };
   const tasks: BoardTask[] = (res.docs as Raw[]).map((t) => {
     const list = t.checklist ?? [];
     return {
@@ -41,6 +41,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
       projectTitle: titleOf(t.project),
       checks: [list.filter((c) => c.done).length, list.length],
       updatedAt: t.updatedAt,
+      repeat: t.repeat ?? null,
     };
   });
 
@@ -63,6 +64,11 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
         description: t.description ?? "",
         checklist: (t.checklist ?? []).map((c) => ({ text: c.text ?? "", done: Boolean(c.done) })),
         late: Boolean(t.dueDate && t.stage !== "tamam" && dayOf(t.dueDate) < today),
+        repeat: t.repeat ?? "",
+        comments: (await ctx.find("task-comments", { where: { task: { equals: t.id } }, sort: "createdAt", limit: 200 })).docs.map((x) => {
+          const c = x as { id: number; text: string; author?: unknown; createdAt: string };
+          return { id: c.id, text: c.text, author: who(c.author) || "Ekip", at: c.createdAt, mine: idOf(c.author) === ctx.user.id };
+        }),
       };
     }
   }

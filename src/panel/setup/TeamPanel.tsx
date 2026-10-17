@@ -10,7 +10,7 @@ import { Badge } from "../ui/badge";
 import { Card, CardHeader } from "../ui/card";
 import { cn } from "@/lib/utils";
 
-export type Member = { id: number | string; name: string; email: string; role: string; modules: string[]; pending: boolean; self: boolean };
+export type Member = { id: number | string; name: string; email: string; role: string; modules: string[]; ownOnly?: boolean; pending: boolean; self: boolean };
 type Mod = { value: string; label: string };
 type Orphan = { id: number | string; name: string; email: string };
 type Answer = { ok?: boolean; error?: string; message?: string; emailSent?: boolean; link?: string } | null;
@@ -21,6 +21,7 @@ export function TeamPanel({ members, modules, emailReady, canEditUsers, orphans 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("uye");
+  const [scope, setScope] = useState("hepsi");
   const [mods, setMods] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [link, setLink] = useState("");
@@ -39,7 +40,7 @@ export function TeamPanel({ members, modules, emailReady, canEditUsers, orphans 
   const invite = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const r = await fetch("/api/users/davet", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, role, modules: mods }) }).catch(() => null);
+    const r = await fetch("/api/users/davet", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, role, modules: mods, scope }) }).catch(() => null);
     if (answer((await r?.json().catch(() => null)) as Answer, `${email} adresine davet gönderildi.`)) {
       setName("");
       setEmail("");
@@ -89,6 +90,15 @@ export function TeamPanel({ members, modules, emailReady, canEditUsers, orphans 
               })}
             </fieldset>
           ) : null}
+          {role === "uye" ? (
+            <label className="grid gap-1 text-[14px] sm:col-span-2">
+              <span className="text-muted">Görünürlük</span>
+              <select value={scope} onChange={(e) => setScope(e.target.value)} className="min-h-10 rounded-[9px] border border-line bg-surface px-3 text-[14px] text-ink">
+                <option value="hepsi">Tüm kayıtlar</option>
+                <option value="kendi">Yalnız kendi kayıtları (sorumlusu olduğu fırsat ve teklifler)</option>
+              </select>
+            </label>
+          ) : null}
           <div className="sm:col-span-2">
             <Button type="submit" variant="primary" disabled={busy}>
               {busy ? "Gönderiliyor…" : "Davet et"}
@@ -134,6 +144,7 @@ export function TeamPanel({ members, modules, emailReady, canEditUsers, orphans 
                 </div>
                 <div className="truncate text-[13px] text-muted">
                   {m.email} · {m.role === "guru" ? "Guru yöneticisi (tüm işletmeler)" : m.role === "yonetici" ? "İşletme yöneticisi" : m.modules.length ? m.modules.map(label).join(", ") : "Modül verilmedi"}
+                  {m.role === "uye" && m.ownOnly ? " · yalnız kendi kayıtları" : ""}
                 </div>
               </div>
               {m.pending ? (

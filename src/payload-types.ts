@@ -74,8 +74,10 @@ export interface Config {
     companies: Company;
     quotes: Quote;
     activities: Activity;
+    automations: Automation;
     projects: Project;
     tasks: Task;
+    'task-comments': TaskComment;
     templates: Template;
     conversations: Conversation;
     knowledge: Knowledge;
@@ -118,8 +120,10 @@ export interface Config {
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
     quotes: QuotesSelect<false> | QuotesSelect<true>;
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    automations: AutomationsSelect<false> | AutomationsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     tasks: TasksSelect<false> | TasksSelect<true>;
+    'task-comments': TaskCommentsSelect<false> | TaskCommentsSelect<true>;
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
     conversations: ConversationsSelect<false> | ConversationsSelect<true>;
     knowledge: KnowledgeSelect<false> | KnowledgeSelect<true>;
@@ -478,6 +482,10 @@ export interface User {
          * Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation. İşletmede açık olmayan modül kaydedilmez.
          */
         modules?: ('site' | 'crm' | 'chat' | 'ops' | 'business')[] | null;
+        /**
+         * Yalnız kendi: üye yalnız sorumlusu olduğu fırsatları, teklifleri ve bunların etkinliklerini görür. Kişi rehberi ve gelen kutusu ortaktır.
+         */
+        scope?: ('hepsi' | 'kendi') | null;
         id?: string | null;
       }[]
     | null;
@@ -673,6 +681,32 @@ export interface Activity {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automations".
+ */
+export interface Automation {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  active?: boolean | null;
+  stage: 'aday' | 'gorusme' | 'teklif' | 'kazanildi' | 'kaybedildi';
+  action: 'gorev' | 'sorumlu' | 'eposta' | 'bildirim';
+  taskType?: ('arama' | 'toplanti' | 'eposta' | 'gorev') | null;
+  deadline?: ('hemen' | 'gun-sonu' | '1' | '3' | 'hafta') | null;
+  taskTitle?: string | null;
+  /**
+   * Görevde boş bırakılırsa fırsatın sorumlusuna atanır.
+   */
+  assignTo?: (number | null) | User;
+  emailSubject?: string | null;
+  /**
+   * {ad}, {firma} ve {firsat} yer tutucuları kişinin adı, firması ve fırsat adıyla dolar. Kişinin e-postası yoksa gönderilmez.
+   */
+  emailBody?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Müşteri işleri ve iç projeler. Şablon seçerek açarsanız görevler kendiliğinden oluşur.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -759,6 +793,10 @@ export interface Task {
    * Ekip planındaki doluluk bununla hesaplanır.
    */
   hours?: number | null;
+  /**
+   * Tamam'a geçince bir sonraki görev aynı sorumlu ve kontrol listesiyle kendiliğinden açılır.
+   */
+  repeat?: ('haftalik' | 'iki-haftalik' | 'aylik') | null;
   description?: string | null;
   /**
    * Açık madde varken görev Tamam'a geçmez.
@@ -779,6 +817,20 @@ export interface Task {
   startedAt?: string | null;
   completedAt?: string | null;
   order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "task-comments".
+ */
+export interface TaskComment {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  task: number | Task;
+  text: string;
+  author?: (number | null) | User;
+  mentions?: (number | User)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1850,12 +1902,20 @@ export interface PayloadLockedDocument {
         value: number | Activity;
       } | null)
     | ({
+        relationTo: 'automations';
+        value: number | Automation;
+      } | null)
+    | ({
         relationTo: 'projects';
         value: number | Project;
       } | null)
     | ({
         relationTo: 'tasks';
         value: number | Task;
+      } | null)
+    | ({
+        relationTo: 'task-comments';
+        value: number | TaskComment;
       } | null)
     | ({
         relationTo: 'templates';
@@ -2196,6 +2256,25 @@ export interface ActivitiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automations_select".
+ */
+export interface AutomationsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  active?: T;
+  stage?: T;
+  action?: T;
+  taskType?: T;
+  deadline?: T;
+  taskTitle?: T;
+  assignTo?: T;
+  emailSubject?: T;
+  emailBody?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
@@ -2226,6 +2305,7 @@ export interface TasksSelect<T extends boolean = true> {
   startDate?: T;
   dueDate?: T;
   hours?: T;
+  repeat?: T;
   description?: T;
   checklist?:
     | T
@@ -2240,6 +2320,19 @@ export interface TasksSelect<T extends boolean = true> {
   startedAt?: T;
   completedAt?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "task-comments_select".
+ */
+export interface TaskCommentsSelect<T extends boolean = true> {
+  tenant?: T;
+  task?: T;
+  text?: T;
+  author?: T;
+  mentions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2740,6 +2833,7 @@ export interface UsersSelect<T extends boolean = true> {
         tenant?: T;
         role?: T;
         modules?: T;
+        scope?: T;
         id?: T;
       };
   updatedAt?: T;

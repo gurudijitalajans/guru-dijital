@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig, GlobalConfig, PayloadRequest } from "payload";
+import type { Access, CollectionConfig, GlobalConfig, PayloadRequest, Where } from "payload";
 
 /**
  * Rol ve modül yetkisi (çok kiracılı).
@@ -21,7 +21,7 @@ export type Module = (typeof MODULES)[number]["value"];
 const ALL: Module[] = MODULES.map((m) => m.value);
 
 type Id = number | string;
-type Row = { tenant?: unknown; role?: string | null; modules?: string[] | null };
+type Row = { tenant?: unknown; role?: string | null; modules?: string[] | null; scope?: string | null };
 type U = { role?: string | null; tenants?: Row[] | null } | null | undefined;
 const tid = (v: unknown) => String(v && typeof v === "object" ? (v as { id?: Id }).id : v);
 
@@ -64,6 +64,22 @@ export function selectedTenant(req: Pick<PayloadRequest, "headers" | "user">): s
 /** İstekteki seçili işletmeye göre modül yetkisi */
 export const canReq = (req: Pick<PayloadRequest, "headers" | "user">, mod: Module) => can(req.user, mod, isAdminUser(req.user) ? undefined : selectedTenant(req));
 export const isTenantAdminReq = (req: Pick<PayloadRequest, "headers" | "user">) => isTenantAdmin(req.user, isAdminUser(req.user) ? undefined : selectedTenant(req));
+/** Seçili işletmede "yalnız kendi kayıtları" görünürlüğü olan ekip üyesi mi */
+export const ownOnly = (req: Pick<PayloadRequest, "headers" | "user">) => {
+  if (!req.user || isAdminUser(req.user)) return false;
+  const row = tenantRow(req.user, selectedTenant(req));
+  return row?.role !== "yonetici" && row?.scope === "kendi";
+};
+/** Fırsat ve teklif: yalnız kendi görünürlüğünde sorumlusu olduğu kayıtlar */
+export const ownerScope: Access = ({ req }) => (!req.user ? false : ownOnly(req) ? { owner: { equals: req.user.id } } : true);
+/** Etkinlik: kendi etkinlikleri ve sorumlusu olduğu fırsatlardakiler */
+export const activityScope: Access = ({ req }) => {
+  if (!req.user) return false;
+  if (!ownOnly(req)) return true;
+  const or: Where[] = [{ owner: { equals: req.user.id } }, { "deal.owner": { equals: req.user.id } }];
+  return { or };
+};
+
 /** Silme kuralı: Guru yöneticisi ya da seçili işletmenin yöneticisi (kayıt işletmeye eklentiyle süzülür) */
 export const tenantAdminAccess: Access = ({ req }) => isTenantAdminReq(req);
 

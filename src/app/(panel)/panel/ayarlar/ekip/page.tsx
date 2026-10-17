@@ -25,7 +25,7 @@ export default async function TeamPage() {
   const open = new Set<string>([...ctx.tenant.modules, ...(ctx.isGuruTenant ? ["site"] : [])]);
   const members: Member[] = users.docs.map((u) => {
     const row = (u.tenants ?? []).find((r) => String(typeof r.tenant === "object" ? r.tenant?.id : r.tenant) === String(ctx.tenant.id));
-    return { id: u.id, name: u.name, email: u.email, role: u.role === "admin" ? "guru" : (row?.role ?? "uye"), modules: (row?.modules ?? []) as string[], pending: Boolean(u.invitePending), self: u.id === ctx.user.id };
+    return { id: u.id, name: u.name, email: u.email, role: u.role === "admin" ? "guru" : (row?.role ?? "uye"), modules: (row?.modules ?? []) as string[], ownOnly: (row as { scope?: string | null } | undefined)?.scope === "kendi", pending: Boolean(u.invitePending), self: u.id === ctx.user.id };
   });
   return (
     <>

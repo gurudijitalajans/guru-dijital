@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Dialog } from "radix-ui";
-import { CheckSquare, Plus, Search, Trash2, X } from "lucide-react";
+import { CheckSquare, MessageSquare, Plus, Repeat, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge, type Tone } from "../ui/badge";
@@ -12,10 +12,11 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTable } from "../ui/data-table";
 import { Sheet, SheetSection } from "../ui/sheet";
-import { createTask, deleteTask, moveTask, setChecklist, toggleCheck, updateTask } from "./actions";
+import { addTaskComment, createTask, deleteTask, deleteTaskComment, moveTask, setChecklist, toggleCheck, updateTask } from "./actions";
 
-export type BoardTask = { id: number; code: string; title: string; stage: string; order: number | null; priority: string; due: string | null; late: boolean; hours: number | null; assignee: number | null; assigneeName: string; project: number | null; projectTitle: string; checks: [number, number]; updatedAt: string };
-export type TaskDetail = { id: number; code: string; title: string; stage: string; priority: string; startDate: string; dueDate: string; hours: number | null; assignee: number | null; project: number | null; projectTitle: string; description: string; checklist: { text: string; done: boolean }[]; late: boolean };
+export type BoardTask = { id: number; code: string; title: string; stage: string; order: number | null; priority: string; due: string | null; late: boolean; hours: number | null; assignee: number | null; assigneeName: string; project: number | null; projectTitle: string; checks: [number, number]; updatedAt: string; repeat?: string | null };
+const REPEAT_LABEL: Record<string, string> = { haftalik: "Her hafta", "iki-haftalik": "İki haftada bir", aylik: "Her ay" };
+export type TaskDetail = { id: number; code: string; title: string; stage: string; priority: string; startDate: string; dueDate: string; hours: number | null; assignee: number | null; project: number | null; projectTitle: string; description: string; checklist: { text: string; done: boolean }[]; late: boolean; repeat: string; comments: { id: number; text: string; author: string; at: string; mine: boolean }[] };
 type Option = { id: number; name?: string; title?: string };
 
 const STAGES = [
@@ -229,6 +230,11 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
                       <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
                         {t.late ? <Badge tone="bad">Gecikti · {fmtDay(t.due)}</Badge> : t.due ? <Badge>{fmtDay(t.due)}</Badge> : null}
                         {t.priority === "yuksek" || t.priority === "acil" ? <Badge tone={PRIO[t.priority][0]}>{PRIO[t.priority][1]}</Badge> : null}
+                        {t.repeat ? (
+                          <span className="inline-flex items-center gap-1 text-[12px] text-muted" title={REPEAT_LABEL[t.repeat]}>
+                            <Repeat className="size-3.5" aria-hidden /> {REPEAT_LABEL[t.repeat]}
+                          </span>
+                        ) : null}
                         {t.checks[1] ? (
                           <span className="inline-flex items-center gap-1 text-[12px] text-muted">
                             <CheckSquare className="size-3.5" aria-hidden />
@@ -269,13 +275,13 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
 /** Yeni görev */
 function TaskForm({ open, onOpenChange, team, projects, me, onSaved }: { open: boolean; onOpenChange: (o: boolean) => void; team: Option[]; projects: Option[]; me: number; onSaved: (id: number) => void }) {
   const router = useRouter();
-  const blank = { title: "", project: "", assignee: team.some((m) => m.id === me) ? String(me) : "", dueDate: "", hours: "", priority: "normal", checklist: "" };
+  const blank = { title: "", project: "", assignee: team.some((m) => m.id === me) ? String(me) : "", dueDate: "", hours: "", priority: "normal", checklist: "", repeat: "" };
   const [f, setF] = useState(blank);
   const [pending, start] = useTransition();
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     start(async () => {
-      const r = await createTask({ title: f.title, project: f.project ? Number(f.project) : null, assignee: f.assignee ? Number(f.assignee) : null, dueDate: f.dueDate || null, hours: f.hours ? Number(f.hours.replace(",", ".")) : null, priority: f.priority, checklist: f.checklist.split("\n") });
+      const r = await createTask({ title: f.title, project: f.project ? Number(f.project) : null, assignee: f.assignee ? Number(f.assignee) : null, dueDate: f.dueDate || null, hours: f.hours ? Number(f.hours.replace(",", ".")) : null, priority: f.priority, checklist: f.checklist.split("\n"), repeat: f.repeat || null });
       if (!r.ok || !r.id) return void toast.error(r.error ?? "Görev açılamadı.");
       toast.success("Görev açıldı.");
       onOpenChange(false);
@@ -346,6 +352,17 @@ function TaskForm({ open, onOpenChange, team, projects, me, onSaved }: { open: b
               </label>
             </div>
             <label className="grid gap-1 text-[13px] text-muted">
+              Tekrar
+              <select id="yeni-gorev-tekrar" value={f.repeat} onChange={(e) => setF({ ...f, repeat: e.target.value })} className={field}>
+                <option value="">Tekrarlamaz</option>
+                {Object.entries(REPEAT_LABEL).map(([k, l]) => (
+                  <option key={k} value={k}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1 text-[13px] text-muted">
               Kontrol listesi (her satır bir madde)
               <textarea id="yeni-gorev-liste" rows={3} value={f.checklist} onChange={(e) => setF({ ...f, checklist: e.target.value })} className={cn(field, "py-2")} />
             </label>
@@ -368,7 +385,9 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
   const router = useRouter();
   const [busy, start] = useTransition();
   const [list, setList] = useState(detail?.checklist ?? []);
-  const [form, setForm] = useState<null | { title: string; project: string; assignee: string; startDate: string; dueDate: string; hours: string; priority: string; description: string }>(null);
+  const [form, setForm] = useState<null | { title: string; project: string; assignee: string; startDate: string; dueDate: string; hours: string; priority: string; description: string; repeat: string }>(null);
+  const [comment, setComment] = useState("");
+  const [notify, setNotify] = useState<number[]>([]);
   const [forId, setForId] = useState<number | null>(null);
   const [synced, setSynced] = useState(detail);
   if (synced !== detail) {
@@ -430,12 +449,12 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
   };
   const edit = () =>
     detail &&
-    setForm({ title: detail.title, project: detail.project ? String(detail.project) : "", assignee: detail.assignee ? String(detail.assignee) : "", startDate: detail.startDate, dueDate: detail.dueDate, hours: detail.hours ? String(detail.hours) : "", priority: detail.priority, description: detail.description });
+    setForm({ title: detail.title, project: detail.project ? String(detail.project) : "", assignee: detail.assignee ? String(detail.assignee) : "", startDate: detail.startDate, dueDate: detail.dueDate, hours: detail.hours ? String(detail.hours) : "", priority: detail.priority, description: detail.description, repeat: detail.repeat });
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     if (!detail || !form) return;
     start(async () => {
-      const r = await updateTask(detail.id, { title: form.title, project: form.project ? Number(form.project) : null, assignee: form.assignee ? Number(form.assignee) : null, startDate: form.startDate || null, dueDate: form.dueDate || null, hours: form.hours ? Number(form.hours.replace(",", ".")) : null, priority: form.priority, description: form.description });
+      const r = await updateTask(detail.id, { title: form.title, project: form.project ? Number(form.project) : null, assignee: form.assignee ? Number(form.assignee) : null, startDate: form.startDate || null, dueDate: form.dueDate || null, hours: form.hours ? Number(form.hours.replace(",", ".")) : null, priority: form.priority, description: form.description, repeat: form.repeat || null });
       if (!r.ok) return void toast.error(r.error ?? "Kaydedilemedi.");
       toast.success("Kaydedildi.");
       setForm(null);
@@ -547,6 +566,17 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
                 </label>
               </div>
               <label className="grid gap-1 text-[13px] text-muted">
+                Tekrar
+                <select id="gorev-tekrar" value={form.repeat} onChange={(e) => setForm({ ...form, repeat: e.target.value })} className={field}>
+                  <option value="">Tekrarlamaz</option>
+                  {Object.entries(REPEAT_LABEL).map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-1 text-[13px] text-muted">
                 Ayrıntı
                 <textarea id="gorev-ayrinti" rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={cn(field, "py-2")} />
               </label>
@@ -570,6 +600,7 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
                     ["Tahmini saat", detail.hours ? `${detail.hours} saat` : "Girilmedi"],
                     ["Öncelik", PRIO[detail.priority]?.[1] ?? detail.priority],
                     ["Proje", detail.projectTitle || "Yok"],
+                    ["Tekrar", REPEAT_LABEL[detail.repeat] ?? "Tekrarlamaz"],
                   ] as [string, string][]
                 ).map(([k, v]) => (
                   <div key={k} className="contents">
@@ -585,6 +616,66 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
             </SheetSection>
           )}
           {!detail.hours ? <p className="mt-4 text-[13px] text-muted">Tahmini saat girilirse görev Ekip yükü&apos;nde sorumlunun haftasına sayılır.</p> : null}
+          <SheetSection title={`Yorumlar${detail.comments.length ? ` (${detail.comments.length})` : ""}`}>
+            {detail.comments.length ? (
+              <ul className="m-0 mb-3 grid list-none gap-2 p-0">
+                {detail.comments.map((c) => (
+                  <li key={c.id} className="group rounded-[10px] bg-sunken px-3 py-2">
+                    <div className="flex items-center gap-2 text-[12px] text-muted">
+                      <MessageSquare className="size-3.5" aria-hidden />
+                      <span className="font-medium text-ink">{c.author}</span>
+                      <span>{new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(c.at))}</span>
+                      {c.mine || canDelete ? (
+                        <button type="button" disabled={busy} onClick={() => start(async () => { const r = await deleteTaskComment(c.id); if (!r.ok) return void toast.error(r.error ?? "Silinemedi."); router.refresh(); })} className="ml-auto grid size-7 place-items-center rounded-[6px] opacity-60 group-hover:opacity-100 hover:bg-surface hover:text-bad pointer-coarse:opacity-100" aria-label="Yorumu sil">
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      ) : null}
+                    </div>
+                    <p className="m-0 mt-0.5 text-[14px] whitespace-pre-wrap text-ink">{c.text}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="m-0 mb-2 text-[13px] text-muted">Henüz yorum yok. Ekip arkadaşınızı seçerseniz bildirim alır.</p>
+            )}
+            <form
+              className="grid gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!comment.trim()) return;
+                start(async () => {
+                  const r = await addTaskComment(detail.id, comment, notify);
+                  if (!r.ok) return void toast.error(r.error ?? "Yorum eklenemedi.");
+                  toast.success(notify.length ? "Yorum eklendi; seçtiğiniz kişilere bildirim gitti." : "Yorum eklendi.");
+                  setComment("");
+                  setNotify([]);
+                  router.refresh();
+                });
+              }}
+            >
+              <label>
+                <span className="sr-only">Yorum</span>
+                <textarea id="gorev-yorum" rows={2} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Yorum yazın" className={cn(field, "py-2")} />
+              </label>
+              {team.length > 1 ? (
+                <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Bildirilecek kişiler">
+                  <span className="text-[12px] text-muted">Bildir:</span>
+                  {team.map((m) => {
+                    const on = notify.includes(m.id);
+                    return (
+                      <button key={m.id} type="button" aria-pressed={on} onClick={() => setNotify((x) => (on ? x.filter((v) => v !== m.id) : [...x, m.id]))} className={cn("min-h-7 rounded-full border px-2.5 text-[12px]", on ? "border-accent bg-accent-soft text-accent" : "border-line text-text hover:border-accent")}>
+                        {m.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+              <Button type="submit" size="sm" variant="primary" className="justify-self-end" disabled={busy || !comment.trim()}>
+                Yorum ekle
+              </Button>
+            </form>
+          </SheetSection>
+
           {canDelete ? (
             <SheetSection title="Görevi sil">
               {confirm ? (

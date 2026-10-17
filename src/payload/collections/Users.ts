@@ -183,6 +183,21 @@ export const Users: CollectionConfig = {
               description: "Örnek: satış ekibine Guru CRM ve Guru Chatbot, tasarım ekibine Guru Operation. İşletmede açık olmayan modül kaydedilmez.",
             },
           },
+          {
+            name: "scope",
+            type: "select",
+            label: "Görünürlük",
+            defaultValue: "hepsi",
+            saveToJWT: true,
+            options: [
+              { label: "Tüm kayıtlar", value: "hepsi" },
+              { label: "Yalnız kendi kayıtları", value: "kendi" },
+            ],
+            admin: {
+              condition: (_, sibling) => sibling?.role !== "yonetici",
+              description: "Yalnız kendi: üye yalnız sorumlusu olduğu fırsatları, teklifleri ve bunların etkinliklerini görür. Kişi rehberi ve gelen kutusu ortaktır.",
+            },
+          },
         ],
       })),
       label: "İşletmeler",

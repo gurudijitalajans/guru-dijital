@@ -43,6 +43,7 @@ export default async function SettingsPage() {
     {
       title: "Veri ve süreçler",
       items: [
+        ctx.has("crm") && ctx.isTenantAdmin && { title: "Aşama otomasyonları", detail: "Fırsat aşamaya girince görev, sorumlu, e-posta ya da bildirim.", href: "/panel/kayitlar/automations" },
         ctx.has("crm") && { title: "Veri aktarma", detail: "Excel ya da CSV dosyasından kişi, firma ve fırsat.", href: "/panel/ayarlar/veri-aktar" },
         ctx.has("ops") && { title: "Süreç şablonları", detail: "Projeye açılınca görev olan adımlar, süreler, sorumlular.", href: "/panel/kayitlar/templates" },
       ],

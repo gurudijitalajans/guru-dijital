@@ -41,6 +41,7 @@ import * as migration_20261017_140000_mobil_v6 from './20261017_140000_mobil_v6'
 import * as migration_20261017_170000_mobil_v7 from './20261017_170000_mobil_v7';
 import * as migration_20261017_170856_gelen_kutusu_2 from './20261017_170856_gelen_kutusu_2';
 import * as migration_20261017_175852_satis_akisi from './20261017_175852_satis_akisi';
+import * as migration_20261017_192913_otomasyon_yetki from './20261017_192913_otomasyon_yetki';
 import * as migration_20261017_200000_mobil_yazilim_v8 from './20261017_200000_mobil_yazilim_v8';
 
 export const migrations = [
@@ -260,8 +261,13 @@ export const migrations = [
     name: '20261017_175852_satis_akisi',
   },
   {
+    up: migration_20261017_192913_otomasyon_yetki.up,
+    down: migration_20261017_192913_otomasyon_yetki.down,
+    name: '20261017_192913_otomasyon_yetki',
+  },
+  {
     up: migration_20261017_200000_mobil_yazilim_v8.up,
     down: migration_20261017_200000_mobil_yazilim_v8.down,
-    name: '20261017_200000_mobil_yazilim_v8',
+    name: '20261017_200000_mobil_yazilim_v8'
   },
 ];

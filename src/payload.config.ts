@@ -15,6 +15,7 @@ import { Users } from "./payload/collections/Users";
 import { Media } from "./payload/collections/Media";
 import { Categories } from "./payload/collections/Categories";
 import { Posts } from "./payload/collections/Posts";
+import { Automations } from "./payload/crm/automations";
 import { Leads } from "./payload/collections/Leads";
 import { Bookings } from "./payload/collections/Bookings";
 import { Services } from "./payload/collections/Services";
@@ -31,7 +32,7 @@ import { Activities, Companies, Contacts, Deals, Quotes } from "./payload/crm/co
 import { fillTenant, Tenants } from "./payload/crm/tenant";
 import { demoTenant } from "./payload/setup/demo";
 import { deleteTenantSettings, ensureTenantSettings } from "./payload/setup/tenant-settings";
-import { Projects, Tasks, Templates } from "./payload/ops/collections";
+import { Projects, Tasks, TaskComments, Templates } from "./payload/ops/collections";
 import { ChatbotSettings, ChatMessages, Conversations, Knowledge } from "./payload/chat/collections";
 import { guardCollection, guardGlobal, selectedTenant } from "./payload/business/roles";
 import { AuditLog, BusinessSettings, withAudit } from "./payload/business/collections";
@@ -182,9 +183,11 @@ export default buildConfig({
     tenanted(guardCollection(Companies, "crm", { privateRead: true, readAlso: ["ops"] })),
     tenanted(guardCollection(Quotes, "crm", { privateRead: true }), ["deal", "contact", "company"]),
     tenanted(guardCollection(Activities, "crm", { privateRead: true }), ["deal", "contact", "company", "booking"]),
+    tenanted(guardCollection(Automations, "crm", { privateRead: true })),
     /* Guru Operation */
     tenanted(guardCollection(Projects, "ops", { privateRead: true }), ["deal", "company", "contact"]),
     tenanted(guardCollection(Tasks, "ops", { privateRead: true }), ["project"]),
+    tenanted(guardCollection(TaskComments, "ops", { privateRead: true }), ["task"]),
     tenanted(guardCollection(Templates, "ops", { privateRead: true })),
     /* Guru Chatbot */
     tenanted(guardCollection(Conversations, "chat", { privateRead: true })),

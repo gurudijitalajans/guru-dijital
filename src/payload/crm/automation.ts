@@ -116,6 +116,9 @@ export async function leadToCrm(
   await logActivity(req, { type: "sistem", title: via === "chatbot" ? "Sohbetten talep geldi" : "Siteden talep geldi", body: [lead.subject, lead.message, lead.source && `Sayfa: ${lead.source}`].filter(Boolean).join("\n\n"), deal: deal.id, contact });
   await logActivity(req, { type: "gorev", title: `${FIRST_RESPONSE}: ${lead.name}`, deal: deal.id, contact, dueAt: nextBusinessDay(), done: false });
   await quietly(req, async () => req.payload.update({ collection: "leads", id: lead.id, data: { contact, deal: deal.id } as never, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));
+  /* Siteden gelen fırsat da "Aday" otomasyonlarından geçer */
+  const { runStageAutomations } = await import("./automations");
+  await quietly(req, async () => runStageAutomations(req, deal as never));
 }
 
 /** Randevu (bookings) oluşturulunca */
@@ -203,6 +206,9 @@ export async function dealStageChanged(req: PayloadRequest, deal: { id: Id; stag
   if (lead && LEAD_STATUS_FOR[deal.stage]) {
     await quietly(req, async () => req.payload.update({ collection: "leads", id: lead, data: { status: LEAD_STATUS_FOR[deal.stage] } as never, req, overrideAccess: true, context: { [CRM_SKIP]: true } }));
   }
+  /* Aşama otomasyonları (Ayarlar > Otomasyonlar) */
+  const { runStageAutomations } = await import("./automations");
+  await runStageAutomations(req, deal as never);
 }
 
 /** Fırsatta tutar, sorumlu ve tahmini kapanış değişince akışa "önce → sonra" kaydı */

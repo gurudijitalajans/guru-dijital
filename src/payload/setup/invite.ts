@@ -63,7 +63,8 @@ export const inviteUser: PayloadHandler = async (req) => {
   const tenant = await currentTenantId(req);
   if (!tenant || !canManage(req, tenant)) return json({ ok: false, error: "Ekibe yalnız işletme yöneticisi kişi ekleyebilir." }, 403);
   await addDataAndFileToRequest(req);
-  const b = (req.data ?? {}) as { name?: string; email?: string; role?: string; modules?: string[] };
+  const b = (req.data ?? {}) as { name?: string; email?: string; role?: string; modules?: string[]; scope?: string };
+  const scope = role_scope(b.scope);
   const name = String(b.name ?? "").trim().slice(0, 120);
   const email = String(b.email ?? "").trim().toLowerCase();
   if (!name || !EMAIL_RE.test(email)) return json({ ok: false, error: "Ad ve geçerli bir e-posta yazın." }, 400);
@@ -83,7 +84,7 @@ export const inviteUser: PayloadHandler = async (req) => {
     await req.payload.update({
       collection: "users",
       id: existing.id,
-      data: { tenants: [...(existing.tenants ?? []), { tenant: Number(tenant), role, modules: modules as never }] },
+      data: { tenants: [...(existing.tenants ?? []), { tenant: Number(tenant), role, modules: modules as never, scope }] },
       req,
       /* Yetki yukarıda denetlendi; satır kuralları (yalnız yönettiği işletme, açık modüller) Users kancasında */
       overrideAccess: true,
@@ -99,7 +100,7 @@ export const inviteUser: PayloadHandler = async (req) => {
 
   const user = await req.payload.create({
     collection: "users",
-    data: { name, email, password: randomBytes(24).toString("base64url"), role: "editor", invitePending: true, tenants: [{ tenant: Number(tenant), role, modules: modules as never }] },
+    data: { name, email, password: randomBytes(24).toString("base64url"), role: "editor", invitePending: true, tenants: [{ tenant: Number(tenant), role, modules: modules as never, scope }] },
     req,
     /* "Davet bekliyor" alanı yalnız buradan yazılır (alan erişimi kapalı) */
     overrideAccess: true,
@@ -127,3 +128,8 @@ export const resendInvite: PayloadHandler = async (req) => {
   if (!token) return json({ ok: false, error: "Davet az önce gönderildi. Birkaç saniye sonra tekrar deneyin." }, 429);
   return json({ ok: true, emailSent: emailReady(), ...(emailReady() ? {} : { link: `${panelOrigin(req)}/parola/${token}` }) });
 };
+
+/** Görünürlük: "kendi" seçilmediyse tüm kayıtlar */
+function role_scope(v?: string): "hepsi" | "kendi" {
+  return v === "kendi" ? "kendi" : "hepsi";
+}

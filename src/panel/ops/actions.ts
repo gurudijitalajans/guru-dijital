@@ -102,7 +102,8 @@ export async function deleteProject(id: number, withTasks: boolean): Promise<Res
   }
 }
 
-export type TaskInput = { title: string; project?: number | null; assignee?: number | null; startDate?: string | null; dueDate?: string | null; hours?: number | null; priority?: string; description?: string | null; checklist?: string[] };
+export type TaskInput = { title: string; project?: number | null; assignee?: number | null; startDate?: string | null; dueDate?: string | null; hours?: number | null; priority?: string; description?: string | null; checklist?: string[]; repeat?: string | null };
+const REPEAT = ["haftalik", "iki-haftalik", "aylik"];
 
 export async function updateTask(id: number, d: TaskInput): Promise<Result> {
   try {
@@ -119,6 +120,7 @@ export async function updateTask(id: number, d: TaskInput): Promise<Result> {
       hours: d.hours === null || d.hours === undefined || Number.isNaN(Number(d.hours)) ? null : Math.max(0, Number(d.hours)),
       priority: d.priority && PRIOS.includes(d.priority) ? d.priority : "normal",
       description: d.description?.trim().slice(0, 4000) || null,
+      ...(d.repeat !== undefined ? { repeat: d.repeat && REPEAT.includes(d.repeat) ? d.repeat : null } : {}),
     });
     return r ? { ok: true } : { ok: false, error: "Görev bulunamadı." };
   } catch (e) {
@@ -144,6 +146,7 @@ export async function createTask(d: TaskInput): Promise<Result> {
       priority: d.priority && PRIOS.includes(d.priority) ? d.priority : "normal",
       description: d.description?.trim() || undefined,
       checklist: (d.checklist ?? []).map((text) => text.trim()).filter(Boolean).slice(0, 30).map((text) => ({ text, done: false })),
+      ...(d.repeat && REPEAT.includes(d.repeat) ? { repeat: d.repeat } : {}),
       stage: "yapilacak",
     })) as { id: number };
     return { ok: true, id: doc.id };
@@ -204,6 +207,39 @@ export async function updateProject(id: number, d: Partial<ProjectInput>): Promi
       data.status = d.status;
     }
     return (await ctx.update("projects", id, data)) ? { ok: true, id } : { ok: false, error: "Proje bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Görev yorumu: bahsedilen kişilere ve görevin sorumlusuna bildirim gider (koleksiyon kancası) */
+export async function addTaskComment(taskId: number, text: string, mentions: number[] = []): Promise<Result> {
+  try {
+    const ctx = await ops();
+    const body = text.trim().slice(0, 4000);
+    if (!body) return { ok: false, error: "Yorum boş." };
+    if (!(await ctx.findByID("tasks", taskId, 0))) return { ok: false, error: "Görev bulunamadı." };
+    const team = new Set((await ctx.team()).map((m) => m.id));
+    await ctx.create("task-comments", { task: taskId, text: body, mentions: [...new Set(mentions)].filter((id) => team.has(id)) });
+    return { ok: true };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Yorumu yazan ya da işletme yöneticisi siler */
+export async function deleteTaskComment(id: number): Promise<Result> {
+  try {
+    const ctx = await ops();
+    const c = (await ctx.findByID("task-comments", id, 0)) as { author?: unknown } | null;
+    if (!c) return { ok: false, error: "Yorum bulunamadı." };
+    const author = c.author && typeof c.author === "object" ? (c.author as { id: number }).id : (c.author as number | null);
+    if (author !== ctx.user.id && !ctx.isTenantAdmin) return { ok: false, error: "Yalnız kendi yorumunuzu silebilirsiniz." };
+    return (await ctx.purge("task-comments", id)) ? { ok: true } : { ok: false, error: "Yorum bulunamadı." };
   } catch (e) {
     const lost = sessionLost(e);
     if (lost) return lost as never;

@@ -4,7 +4,7 @@ import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
 import { CRM_SKIP, logDealChanges, dealStageChanged, idOf, logActivity } from "./automation";
 import { quotePrint } from "./quote-print";
 import { importContacts } from "../setup/import";
-import { tenantAdminAccess } from "../business/roles";
+import { activityScope, ownerScope, tenantAdminAccess } from "../business/roles";
 
 /**
  * Guru CRM: firma, kişi, fırsat, not/görev ve teklif. Sitedeki talep ve
@@ -138,7 +138,8 @@ export const Deals: CollectionConfig = {
     description: "Satışa dönüşebilecek her iş. Aşamaları Satış hattı panosunda sürükleyerek değiştirebilirsiniz.",
   },
   defaultSort: "-updatedAt",
-  access,
+  /* Görünürlük "yalnız kendi" olan üye yalnız sorumlusu olduğu fırsatları görür ve değiştirir */
+  access: { ...access, read: ownerScope, update: ownerScope },
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, req }) => {
@@ -162,6 +163,8 @@ export const Deals: CollectionConfig = {
         if (context[CRM_SKIP]) return;
         if (operation === "create") {
           await logActivity(req, { type: "sistem", title: "Fırsat açıldı", deal: doc.id, contact: idOf(doc.contact), company: idOf(doc.company) });
+          const { runStageAutomations } = await import("./automations");
+          await runStageAutomations(req, doc);
         } else {
           if (previousDoc?.stage && previousDoc.stage !== doc.stage) await dealStageChanged(req, doc, previousDoc.stage);
           await logDealChanges(req, doc, previousDoc);
@@ -221,7 +224,7 @@ export const Activities: CollectionConfig = {
     description: "Arama, toplantı, not ve görevler. Kişi, firma ya da fırsat sayfasının altından da hızlıca eklenir.",
   },
   defaultSort: "-createdAt",
-  access,
+  access: { ...access, read: activityScope, update: activityScope },
   fields: [
     {
       type: "row",
@@ -292,7 +295,7 @@ export const Quotes: CollectionConfig = {
     description: "Kalem kalem teklif; toplamlar kendiliğinden hesaplanır. Kaydettikten sonra \"Yazdır / PDF\" ile müşteriye gönderilecek belge açılır.",
   },
   defaultSort: "-createdAt",
-  access,
+  access: { ...access, read: ownerScope, update: ownerScope },
   endpoints: [{ path: "/:id/yazdir", method: "get", handler: quotePrint }],
   hooks: {
     beforeChange: [
