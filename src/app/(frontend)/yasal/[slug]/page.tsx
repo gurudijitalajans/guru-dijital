@@ -240,8 +240,9 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
         </div>
       </div>
 
-      {/* Diğer yasal metinler */}
-      <section className="bg-soft py-12 md:py-14" aria-labelledby="diger-yasal">
+      {/* Diğer yasal metinler: beyaz zeminde, üstte ince çizgiyle; alt bilginin tonlu zemini hemen sonra başlar
+          (iki tonlu bölüm art arda gelince boşluklar birleşip hata gibi duruyordu) */}
+      <section className="border-t border-[rgb(1_20_65/0.08)] py-12 md:py-14" aria-labelledby="diger-yasal">
         <div className="container-g">
           <h2 id="diger-yasal" className="text-[22px] font-medium tracking-[-0.02em] text-heading md:text-[26px]">
             Diğer Yasal Metinler

@@ -44,6 +44,7 @@ import * as migration_20261017_175852_satis_akisi from './20261017_175852_satis_
 import * as migration_20261017_192913_otomasyon_yetki from './20261017_192913_otomasyon_yetki';
 import * as migration_20261017_200000_mobil_yazilim_v8 from './20261017_200000_mobil_yazilim_v8';
 import * as migration_20261017_210000_pano_sirasi from './20261017_210000_pano_sirasi';
+import * as migration_20261018_120000_blog_v3_temizlik from './20261018_120000_blog_v3_temizlik';
 
 export const migrations = [
   {
@@ -275,5 +276,10 @@ export const migrations = [
     up: migration_20261017_210000_pano_sirasi.up,
     down: migration_20261017_210000_pano_sirasi.down,
     name: '20261017_210000_pano_sirasi',
+  },
+  {
+    up: migration_20261018_120000_blog_v3_temizlik.up,
+    down: migration_20261018_120000_blog_v3_temizlik.down,
+    name: '20261018_120000_blog_v3_temizlik',
   },
 ];

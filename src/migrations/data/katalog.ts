@@ -194,3 +194,39 @@ export async function galeriGorseliYenile(payload: Payload, req: PayloadRequest,
   await ctx.payload.delete({ collection: 'media', id: oldId, req: ctx.req, ...ok }).catch(() => null)
   ctx.log(`${slug}-${key}: yenilendi (${prefix})`)
 }
+
+/** Blog kapakları v3: blog/v3/<slug>.webp yeni adla yüklenir ve yazının kapağı olur (yayın durumu korunur) */
+export async function blogKapaklari(payload: Payload, req: PayloadRequest, slugs: string[], prefix: string) {
+  const ctx: Ctx = { payload, req, log: (m) => payload.logger.info(`[katalog] ${m}`) }
+  for (const slug of slugs) {
+    const post = await one(ctx, 'posts', { slug: { equals: slug } }, true)
+    if (!post) {
+      ctx.log(`blog ${slug}: yazı yok`)
+      continue
+    }
+    const id = await upload(ctx, `blog/v3/${slug}.webp`, String(post.title), 'Blog kapakları', prefix)
+    const cur = typeof post.cover === 'object' && post.cover ? (post.cover as { id: number }).id : post.cover
+    if (!id || cur === id) continue
+    await ctx.payload.update({ collection: 'posts', id: post.id, data: { cover: id, _status: post._status ?? 'published' } as never, req: ctx.req, ...ok })
+    ctx.log(`blog ${slug}: kapak yenilendi (${prefix})`)
+  }
+}
+
+/** Hiçbir kayıtta (taslaklar dahil) ve sayfa ayarında kullanılmayan medyayı dosyasıyla birlikte siler */
+export async function kullanilmayanMedyayiSil(payload: Payload, req: PayloadRequest) {
+  const { mediaUsageMap } = await import('../../payload/media-usage')
+  const used = await mediaUsageMap(payload, req)
+  const all = await payload.find({ collection: 'media', depth: 0, limit: 5000, pagination: false, req, ...ok })
+  let n = 0
+  for (const m of all.docs as unknown as (Doc & { filename?: string })[]) {
+    if (used.has(String(m.id))) continue
+    await payload
+      .delete({ collection: 'media', id: m.id, req, ...ok })
+      .then(() => {
+        n++
+        payload.logger.info(`[katalog] silindi: ${m.filename ?? m.id}`)
+      })
+      .catch((e: unknown) => payload.logger.warn(`[katalog] silinemedi ${m.filename ?? m.id}: ${String(e)}`))
+  }
+  payload.logger.info(`[katalog] kullanılmayan medya: ${n} silindi, ${all.docs.length - n} kaldı`)
+}

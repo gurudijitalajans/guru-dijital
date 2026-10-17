@@ -79,3 +79,7 @@ for (const slug of ["web-tasarim", "sosyal-medya-yonetimi", "grafik-tasarim", "d
 /* Mobil Uygulama v5: tek kod tabanı, iki mağaza (markasız örnek uygulama) */
 import { mobil2Scenes, mobil2Screens } from "./h3/mobil2.mjs";
 HIZMET3_SCENES.push(...mobil2Scenes(), ...mobil2Screens());
+
+/* Blog kapakları v3: hizmet galerilerinin diliyle (h3/blog3.mjs) */
+import { blog3Scenes } from "./h3/blog3.mjs";
+HIZMET3_SCENES.push(...blog3Scenes());
