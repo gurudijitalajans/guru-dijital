@@ -1,9 +1,10 @@
 import { APIError, type CollectionConfig } from "payload";
-import { isAdmin, isLoggedIn } from "../access";
+import { isLoggedIn } from "../access";
 import { busySlots, submitBooking } from "../endpoints/forms";
 import { dayKey } from "../utils";
 import { kaynakField } from "../kaynak";
 import { bookingToCrm, CRM_SKIP, syncBookingActivity } from "../crm/automation";
+import { tenantAdminAccess } from "../business/roles";
 
 
 export const BOOKING_STATUS = [
@@ -28,7 +29,7 @@ export const Bookings: CollectionConfig = {
     listSearchableFields: ["name", "email", "topic"],
   },
   defaultSort: "date",
-  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
+  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: tenantAdminAccess },
   endpoints: [
     { path: "/gonder", method: "post", handler: submitBooking },
     { path: "/dolu", method: "get", handler: busySlots },

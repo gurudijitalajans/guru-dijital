@@ -60,3 +60,37 @@ export async function setQuoteStatus(id: number, status: string): Promise<Result
     return { ok: false, error: e instanceof Error && e.message ? e.message : "Kaydedilemedi." };
   }
 }
+
+/** Teklifi kalıcı siler (yalnız işletme yöneticisi) */
+export async function deleteQuote(id: number): Promise<Result> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
+  if (!ctx.isTenantAdmin) return { ok: false, error: "Teklifi yalnız işletme yöneticisi silebilir." };
+  try {
+    return (await ctx.remove("quotes", id)) ? { ok: true } : { ok: false, error: "Teklif bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return { ok: false, error: e instanceof Error && e.message ? e.message : "Silinemedi." };
+  }
+}
+
+/** Teklifin taslak kopyası: aynı kalemler ve bağlantılar, yeni numara, bugünün tarihi */
+export async function duplicateQuote(id: number): Promise<Result> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
+  const q = (await ctx.findByID("quotes", id, 0)) as null | { title: string; deal?: unknown; contact?: unknown; company?: unknown; items?: QuoteItemInput[] | null; notes?: string | null; terms?: string | null };
+  if (!q) return { ok: false, error: "Teklif bulunamadı." };
+  const rel = (v: unknown) => (v && typeof v === "object" ? (v as { id: number }).id : (v as number | null | undefined)) ?? null;
+  return saveQuote(null, {
+    title: `${q.title} (kopya)`.slice(0, 200),
+    deal: rel(q.deal),
+    contact: rel(q.contact),
+    company: rel(q.company),
+    items: (q.items ?? []).map((i) => ({ description: i.description, qty: i.qty, unit: i.unit, unitPrice: i.unitPrice, vatRate: String(i.vatRate) })),
+    notes: q.notes ?? undefined,
+    terms: q.terms ?? undefined,
+    issueDate: new Date().toISOString().slice(0, 10),
+    status: "taslak",
+  });
+}

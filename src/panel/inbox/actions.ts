@@ -12,9 +12,12 @@ import { kanalAdi } from "@/lib/analiz/kanal";
  * Chatbot, talep ve randevular CRM modülü ister.
  */
 
-export type InboxFilter = "bekleyen" | "sohbet" | "talep" | "randevu" | "kapanan" | "tumu";
+export type InboxFilter = "bekleyen" | "benim" | "sohbet" | "talep" | "randevu" | "kapanan" | "tumu";
 export type InboxKind = "sohbet" | "talep" | "randevu";
-export type InboxItem = { key: string; kind: InboxKind; title: string; preview: string; at: string; tone: Tone; label: string; waiting: boolean };
+export type InboxItem = { key: string; kind: InboxKind; title: string; preview: string; at: string; tone: Tone; label: string; waiting: boolean; assignee?: string };
+export type InboxPage = { items: InboxItem[]; more: boolean };
+/** Liste sayfa boyu; istemcideki Inbox aynı değeri kullanır */
+const INBOX_PAGE = 40;
 
 const TZ = "Europe/Istanbul";
 const dateFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: TZ, day: "numeric", month: "long", weekday: "long" });
@@ -28,27 +31,43 @@ type Lead = { id: number; name: string; email: string; phone?: string | null; se
 type Booking = { id: number; name: string; email: string; phone?: string | null; date: string; time: string; topic?: string | null; note?: string | null; status: string; contact?: unknown; deal?: unknown; kaynak?: { kanal?: string | null; utmCampaign?: string | null; utmSource?: string | null; ref?: string | null; giris?: string | null } | null; createdAt: string; updatedAt: string };
 const idOf = (v: unknown) => (v && typeof v === "object" ? (v as { id?: number }).id : (v as number | undefined)) ?? null;
 
-export async function listInbox(filter: InboxFilter): Promise<InboxItem[]> {
+/** Arama: kelimeler alanlardan birinde geçmeli (büyük küçük harf duyarsız) */
+const textWhere = (q: string, fields: string[]): Where | undefined => {
+  const words = q.trim().split(/\s+/).filter(Boolean).slice(0, 5);
+  if (!words.length) return undefined;
+  return { and: words.map((w) => ({ or: fields.map((f) => ({ [f]: { like: w } })) })) };
+};
+const both = (a?: Where, b?: Where): Where | undefined => (a && b ? { and: [a, b] } : (a ?? b));
+
+/**
+ * Liste: süzgeç, arama ve sayfa boyu. Her türden `limit` kadar okunur, tarihe
+ * göre birleştirilir; "Daha fazla" sayfa boyunu büyüterek ilerler.
+ */
+export async function listInbox(filter: InboxFilter, opts: { q?: string; limit?: number } = {}): Promise<InboxPage> {
   const ctx = await getPanelContext();
   const chat = ctx.has("chat");
   const crm = ctx.has("crm");
-  const want = (k: InboxKind) => filter === "tumu" || filter === "bekleyen" || filter === "kapanan" || filter === k;
+  const limit = Math.min(Math.max(Number(opts.limit) || INBOX_PAGE, INBOX_PAGE), 400);
+  const q = (opts.q ?? "").slice(0, 80);
+  const mine = filter === "benim";
+  const want = (k: InboxKind) => (mine ? k === "sohbet" : filter === "tumu" || filter === "bekleyen" || filter === "kapanan" || filter === k);
   const closed = filter === "kapanan";
   const waiting = filter === "bekleyen";
-  const convWhere: Where | undefined = waiting ? { needsReply: { equals: true } } : closed ? { status: { equals: "kapali" } } : filter === "tumu" ? undefined : { status: { not_equals: "kapali" } };
+  const convWhere: Where | undefined = mine ? { assignee: { equals: ctx.user.id } } : waiting ? { needsReply: { equals: true } } : closed ? { status: { equals: "kapali" } } : filter === "tumu" ? undefined : { status: { not_equals: "kapali" } };
   const leadWhere: Where | undefined = waiting ? { status: { equals: "yeni" } } : closed ? { status: { in: ["kazanildi", "kaybedildi"] } } : filter === "tumu" ? undefined : { status: { in: ["yeni", "iletisim", "teklif"] } };
   const bookWhere: Where | undefined = waiting ? { status: { equals: "bekliyor" } } : closed ? { status: { in: ["tamamlandi", "iptal"] } } : filter === "tumu" ? undefined : { status: { in: ["bekliyor", "onaylandi"] } };
-  const none = Promise.resolve({ docs: [] as unknown[] });
+  const none = Promise.resolve({ docs: [] as unknown[], totalDocs: 0 });
   const [convs, leads, books] = await Promise.all([
-    chat && want("sohbet") ? ctx.find("conversations", { where: convWhere, sort: "-lastMessageAt", limit: 60 }) : none,
-    crm && want("talep") ? ctx.find("leads", { where: leadWhere, sort: "-createdAt", limit: 60 }) : none,
-    crm && want("randevu") ? ctx.find("bookings", { where: bookWhere, sort: "-createdAt", limit: 60 }) : none,
+    chat && want("sohbet") ? ctx.find("conversations", { where: both(convWhere, textWhere(q, ["label", "name", "email", "phone", "lastText"])), sort: "-lastMessageAt", limit }) : none,
+    crm && want("talep") ? ctx.find("leads", { where: both(leadWhere, textWhere(q, ["name", "email", "phone", "message", "subject", "service"])), sort: "-createdAt", limit }) : none,
+    crm && want("randevu") ? ctx.find("bookings", { where: both(bookWhere, textWhere(q, ["name", "email", "phone", "topic", "note"])), sort: "-createdAt", limit }) : none,
   ]);
+  const who = await ctx.names();
   const items: InboxItem[] = [
     ...(convs.docs as Conv[]).map((c) => {
       const [tone, label] = c.needsReply ? (["bad", "Yanıt bekliyor"] as [Tone, string]) : (CONV[c.status] ?? ["plain", c.status]);
       const via = c.channel === "whatsapp" ? "WhatsApp · " : c.channel === "instagram" ? "Instagram · " : "";
-      return { key: `s${c.id}`, kind: "sohbet" as const, title: c.label || c.name || "Ziyaretçi", preview: `${via}${c.lastText ?? ""}`, at: c.lastMessageAt ?? c.updatedAt, tone, label, waiting: Boolean(c.needsReply) };
+      return { key: `s${c.id}`, kind: "sohbet" as const, title: c.label || c.name || "Ziyaretçi", preview: `${via}${c.lastText ?? ""}`, at: c.lastMessageAt ?? c.updatedAt, tone, label, waiting: Boolean(c.needsReply), assignee: c.assignee ? who(c.assignee) || undefined : undefined };
     }),
     ...(leads.docs as Lead[]).map((l) => {
       const [tone, label] = LEAD[l.status] ?? ["plain", l.status];
@@ -59,7 +78,8 @@ export async function listInbox(filter: InboxFilter): Promise<InboxItem[]> {
       return { key: `r${b.id}`, kind: "randevu" as const, title: b.name, preview: `${dateFmt.format(new Date(b.date))} ${b.time}${b.topic ? ` · ${b.topic}` : ""}`, at: b.createdAt, tone, label, waiting: b.status === "bekliyor" };
     }),
   ];
-  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 80);
+  const total = convs.totalDocs + leads.totalDocs + books.totalDocs;
+  return { items: items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit), more: total > limit };
 }
 
 export type ThreadMessage = { id: number; role: "ziyaretci" | "bot" | "ekip" | "sistem"; text: string; at: string; author?: string; unanswered?: boolean };
@@ -78,6 +98,9 @@ export type Thread = {
   deals: { id: number; title: string; stage: string; value: number }[];
   links: { label: string; href: string }[];
   canned: { label: string; text: string }[];
+  /** Sohbetin sorumlusu ve atanabilecek ekip (yalnız sohbet) */
+  assignee: number | null;
+  team: { id: number; name: string }[];
 };
 
 const STAGE: Record<string, string> = { aday: "Aday", gorusme: "Görüşme", teklif: "Teklif", kazanildi: "Kazanıldı", kaybedildi: "Kaybedildi" };
@@ -138,6 +161,8 @@ export async function getThread(key: string): Promise<Thread | null> {
         ...(idOf(c.booking) ? [{ label: "Randevu", href: `/panel/gelen?s=r${idOf(c.booking)}` }] : []),
       ],
       canned,
+      assignee: idOf(c.assignee),
+      team: (await ctx.team()).map((t) => ({ id: t.id, name: t.name })),
     };
   }
   if (kind === "t" && ctx.has("crm")) {
@@ -155,6 +180,8 @@ export async function getThread(key: string): Promise<Thread | null> {
       ...block,
       links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/leads/${l.id}` }],
       canned: [],
+      assignee: null,
+      team: [],
     };
   }
   if (kind === "r" && ctx.has("crm")) {
@@ -169,6 +196,8 @@ export async function getThread(key: string): Promise<Thread | null> {
       ...block,
       links: [{ label: "Tüm alanları düzenle", href: `/panel/duzenle/bookings/${b.id}` }],
       canned: [],
+      assignee: null,
+      team: [],
     };
   }
   return null;
@@ -186,6 +215,20 @@ export async function replyChat(id: number, text: string): Promise<Result> {
   try {
     await ctx.create("chat-messages", { conversation: id, role: "ekip", text: body });
     return { ok: true };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Sohbeti ekipten birine atar ya da atamayı kaldırır (null) */
+export async function assignConversation(id: number, userId: number | null): Promise<Result> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("chat")) return { ok: false, error: "Yetki yok." };
+  if (userId !== null && !(await ctx.team()).some((t) => t.id === userId)) return { ok: false, error: "Bu kişi ekipte değil." };
+  try {
+    return (await ctx.update("conversations", id, { assignee: userId })) ? { ok: true } : { ok: false, error: "Sohbet bulunamadı." };
   } catch (e) {
     const lost = sessionLost(e);
     if (lost) return lost as never;

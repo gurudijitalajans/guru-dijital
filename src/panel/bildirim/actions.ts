@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import type { PayloadRequest } from "payload";
+import type { PayloadRequest, Where } from "payload";
 import { cms } from "@/lib/cms";
 import { getPanelContext } from "../context";
 import { sessionLost } from "../errors";
@@ -12,16 +12,18 @@ async function me() {
   const ctx = await getPanelContext();
   const payload = await cms();
   const req = { headers: await headers(), user: ctx.user } as unknown as Partial<PayloadRequest>;
-  return { ctx, payload, opts: { user: ctx.user, req, overrideAccess: false } as const };
+  /* Seçili işletmenin bildirimleri ve işletmesiz (genel) olanlar; başka işletmenin kaydı karışmaz */
+  const scope: Where = { or: [{ tenant: { equals: ctx.tenant.id } }, { tenant: { exists: false } }] };
+  return { ctx, payload, scope, opts: { user: ctx.user, req, overrideAccess: false } as const };
 }
 
 /** Kişinin son bildirimleri ve okunmamış sayısı (yalnız kendi bildirimleri) */
 export async function listNotifications(): Promise<{ unread: number; items: Bildirim[] }> {
   try {
-    const { payload, opts } = await me();
+    const { payload, scope, opts } = await me();
     const [list, unread] = await Promise.all([
-      payload.find({ collection: "notifications", sort: "-createdAt", limit: 20, depth: 0, ...opts }),
-      payload.count({ collection: "notifications", where: { read: { equals: false } }, ...opts }),
+      payload.find({ collection: "notifications", where: scope, sort: "-createdAt", limit: 30, depth: 0, ...opts }),
+      payload.count({ collection: "notifications", where: { and: [scope, { read: { equals: false } }] }, ...opts }),
     ]);
     return {
       unread: unread.totalDocs,
@@ -36,8 +38,19 @@ export async function listNotifications(): Promise<{ unread: number; items: Bild
 /** Okundu işaretle: id verilirse o bildirim, verilmezse hepsi */
 export async function markRead(id?: number): Promise<{ ok: boolean }> {
   try {
-    const { payload, opts } = await me();
-    await payload.update({ collection: "notifications", where: id ? { id: { equals: id } } : { read: { equals: false } }, data: { read: true }, ...opts });
+    const { payload, scope, opts } = await me();
+    await payload.update({ collection: "notifications", where: id ? { id: { equals: id } } : { and: [scope, { read: { equals: false } }] }, data: { read: true }, ...opts });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** Bildirimi siler: id verilirse o bildirim, verilmezse okunmuş olanların hepsi (yalnız kendi bildirimleri) */
+export async function removeNotifications(id?: number): Promise<{ ok: boolean }> {
+  try {
+    const { payload, scope, opts } = await me();
+    await payload.delete({ collection: "notifications", where: id ? { id: { equals: id } } : { and: [scope, { read: { equals: true } }] }, ...opts });
     return { ok: true };
   } catch {
     return { ok: false };

@@ -62,6 +62,39 @@ export async function searchPanel(q: string): Promise<SearchHit[]> {
       ),
     );
   }
+  /* Gelen kutusu ve teklifler: eski talep, sohbet ve randevulara da buradan ulaşılır */
+  if (ctx.has("crm")) {
+    jobs.push(
+      ctx.find("leads", { where: { or: [like("name"), like("email"), like("phone"), like("message")] }, sort: "-createdAt", limit: 4 }).then((r) =>
+        r.docs.map((d) => {
+          const c = d as { id: number; name: string; email?: string | null; service?: string | null };
+          return { id: `l${c.id}`, label: c.name, detail: [c.service, c.email].filter(Boolean).join(" · "), group: "Talep", href: `/panel/gelen?f=tumu&s=t${c.id}` };
+        }),
+      ),
+      ctx.find("bookings", { where: { or: [like("name"), like("email"), like("phone")] }, sort: "-createdAt", limit: 3 }).then((r) =>
+        r.docs.map((d) => {
+          const c = d as { id: number; name: string; date: string; time: string };
+          return { id: `b${c.id}`, label: c.name, detail: `${new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(c.date))} ${c.time}`, group: "Randevu", href: `/panel/gelen?f=tumu&s=r${c.id}` };
+        }),
+      ),
+      ctx.find("quotes", { where: { or: [like("title"), like("number")] }, sort: "-createdAt", limit: 4 }).then((r) =>
+        r.docs.map((d) => {
+          const c = d as { id: number; title: string; number?: string | null };
+          return { id: `q${c.id}`, label: c.title, detail: c.number ?? undefined, group: "Teklif", href: `/panel/teklifler/${c.id}` };
+        }),
+      ),
+    );
+  }
+  if (ctx.has("chat")) {
+    jobs.push(
+      ctx.find("conversations", { where: { or: [like("label"), like("name"), like("email"), like("phone"), like("lastText")] }, sort: "-lastMessageAt", limit: 4 }).then((r) =>
+        r.docs.map((d) => {
+          const c = d as { id: number; label?: string | null; name?: string | null; lastText?: string | null };
+          return { id: `s${c.id}`, label: c.label || c.name || "Ziyaretçi", detail: c.lastText ?? undefined, group: "Sohbet", href: `/panel/gelen?f=tumu&s=s${c.id}` };
+        }),
+      ),
+    );
+  }
   const all = await Promise.all(jobs.map((j) => j.catch(() => [] as SearchHit[])));
   return all.flat();
 }

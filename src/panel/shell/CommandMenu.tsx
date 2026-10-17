@@ -51,7 +51,7 @@ export function CommandMenu({ open, onOpenChange, nav }: { open: boolean; onOpen
           <Dialog.Title className="sr-only">Ara</Dialog.Title>
           <Dialog.Description className="sr-only">Sayfalara gidin ya da kayıt arayın</Dialog.Description>
           <Command shouldFilter={false} label="Ara" className="text-text">
-            <Command.Input value={q} onValueChange={setQ} placeholder="Kişi, firma, fırsat, görev ya da sayfa ara" className="w-full border-0 border-b border-line bg-transparent px-4.5 py-4 text-[16px] text-ink outline-none placeholder:text-muted" />
+            <Command.Input value={q} onValueChange={setQ} placeholder="Kişi, talep, sohbet, fırsat, teklif ya da sayfa ara" className="w-full border-0 border-b border-line bg-transparent px-4.5 py-4 text-[16px] text-ink outline-none placeholder:text-muted" />
             <Command.List className="max-h-[55vh] overflow-y-auto p-1.5">
               <Command.Empty className="px-3 py-4 text-[14px] text-muted">{loading ? "Aranıyor…" : q.trim().length < 2 ? "En az iki harf yazın." : "Sonuç yok."}</Command.Empty>
               {groups.map((g) => (

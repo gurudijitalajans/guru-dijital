@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import { Dialog, DropdownMenu } from "radix-ui";
-import { ArrowUpRight, Check, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, UserRound, X } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, UserRound, X } from "lucide-react";
 import { toast } from "sonner";
 import { PanelMark } from "../ui/panel-mark";
 import { cn } from "@/lib/utils";
@@ -73,13 +73,65 @@ function TenantSwitcher({ tenant, tenants }: { tenant: ShellTenant; tenants: She
   );
 }
 
+/* Daraltılan menü bölümleri tarayıcıda hatırlanır (sunucu çizimi hepsini açık gösterir) */
+const NAV_KEY = "guru-menu-kapali";
+const navListeners = new Set<() => void>();
+const readClosed = () => {
+  try {
+    return localStorage.getItem(NAV_KEY) ?? "";
+  } catch {
+    return "";
+  }
+};
+function useClosedGroups(): [Set<string>, (label: string) => void] {
+  const raw = useSyncExternalStore(
+    (cb) => {
+      navListeners.add(cb);
+      return () => navListeners.delete(cb);
+    },
+    readClosed,
+    () => "",
+  );
+  const closed = useMemo(() => new Set(raw ? raw.split("|") : []), [raw]);
+  const toggle = (label: string) => {
+    const next = new Set(closed);
+    if (next.has(label)) next.delete(label);
+    else next.add(label);
+    try {
+      localStorage.setItem(NAV_KEY, [...next].join("|"));
+    } catch {
+      /* gizli pencerede kaydedilmez; bu oturumda yine çalışır */
+    }
+    navListeners.forEach((f) => f());
+  };
+  return [closed, toggle];
+}
+
 function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; onNavigate?: () => void }) {
+  const [closed, toggle] = useClosedGroups();
   return (
-    <nav aria-label="Ana menü" className="min-h-0 flex-1 overflow-y-auto px-2.5">
-      {nav.map((g) => (
-        <div key={g.label || "son"} className="mb-1">
-          {g.label ? <div className="mx-2.5 mt-4 mb-1 text-[11px] font-semibold text-nav-label">{g.label}</div> : <div className="mt-4 border-t border-white/10" />}
-          {g.items.map((it) => {
+    <nav aria-label="Ana menü" className="nav-scroll min-h-0 flex-1 overflow-y-auto px-2.5">
+      {nav.map((g) => {
+        /* Açık sayfa daraltılmış bölümdeyse bölüm yine açık görünür */
+        const shut = Boolean(g.label) && closed.has(g.label) && !g.items.some((it) => isActive(path, it.href));
+        const waiting = g.items.reduce((n, it) => n + (it.count ?? 0), 0);
+        return (
+          <div key={g.label || "son"} className="mb-1 [@media(max-height:860px)]:mb-0">
+            {g.label ? (
+              <button
+                type="button"
+                onClick={() => toggle(g.label)}
+                aria-expanded={!shut}
+                className="mx-1 mt-3.5 mb-0.5 flex w-[calc(100%-8px)] items-center gap-1 rounded-[6px] px-1.5 py-0.5 text-left text-[11px] font-semibold text-nav-label hover:text-nav-text [@media(max-height:860px)]:mt-2.5"
+              >
+                <span className="flex-1">{g.label}</span>
+                {shut && waiting ? <span className="tabular rounded-full bg-accent px-1.5 text-[10px] text-white">{waiting > 99 ? "99+" : waiting}</span> : null}
+                <ChevronDown className={cn("size-3.5 transition-transform", shut && "-rotate-90")} aria-hidden />
+              </button>
+            ) : (
+              <div className="mt-4 border-t border-white/10" />
+            )}
+            {shut ? null : g.items.map((it) => {
             const active = isActive(path, it.href);
             return (
               <Link
@@ -90,7 +142,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
                 aria-current={active ? "page" : undefined}
                 title={it.legacy ? "İçerik ekranında, canlı önizlemeyle açılır" : undefined}
                 className={cn(
-                  "flex min-h-10 pointer-coarse:min-h-11 items-center gap-2.5 rounded-[8px] px-2.5 text-nav-text no-underline hover:bg-nav-hover hover:text-nav-strong",
+                  "flex min-h-10 pointer-coarse:min-h-11 items-center gap-2.5 rounded-[8px] px-2.5 text-nav-text no-underline hover:bg-nav-hover hover:text-nav-strong [@media(max-height:860px)]:min-h-9",
                   active && "bg-nav-hover text-nav-strong shadow-[inset_3px_0_0_var(--accent)]",
                 )}
               >
@@ -105,8 +157,9 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
               </Link>
             );
           })}
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -240,7 +293,7 @@ export function Shell(props: Props) {
             <Search className="size-4 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate">
               <span className="sm:hidden">Ara</span>
-              <span className="hidden sm:inline">Kişi, firma, fırsat, görev ya da sayfa ara</span>
+              <span className="hidden sm:inline">Kişi, talep, sohbet, fırsat, teklif ya da sayfa ara</span>
             </span>
             <kbd className="hidden rounded-[5px] border border-line bg-surface px-1.5 font-mono text-[11px] sm:inline pointer-coarse:hidden">⌘K</kbd>
           </button>

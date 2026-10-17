@@ -17,17 +17,17 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   const filters: FilterDef[] = [
     { key: "bekleyen", label: "Bekleyen" },
-    ...(chat ? [{ key: "sohbet" as const, label: "Sohbetler" }] : []),
+    ...(chat ? [{ key: "benim" as const, label: "Bana atanan" }, { key: "sohbet" as const, label: "Sohbetler" }] : []),
     ...(crm ? [{ key: "talep" as const, label: "Talepler" }, { key: "randevu" as const, label: "Randevular" }] : []),
     { key: "kapanan", label: "Kapanan" },
     { key: "tumu", label: "Tümü" },
   ];
   const filter = (filters.some((f) => f.key === sp.f) ? sp.f : "bekleyen") as InboxFilter;
-  const [items, thread] = await Promise.all([listInbox(filter), sp.s ? getThread(sp.s) : Promise.resolve(null)]);
+  const [page, thread] = await Promise.all([listInbox(filter), sp.s ? getThread(sp.s) : Promise.resolve(null)]);
   return (
     <>
       <PageHeader title="Gelen kutusu" description={chat && crm ? "Sitedeki sohbetler, form talepleri ve randevular tek listede." : chat ? "Sitedeki sohbetler." : "Form talepleri ve randevular tek listede."} />
-      <Inbox filters={filters} initialFilter={filter} initialItems={items} initialThread={thread} canDelete={ctx.isTenantAdmin} />
+      <Inbox filters={filters} initialFilter={filter} initialPage={page} me={ctx.user.id} initialThread={thread} canDelete={ctx.isTenantAdmin} />
     </>
   );
 }

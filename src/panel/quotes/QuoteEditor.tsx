@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { ArrowLeft, FileText, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, FileText, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { findContacts } from "../deals/actions";
-import { saveQuote, setQuoteStatus, type QuoteItemInput } from "./actions";
+import { deleteQuote, duplicateQuote, saveQuote, setQuoteStatus, type QuoteItemInput } from "./actions";
 import { QUOTE_STATUS } from "./QuotesList";
 
 export type DealOption = { id: number; title: string; contact: { id: number; name: string } | null; company: { id: number; name: string } | null; value: number; service: string };
@@ -44,7 +44,7 @@ const totals = (items: QuoteItemInput[]) => {
 const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 const num = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
 
-export function QuoteEditor({ quote, deals }: { quote: EditorQuote; deals: DealOption[] }) {
+export function QuoteEditor({ quote, deals, canDelete = false }: { quote: EditorQuote; deals: DealOption[]; canDelete?: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState(quote);
   const [synced, setSynced] = useState(quote);
@@ -55,6 +55,7 @@ export function QuoteEditor({ quote, deals }: { quote: EditorQuote; deals: DealO
   const [cq, setCq] = useState("");
   const [hits, setHits] = useState<{ id: number; name: string; detail: string }[]>([]);
   const [pending, start] = useTransition();
+  const [confirm, setConfirm] = useState(false);
   const t = totals(q.items);
   const set = (patch: Partial<EditorQuote>) => setQ((x) => ({ ...x, ...patch }));
   const setItem = (i: number, patch: Partial<QuoteItemInput>) => set({ items: q.items.map((it, k) => (k === i ? { ...it, ...patch } : it)) });
@@ -84,6 +85,25 @@ export function QuoteEditor({ quote, deals }: { quote: EditorQuote; deals: DealO
       toast.success(s === "gonderildi" ? "Gönderildi olarak işaretlendi; fırsat Teklif aşamasına geçer." : s === "kabul" ? "Kabul edildi; fırsat Kazanıldı aşamasına geçer." : `Durum: ${QUOTE_STATUS[s][1]}`);
       router.refresh();
     });
+  const copy = () =>
+    q.id &&
+    start(async () => {
+      const r = await duplicateQuote(q.id!);
+      if (!r.ok || !r.id) return void toast.error(r.error ?? "Kopyalanamadı.");
+      toast.success("Taslak kopya oluşturuldu.");
+      router.push(`/panel/teklifler/${r.id}`);
+    });
+  const remove = () =>
+    q.id &&
+    start(async () => {
+      const r = await deleteQuote(q.id!);
+      if (!r.ok) {
+        setConfirm(false);
+        return void toast.error(r.error ?? "Silinemedi.");
+      }
+      toast.success("Teklif silindi.");
+      router.push("/panel/teklifler");
+    });
   const [tone, label] = QUOTE_STATUS[q.status] ?? ["plain", q.status];
 
   return (
@@ -106,17 +126,41 @@ export function QuoteEditor({ quote, deals }: { quote: EditorQuote; deals: DealO
         </div>
         <div className="flex flex-wrap gap-2">
           {q.id ? (
-            <Button asChild>
-              <a href={`/api/quotes/${q.id}/yazdir`} target="_blank" rel="noreferrer">
-                <FileText /> Belgeyi aç
-              </a>
-            </Button>
+            <>
+              <Button asChild>
+                <a href={`/api/quotes/${q.id}/yazdir`} target="_blank" rel="noreferrer">
+                  <FileText /> Belgeyi aç
+                </a>
+              </Button>
+              <Button type="button" disabled={pending} onClick={copy}>
+                <Copy /> Kopyala
+              </Button>
+              {canDelete && !confirm ? (
+                <Button type="button" variant="danger" disabled={pending} onClick={() => setConfirm(true)}>
+                  <Trash2 /> Sil
+                </Button>
+              ) : null}
+            </>
           ) : null}
           <Button type="submit" variant="primary" disabled={pending}>
             {pending ? "Kaydediliyor…" : "Kaydet"}
           </Button>
         </div>
       </div>
+
+      {confirm ? (
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-card border border-line bg-sunken px-3 py-2.5" role="alert">
+          <span className="text-[14px] text-ink">Teklif {q.number} kalıcı olarak silinsin mi? Bağlı fırsat ve kişi kalır.</span>
+          <span className="ml-auto flex gap-2">
+            <Button type="button" size="sm" variant="danger" disabled={pending} onClick={remove}>
+              Evet, sil
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={() => setConfirm(false)}>
+              Vazgeç
+            </Button>
+          </span>
+        </div>
+      ) : null}
 
       {q.id ? (
         <div className="mb-4 flex flex-wrap items-center gap-1.5 rounded-card border border-line bg-surface px-3 py-2.5" role="group" aria-label="Durum">

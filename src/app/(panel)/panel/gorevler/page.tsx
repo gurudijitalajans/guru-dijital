@@ -74,6 +74,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
         tasks={tasks}
         detail={detail}
         me={ctx.user.id}
+        canDelete={ctx.isTenantAdmin}
         team={team.map((m) => ({ id: m.id, name: m.name }))}
         projects={(projects.docs as { id: number; title: string }[]).map((p) => ({ id: p.id, title: p.title }))}
         initialView={sp.gorunum === "liste" ? "liste" : "pano"}

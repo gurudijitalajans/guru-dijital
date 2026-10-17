@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Dialog } from "radix-ui";
-import { Plus, Search, X } from "lucide-react";
+import { Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge, type Tone } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Sheet, SheetSection } from "../ui/sheet";
-import { createProject, createTask, updateProject } from "./actions";
+import { createProject, createTask, deleteProject, updateProject } from "./actions";
 
 export type ProjectRow = { id: number; title: string; status: string; who: string; owner: string; due: string | null; late: boolean; total: number; done: number; lateTasks: number };
 export type ProjectDetail = {
@@ -35,7 +35,7 @@ const dFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "UTC", day: "numeric",
 const fmt = (d: string | null) => (d ? dFmt.format(new Date(`${d}T12:00:00Z`)) : "");
 const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 
-export function ProjectsView({ rows, detail, team, templates, deals, me, startNew, fromDeal }: { rows: ProjectRow[]; detail: ProjectDetail | null; team: Opt[]; templates: Opt[]; deals: Opt[]; me: number; startNew: boolean; fromDeal: number | null }) {
+export function ProjectsView({ rows, detail, team, templates, deals, me, startNew, fromDeal, canDelete = false }: { rows: ProjectRow[]; detail: ProjectDetail | null; team: Opt[]; templates: Opt[]; deals: Opt[]; me: number; startNew: boolean; fromDeal: number | null; canDelete?: boolean }) {
   const router = useRouter();
   const path = usePathname();
   const params = useSearchParams();
@@ -126,7 +126,7 @@ export function ProjectsView({ rows, detail, team, templates, deals, me, startNe
         fromDeal={fromDeal}
         onSaved={(id) => setParams({ proje: String(id), yeni: null, firsat: null })}
       />
-      <ProjectSheet detail={detail} team={team} onClose={() => setParams({ proje: null })} />
+      <ProjectSheet canDelete={canDelete} detail={detail} team={team} onClose={() => setParams({ proje: null })} />
     </>
   );
 }
@@ -224,17 +224,31 @@ function NewProject({ open, onOpenChange, team, templates, deals, me, fromDeal, 
   );
 }
 
-function ProjectSheet({ detail, team, onClose }: { detail: ProjectDetail | null; team: Opt[]; onClose: () => void }) {
+function ProjectSheet({ detail, team, canDelete, onClose }: { detail: ProjectDetail | null; team: Opt[]; canDelete: boolean; onClose: () => void }) {
   const router = useRouter();
   const [busy, start] = useTransition();
   const [edit, setEdit] = useState<null | { title: string; dueDate: string; owner: string; description: string }>(null);
   const [task, setTask] = useState({ title: "", assignee: "" });
   const [forId, setForId] = useState<number | null>(null);
+  const [confirm, setConfirm] = useState(false);
   if ((detail?.id ?? null) !== forId) {
     setForId(detail?.id ?? null);
     setEdit(null);
     setTask({ title: "", assignee: "" });
+    setConfirm(false);
   }
+  const remove = (withTasks: boolean) =>
+    detail &&
+    start(async () => {
+      const r = await deleteProject(detail.id, withTasks);
+      if (!r.ok) {
+        setConfirm(false);
+        return void toast.error(r.error ?? "Silinemedi.");
+      }
+      toast.success(withTasks ? "Proje ve görevleri silindi." : "Proje silindi; görevleri projesiz kaldı.");
+      onClose();
+      router.refresh();
+    });
   const run = (job: () => Promise<{ ok: boolean; error?: string }>, done: string, after?: () => void) =>
     start(async () => {
       const r = await job();
@@ -384,6 +398,39 @@ function ProjectSheet({ detail, team, onClose }: { detail: ProjectDetail | null;
               </Button>
             </form>
           </SheetSection>
+
+          {canDelete ? (
+            <SheetSection title="Projeyi sil">
+              {confirm ? (
+                <div className="grid gap-2">
+                  <span className="text-[14px] text-ink">{detail.tasks.length ? `Projenin ${detail.tasks.length} görevi var. Ne yapılsın?` : "Proje kalıcı olarak silinsin mi?"}</span>
+                  <div className="flex flex-wrap gap-2">
+                    {detail.tasks.length ? (
+                      <>
+                        <Button type="button" size="sm" variant="danger" onClick={() => remove(true)} disabled={busy}>
+                          Görevleriyle sil
+                        </Button>
+                        <Button type="button" size="sm" onClick={() => remove(false)} disabled={busy}>
+                          Yalnız projeyi sil
+                        </Button>
+                      </>
+                    ) : (
+                      <Button type="button" size="sm" variant="danger" onClick={() => remove(false)} disabled={busy}>
+                        Evet, sil
+                      </Button>
+                    )}
+                    <Button type="button" size="sm" variant="ghost" onClick={() => setConfirm(false)}>
+                      Vazgeç
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button type="button" size="sm" variant="danger" onClick={() => setConfirm(true)}>
+                  <Trash2 /> Sil
+                </Button>
+              )}
+            </SheetSection>
+          ) : null}
         </>
       ) : null}
     </Sheet>

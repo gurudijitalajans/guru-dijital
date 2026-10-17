@@ -7,6 +7,7 @@ import { deliverOutbound, metaWebhook } from "../channels/meta";
 import { resetKnowledge } from "./knowledge";
 import { revalidate } from "../utils";
 import { crawlSite, importDocument } from "../channels/importers";
+import { tenantAdminAccess } from "../business/roles";
 
 /**
  * Guru Chatbot: sitedeki sohbet balonu, ekip gelen kutusu ve bilgi tabanı.
@@ -169,7 +170,7 @@ export const Conversations: CollectionConfig = {
     description: "Sitedeki sohbetler. Yanıtlamak için menüdeki Sohbetler ekranını kullanın.",
   },
   defaultSort: "-lastMessageAt",
-  access: { read: isLoggedIn, create: isAdmin, update: isLoggedIn, delete: isAdmin },
+  access: { read: isLoggedIn, create: isAdmin, update: isLoggedIn, delete: tenantAdminAccess },
   endpoints: [
     { path: "/mesaj", method: "post", handler: chatSend },
     { path: "/akis", method: "get", handler: chatPoll },
@@ -234,7 +235,7 @@ export const ChatMessages: CollectionConfig = {
   labels: { singular: "Sohbet mesajı", plural: "Sohbet mesajları" },
   admin: { useAsTitle: "text", group: GROUP, hidden: true },
   defaultSort: "createdAt",
-  access: { read: isLoggedIn, create: isLoggedIn, update: isAdmin, delete: isAdmin },
+  access: { read: isLoggedIn, create: isLoggedIn, update: isAdmin, delete: tenantAdminAccess },
   hooks: {
     beforeChange: [
       ({ data, operation, req }) => {

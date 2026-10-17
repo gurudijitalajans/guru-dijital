@@ -9,6 +9,7 @@ import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
+import { contactValue } from "../ui/contact-link";
 import { cn } from "@/lib/utils";
 
 export type PersonRow = { id: number; name: string; title: string; email: string; phone: string; company: string; source: string };
@@ -140,7 +141,7 @@ export function PeopleView({ view, q, page, pages, total, people, companies, sel
               ) : null}
             </div>
             <SheetSection title="Bilgiler">
-              <Fields rows={selected.fields} />
+              <Fields rows={selected.fields.map(([k, v]) => [k, typeof v === "string" ? contactValue(k, v) : v] as [string, React.ReactNode])} />
             </SheetSection>
             {selected.people ? (
               <SheetSection title={`Kişiler (${selected.people.length})`}>

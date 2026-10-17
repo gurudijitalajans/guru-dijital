@@ -80,6 +80,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
         templates={(templates.docs as { id: number; name: string }[]).map((t) => ({ id: t.id, name: t.name }))}
         deals={(deals.docs as { id: number; title: string }[]).map((d) => ({ id: d.id, title: d.title }))}
         me={ctx.user.id}
+        canDelete={ctx.isTenantAdmin}
         startNew={Boolean(sp.yeni)}
         fromDeal={fromDeal}
       />

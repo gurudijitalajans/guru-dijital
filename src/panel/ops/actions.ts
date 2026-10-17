@@ -54,6 +54,54 @@ export async function toggleCheck(id: number, index: number, done: boolean): Pro
   }
 }
 
+/** Kontrol listesini baştan yazar: madde ekleme, silme ve yeniden adlandırma (en çok 30 madde) */
+export async function setChecklist(id: number, items: { text: string; done: boolean }[]): Promise<Result> {
+  try {
+    const ctx = await ops();
+    const list = items
+      .map((c) => ({ text: String(c.text ?? "").trim().slice(0, 200), done: Boolean(c.done) }))
+      .filter((c) => c.text)
+      .slice(0, 30);
+    return (await ctx.update("tasks", id, { checklist: list })) ? { ok: true } : { ok: false, error: "Görev bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Görevi kalıcı siler (yalnız işletme yöneticisi) */
+export async function deleteTask(id: number): Promise<Result> {
+  try {
+    const ctx = await ops();
+    if (!ctx.isTenantAdmin) return { ok: false, error: "Görevi yalnız işletme yöneticisi silebilir." };
+    return (await ctx.remove("tasks", id)) ? { ok: true } : { ok: false, error: "Görev bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
+/** Projeyi siler; withTasks ise görevleri de silinir, değilse görevler projesiz kalır */
+export async function deleteProject(id: number, withTasks: boolean): Promise<Result> {
+  try {
+    const ctx = await ops();
+    if (!ctx.isTenantAdmin) return { ok: false, error: "Projeyi yalnız işletme yöneticisi silebilir." };
+    if (!(await ctx.findByID("projects", id, 0))) return { ok: false, error: "Proje bulunamadı." };
+    const tasks = await ctx.find("tasks", { where: { project: { equals: id } }, limit: 1000, select: { id: true } });
+    for (const t of tasks.docs) {
+      if (withTasks) await ctx.remove("tasks", t.id);
+      else await ctx.update("tasks", t.id, { project: null });
+    }
+    return (await ctx.remove("projects", id)) ? { ok: true } : { ok: false, error: "Proje bulunamadı." };
+  } catch (e) {
+    const lost = sessionLost(e);
+    if (lost) return lost as never;
+    return fail(e);
+  }
+}
+
 export type TaskInput = { title: string; project?: number | null; assignee?: number | null; startDate?: string | null; dueDate?: string | null; hours?: number | null; priority?: string; description?: string | null; checklist?: string[] };
 
 export async function updateTask(id: number, d: TaskInput): Promise<Result> {

@@ -64,6 +64,8 @@ export function selectedTenant(req: Pick<PayloadRequest, "headers" | "user">): s
 /** İstekteki seçili işletmeye göre modül yetkisi */
 export const canReq = (req: Pick<PayloadRequest, "headers" | "user">, mod: Module) => can(req.user, mod, isAdminUser(req.user) ? undefined : selectedTenant(req));
 export const isTenantAdminReq = (req: Pick<PayloadRequest, "headers" | "user">) => isTenantAdmin(req.user, isAdminUser(req.user) ? undefined : selectedTenant(req));
+/** Silme kuralı: Guru yöneticisi ya da seçili işletmenin yöneticisi (kayıt işletmeye eklentiyle süzülür) */
+export const tenantAdminAccess: Access = ({ req }) => isTenantAdminReq(req);
 
 type AnyAccess = Access | undefined;
 const wrap =

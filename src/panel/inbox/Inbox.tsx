@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, Bot, CalendarCheck, FileText, MessageCircle, Send, Trash2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { ArrowLeft, Bot, CalendarCheck, FileText, Info, MessageCircle, Search, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Fields } from "../ui/sheet";
-import { deleteInboxItem, getThread, listInbox, replyChat, setConversation, setStatus, type InboxFilter, type InboxItem, type InboxKind, type Thread } from "./actions";
+import { contactValue } from "../ui/contact-link";
+import { assignConversation, deleteInboxItem, getThread, listInbox, replyChat, setConversation, setStatus, type InboxFilter, type InboxKind, type InboxPage, type Thread } from "./actions";
 
+/* Sunucudaki sayfa boyuyla aynı (actions.ts) */
+const INBOX_PAGE = 40;
 const TZ = "Europe/Istanbul";
 const stamp = (iso: string) => {
   const d = new Date(iso);
@@ -30,9 +34,13 @@ const writeUrl = (filter: InboxFilter, key: string) => {
   window.history.replaceState(null, "", `/panel/gelen${p.toString() ? `?${p}` : ""}`);
 };
 
-export function Inbox({ filters, initialFilter, initialItems, initialThread, canDelete = false }: { filters: FilterDef[]; initialFilter: InboxFilter; initialItems: InboxItem[]; initialThread: Thread | null; canDelete?: boolean }) {
+export function Inbox({ filters, initialFilter, initialPage, initialThread, me, canDelete = false }: { filters: FilterDef[]; initialFilter: InboxFilter; initialPage: InboxPage; initialThread: Thread | null; me: number; canDelete?: boolean }) {
   const [filter, setFilter] = useState<InboxFilter>(initialFilter);
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState(initialPage.items);
+  const [more, setMore] = useState(initialPage.more);
+  const [q, setQ] = useState("");
+  const [limit, setLimit] = useState(INBOX_PAGE);
+  const [info, setInfo] = useState(false);
   const [thread, setThread] = useState<Thread | null>(initialThread);
   const [key, setKey] = useState(initialThread?.key ?? "");
   const [reply, setReply] = useState("");
@@ -40,7 +48,13 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
   const [confirm, setConfirm] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
-  const reloadList = useCallback(async (f: InboxFilter) => setItems(await listInbox(f)), []);
+  /* Liste her zaman güncel süzgeç, arama ve sayfa boyuyla okunur (yoklama da) */
+  const params = useRef({ q: "", limit: INBOX_PAGE });
+  const reloadList = useCallback(async (f: InboxFilter) => {
+    const r = await listInbox(f, params.current);
+    setItems(r.items);
+    setMore(r.more);
+  }, []);
   const reloadThread = useCallback(async (k: string) => {
     if (!k) return setThread(null);
     const t = await getThread(k);
@@ -63,16 +77,52 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
 
   const pickFilter = (f: InboxFilter) => {
     setFilter(f);
+    setLimit(INBOX_PAGE);
+    params.current = { q, limit: INBOX_PAGE };
     writeUrl(f, key);
     start(() => reloadList(f));
   };
-  const open = (k: string) => {
-    setKey(k);
-    setReply("");
-    setConfirm(false);
-    writeUrl(filter, k);
-    start(() => reloadThread(k));
+  /* Arama: yazmayı bırakınca (300 ms) ilk sayfa yeniden okunur */
+  const firstSearch = useRef(true);
+  useEffect(() => {
+    if (firstSearch.current) {
+      firstSearch.current = false;
+      return;
+    }
+    const t = setTimeout(() => {
+      setLimit(INBOX_PAGE);
+      params.current = { q, limit: INBOX_PAGE };
+      start(() => reloadList(filter));
+    }, 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
+  const loadMore = () => {
+    const next = limit + INBOX_PAGE;
+    setLimit(next);
+    params.current = { q, limit: next };
+    start(() => reloadList(filter));
   };
+  const open = useCallback(
+    (k: string) => {
+      setKey(k);
+      setReply("");
+      setConfirm(false);
+      setInfo(false);
+      writeUrl(filter, k);
+      start(() => reloadThread(k));
+    },
+    [filter, reloadThread],
+  );
+  /* Bildirim ya da arama paletinden gelen ?s= değişikliği (sayfa açıkken) kaydı açar */
+  const sp = useSearchParams();
+  const urlKey = sp.get("s") ?? "";
+  useEffect(() => {
+    if (!urlKey || urlKey === key) return;
+    const t = setTimeout(() => open(urlKey), 0);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlKey]);
   const back = () => {
     setKey("");
     setThread(null);
@@ -95,17 +145,41 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
       back();
       await reloadList(filter);
     });
+  /* Metin, gönderim başarılı olana kadar kutuda kalır; hata olursa geri yazılır */
   const send = () => {
     if (!thread || !reply.trim()) return;
     const text = reply;
     setReply("");
-    run(() => replyChat(thread.id, text), "Yanıt gönderildi.");
+    start(async () => {
+      const r = await replyChat(thread.id, text);
+      if (!r.ok) {
+        setReply((cur) => cur || text);
+        return void toast.error(r.error ?? "Yanıt gönderilemedi; metniniz kutuda duruyor.");
+      }
+      toast.success("Yanıt gönderildi.");
+      await Promise.all([reloadThread(key), reloadList(filter)]);
+    });
   };
+  const assign = (v: string) => thread && run(() => assignConversation(thread.id, v ? Number(v) : null), v ? "Sohbet atandı." : "Atama kaldırıldı.");
 
   return (
-    <div className="grid min-h-[520px] overflow-hidden rounded-card border border-line bg-surface md:h-[calc(100dvh-190px)] md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)_280px]">
+    <div className="relative grid min-h-[520px] grid-cols-[minmax(0,1fr)] overflow-hidden rounded-card border border-line bg-surface md:h-[calc(100dvh-190px)] md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)_280px]">
       {/* Liste */}
-      <aside className={cn("flex min-h-0 flex-col border-line md:border-r", key && "hidden md:flex")} aria-label="Gelen kutusu">
+      <aside className={cn("flex min-h-0 min-w-0 flex-col border-line md:border-r", key && "hidden md:flex")} aria-label="Gelen kutusu">
+        <div className="border-b border-line px-3 pt-3">
+          <label className="relative block">
+            <span className="sr-only">Gelen kutusunda ara</span>
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" aria-hidden />
+            <input
+              id="gelen-ara"
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Ad, e-posta, telefon ya da mesaj"
+              className="block min-h-10 w-full rounded-[9px] border border-line bg-surface pr-3 pl-9 text-[14px] text-ink placeholder:text-muted focus:border-accent focus:outline-none pointer-coarse:text-[16px]"
+            />
+          </label>
+        </div>
         <div className="flex flex-wrap gap-1.5 border-b border-line p-3" role="group" aria-label="Süzgeç">
           {filters.map((f) => (
             <button key={f.key} type="button" aria-pressed={filter === f.key} onClick={() => pickFilter(f.key)} className={cn("min-h-8.5 pointer-coarse:min-h-11 rounded-full border border-line px-3 text-[13px]", filter === f.key ? "border-accent bg-accent-soft text-accent" : "text-text hover:border-accent")}>
@@ -126,18 +200,26 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
                       <span className="tabular shrink-0 text-[12px] text-muted">{stamp(it.at)}</span>
                     </span>
                     <span className="mt-0.5 block truncate text-[13px] text-muted">{it.preview || KIND_LABEL[it.kind]}</span>
-                    <span className="mt-1.5 block">
+                    <span className="mt-1.5 flex min-w-0 items-center gap-2">
                       <Badge tone={it.tone} dot={it.waiting}>
                         {it.label}
                       </Badge>
+                      {it.assignee ? <span className="truncate text-[12px] text-muted">{it.assignee}</span> : null}
                     </span>
                   </button>
                 </li>
               );
             })
           ) : (
-            <li className="px-4 py-6 text-[14px] text-muted">{filter === "bekleyen" ? "Bekleyen bir şey yok. Yeni sohbet, talep ya da randevu geldiğinde burada görünür." : "Bu süzgeçte kayıt yok."}</li>
+            <li className="px-4 py-6 text-[14px] text-muted">{q.trim() ? `"${q.trim()}" için kayıt bulunamadı.` : filter === "bekleyen" ? "Bekleyen bir şey yok. Yeni sohbet, talep ya da randevu geldiğinde burada görünür." : filter === "benim" ? "Size atanmış sohbet yok." : "Bu süzgeçte kayıt yok."}</li>
           )}
+          {more ? (
+            <li className="p-3">
+              <Button size="sm" className="w-full justify-center" disabled={pending} onClick={loadMore}>
+                Daha fazla yükle
+              </Button>
+            </li>
+          ) : null}
         </ul>
       </aside>
 
@@ -162,8 +244,28 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="ghost" className="xl:hidden" onClick={() => setInfo(true)} aria-label="Kişi ve kayıt bilgisi">
+                  <Info /> Bilgiler
+                </Button>
                 {thread.kind === "sohbet" ? (
                   <>
+                    <label className="flex items-center gap-1.5 text-[13px] text-muted">
+                      <span className="sr-only sm:not-sr-only">Sorumlu</span>
+                      <select
+                        id="gelen-sorumlu"
+                        value={thread.assignee ?? ""}
+                        disabled={pending}
+                        onChange={(e) => assign(e.target.value)}
+                        className="min-h-8.5 max-w-[160px] rounded-[9px] border border-line bg-surface px-2 text-[13px] text-ink pointer-coarse:min-h-11"
+                      >
+                        <option value="">Atanmadı</option>
+                        {thread.team.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.id === me ? `${t.name} (ben)` : t.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                     {thread.status === "bot" ? (
                       <Button size="sm" disabled={pending} onClick={() => run(() => setConversation(thread.id, "devral"), "Sohbeti devraldınız; asistan susar.")}>
                         Devral
@@ -302,14 +404,28 @@ export function Inbox({ filters, initialFilter, initialItems, initialThread, can
 
       {/* Kişi ve CRM bilgisi */}
       {thread ? (
-        <aside className="hidden min-h-0 overflow-y-auto border-l border-line px-4 py-4 xl:block" aria-label="Kişi bilgisi">
-          <h3 className="mt-0 mb-2 text-[12px] font-semibold text-muted">Bilgiler</h3>
-          <Fields rows={thread.fields} />
+        <aside
+          className={cn(
+            "min-h-0 overflow-y-auto border-l border-line bg-surface px-4 py-4 xl:static xl:block xl:w-auto xl:shadow-none",
+            info ? "absolute inset-y-0 right-0 z-20 block w-[min(320px,92%)] shadow-[-12px_0_32px_rgba(1,20,65,.12)]" : "hidden",
+          )}
+          aria-label="Kişi bilgisi"
+        >
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="m-0 text-[12px] font-semibold text-muted">Bilgiler</h3>
+            <button type="button" onClick={() => setInfo(false)} className="grid size-9 place-items-center rounded-[8px] text-muted hover:bg-sunken xl:hidden" aria-label="Bilgileri kapat">
+              <X className="size-4" />
+            </button>
+          </div>
+          <Fields rows={thread.fields.map(([k, v]) => [k, contactValue(k, v)] as [string, React.ReactNode])} />
           <h3 className="mt-5 mb-2 text-[12px] font-semibold text-muted">Kişi</h3>
           {thread.contact ? (
             <>
               <p className="m-0 font-medium text-ink">{thread.contact.name}</p>
-              <p className="m-0 text-[13px] break-words text-muted">{[thread.contact.email, thread.contact.phone].filter(Boolean).join(" · ")}</p>
+              <p className="m-0 flex flex-col text-[13px] break-words text-muted">
+                {thread.contact.email ? contactValue("E-posta", thread.contact.email) : null}
+                {thread.contact.phone ? contactValue("Telefon", thread.contact.phone) : null}
+              </p>
               <Link href={`/panel/kisiler?kisi=${thread.contact.id}`} className="mt-1.5 inline-block text-[14px] text-accent">
                 Kişi kaydını aç
               </Link>

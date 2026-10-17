@@ -33,7 +33,7 @@ export async function moveDeal(id: number, stage: string, order: number, lostRea
   }
 }
 
-export type DealInput = { title: string; value?: number | null; expectedClose?: string | null; service?: string | null; notes?: string | null; contact?: number | null; stage?: string; owner?: number | null };
+export type DealInput = { title: string; value?: number | null; expectedClose?: string | null; service?: string | null; notes?: string | null; contact?: number | null; company?: number | null; stage?: string; owner?: number | null };
 const clean = (d: DealInput) => ({
   title: d.title.trim().slice(0, 200),
   value: d.value === null || d.value === undefined || Number.isNaN(Number(d.value)) ? null : Math.max(0, Number(d.value)),
@@ -47,7 +47,12 @@ export async function updateDeal(id: number, d: DealInput): Promise<Result> {
   try {
     const ctx = await crm();
     if (!d.title?.trim()) return { ok: false, error: "Fırsat adı boş olamaz." };
-    return (await ctx.update("deals", id, clean(d))) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
+    /* Kişi, firma ve sorumlu seçili işletmeden olmalı; undefined gelen alan değişmez */
+    if (d.contact && !(await ctx.findByID("contacts", d.contact, 0))) return { ok: false, error: "Kişi bulunamadı." };
+    if (d.company && !(await ctx.findByID("companies", d.company, 0))) return { ok: false, error: "Firma bulunamadı." };
+    if (d.owner && !(await ctx.team()).some((m) => m.id === Number(d.owner))) return { ok: false, error: "Sorumlu bu işletmenin ekibinde değil." };
+    const links = { ...(d.contact !== undefined ? { contact: d.contact || null } : {}), ...(d.company !== undefined ? { company: d.company || null } : {}) };
+    return (await ctx.update("deals", id, { ...clean(d), ...links })) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
   } catch (e) {
     const lost = sessionLost(e);
     if (lost) return lost as never;
@@ -131,4 +136,11 @@ export async function findContacts(q: string): Promise<{ id: number; name: strin
     name: c.name,
     detail: [typeof c.company === "object" ? c.company?.name : null, c.email].filter(Boolean).join(" · "),
   }));
+}
+
+export async function findCompanies(q: string): Promise<{ id: number; name: string; detail: string }[]> {
+  const ctx = await getPanelContext();
+  if (!ctx.has("crm") || q.trim().length < 2) return [];
+  const r = await ctx.find("companies", { where: { name: { like: q.trim() } }, limit: 8 });
+  return (r.docs as { id: number; name: string; sector?: string | null }[]).map((c) => ({ id: c.id, name: c.name, detail: c.sector ?? "" }));
 }

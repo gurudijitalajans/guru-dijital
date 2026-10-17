@@ -1,9 +1,10 @@
 import type { CollectionConfig, Field } from "payload";
-import { isAdmin, isLoggedIn } from "../access";
+import { isLoggedIn } from "../access";
 import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
 import { CRM_SKIP, dealStageChanged, idOf, logActivity } from "./automation";
 import { quotePrint } from "./quote-print";
 import { importContacts } from "../setup/import";
+import { tenantAdminAccess } from "../business/roles";
 
 /**
  * Guru CRM: firma, kişi, fırsat, not/görev ve teklif. Sitedeki talep ve
@@ -12,7 +13,7 @@ import { importContacts } from "../setup/import";
  */
 
 const GROUP = "Guru CRM";
-const access = { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin };
+const access = { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: tenantAdminAccess };
 
 const ownerField: Field = {
   name: "owner",

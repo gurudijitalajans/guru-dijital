@@ -14,7 +14,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTable } from "../ui/data-table";
 import { Fields, Sheet, SheetSection } from "../ui/sheet";
-import { addNote, createDeal, deleteDeal, findContacts, moveDeal, scheduleCall, updateDeal } from "./actions";
+import { contactValue } from "../ui/contact-link";
+import { addNote, createDeal, deleteDeal, findCompanies, findContacts, moveDeal, scheduleCall, updateDeal } from "./actions";
 
 export type BoardDeal = { id: number; title: string; stage: string; value: number; order: number | null; who: string; owner: number | null; ownerName: string; expectedClose: string | null; updatedAt: string; closedAt: string | null; lateTask: boolean };
 export type DealDetail = {
@@ -31,6 +32,7 @@ export type DealDetail = {
   contact: { id: number; name: string; email: string; phone: string } | null;
   company: { id: number; name: string } | null;
   ownerName: string;
+  ownerId: number | null;
   created: string;
   leadKey: string | null;
   timeline: { id: number; title: string; body: string; detail: string; open: boolean }[];
@@ -53,7 +55,7 @@ const byOrder = (a: BoardDeal, b: BoardDeal) => (a.order ?? Infinity) - (b.order
 
 type View = "pano" | "liste";
 
-export function DealsView({ deals: initial, detail, me, hasOps, canDelete = false, initialView }: { deals: BoardDeal[]; detail: DealDetail | null; me: number; hasOps: boolean; canDelete?: boolean; initialView: View }) {
+export function DealsView({ deals: initial, detail, me, hasOps, canDelete = false, team = [], initialView }: { deals: BoardDeal[]; detail: DealDetail | null; me: number; hasOps: boolean; canDelete?: boolean; team?: { id: number; name: string }[]; initialView: View }) {
   const router = useRouter();
   const path = usePathname();
   const params = useSearchParams();
@@ -334,7 +336,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
         }}
       />
       <NewDealDialog open={creating} onOpenChange={setCreating} onCreated={(id) => setParam("firsat", String(id))} />
-      <DealSheet canDelete={canDelete} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
+      <DealSheet canDelete={canDelete} team={team} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
     </>
   );
 }
@@ -483,12 +485,63 @@ function NewDealDialog({ open, onOpenChange, onCreated }: { open: boolean; onOpe
   );
 }
 
-function DealSheet({ detail, hasOps, canDelete, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; canDelete: boolean; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
+type Picked = { id: number; name: string } | null;
+
+/** Kayıt seçici: seçili kayıt etiketi, kaldır düğmesi ve yazdıkça arama (en az 2 harf) */
+function RecordPicker({ id, label, value, onChange, search }: { id: string; label: string; value: Picked; onChange: (v: Picked) => void; search: (q: string) => Promise<{ id: number; name: string; detail: string }[]> }) {
+  const [q, setQ] = useState("");
+  const [hits, setHits] = useState<{ id: number; name: string; detail: string }[]>([]);
+  const [, start] = useTransition();
+  const type = (v: string) => {
+    setQ(v);
+    if (v.trim().length < 2) return setHits([]);
+    start(async () => setHits(await search(v)));
+  };
+  return (
+    <div className="grid gap-1 text-[13px] text-muted">
+      <label htmlFor={id}>{label}</label>
+      {value ? (
+        <span className="flex min-h-10 items-center justify-between gap-2 rounded-[9px] border border-line bg-sunken px-3 text-[14px] text-ink">
+          <span className="truncate">{value.name}</span>
+          <button type="button" onClick={() => onChange(null)} className="shrink-0 text-[13px] text-accent">
+            Değiştir
+          </button>
+        </span>
+      ) : (
+        <div className="relative">
+          <input id={id} value={q} onChange={(e) => type(e.target.value)} placeholder="Ara ve seç" autoComplete="off" className="block min-h-10 w-full rounded-[9px] border border-line bg-surface px-3 text-[14px] text-ink focus:border-accent focus:outline-none pointer-coarse:text-[16px]" />
+          {hits.length ? (
+            <ul className="absolute inset-x-0 top-full z-10 m-0 mt-1 max-h-56 list-none overflow-y-auto rounded-[9px] border border-line bg-surface p-1 shadow-pop">
+              {hits.map((h) => (
+                <li key={h.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange({ id: h.id, name: h.name });
+                      setQ("");
+                      setHits([]);
+                    }}
+                    className="block w-full rounded-[7px] px-2.5 py-1.5 text-left hover:bg-sunken"
+                  >
+                    <span className="block text-[14px] text-ink">{h.name}</span>
+                    {h.detail ? <span className="block text-[12px] text-muted">{h.detail}</span> : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DealSheet({ detail, hasOps, canDelete, team, onClose, onMove, pending }: { detail: DealDetail | null; hasOps: boolean; canDelete: boolean; team: { id: number; name: string }[]; onClose: () => void; onMove: (stage: string) => void; pending: boolean }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [note, setNote] = useState("");
   const [busy, start] = useTransition();
-  const [form, setForm] = useState<{ title: string; value: string; expectedClose: string; service: string; notes: string } | null>(null);
+  const [form, setForm] = useState<{ title: string; value: string; expectedClose: string; service: string; notes: string; contact: Picked; company: Picked; owner: string } | null>(null);
   const [forId, setForId] = useState<number | null>(null);
   const [confirm, setConfirm] = useState(false);
   /* Başka fırsat açılınca düzenleme formu ve silme onayı kapanır */
@@ -500,14 +553,14 @@ function DealSheet({ detail, hasOps, canDelete, onClose, onMove, pending }: { de
   }
   const startEdit = () => {
     if (!detail) return;
-    setForm({ title: detail.title, value: detail.value ? String(detail.value) : "", expectedClose: detail.expectedClose, service: detail.service, notes: detail.notes });
+    setForm({ title: detail.title, value: detail.value ? String(detail.value) : "", expectedClose: detail.expectedClose, service: detail.service, notes: detail.notes, contact: detail.contact ? { id: detail.contact.id, name: detail.contact.name } : null, company: detail.company, owner: detail.ownerId ? String(detail.ownerId) : "" });
     setEditing(true);
   };
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     if (!detail || !form) return;
     start(async () => {
-      const r = await updateDeal(detail.id, { title: form.title, value: form.value ? Number(form.value.replace(/\./g, "").replace(",", ".")) : null, expectedClose: form.expectedClose || null, service: form.service, notes: form.notes });
+      const r = await updateDeal(detail.id, { title: form.title, value: form.value ? Number(form.value.replace(/\./g, "").replace(",", ".")) : null, expectedClose: form.expectedClose || null, service: form.service, notes: form.notes, contact: form.contact?.id ?? null, company: form.company?.id ?? null, owner: form.owner ? Number(form.owner) : null });
       if (!r.ok) return void toast.error(r.error ?? "Kaydedilemedi.");
       toast.success("Kaydedildi.");
       setEditing(false);
@@ -587,6 +640,21 @@ function DealSheet({ detail, hasOps, canDelete, onClose, onMove, pending }: { de
                 Fırsat adı
                 <input id="firsat-ad" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={field} />
               </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <RecordPicker id="firsat-kisi" label="Kişi" value={form.contact} onChange={(v) => setForm({ ...form, contact: v })} search={findContacts} />
+                <RecordPicker id="firsat-firma" label="Firma" value={form.company} onChange={(v) => setForm({ ...form, company: v })} search={findCompanies} />
+              </div>
+              <label className="grid gap-1 text-[13px] text-muted">
+                Sorumlu
+                <select id="firsat-sorumlu" value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} className={field}>
+                  <option value="">Atanmadı</option>
+                  {team.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="grid gap-1 text-[13px] text-muted">
                   Tutar (₺, KDV hariç)
@@ -624,7 +692,8 @@ function DealSheet({ detail, hasOps, canDelete, onClose, onMove, pending }: { de
               <Fields
                 rows={[
                   ["Kişi", detail.contact ? <a href={`/panel/kisiler?kisi=${detail.contact.id}`} className="text-accent">{detail.contact.name}</a> : ""],
-                  ["İletişim", detail.contact ? [detail.contact.email, detail.contact.phone].filter(Boolean).join(" · ") : ""],
+                  ["E-posta", detail.contact?.email ? contactValue("E-posta", detail.contact.email) : ""],
+                  ["Telefon", detail.contact?.phone ? contactValue("Telefon", detail.contact.phone) : ""],
                   ["Firma", detail.company ? <a href={`/panel/kisiler?firma=${detail.company.id}`} className="text-accent">{detail.company.name}</a> : ""],
                   ["Tutar", <span key="v" className="tabular">{money.format(detail.value)}</span>],
                   ["Tahmini kapanış", detail.expectedClose ? dayFmt.format(new Date(detail.expectedClose)) : ""],

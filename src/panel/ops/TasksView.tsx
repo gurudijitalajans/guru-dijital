@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Dialog } from "radix-ui";
-import { CheckSquare, Plus, Search, X } from "lucide-react";
+import { CheckSquare, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Badge, type Tone } from "../ui/badge";
@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTable } from "../ui/data-table";
 import { Sheet, SheetSection } from "../ui/sheet";
-import { createTask, moveTask, toggleCheck, updateTask } from "./actions";
+import { createTask, deleteTask, moveTask, setChecklist, toggleCheck, updateTask } from "./actions";
 
 export type BoardTask = { id: number; code: string; title: string; stage: string; order: number | null; priority: string; due: string | null; late: boolean; hours: number | null; assignee: number | null; assigneeName: string; project: number | null; projectTitle: string; checks: [number, number]; updatedAt: string };
 export type TaskDetail = { id: number; code: string; title: string; stage: string; priority: string; startDate: string; dueDate: string; hours: number | null; assignee: number | null; project: number | null; projectTitle: string; description: string; checklist: { text: string; done: boolean }[]; late: boolean };
@@ -38,7 +38,7 @@ const initials = (n: string) =>
     .join("");
 const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
 
-export function TasksView({ tasks: initial, detail, me, team, projects, initialView }: { tasks: BoardTask[]; detail: TaskDetail | null; me: number; team: Option[]; projects: Option[]; initialView: "pano" | "liste" }) {
+export function TasksView({ tasks: initial, detail, me, team, projects, canDelete = false, initialView }: { tasks: BoardTask[]; detail: TaskDetail | null; me: number; team: Option[]; projects: Option[]; canDelete?: boolean; initialView: "pano" | "liste" }) {
   const router = useRouter();
   const path = usePathname();
   const params = useSearchParams();
@@ -253,7 +253,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, initialV
       )}
 
       <TaskForm open={creating} onOpenChange={setCreating} team={team} projects={projects} me={me} onSaved={(id) => setParam("gorev", String(id))} />
-      <TaskSheet detail={detail} team={team} projects={projects} pending={pending} onClose={() => setParam("gorev", null)} onMove={(st) => detail && move(detail.id, st, null)} />
+      <TaskSheet canDelete={canDelete} detail={detail} team={team} projects={projects} pending={pending} onClose={() => setParam("gorev", null)} onMove={(st) => detail && move(detail.id, st, null)} />
     </>
   );
 }
@@ -356,7 +356,7 @@ function TaskForm({ open, onOpenChange, team, projects, me, onSaved }: { open: b
   );
 }
 
-function TaskSheet({ detail, team, projects, pending, onClose, onMove }: { detail: TaskDetail | null; team: Option[]; projects: Option[]; pending: boolean; onClose: () => void; onMove: (stage: string) => void }) {
+function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove }: { detail: TaskDetail | null; team: Option[]; projects: Option[]; pending: boolean; canDelete: boolean; onClose: () => void; onMove: (stage: string) => void }) {
   const router = useRouter();
   const [busy, start] = useTransition();
   const [list, setList] = useState(detail?.checklist ?? []);
@@ -367,10 +367,47 @@ function TaskSheet({ detail, team, projects, pending, onClose, onMove }: { detai
     setSynced(detail);
     setList(detail?.checklist ?? []);
   }
+  const [newItem, setNewItem] = useState("");
+  const [confirm, setConfirm] = useState(false);
   if ((detail?.id ?? null) !== forId) {
     setForId(detail?.id ?? null);
     setForm(null);
+    setNewItem("");
+    setConfirm(false);
   }
+  /* Kontrol listesi: madde ekle ya da kaldır; liste baştan kaydedilir */
+  const saveList = (next: { text: string; done: boolean }[]) => {
+    if (!detail) return;
+    const prev = list;
+    setList(next);
+    start(async () => {
+      const r = await setChecklist(detail.id, next);
+      if (!r.ok) {
+        setList(prev);
+        return void toast.error(r.error ?? "Kaydedilemedi.");
+      }
+      router.refresh();
+    });
+  };
+  const addItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = newItem.trim();
+    if (!text) return;
+    setNewItem("");
+    saveList([...list, { text, done: false }]);
+  };
+  const remove = () =>
+    detail &&
+    start(async () => {
+      const r = await deleteTask(detail.id);
+      if (!r.ok) {
+        setConfirm(false);
+        return void toast.error(r.error ?? "Silinemedi.");
+      }
+      toast.success("Görev silindi.");
+      onClose();
+      router.refresh();
+    });
   const check = (i: number, done: boolean) => {
     if (!detail) return;
     setList((l) => l.map((c, k) => (k === i ? { ...c, done } : c)));
@@ -415,20 +452,34 @@ function TaskSheet({ detail, team, projects, pending, onClose, onMove }: { detai
             {detail.stage === "kontrol" && open ? <p className="mt-2 mb-0 text-[13px] text-warn">Tamam&apos;a geçmek için kontrol listesinde {open} madde açık.</p> : null}
           </SheetSection>
 
-          {list.length ? (
-            <SheetSection title={`Kontrol listesi (${list.length - open}/${list.length})`}>
+          <SheetSection title={list.length ? `Kontrol listesi (${list.length - open}/${list.length})` : "Kontrol listesi"}>
+            {list.length ? (
               <ul className="m-0 list-none p-0">
                 {list.map((c, i) => (
-                  <li key={i}>
-                    <label className="flex min-h-10 cursor-pointer items-center gap-2.5 rounded-[8px] px-1 hover:bg-sunken">
-                      <input type="checkbox" checked={c.done} disabled={busy} onChange={(e) => check(i, e.target.checked)} className="size-4 accent-[var(--accent)]" />
-                      <span className={cn("text-[14px]", c.done ? "text-muted line-through" : "text-ink")}>{c.text}</span>
+                  <li key={i} className="group flex items-center gap-1">
+                    <label className="flex min-h-10 min-w-0 flex-1 cursor-pointer items-center gap-2.5 rounded-[8px] px-1 hover:bg-sunken">
+                      <input type="checkbox" checked={c.done} disabled={busy} onChange={(e) => check(i, e.target.checked)} className="size-4 shrink-0 accent-[var(--accent)]" />
+                      <span className={cn("min-w-0 text-[14px] break-words", c.done ? "text-muted line-through" : "text-ink")}>{c.text}</span>
                     </label>
+                    <button type="button" disabled={busy} onClick={() => saveList(list.filter((_, k) => k !== i))} className="grid size-9 shrink-0 place-items-center rounded-[8px] text-muted opacity-60 group-hover:opacity-100 hover:bg-sunken hover:text-ink focus-visible:opacity-100 pointer-coarse:opacity-100" aria-label={`Maddeyi kaldır: ${c.text}`}>
+                      <X className="size-4" />
+                    </button>
                   </li>
                 ))}
               </ul>
-            </SheetSection>
-          ) : null}
+            ) : (
+              <p className="m-0 text-[13px] text-muted">Madde yok. Eklenen maddeler bitmeden görev Tamam&apos;a geçmez.</p>
+            )}
+            <form onSubmit={addItem} className="mt-2 flex gap-2">
+              <label className="min-w-0 flex-1">
+                <span className="sr-only">Yeni madde</span>
+                <input id="gorev-yeni-madde" value={newItem} onChange={(e) => setNewItem(e.target.value)} placeholder="Madde ekle" className={field} />
+              </label>
+              <Button type="submit" size="sm" disabled={busy || !newItem.trim()}>
+                <Plus /> Ekle
+              </Button>
+            </form>
+          </SheetSection>
 
           {form ? (
             <form onSubmit={save} className="mt-5 grid gap-3 rounded-card border border-line p-3">
@@ -526,6 +577,25 @@ function TaskSheet({ detail, team, projects, pending, onClose, onMove }: { detai
             </SheetSection>
           )}
           {!detail.hours ? <p className="mt-4 text-[13px] text-muted">Tahmini saat girilirse görev Ekip yükü&apos;nde sorumlunun haftasına sayılır.</p> : null}
+          {canDelete ? (
+            <SheetSection title="Görevi sil">
+              {confirm ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[14px] text-ink">Görev kalıcı olarak silinsin mi?</span>
+                  <Button type="button" size="sm" variant="danger" onClick={remove} disabled={busy}>
+                    Evet, sil
+                  </Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setConfirm(false)}>
+                    Vazgeç
+                  </Button>
+                </div>
+              ) : (
+                <Button type="button" size="sm" variant="danger" onClick={() => setConfirm(true)}>
+                  <Trash2 /> Sil
+                </Button>
+              )}
+            </SheetSection>
+          ) : null}
         </>
       ) : null}
     </Sheet>

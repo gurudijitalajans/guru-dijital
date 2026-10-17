@@ -71,5 +71,5 @@ export default async function QuotePage({ params, searchParams }: { params: Prom
     /* Kapanmış fırsata bağlı teklif: seçenekte de görünsün */
     if (quote.deal && !dealOptions.some((d) => d.id === quote.deal) && q.deal && typeof q.deal === "object") dealOptions.unshift({ id: quote.deal, title: (q.deal as { title: string }).title, contact: quote.contact, company: quote.company, value: 0, service: "" });
   }
-  return <QuoteEditor quote={quote} deals={dealOptions} />;
+  return <QuoteEditor quote={quote} deals={dealOptions} canDelete={ctx.isTenantAdmin} />;
 }

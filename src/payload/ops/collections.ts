@@ -1,9 +1,10 @@
 import { APIError, type CollectionConfig, type Field, type PayloadRequest } from "payload";
-import { isAdmin, isLoggedIn } from "../access";
+import { isLoggedIn } from "../access";
 import { CRM_SKIP, idOf, logActivity } from "../crm/automation";
 import { sendNotice } from "../notify";
 import { PRIORITIES, PROJECT_STATUS, TASK_STAGES, taskCode } from "./stages";
 import { addBusinessDays, dayOf, noonUtc } from "./dates";
+import { tenantAdminAccess } from "../business/roles";
 
 /**
  * Guru Operation: işler (proje), görevler ve süreç şablonları. Şablonlu bir
@@ -13,7 +14,7 @@ import { addBusinessDays, dayOf, noonUtc } from "./dates";
  */
 
 const GROUP = "Guru Operation";
-const access = { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin };
+const access = { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: tenantAdminAccess };
 const dayField = (name: string, label: string, extra: Partial<Field> = {}): Field =>
   ({
     name,

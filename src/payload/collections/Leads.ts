@@ -1,8 +1,9 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin, isLoggedIn } from "../access";
+import { isLoggedIn } from "../access";
 import { submitLead } from "../endpoints/forms";
 import { kaynakField } from "../kaynak";
 import { CRM_SKIP, idOf, leadToCrm } from "../crm/automation";
+import { tenantAdminAccess } from "../business/roles";
 
 const STAGE_FOR: Record<string, string> = { yeni: "aday", iletisim: "gorusme", teklif: "teklif", kazanildi: "kazanildi", kaybedildi: "kaybedildi" };
 
@@ -29,7 +30,7 @@ export const Leads: CollectionConfig = {
     listSearchableFields: ["name", "email", "message"],
   },
   defaultSort: "-createdAt",
-  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: isAdmin },
+  access: { read: isLoggedIn, create: isLoggedIn, update: isLoggedIn, delete: tenantAdminAccess },
   endpoints: [{ path: "/gonder", method: "post", handler: submitLead }],
   hooks: {
     afterChange: [
