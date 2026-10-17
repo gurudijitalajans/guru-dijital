@@ -76,10 +76,10 @@ export default async function PanelHome() {
   for (const d of late.docs as { id: number; title: string; seq?: number | null; dueDate?: string | null; project?: unknown }[])
     rows.push({ key: `t${d.id}`, title: `${taskCode(d.seq)} ${d.title}`.trim(), detail: [nameOf(d.project), d.dueDate ? `teslim ${shortFmt.format(new Date(d.dueDate))}` : null].filter(Boolean).join(" · "), href: `/panel/gorevler?gorev=${d.id}`, tone: "bad", badge: "Gecikti", at: d.dueDate ?? "" });
   for (const a of lateActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
-    rows.push({ key: `ga${a.id}`, title: a.title, detail: [nameOf(a.deal) || nameOf(a.contact), a.dueAt ? shortFmt.format(new Date(a.dueAt)) : null].filter(Boolean).join(" · "), href: idOf(a.deal) ? `/panel/firsatlar?firsat=${idOf(a.deal)}` : `/panel/duzenle/activities/${a.id}`, tone: "bad", badge: "Gecikti", at: a.dueAt ?? "" });
+    rows.push({ key: `ga${a.id}`, title: a.title, detail: [nameOf(a.deal) || nameOf(a.contact), a.dueAt ? shortFmt.format(new Date(a.dueAt)) : null].filter(Boolean).join(" · "), href: idOf(a.deal) ? `?panel=firsat-${idOf(a.deal)}` : idOf(a.contact) ? `?panel=kisi-${idOf(a.contact)}` : `/panel/duzenle/activities/${a.id}`, tone: "bad", badge: "Gecikti", at: a.dueAt ?? "" });
   for (const d of stale.docs as { id: number; title: string; value?: number | null; updatedAt: string; company?: unknown; contact?: unknown }[]) {
     const days = Math.floor((now.getTime() - new Date(d.updatedAt).getTime()) / 86400000);
-    rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `/panel/firsatlar?firsat=${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });
+    rows.push({ key: `d${d.id}`, title: d.title, detail: [nameOf(d.company) || nameOf(d.contact), d.value ? money.format(d.value) : null].filter(Boolean).join(" · "), href: `?panel=firsat-${d.id}`, tone: "warn", badge: `${days} gündür dokunulmadı`, at: d.updatedAt });
   }
 
   /* Bugün */
@@ -87,7 +87,7 @@ export default async function PanelHome() {
   for (const b of todayBookings.docs as { id: number; name: string; time: string; topic?: string | null; status: string }[])
     agenda.push({ key: `b${b.id}`, time: b.time, title: `${b.name} ile görüşme`, detail: b.topic ?? "Randevu", href: `/panel/gelen?s=r${b.id}`, tone: b.status === "onaylandi" ? "good" : "warn" });
   for (const a of todayActs.docs as { id: number; title: string; dueAt?: string | null; contact?: unknown; deal?: unknown }[])
-    agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: `/panel/duzenle/activities/${a.id}`, tone: "info" });
+    agenda.push({ key: `a${a.id}`, time: a.dueAt ? timeFmt.format(new Date(a.dueAt)) : "Gün içinde", title: a.title, detail: nameOf(a.deal) || nameOf(a.contact) || "CRM görevi", href: idOf(a.deal) ? `?panel=firsat-${idOf(a.deal)}` : idOf(a.contact) ? `?panel=kisi-${idOf(a.contact)}` : `/panel/duzenle/activities/${a.id}`, tone: "info" });
   for (const t of todayTasks.docs as { id: number; title: string; seq?: number | null; project?: unknown }[])
     agenda.push({ key: `t${t.id}`, time: "Teslim", title: `${taskCode(t.seq)} ${t.title}`.trim(), detail: nameOf(t.project) || "Operasyon görevi", href: `/panel/gorevler?gorev=${t.id}`, tone: "warn" });
   agenda.sort((a, b) => a.time.localeCompare(b.time, "tr"));
@@ -132,7 +132,7 @@ export default async function PanelHome() {
                 <ul className="m-0 list-none p-0">
                   {[...rows].sort((a, b) => RANK[a.tone] - RANK[b.tone]).slice(0, 8).map((r) => (
                     <li key={r.key} className="border-b border-line last:border-0">
-                      <Link href={r.href} prefetch={false} className="flex min-h-13 items-center gap-3 px-4 py-2.5 no-underline hover:bg-sunken">
+                      <Link href={r.href} prefetch={false} scroll={false} className="flex min-h-13 items-center gap-3 px-4 py-2.5 no-underline hover:bg-sunken">
                         <span className="min-w-0 flex-1">
                           <span className="block truncate font-medium text-ink">{r.title}</span>
                           {r.detail ? <span className="block truncate text-[13px] text-muted">{r.detail}</span> : null}
@@ -154,7 +154,7 @@ export default async function PanelHome() {
                 <ul className="m-0 list-none p-0">
                   {agenda.map((a) => (
                     <li key={a.key} className="border-b border-line last:border-0">
-                      <Link href={a.href} prefetch={false} className="flex min-h-13 items-center gap-3 px-4 py-2.5 no-underline hover:bg-sunken">
+                      <Link href={a.href} prefetch={false} scroll={false} className="flex min-h-13 items-center gap-3 px-4 py-2.5 no-underline hover:bg-sunken">
                         <Badge tone={a.tone} className="tabular min-w-14 justify-center">
                           {a.time}
                         </Badge>

@@ -54,7 +54,7 @@ const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min
  * kutusu, altta tüm geçmiş. Görev tamamlanırken sonuç yazılır ve sonraki adım
  * hemen planlanabilir (Kommo alışkanlığı: her fırsatın bir sonraki adımı belli).
  */
-export function Akis({ items, target, team, me }: { items: FeedItem[]; target: FeedTarget; team: { id: number; name: string }[]; me: number }) {
+export function Akis({ items, target, team, me, onChanged }: { items: FeedItem[]; target: FeedTarget; team: { id: number; name: string }[]; me: number; onChanged?: () => Promise<void> | void }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [tab, setTab] = useState<"not" | "plan">("not");
@@ -73,6 +73,8 @@ export function Akis({ items, target, team, me }: { items: FeedItem[]; target: F
       if (!r.ok) return void toast.error(r.error ?? "İşlem yapılamadı.");
       toast.success(done);
       after?.();
+      /* Yan panelde veri istemcide okunur: panel kendini yeniler, sayfa da tazelenir */
+      await onChanged?.();
       router.refresh();
     });
 

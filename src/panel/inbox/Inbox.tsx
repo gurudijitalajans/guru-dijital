@@ -578,7 +578,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
                 {thread.contact.email ? contactValue("E-posta", thread.contact.email) : null}
                 {thread.contact.phone ? contactValue("Telefon", thread.contact.phone) : null}
               </p>
-              <Link href={`/panel/kisiler?kisi=${thread.contact.id}`} className="mt-1.5 inline-block text-[14px] text-accent">
+              <Link href={`/panel/gelen?${new URLSearchParams({ ...(filter !== "bekleyen" ? { f: filter } : {}), s: thread.key, panel: `kisi-${thread.contact.id}` })}`} scroll={false} className="mt-1.5 inline-block text-[14px] text-accent">
                 Kişi kaydını aç
               </Link>
             </>
@@ -591,12 +591,12 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
               <ul className="m-0 list-none p-0">
                 {thread.deals.map((d) => (
                   <li key={d.id} className="mb-1.5">
-                    <a href={`/panel/firsatlar?firsat=${d.id}`} className="block rounded-[8px] border border-line px-3 py-2 no-underline hover:border-accent">
+                    <Link href={`/panel/gelen?${new URLSearchParams({ ...(filter !== "bekleyen" ? { f: filter } : {}), s: thread.key, panel: `firsat-${d.id}` })}`} scroll={false} className="block rounded-[8px] border border-line px-3 py-2 no-underline hover:border-accent">
                       <span className="block truncate font-medium text-ink">{d.title}</span>
                       <span className="text-[13px] text-muted">
                         {d.stage} · <span className="tabular">{money.format(d.value)}</span>
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

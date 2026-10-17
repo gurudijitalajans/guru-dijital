@@ -78,7 +78,15 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
   const [dragId, setDragId] = useState<number | null>(null);
   const [over, setOver] = useState<string | null>(null);
   const [lost, setLost] = useState<{ id: number; order: number } | null>(null);
-  const [creating, setCreating] = useState(false);
+  /* ?yeni=1 (ör. telefondaki "+" menüsü) yeni kayıt penceresini açık getirir */
+  const yeni = params.get("yeni") === "1";
+  const [creating, setCreating] = useState(yeni);
+  /* Aynı sayfadayken adrese ?yeni=1 eklenirse de pencere açılır */
+  const [prevYeni, setPrevYeni] = useState(yeni);
+  if (yeni !== prevYeni) {
+    setPrevYeni(yeni);
+    if (yeni) setCreating(true);
+  }
   const [pending, start] = useTransition();
 
   const setParam = useCallback(
@@ -281,7 +289,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
           </div>
 
           {/* Kapanış alanları: yalnız sürüklerken ekranın altında belirir; telefonda karttaki aşama düğmeleri kullanılır */}
-          <div className={cn("fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-3 bg-gradient-to-t from-bg via-bg/95 to-transparent px-[max(16px,env(safe-area-inset-left))] pt-8 pb-[max(16px,env(safe-area-inset-bottom))] lg:left-[248px]", dragId === null && "hidden")}>
+          <div className={cn("fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-3 bg-gradient-to-t from-bg via-bg/95 to-transparent px-[max(16px,env(safe-area-inset-left))] pt-8 pb-[max(16px,env(safe-area-inset-bottom))] lg:left-[var(--nav-w,248px)]", dragId === null && "hidden")}>
             {(["kazanildi", "kaybedildi"] as const).map((st) => (
               <div
                 key={st}

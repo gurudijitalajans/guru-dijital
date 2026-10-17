@@ -55,7 +55,15 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
   const [project, setProject] = useState<string>("");
   const [dragId, setDragId] = useState<number | null>(null);
   const [over, setOver] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
+  /* ?yeni=1 (ör. telefondaki "+" menüsü) yeni kayıt penceresini açık getirir */
+  const yeni = params.get("yeni") === "1";
+  const [creating, setCreating] = useState(yeni);
+  /* Aynı sayfadayken adrese ?yeni=1 eklenirse de pencere açılır */
+  const [prevYeni, setPrevYeni] = useState(yeni);
+  if (yeni !== prevYeni) {
+    setPrevYeni(yeni);
+    if (yeni) setCreating(true);
+  }
   const [pending, start] = useTransition();
 
   const setParam = useCallback(

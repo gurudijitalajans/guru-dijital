@@ -32,7 +32,8 @@ export default async function TodoPage({ searchParams }: { searchParams: Promise
     body: a.body && a.body !== a.title ? a.body : "",
     due: a.dueAt ?? null,
     owner: who(a.owner),
-    link: idOf(a.deal) ? { href: `/panel/firsatlar?firsat=${idOf(a.deal)}`, label: nameOf(a.deal) } : idOf(a.contact) ? { href: `/panel/kisiler?kisi=${idOf(a.contact)}`, label: nameOf(a.contact) } : null,
+    /* Kayıt yan panelde açılır: liste yerinde kalır */
+    link: idOf(a.deal) ? { href: `?panel=firsat-${idOf(a.deal)}${all ? "&kim=herkes" : ""}`, label: nameOf(a.deal) } : idOf(a.contact) ? { href: `?panel=kisi-${idOf(a.contact)}${all ? "&kim=herkes" : ""}`, label: nameOf(a.contact) } : null,
   }));
   return (
     <>

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useSyncExternalStore, useTransition } from "react";
-import { Dialog, DropdownMenu } from "radix-ui";
-import { ArrowUpRight, Check, ChevronDown, ChevronsUpDown, ExternalLink, LogOut, Menu, Search, UserRound, X } from "lucide-react";
+import { Suspense, useEffect, useMemo, useState, useSyncExternalStore, useTransition } from "react";
+import { Dialog, DropdownMenu, Tooltip } from "radix-ui";
+import { ArrowUpRight, Check, ChevronDown, ChevronsUpDown, ExternalLink, LogOut, PanelLeftClose, PanelLeftOpen, Search, UserRound, X } from "lucide-react";
 import { toast } from "sonner";
 import { PanelMark } from "../ui/panel-mark";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,8 @@ import { NavGlyph } from "../ui/icons";
 import { selectTenant } from "../actions";
 import { CommandMenu } from "./CommandMenu";
 import { Zil } from "../bildirim/Zil";
+import { KayitPaneli } from "../crm/KayitPaneli";
+import { AltMenu } from "./AltMenu";
 
 export type ShellTenant = { id: number; name: string; detail: string };
 type Props = {
@@ -25,7 +27,15 @@ type Props = {
 
 const isActive = (path: string, href: string) => (href === "/panel" ? path === "/panel" : path === href || path.startsWith(href + "/"));
 
-function TenantSwitcher({ tenant, tenants }: { tenant: ShellTenant; tenants: ShellTenant[] }) {
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toLocaleUpperCase("tr-TR"))
+    .join("");
+
+function TenantSwitcher({ tenant, tenants, rail = false }: { tenant: ShellTenant; tenants: ShellTenant[]; rail?: boolean }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const pick = (id: number) =>
@@ -35,6 +45,13 @@ function TenantSwitcher({ tenant, tenants }: { tenant: ShellTenant; tenants: She
       router.refresh();
       toast.success(`${r.name} seçildi.`);
     });
+  /* Dar menüde işletme baş harfleriyle */
+  const chip = (
+    <span className="mx-auto mb-3 grid size-10 place-items-center rounded-[10px] border border-white/10 bg-nav-hover text-[13px] font-semibold text-nav-strong" aria-label={`İşletme: ${tenant.name}`}>
+      {initialsOf(tenant.name)}
+    </span>
+  );
+  if (rail && tenants.length < 2) return <RailTip label={tenant.name}>{chip}</RailTip>;
   if (tenants.length < 2)
     return (
       <div className="mx-3 mb-3 rounded-[9px] border border-white/10 bg-nav-hover px-3 py-2 text-nav-strong">
@@ -44,19 +61,25 @@ function TenantSwitcher({ tenant, tenants }: { tenant: ShellTenant; tenants: She
     );
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className="mx-3 mb-3 flex min-h-11 items-center justify-between gap-2 rounded-[9px] border border-white/10 bg-nav-hover px-3 py-2 text-left text-nav-strong disabled:opacity-60"
-        disabled={pending}
-        aria-label={`İşletme: ${tenant.name}. Değiştir`}
-      >
-        <span className="min-w-0">
-          <span className="block truncate">{tenant.name}</span>
-          <span className="block truncate text-[12px] text-nav-text">{pending ? "Değiştiriliyor…" : tenant.detail}</span>
-        </span>
-        <ChevronsUpDown className="size-4 shrink-0 text-nav-text" aria-hidden />
-      </DropdownMenu.Trigger>
+      {rail ? (
+        <DropdownMenu.Trigger className="mx-auto mb-3 grid size-10 place-items-center rounded-[10px] border border-white/10 bg-nav-hover text-[13px] font-semibold text-nav-strong disabled:opacity-60" disabled={pending} aria-label={`İşletme: ${tenant.name}. Değiştir`} title={tenant.name}>
+          {initialsOf(tenant.name)}
+        </DropdownMenu.Trigger>
+      ) : (
+        <DropdownMenu.Trigger
+          className="mx-3 mb-3 flex min-h-11 items-center justify-between gap-2 rounded-[9px] border border-white/10 bg-nav-hover px-3 py-2 text-left text-nav-strong disabled:opacity-60"
+          disabled={pending}
+          aria-label={`İşletme: ${tenant.name}. Değiştir`}
+        >
+          <span className="min-w-0">
+            <span className="block truncate">{tenant.name}</span>
+            <span className="block truncate text-[12px] text-nav-text">{pending ? "Değiştiriliyor…" : tenant.detail}</span>
+          </span>
+          <ChevronsUpDown className="size-4 shrink-0 text-nav-text" aria-hidden />
+        </DropdownMenu.Trigger>
+      )}
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="start" sideOffset={6} className="z-50 max-h-[60vh] w-[260px] overflow-y-auto rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
+        <DropdownMenu.Content align="start" side={rail ? "right" : "bottom"} sideOffset={6} className="z-50 max-h-[60vh] w-[260px] overflow-y-auto rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
           <DropdownMenu.Label className="px-2.5 py-1.5 text-[12px] font-semibold text-muted">İşletme</DropdownMenu.Label>
           {tenants.map((t) => (
             <DropdownMenu.Item key={t.id} onSelect={() => t.id !== tenant.id && pick(t.id)} className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 py-1.5 outline-none data-[highlighted]:bg-accent-soft">
@@ -105,6 +128,79 @@ function useClosedGroups(): [Set<string>, (label: string) => void] {
     navListeners.forEach((f) => f());
   };
   return [closed, toggle];
+}
+
+/* Dar menü (ikon şeridi): tercih tarayıcıda hatırlanır; "[" kısayolu ya da menünün başındaki düğme */
+const RAIL_KEY = "guru-menu-dar";
+const railListeners = new Set<() => void>();
+const readRail = () => {
+  try {
+    return localStorage.getItem(RAIL_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+/** Dar menüyü aç ya da kapat: güncel değer depodan okunur (kısayol eski bir kapanıştan çağrılabilir) */
+function flipRail() {
+  try {
+    localStorage.setItem(RAIL_KEY, readRail() ? "0" : "1");
+  } catch {
+    /* gizli pencerede kaydedilmez */
+  }
+  railListeners.forEach((f) => f());
+}
+function useRail(): boolean {
+  return useSyncExternalStore(
+    (cb) => {
+      railListeners.add(cb);
+      return () => railListeners.delete(cb);
+    },
+    readRail,
+    () => false,
+  );
+}
+
+/** Dar menüde öğe adı sağda ipucu olarak çıkar */
+function RailTip({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content side="right" sideOffset={10} className="z-50 rounded-[7px] bg-ink px-2.5 py-1.5 text-[13px] font-medium text-surface shadow-pop">
+          {label}
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+}
+
+function RailLinks({ nav, path }: { nav: NavGroup[]; path: string }) {
+  return (
+    <nav aria-label="Ana menü" className="nav-scroll grid min-h-0 flex-1 content-start justify-items-center gap-1 overflow-y-auto px-2">
+      {nav.map((g, gi) => (
+        <div key={g.label || "son"} className="grid w-full justify-items-center gap-1">
+          {gi ? <div className="my-1.5 w-8 border-t border-white/10" aria-hidden /> : null}
+          {g.items.map((it) => {
+            const active = isActive(path, it.href);
+            return (
+              <RailTip key={it.id} label={it.count ? `${it.label} (${it.count})` : it.label}>
+                <Link
+                  href={it.href}
+                  prefetch={it.legacy ? false : undefined}
+                  aria-current={active ? "page" : undefined}
+                  aria-label={it.count ? `${it.label}, ${it.count} bekleyen` : it.label}
+                  className={cn("relative grid size-10 place-items-center rounded-[9px] text-nav-text hover:bg-nav-hover hover:text-nav-strong", active && "bg-nav-hover text-nav-strong shadow-[inset_3px_0_0_var(--accent)]")}
+                >
+                  <NavGlyph name={it.icon} className="size-[19px]" />
+                  {it.count ? <span className="tabular absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] leading-4 font-semibold text-white">{it.count > 99 ? "99+" : it.count}</span> : null}
+                </Link>
+              </RailTip>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
+  );
 }
 
 function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; onNavigate?: () => void }) {
@@ -164,7 +260,7 @@ function NavLinks({ nav, path, onNavigate }: { nav: NavGroup[]; path: string; on
   );
 }
 
-function UserFoot({ user }: { user: Props["user"] }) {
+function UserFoot({ user, rail = false }: { user: Props["user"]; rail?: boolean }) {
   const router = useRouter();
   const logout = async () => {
     await fetch("/api/users/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
@@ -172,18 +268,22 @@ function UserFoot({ user }: { user: Props["user"] }) {
   };
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="mx-2.5 mt-2 flex min-h-12 items-center gap-2.5 rounded-[9px] border-t border-white/10 px-2 pt-2.5 text-left text-[13px] hover:bg-nav-hover" aria-label="Hesap menüsü">
+      <DropdownMenu.Trigger className={cn("mt-2 flex min-h-12 items-center gap-2.5 rounded-[9px] border-t border-white/10 text-left text-[13px] hover:bg-nav-hover", rail ? "mx-auto justify-center px-1.5 pt-2.5" : "mx-2.5 px-2 pt-2.5")} aria-label="Hesap menüsü" title={rail ? user.name : undefined}>
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft text-[12px] font-semibold text-accent" aria-hidden>
           {user.initials}
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate font-medium text-nav-strong">{user.name}</span>
-          <span className="block truncate text-nav-text">{user.role}</span>
-        </span>
-        <ChevronsUpDown className="size-4 shrink-0 text-nav-text" aria-hidden />
+        {rail ? null : (
+          <>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium text-nav-strong">{user.name}</span>
+              <span className="block truncate text-nav-text">{user.role}</span>
+            </span>
+            <ChevronsUpDown className="size-4 shrink-0 text-nav-text" aria-hidden />
+          </>
+        )}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content side="top" align="start" sideOffset={6} className="z-50 w-[226px] rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
+        <DropdownMenu.Content side={rail ? "right" : "top"} align={rail ? "end" : "start"} sideOffset={6} className="z-50 w-[226px] rounded-[10px] border border-line bg-surface p-1.5 text-text shadow-pop">
           <DropdownMenu.Item asChild className="flex min-h-10 cursor-pointer items-center gap-2 rounded-[7px] px-2.5 text-ink no-underline outline-none data-[highlighted]:bg-accent-soft">
             <Link href="/panel/hesap">
               <UserRound className="size-4 text-muted" aria-hidden />
@@ -206,12 +306,32 @@ function UserFoot({ user }: { user: Props["user"] }) {
   );
 }
 
-function SidebarBody({ nav, tenant, tenants, user, path, onNavigate }: Omit<Props, "children"> & { path: string; onNavigate?: () => void }) {
+function SidebarBody({ nav, tenant, tenants, user, path, onNavigate, rail = false, onToggleRail }: Omit<Props, "children"> & { path: string; onNavigate?: () => void; rail?: boolean; onToggleRail?: () => void }) {
+  const toggleBtn = onToggleRail ? (
+    <RailTip label={rail ? "Menüyü genişlet  [" : "Menüyü daralt  ["}>
+      <button type="button" onClick={onToggleRail} className="grid size-8 shrink-0 place-items-center rounded-[8px] text-nav-text hover:bg-nav-hover hover:text-nav-strong" aria-label={rail ? "Menüyü genişlet" : "Menüyü daralt"} aria-keyshortcuts="[">
+        {rail ? <PanelLeftOpen className="size-[18px]" /> : <PanelLeftClose className="size-[18px]" />}
+      </button>
+    </RailTip>
+  ) : null;
+  if (rail)
+    return (
+      <>
+        <div className="grid justify-items-center gap-2 pt-1 pb-3">
+          <PanelMark size={30} />
+          {toggleBtn}
+        </div>
+        <TenantSwitcher tenant={tenant} tenants={tenants} rail />
+        <RailLinks nav={nav} path={path} />
+        <UserFoot user={user} rail />
+      </>
+    );
   return (
     <>
-      <div className="flex items-center gap-2.5 px-4.5 pt-1 pb-3.5 font-semibold text-nav-strong">
+      <div className="flex items-center gap-2.5 pt-1 pr-2.5 pb-3.5 pl-4.5 font-semibold text-nav-strong">
         <PanelMark size={30} />
-        Guru Panel
+        <span className="flex-1">Guru Panel</span>
+        {toggleBtn}
       </div>
       <TenantSwitcher tenant={tenant} tenants={tenants} />
       <NavLinks nav={nav} path={path} onNavigate={onNavigate} />
@@ -224,6 +344,7 @@ export function Shell(props: Props) {
   const path = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [palette, setPalette] = useState(false);
+  const rail = useRail();
   /* Kayan oturum: sekme açık ve görünürken oturum 30 dakikada bir yenilenir (Payload'un 8 saatlik
      belirteci gün ortasında düşmesin); sekmeye geri dönülünce de hemen yenilenir */
   useEffect(() => {
@@ -254,15 +375,25 @@ export function Shell(props: Props) {
         e.preventDefault();
         setPalette((o) => !o);
       }
+      /* "[": menüyü daralt ya da genişlet (yazı yazılırken değil) */
+      const el = e.target as HTMLElement | null;
+      if (e.key === "[" && !e.metaKey && !e.ctrlKey && !e.altKey && !(el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))) {
+        e.preventDefault();
+        flipRail();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   return (
-    <div className="grid h-full grid-cols-1 lg:grid-cols-[248px_minmax(0,1fr)]">
-      <aside className="hidden min-h-0 flex-col bg-nav py-3.5 lg:flex">
-        <SidebarBody {...props} path={path} />
+    <Tooltip.Provider delayDuration={250}>
+    <div
+      className={cn("grid h-full grid-cols-1 transition-[grid-template-columns] duration-200 motion-reduce:transition-none", rail ? "lg:grid-cols-[68px_minmax(0,1fr)]" : "lg:grid-cols-[248px_minmax(0,1fr)]")}
+      style={{ "--nav-w": rail ? "68px" : "248px" } as React.CSSProperties}
+    >
+      <aside className="hidden min-h-0 flex-col overflow-hidden bg-nav py-3.5 lg:flex">
+        <SidebarBody {...props} path={path} rail={rail} onToggleRail={flipRail} />
       </aside>
 
       <Dialog.Root open={drawer} onOpenChange={setDrawer}>
@@ -281,9 +412,9 @@ export function Shell(props: Props) {
 
       <div className="flex min-h-0 min-w-0 flex-col">
         <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2.5 pt-[calc(env(safe-area-inset-top,0px)+10px)] lg:px-6 lg:pt-2.5">
-          <button type="button" onClick={() => setDrawer(true)} className="grid size-11 place-items-center rounded-[9px] border border-line lg:hidden" aria-label="Menüyü aç">
-            <Menu className="size-5" />
-          </button>
+          <span className="grid size-10 shrink-0 place-items-center lg:hidden" aria-hidden>
+            <PanelMark size={28} />
+          </span>
           <button
             type="button"
             onClick={() => setPalette(true)}
@@ -300,12 +431,17 @@ export function Shell(props: Props) {
           <span className="flex-1" />
           <Zil />
         </header>
-        <main id="icerik" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-12 focus:outline-none lg:px-7 lg:pt-6">
+        <main id="icerik" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] focus:outline-none lg:px-7 lg:pt-6 lg:pb-12">
           {props.children}
         </main>
       </div>
 
+      <AltMenu nav={props.nav} path={path} onMenu={() => setDrawer(true)} />
       <CommandMenu open={palette} onOpenChange={setPalette} nav={props.nav} />
+      <Suspense fallback={null}>
+        <KayitPaneli />
+      </Suspense>
     </div>
+    </Tooltip.Provider>
   );
 }

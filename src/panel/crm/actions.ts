@@ -126,3 +126,92 @@ export async function deleteNote(id: number): Promise<Result> {
     return fail(e);
   }
 }
+
+/* ---------- Kayıt yan paneli: her sayfadan fırsat, kişi ya da firma ---------- */
+
+export type Peek = {
+  kind: "firsat" | "kisi" | "firma";
+  id: number;
+  title: string;
+  subtitle: string;
+  fields: [string, string][];
+  badge: string;
+  href: string;
+  feed: import("./feed").FeedItem[];
+  team: { id: number; name: string }[];
+  me: number;
+};
+
+const STAGE: Record<string, string> = { aday: "Aday", gorusme: "Görüşme", teklif: "Teklif", kazanildi: "Kazanıldı", kaybedildi: "Kaybedildi" };
+const nameOf = (v: unknown) => (v && typeof v === "object" ? ((v as { name?: string }).name ?? "") : "");
+const tl = (n?: number | null) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(n ?? 0);
+
+export async function peekRecord(kind: string, id: number): Promise<Peek | null> {
+  try {
+    const ctx = await crm();
+    const { buildFeed } = await import("./feed");
+    const who = await ctx.names();
+    const base = { id, team: (await ctx.team()).map((m) => ({ id: m.id, name: m.name })), me: ctx.user.id };
+    if (kind === "firsat") {
+      const d = (await ctx.findByID("deals", id, 1)) as { title: string; stage: string; value?: number | null; contact?: unknown; company?: unknown; owner?: unknown; expectedClose?: string | null; service?: string | null } | null;
+      if (!d) return null;
+      const c = d.contact && typeof d.contact === "object" ? (d.contact as { email?: string | null; phone?: string | null }) : null;
+      return {
+        ...base,
+        kind: "firsat",
+        title: d.title,
+        subtitle: [nameOf(d.company) || nameOf(d.contact), tl(d.value)].filter(Boolean).join(" · "),
+        badge: STAGE[d.stage] ?? d.stage,
+        fields: [
+          ["Kişi", nameOf(d.contact)],
+          ["E-posta", c?.email ?? ""],
+          ["Telefon", c?.phone ?? ""],
+          ["Firma", nameOf(d.company)],
+          ["Hizmet", d.service ?? ""],
+          ["Sorumlu", who(d.owner)],
+        ],
+        href: `/panel/firsatlar?firsat=${id}`,
+        feed: await buildFeed({ deal: id }),
+      };
+    }
+    if (kind === "kisi") {
+      const c = (await ctx.findByID("contacts", id, 1)) as { name: string; title?: string | null; email?: string | null; phone?: string | null; company?: unknown } | null;
+      if (!c) return null;
+      return {
+        ...base,
+        kind: "kisi",
+        title: c.name,
+        subtitle: [c.title, nameOf(c.company)].filter(Boolean).join(" · ") || "Bireysel müşteri",
+        badge: "Kişi",
+        fields: [
+          ["E-posta", c.email ?? ""],
+          ["Telefon", c.phone ?? ""],
+          ["Firma", nameOf(c.company)],
+        ],
+        href: `/panel/kisiler?kisi=${id}`,
+        feed: await buildFeed({ contact: id }),
+      };
+    }
+    if (kind === "firma") {
+      const f = (await ctx.findByID("companies", id, 0)) as { name: string; sector?: string | null; email?: string | null; phone?: string | null; website?: string | null } | null;
+      if (!f) return null;
+      return {
+        ...base,
+        kind: "firma",
+        title: f.name,
+        subtitle: f.sector || "Firma",
+        badge: "Firma",
+        fields: [
+          ["E-posta", f.email ?? ""],
+          ["Telefon", f.phone ?? ""],
+          ["Web sitesi", f.website ?? ""],
+        ],
+        href: `/panel/kisiler?firma=${id}`,
+        feed: await buildFeed({ company: id }),
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
