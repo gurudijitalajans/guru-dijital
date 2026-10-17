@@ -1,7 +1,7 @@
 {
  "kvkk-aydinlatma-metni": {
   "title": "KVKK Aydınlatma Metni",
-  "updated": "2026-10-16",
+  "updated": "2026-10-18",
   "blocks": [
    {
     "type": "p",
@@ -141,8 +141,8 @@
     ],
     "rows": [
      [
-      "Vercel Inc. (barındırma ve görsel depolama)",
-      "Sitenin çalışması için gereken teknik kayıtlar ve form içerikleri geçici olarak bu altyapıdan geçer",
+      "Vercel Inc. (barındırma, dosya depolama ve çerezsiz ölçüm)",
+      "Sitenin çalışması için gereken teknik kayıtlar ve form içerikleri geçici olarak bu altyapıdan geçer; kimliğinizi belirlemeyen sayfa görüntüleme ve sayfa hızı ölçümleri de burada tutulur",
       "ABD / Avrupa Birliği"
      ],
      [
@@ -368,7 +368,7 @@
  },
  "gizlilik-politikasi": {
   "title": "Gizlilik Politikası",
-  "updated": "2026-10-16",
+  "updated": "2026-10-18",
   "blocks": [
    {
     "type": "p",
@@ -422,7 +422,7 @@
     "rows": [
      [
       "Vercel",
-      "Sitenin barındırılması ve görsellerin depolanması",
+      "Sitenin barındırılması, görsel ve videoların depolanması, çerez kullanmayan ziyaret ve sayfa hızı ölçümü (Web Analytics, Speed Insights)",
       "ABD / AB"
      ],
      [

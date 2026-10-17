@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/components/site/SiteShell";
 import { site } from "@/lib/data";
 import "../globals.css";
@@ -40,5 +42,12 @@ export const viewport: Viewport = {
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return <SiteShell>{children}</SiteShell>;
+  /* Vercel Web Analytics ve Speed Insights: çerez kullanmaz, kimlik saklamaz (yalnız canlı dağıtımda veri toplar) */
+  return (
+    <SiteShell>
+      {children}
+      <Analytics />
+      <SpeedInsights />
+    </SiteShell>
+  );
 }

@@ -1,6 +1,5 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
+import { hasVideo, videoUrl } from "@/lib/video";
 import { notFound } from "next/navigation";
 import { site } from "@/lib/data";
 import { getProduct, getProducts, type ProductView } from "@/lib/content";
@@ -33,9 +32,6 @@ function formatStat({ value, suffix }: ProductView["stats"][number]) {
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
-
-/** Site içindeki video dosyası gerçekten var mı (Remotion çıktısı henüz üretilmediyse bölüm gizlenir) */
-const videoExists = (src: string) => /^https:\/\//.test(src) || existsSync(join(process.cwd(), "public", src));
 
 export async function generateStaticParams() {
   return (await getProducts()).map((p) => ({ slug: p.slug }));
@@ -81,7 +77,8 @@ export default async function UrunDetayPage({ params }: { params: Params }) {
   const name = product.name;
   /* Demo formundaki ürün listesi: ajans hizmetleri yerine yalnız Guru ürünleri */
   const productNames = products.map((p) => p.name);
-  const tour = product.tour && videoExists(product.tour.src) ? product.tour : null;
+  /* Video Blob'da ya da tam adresliyse bölüm görünür; "/video/..." yolları Blob adresine çevrilir */
+  const tour = product.tour && hasVideo(product.tour.src) ? { ...product.tour, src: videoUrl(product.tour.src), poster: videoUrl(product.tour.poster) } : null;
   const bundle = product.bundle.map((s) => products.find((p) => p.slug === s)).filter((p): p is ProductView => Boolean(p));
   const others = products.filter((p) => p.slug !== product.slug && !product.bundle.includes(p.slug));
 

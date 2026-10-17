@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { LightboxRoot } from "@/components/ui/Lightbox";
 import { zoomCls, zoomProps } from "@/components/ui/zoom";
-import { existsSync } from "fs";
 import { serviceAsset } from "@/lib/service-assets";
-import { join } from "path";
+import { hasVideo, videoUrl } from "@/lib/video";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -69,10 +68,10 @@ export default async function HizmetDetayPage({ params }: { params: Params }) {
   /* Girişte ana kare + dikey kapak; öne çıkan ekranlar kendi bölümünde */
   const gallery = allImages.slice(0, allImages[1] && allImages[1].h > allImages[1].w ? 2 : 3);
   const features = allImages.slice(gallery.length);
-  /* Hizmet turu videosu (1 dk, sesli): public/video/services/v3/<slug>.mp4 */
+  /* Hizmet turu videosu (1 dk, sesli): Blob'da /video/services/v3/<slug>.mp4 (src/lib/video.ts) */
   const tourSrc = `/video/services/v3/${service.slug}.mp4`;
-  const tour = existsSync(join(process.cwd(), "public", tourSrc))
-    ? { src: tourSrc, poster: `/video/services/v3/${service.slug}.jpg`, label: `${service.title} tanıtım filmini oynat`, trackName: `hizmet-${service.slug}` }
+  const tour = hasVideo(tourSrc)
+    ? { src: videoUrl(tourSrc), poster: videoUrl(`/video/services/v3/${service.slug}.jpg`), label: `${service.title} tanıtım filmini oynat`, trackName: `hizmet-${service.slug}` }
     : null;
   const video: GalleryVideo | undefined = undefined;
   /* Vaka ve ödüller panelden (Kurumsal > Vaka Çalışmaları, İçerik > Hakkımızda > Ödüller) */

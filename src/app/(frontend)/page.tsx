@@ -1,5 +1,3 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
 import { getCases, getHome, getReferences, getTeam, getTestimonials } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
@@ -7,7 +5,8 @@ import { Hero } from "@/components/home/Hero";
 import { LogoWall } from "@/components/home/LogoWall";
 import { ServicesGrid } from "@/components/home/ServicesGrid";
 import { ProductsGrid } from "@/components/home/ProductsGrid";
-import { VideoBlock } from "@/components/home/VideoBlock";
+import { VideoBlock, VIDEO_SRC } from "@/components/home/VideoBlock";
+import { hasVideo as hasVideoFile } from "@/lib/video";
 import { CasesBlock } from "@/components/home/CasesBlock";
 import { TeamBlock } from "@/components/home/TeamBlock";
 import { QuotesBlock } from "@/components/home/QuotesBlock";
@@ -38,8 +37,8 @@ export default async function Home() {
   ]);
   const homeCases = cases.filter((c) => c.showOnHome);
   const quotes = testimonials.filter((t) => t.quote || t.videoUrl);
-  /* Tanıtım videosu public/video altında varsa oynatıcı açılır (statik sayfada derleme anında bakılır). */
-  const hasVideo = existsSync(join(process.cwd(), "public/video/guru-tanitim-v2.mp4"));
+  /* Tanıtım videosu Blob'a yüklüyse oynatıcı açılır (src/lib/video.ts) */
+  const hasVideo = hasVideoFile(VIDEO_SRC);
   const faqItems = home.faq.show ? home.faq.items : [];
   /* Aynı zeminli iki bölüm üst üste gelince aradaki boşluk iki kat olmasın: alttakinin üst boşluğu kalkar */
   const showRefs = home.references.show && references.length > 0;
