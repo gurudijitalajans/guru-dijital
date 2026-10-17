@@ -29,7 +29,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageHeader title="Gelen kutusu" description={chat && crm ? "Sitedeki sohbetler, form talepleri ve randevular tek listede." : chat ? "Sitedeki sohbetler." : "Form talepleri ve randevular tek listede."} />
-      <Inbox filters={filters} initialFilter={filter} initialPage={page} me={ctx.user.id} initialThread={thread} canDelete={ctx.isTenantAdmin} />
+      <Inbox key={ctx.tenant.id} filters={filters} initialFilter={filter} initialPage={page} me={ctx.user.id} initialThread={thread} canDelete={ctx.isTenantAdmin} />
     </>
   );
 }

@@ -13,7 +13,9 @@ export type QuoteRow = { id: number; number: string; title: string; who: string;
 export const QUOTE_STATUS: Record<string, [Tone, string]> = { taslak: ["plain", "Taslak"], gonderildi: ["info", "Gönderildi"], kabul: ["good", "Kabul"], red: ["bad", "Red"] };
 const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
 const dFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short", year: "numeric" });
-const expired = (q: QuoteRow) => q.status === "gonderildi" && q.validUntil !== null && new Date(q.validUntil).getTime() < Date.now();
+/* Geçerlilik günü İstanbul'a göre sonuna kadar sürer */
+const trDay = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" });
+const expired = (q: QuoteRow) => q.status === "gonderildi" && q.validUntil !== null && trDay(new Date(q.validUntil)) < trDay(new Date());
 
 const cols: ColumnDef<QuoteRow, unknown>[] = [
   { accessorKey: "number", header: "No", cell: ({ getValue }) => <span className="whitespace-nowrap font-mono text-[13px] text-ink">{getValue() as string}</span> },

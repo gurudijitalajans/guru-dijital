@@ -59,7 +59,9 @@ export function Akis({ items, target, team, me, onChanged }: { items: FeedItem[]
   const [pending, start] = useTransition();
   const [tab, setTab] = useState<"not" | "plan">("not");
   const [note, setNote] = useState("");
-  const [plan, setPlan] = useState({ type: "arama", title: "", due: tomorrowAt10(), owner: String(me) });
+  /* Guru yöneticisi müşteri işletmesinin ekibinde değil: varsayılan sorumlu ekipten biri olur */
+  const defaultOwner = String(team.some((m) => m.id === me) ? me : (team[0]?.id ?? ""));
+  const [plan, setPlan] = useState({ type: "arama", title: "", due: tomorrowAt10(), owner: defaultOwner });
   const [filter, setFilter] = useState("tumu");
   const [doneFor, setDoneFor] = useState<number | null>(null);
   const [result, setResult] = useState("");
@@ -100,7 +102,7 @@ export function Akis({ items, target, team, me, onChanged }: { items: FeedItem[]
         /* Sonraki adım: aynı türde, yarın 10:00 için planlama kutusu açılır */
         if (nextStep) {
           setTab("plan");
-          setPlan({ type: it.type === "gorev" ? "arama" : it.type, title: "", due: tomorrowAt10(), owner: String(me) });
+          setPlan({ type: it.type === "gorev" ? "arama" : it.type, title: "", due: tomorrowAt10(), owner: defaultOwner });
           requestAnimationFrame(() => document.getElementById("akis-plan-baslik")?.focus());
         }
       },

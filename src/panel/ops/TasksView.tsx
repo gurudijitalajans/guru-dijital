@@ -67,6 +67,18 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
   }
   const [pending, start] = useTransition();
 
+  /* Birden çok parametre tek seferde (ör. yeni kayıt açılınca ?yeni düşer, ?gorev eklenir) */
+  const setParams = useCallback(
+    (kv: Record<string, string | null>) => {
+      const next = new URLSearchParams(params.toString());
+      for (const [k, v] of Object.entries(kv)) {
+        if (v) next.set(k, v);
+        else next.delete(k);
+      }
+      router.push(`${path}${next.toString() ? `?${next}` : ""}`, { scroll: false });
+    },
+    [params, path, router],
+  );
   const setParam = useCallback(
     (k: string, v: string | null) => {
       const next = new URLSearchParams(params.toString());
@@ -92,7 +104,15 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
 
   const move = (id: number, stage: string, beforeId: number | null) => {
     const task = tasks.find((t) => t.id === id);
-    if (!task) return;
+    /* Panoda olmayan (eski, tamamlanmış) görev: paneldeki aşama düğmesi doğrudan taşır */
+    if (!task) {
+      return start(async () => {
+        const r = await moveTask(id, stage, NaN);
+        if (!r.ok) return void toast.error(r.error ?? "Taşınamadı.");
+        toast.success(LABEL[stage]);
+        router.refresh();
+      });
+    }
     const col = tasks.filter((t) => t.stage === stage && t.id !== id).sort(byOrder);
     const at = beforeId ? Math.max(0, col.findIndex((t) => t.id === beforeId)) : col.length;
     const prev = col[at - 1]?.order ?? (col[at] ? (col[at].order ?? at) - 1 : 0);
@@ -104,12 +124,13 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
       if (task.stage !== "kontrol") return void toast.error("Görev Tamam'a yalnız Kontrol aşamasından geçer. Önce Kontrol'e alın.");
       if (task.checks[1] && task.checks[0] < task.checks[1]) return void toast.error(`Kontrol listesinde ${task.checks[1] - task.checks[0]} madde açık. Hepsi işaretlenince Tamam'a geçebilir.`);
     }
-    const before = tasks;
+    const prevTask = task;
     setTasks((list) => list.map((t) => (t.id === id ? { ...t, stage, order, late: stage === "tamam" ? false : t.late } : t)));
     start(async () => {
       const r = await moveTask(id, stage, order);
       if (!r.ok) {
-        setTasks(before);
+        /* Yalnız bu kart geri alınır: arada yapılan başka taşımalar bozulmaz */
+        setTasks((list) => list.map((t) => (t.id === id ? prevTask : t)));
         return void toast.error(r.error ?? "Taşınamadı.");
       }
       if (task.stage !== stage) toast.success(`${task.code} ${LABEL[stage]}`);
@@ -117,7 +138,8 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
     });
   };
   const onDrop = (stage: string, beforeId: number | null) => {
-    if (dragId !== null) move(dragId, stage, beforeId);
+    /* Kart kendi üstüne bırakıldıysa yerinde kalır */
+    if (dragId !== null && beforeId !== dragId) move(dragId, stage, beforeId);
     setDragId(null);
     setOver(null);
   };
@@ -204,7 +226,7 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
                     <button
                       key={t.id}
                       type="button"
-                      draggable
+                      draggable={!pending}
                       onDragStart={(e) => {
                         setDragId(t.id);
                         e.dataTransfer.effectAllowed = "move";
@@ -266,7 +288,11 @@ export function TasksView({ tasks: initial, detail, me, team, projects, canDelet
         />
       )}
 
-      <TaskForm open={creating} onOpenChange={setCreating} team={team} projects={projects} me={me} onSaved={(id) => setParam("gorev", String(id))} />
+      <TaskForm open={creating} onOpenChange={(o) => {
+          setCreating(o);
+          /* "+" menüsünden gelinen ?yeni=1 kapanınca düşer: aynı kısayol tekrar çalışsın */
+          if (!o && yeni) setParams({ yeni: null });
+        }} team={team} projects={projects} me={me} onSaved={(id) => setParams({ gorev: String(id), yeni: null })} />
       <TaskSheet canDelete={canDelete} detail={detail} team={team} projects={projects} pending={pending} onClose={() => setParam("gorev", null)} onMove={(st) => detail && move(detail.id, st, null)} />
     </>
   );
@@ -401,6 +427,9 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
     setForm(null);
     setNewItem("");
     setConfirm(false);
+    /* Yorum taslağı ve bildirilecek kişiler başka göreve taşınmaz */
+    setComment("");
+    setNotify([]);
   }
   /* Kontrol listesi: madde ekle ya da kaldır; liste baştan kaydedilir */
   const saveList = (next: { text: string; done: boolean }[]) => {
@@ -465,7 +494,7 @@ function TaskSheet({ detail, team, projects, pending, canDelete, onClose, onMove
   const open = list.filter((c) => !c.done).length;
 
   return (
-    <Sheet open={Boolean(detail)} onOpenChange={(o) => !o && onClose()} title={detail ? `${detail.code} ${detail.title}`.trim() : ""} description={detail ? [detail.projectTitle, assigneeName].filter(Boolean).join(" · ") || undefined : undefined}>
+    <Sheet open={Boolean(detail)} onOpenChange={(o) => !o && (!form || window.confirm("Kaydedilmemiş değişiklikler silinsin mi?")) && onClose()} title={detail ? `${detail.code} ${detail.title}`.trim() : ""} description={detail ? [detail.projectTitle, assigneeName].filter(Boolean).join(" · ") || undefined : undefined}>
       {detail ? (
         <>
           <SheetSection title="Aşama">

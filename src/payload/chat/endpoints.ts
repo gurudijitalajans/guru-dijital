@@ -112,7 +112,8 @@ export const chatSend: PayloadHandler = async (req) => {
     req,
     overrideAccess: true,
   });
-  const reopen = conv.status === "kapali";
+  /* Spam işaretli sohbet yeniden açılmaz, asistan da yanıt vermez */
+  const reopen = conv.status === "kapali" && !conv.spam;
   conv = (await req.payload.update({
     collection: "conversations",
     id: conv.id,

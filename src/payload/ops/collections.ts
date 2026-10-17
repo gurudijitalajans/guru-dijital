@@ -235,6 +235,8 @@ export const Tasks: CollectionConfig = {
           const last = await req.payload.find({ collection: "tasks", where: tenant ? { tenant: { equals: tenant } } : undefined, sort: "-seq", limit: 1, depth: 0, req, overrideAccess: true, select: { seq: true } });
           data.seq = (last.docs[0]?.seq ?? 0) + 1;
         }
+        /* Yeni görev panoda sütunun başında durur (boş sıra sürükle bırakta sırayı bozuyordu) */
+        if (operation === "create" && (data.order === null || data.order === undefined)) data.order = -Math.floor(Date.now() / 1000);
         const from = originalDoc?.stage ?? "yapilacak";
         const to = data.stage ?? from;
         if (to !== from || operation === "create") {
@@ -261,9 +263,24 @@ export const Tasks: CollectionConfig = {
           const d = new Date(iso);
           if (doc.repeat === "haftalik") d.setUTCDate(d.getUTCDate() + 7);
           else if (doc.repeat === "iki-haftalik") d.setUTCDate(d.getUTCDate() + 14);
-          else d.setUTCMonth(d.getUTCMonth() + 1);
+          else {
+            /* Aylık: 31 Ocak → 28/29 Şubat (ay sonu taşıp Mart'a atlamaz) */
+            const day = d.getUTCDate();
+            d.setUTCDate(1);
+            d.setUTCMonth(d.getUTCMonth() + 1);
+            d.setUTCDate(Math.min(day, new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()));
+          }
           return d.toISOString();
         };
+        const dueDate = next(doc.dueDate) ?? next(new Date().toISOString());
+        /* Görev Tamam'dan geri alınıp yeniden Tamam'a geçerse ikinci kopya açılmaz */
+        const twin = await req.payload.count({
+          collection: "tasks",
+          where: { and: [{ title: { equals: doc.title } }, { tenant: { equals: idOf(doc.tenant) } }, { repeat: { equals: doc.repeat } }, { dueDate: { equals: dueDate } }] },
+          req,
+          overrideAccess: true,
+        });
+        if (twin.totalDocs) return;
         await req.payload.create({
           collection: "tasks",
           data: {
@@ -275,7 +292,7 @@ export const Tasks: CollectionConfig = {
             hours: doc.hours,
             repeat: doc.repeat,
             startDate: next(doc.startDate),
-            dueDate: next(doc.dueDate) ?? next(new Date().toISOString()),
+            dueDate,
             checklist: (doc.checklist ?? []).map((c: ChecklistItem) => ({ text: c.text, done: false })),
             stage: "yapilacak",
             tenant: idOf(doc.tenant),

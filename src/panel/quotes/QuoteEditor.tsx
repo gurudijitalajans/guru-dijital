@@ -50,7 +50,39 @@ const totals = (items: QuoteItemInput[]) => {
   return { subtotal: round(subtotal), vat: round(vat), total: round(subtotal + vat) };
 };
 const field = "block w-full rounded-[9px] border border-line bg-surface px-3 min-h-10 text-[14px] pointer-coarse:text-[16px] text-ink focus:border-accent focus:outline-none";
-const num = (v: string) => Number(v.replace(/\./g, "").replace(",", ".")) || 0;
+/* Türkçe sayı: "1.250", "1.250,50", "0,5" ve "1250.5" aynı biçimde okunur */
+const num = (v: string) => {
+  const t = v.replace(/[\s₺]/g, "");
+  const n = t.includes(",") ? Number(t.replace(/\./g, "").replace(",", ".")) : /^\d{1,3}(\.\d{3})+$/.test(t) ? Number(t.replace(/\./g, "")) : Number(t);
+  return Number.isFinite(n) ? n : 0;
+};
+const fmt = (n: number) => n.toLocaleString("tr-TR", { maximumFractionDigits: 4, useGrouping: false });
+
+/** Sayı alanı: yazılan metin olduğu gibi kalır ("1250," ya da "0,"), sayı arkadan güncellenir */
+function NumInput({ id, value, onChange }: { id: string; value: number; onChange: (n: number) => void }) {
+  const [text, setText] = useState(fmt(value));
+  const [seen, setSeen] = useState(value);
+  /* Dışarıdan değişirse (ör. hizmet seçildi) metin de yenilenir */
+  if (value !== seen) {
+    setSeen(value);
+    if (num(text) !== value) setText(fmt(value));
+  }
+  return (
+    <input
+      id={id}
+      inputMode="decimal"
+      value={text}
+      onChange={(e) => {
+        setText(e.target.value);
+        const n = num(e.target.value);
+        setSeen(n);
+        onChange(n);
+      }}
+      onBlur={() => setText(fmt(num(text)))}
+      className={cn(field, "tabular")}
+    />
+  );
+}
 
 export function QuoteEditor({ quote, deals, canDelete = false }: { quote: EditorQuote; deals: DealOption[]; canDelete?: boolean }) {
   const router = useRouter();
@@ -339,7 +371,7 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
                   </label>
                   <label className="grid gap-1 text-[12px] text-muted">
                     Miktar
-                    <input id={`kalem-${i}-miktar`} inputMode="decimal" value={String(it.qty)} onChange={(e) => setItem(i, { qty: num(e.target.value) })} className={cn(field, "tabular")} />
+                    <NumInput id={`kalem-${i}-miktar`} value={it.qty} onChange={(n) => setItem(i, { qty: n })} />
                   </label>
                   <label className="grid gap-1 text-[12px] text-muted">
                     Birim
@@ -347,7 +379,7 @@ export function QuoteEditor({ quote, deals, canDelete = false }: { quote: Editor
                   </label>
                   <label className="grid gap-1 text-[12px] text-muted">
                     Birim fiyat (₺)
-                    <input id={`kalem-${i}-fiyat`} inputMode="decimal" value={String(it.unitPrice)} onChange={(e) => setItem(i, { unitPrice: num(e.target.value) })} className={cn(field, "tabular")} />
+                    <NumInput id={`kalem-${i}-fiyat`} value={it.unitPrice} onChange={(n) => setItem(i, { unitPrice: n })} />
                   </label>
                   <label className="grid gap-1 text-[12px] text-muted">
                     KDV

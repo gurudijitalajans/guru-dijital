@@ -20,7 +20,11 @@ export function CommandMenu({ open, onOpenChange, nav }: { open: boolean; onOpen
     const term = q.trim();
     const n = ++seq.current;
     if (term.length < 2) {
-      const t = setTimeout(() => n === seq.current && setHits([]), 0);
+      const t = setTimeout(() => {
+        if (n !== seq.current) return;
+        setHits([]);
+        setLoading(false);
+      }, 0);
       return () => clearTimeout(t);
     }
     const t = setTimeout(async () => {

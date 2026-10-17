@@ -460,11 +460,17 @@ export async function bulkInbox(keys: string[], action: "ata" | "kapat" | "sil",
     const list = keys.map(parseKey).filter((p): p is { kind: InboxKind; id: number } => Boolean(p)).slice(0, 200);
     if (action === "sil") {
       if (!ctx.isTenantAdmin) return { ok: false, error: "Kaydı yalnız işletme yöneticisi silebilir." };
+      /* Biri silinemese de diğerleri silinir; sonunda kaç tanesinin kaldığı söylenir */
+      let failed = 0;
+      let lastError = "";
       for (const p of list) {
         const r = await deleteInboxItem(p.kind, p.id);
-        if (!r.ok) return r;
+        if (!r.ok) {
+          failed++;
+          lastError = r.error ?? "";
+        }
       }
-      return { ok: true };
+      return failed ? { ok: false, error: `${list.length - failed} kayıt silindi, ${failed} kayıt silinemedi${lastError ? `: ${lastError}` : "."}` } : { ok: true };
     }
     if (!ctx.has("chat")) return { ok: false, error: "Yetki yok." };
     if (action === "ata" && userId && !(await ctx.team()).some((t) => t.id === userId)) return { ok: false, error: "Bu kişi ekipte değil." };
@@ -530,7 +536,9 @@ export async function replyByEmail(key: string, subject: string, text: string): 
     if (!r?.email) return { ok: false, error: "Kaydın e-posta adresi yok." };
     const payload = await cms();
     const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
-    const html = brandedEmail({ title: subj, intro: body, rows: [], link: null, base });
+    const { brandOf, emailSender } = await import("@/payload/crm/brand");
+    const brand = await brandOf({ payload, user: ctx.user } as unknown as PayloadRequest, ctx.tenant.id);
+    const html = brandedEmail({ title: subj, intro: body, rows: [], link: null, base, sender: emailSender(brand) });
     try {
       await payload.sendEmail({ to: r.email, subject: subj, html, text: body, replyTo: ctx.user.email });
     } catch (e) {
@@ -538,10 +546,15 @@ export async function replyByEmail(key: string, subject: string, text: string): 
       /* Resend, alan adı doğrulanmadan yalnız hesap sahibine gönderir */
       return { ok: false, error: /verify a domain|testing emails|own email/i.test(msg) ? "Gönderen alan adı Resend'de doğrulanmadığı için müşteriye e-posta gidemiyor." : msg || "E-posta gönderilemedi." };
     }
-    await ctx.create("activities", { type: "eposta", title: subj, body, [p.kind === "talep" ? "lead" : "booking"]: p.id, contact: idOf(r.contact), deal: idOf(r.deal), done: true });
-    if (p.kind === "talep") {
-      const lead = (await ctx.findByID("leads", p.id, 0)) as Lead | null;
-      if (lead?.status === "yeni") await ctx.update("leads", p.id, { status: "iletisim" });
+    /* E-posta gitti: geçmişe yazma başarısız olsa da "gönderildi" denir (yoksa ikinci kez gönderilir) */
+    try {
+      await ctx.create("activities", { type: "eposta", title: subj, body, [p.kind === "talep" ? "lead" : "booking"]: p.id, contact: idOf(r.contact), deal: idOf(r.deal), done: true });
+      if (p.kind === "talep") {
+        const lead = (await ctx.findByID("leads", p.id, 0)) as Lead | null;
+        if (lead?.status === "yeni") await ctx.update("leads", p.id, { status: "iletisim" });
+      }
+    } catch (e) {
+      payload.logger.error({ err: e }, "E-posta yanıtı geçmişe yazılamadı");
     }
     return { ok: true };
   });
@@ -556,7 +569,9 @@ export async function retryDelivery(messageId: number): Promise<Result> {
     if (!m) return { ok: false, error: "Mesaj bulunamadı." };
     const payload = await cms();
     const req = { payload, user: ctx.user, headers: await headers() } as unknown as PayloadRequest;
-    const { deliverOutbound } = await import("@/payload/channels/meta");
+    const { deliverOutbound, metaEnabled } = await import("@/payload/channels/meta");
+    if (!metaEnabled()) return { ok: false, error: "WhatsApp/Instagram bağlantısı kapalı." };
+    if (!["bot", "ekip", "sistem"].includes(m.role)) return { ok: false, error: "Bu mesaj kanala gönderilmez." };
     const error = await deliverOutbound(req, m);
     return error ? { ok: false, error: `Yine gönderilemedi: ${error}` } : { ok: true };
   });

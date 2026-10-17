@@ -104,14 +104,15 @@ export async function quoteLink(id: number): Promise<{ ok: boolean; error?: stri
   const ctx = await getPanelContext();
   if (!ctx.has("crm")) return { ok: false, error: "Yetki yok." };
   try {
-    const q = (await ctx.findByID("quotes", id, 0)) as { id: number; publicToken?: string | null } | null;
+    const q = (await ctx.findByID("quotes", id, 0)) as { id: number; status: string; publicToken?: string | null } | null;
     if (!q) return { ok: false, error: "Teklif bulunamadı." };
     let token = q.publicToken;
     if (!token) {
       const { randomBytes } = await import("node:crypto");
       token = randomBytes(24).toString("base64url");
-      await ctx.update("quotes", id, { publicToken: token });
     }
+    /* Bağlantı müşteriye iletilmek için alınır: taslak teklif Gönderildi olur (taslak kabul edilemez) */
+    if (token !== q.publicToken || q.status === "taslak") await ctx.update("quotes", id, { publicToken: token, ...(q.status === "taslak" ? { status: "gonderildi", sentAt: new Date().toISOString() } : {}) });
     return { ok: true, url: linkOf(token) };
   } catch (e) {
     const lost = sessionLost(e);
@@ -137,6 +138,7 @@ export async function sendQuote(id: number, to: string, message: string): Promis
     if (!q) return { ok: false, error: "Teklif bulunamadı." };
     const { cms } = await import("@/lib/cms");
     const { brandedEmail, emailConfigured } = await import("@/payload/notify");
+    const { brandOf, emailSender } = await import("@/payload/crm/brand");
     if (!emailConfigured()) return { ok: false, error: "E-posta servisi bağlı değil; bağlantıyı kopyalayıp iletebilirsiniz.", url: link.url };
     const payload = await cms();
     const base = process.env.NEXT_PUBLIC_SERVER_URL || "";
@@ -153,6 +155,7 @@ export async function sendQuote(id: number, to: string, message: string): Promis
       link: link.url,
       base,
       button: "Teklifi görüntüle",
+      sender: emailSender(await brandOf({ payload, user: ctx.user } as never, ctx.tenant.id)),
     });
     try {
       await payload.sendEmail({ to: email, subject: `Teklif ${q.number ?? ""}: ${q.title}`.replace(/\s+/g, " "), html, text: `${message.trim()}\n\nTeklif: ${link.url}`, replyTo: ctx.user.email });
@@ -160,9 +163,14 @@ export async function sendQuote(id: number, to: string, message: string): Promis
       const msg = e instanceof Error ? e.message : "";
       return { ok: false, url: link.url, error: /verify a domain|testing emails|own email/i.test(msg) ? "Gönderen alan adı Resend'de doğrulanmadığı için e-posta müşteriye gidemedi; bağlantıyı kopyalayıp iletebilirsiniz." : msg || "E-posta gönderilemedi." };
     }
-    await ctx.update("quotes", id, { sentAt: new Date().toISOString(), ...(q.status === "taslak" ? { status: "gonderildi" } : {}) });
-    const rel = (v: unknown) => (v && typeof v === "object" ? (v as { id: number }).id : (v as number | null | undefined)) ?? null;
-    await ctx.create("activities", { type: "eposta", title: `Teklif gönderildi: ${q.number ?? q.title}`, body: `${email}\n${message.trim()}`.trim(), deal: rel(q.deal), contact: rel(q.contact), company: rel(q.company), done: true, owner: ctx.user.id });
+    /* E-posta gitti: kayıt güncellemesi başarısız olsa da "gönderildi" denir (yoksa ikinci kez gönderilir) */
+    try {
+      await ctx.update("quotes", id, { sentAt: new Date().toISOString(), ...(q.status === "taslak" ? { status: "gonderildi" } : {}) });
+      const rel = (v: unknown) => (v && typeof v === "object" ? (v as { id: number }).id : (v as number | null | undefined)) ?? null;
+      await ctx.create("activities", { type: "eposta", title: `Teklif gönderildi: ${q.number ?? q.title}`, body: `${email}\n${message.trim()}`.trim(), deal: rel(q.deal), contact: rel(q.contact), company: rel(q.company), done: true, owner: ctx.user.id });
+    } catch (e) {
+      payload.logger.error({ err: e }, "Teklif gönderimi kaydedilemedi");
+    }
     return { ok: true, url: link.url };
   } catch (e) {
     const lost = sessionLost(e);

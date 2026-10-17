@@ -450,7 +450,7 @@ export function Shell(props: Props) {
             <kbd className="hidden rounded-[5px] border border-line bg-surface px-1.5 font-mono text-[11px] sm:inline pointer-coarse:hidden">⌘K</kbd>
           </button>
           <span className="flex-1" />
-          <Zil />
+          <Zil key={props.tenant.id} />
         </header>
         <main id="icerik" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto px-4 pt-5 pb-[calc(env(safe-area-inset-bottom,0px)+96px)] focus:outline-none lg:px-7 lg:pt-6 lg:pb-12">
           {props.children}

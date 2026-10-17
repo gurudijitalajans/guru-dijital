@@ -70,7 +70,7 @@ export function MediaView({ items, total, page, pages, q, folder, folders, selec
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (term === q) return;
+    if (term.trim() === q) return;
     const t = setTimeout(() => set({ q: term.trim() || null, sayfa: null }, true), 300);
     return () => clearTimeout(t);
   }, [term, q, set]);

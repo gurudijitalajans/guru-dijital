@@ -1,3 +1,4 @@
+import { APIError } from "payload";
 import type { CollectionConfig, Field } from "payload";
 import { isLoggedIn } from "../access";
 import { ACTIVITY_TYPES, DEAL_STAGES, QUOTE_STATUS, SOURCES } from "./stages";
@@ -142,8 +143,10 @@ export const Deals: CollectionConfig = {
   access: { ...access, read: ownerScope, update: ownerScope },
   hooks: {
     beforeChange: [
-      async ({ data, originalDoc, req }) => {
+      async ({ data, originalDoc, operation, req }) => {
         const stage = data.stage ?? originalDoc?.stage;
+        /* Yeni fırsat panoda sütunun başında durur (boş sıra sürükle bırakta sırayı bozuyordu) */
+        if (operation === "create" && (data.order === null || data.order === undefined)) data.order = -Math.floor(Date.now() / 1000);
         /* Aşamaya giriş zamanı: panodaki "N gündür bu aşamada" rozeti */
         if (!originalDoc || (data.stage && data.stage !== originalDoc.stage)) data.stageChangedAt = new Date().toISOString();
         const closed = stage === "kazanildi" || stage === "kaybedildi";
@@ -300,6 +303,13 @@ export const Quotes: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
+        /* Teklif yalnız kullanıcının görebildiği fırsata bağlanır: kabulde fırsat Kazanıldı'ya geçtiği için
+           "yalnız kendi" görünürlüğündeki üye REST ile başkasının fırsatını kapatamasın */
+        const dealId = idOf(data.deal);
+        if (req.user && dealId && dealId !== idOf(originalDoc?.deal)) {
+          const seen = await req.payload.findByID({ collection: "deals", id: dealId, depth: 0, req, overrideAccess: false }).catch(() => null);
+          if (!seen) throw new APIError("Fırsat bulunamadı.", 400, undefined, true);
+        }
         Object.assign(data, quoteTotals(data.items ?? originalDoc?.items));
         /* Numara işletme başına: işletmenin ön eki, yıl ve sıra (GD-2026-001) */
         if (operation === "create" && !data.number) {
@@ -310,13 +320,14 @@ export const Quotes: CollectionConfig = {
           const last = await req.payload.find({
             collection: "quotes",
             where: { and: [{ number: { like: `${prefix}-${year}-` } }, ...(tenant ? [{ tenant: { equals: tenant } }] : [])] },
-            sort: "-number",
-            limit: 1,
+            limit: 0,
             depth: 0,
             req,
             overrideAccess: true,
+            select: { number: true },
           });
-          const n = Number(String(last.docs[0]?.number ?? "").split("-")[2] ?? 0) + 1;
+          /* Sayı olarak en büyüğü (metin sıralamasında "-999" "-1000"den büyük görünür) */
+          const n = Math.max(0, ...last.docs.map((d) => Number(String(d.number ?? "").split("-")[2]) || 0)) + 1;
           data.number = `${prefix}-${year}-${String(n).padStart(3, "0")}`;
         }
         /* Kişi ve firma boşsa fırsattan */

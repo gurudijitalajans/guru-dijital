@@ -111,7 +111,7 @@ function FieldView({ f, base }: { f: CField; base: string }) {
             id={domId(path)}
             type={f.time ? "datetime-local" : "date"}
             value={toLocalInput(value, Boolean(f.time))}
-            onChange={(e) => set(e.target.value ? new Date(f.time ? e.target.value : `${e.target.value}T12:00:00`).toISOString() : null)}
+            onChange={(e) => set(e.target.value ? new Date(f.time ? `${e.target.value}:00+03:00` : `${e.target.value}T12:00:00+03:00`).toISOString() : null)}
             disabled={ro}
           />
         </Shell>
@@ -212,13 +212,15 @@ function FieldView({ f, base }: { f: CField; base: string }) {
   }
 }
 
+/* Tarih ve saat İstanbul'a göre (sunucu UTC, tarayıcı İstanbul: ilk çizim ikisinde aynı olsun) */
 function toLocalInput(v: unknown, time: boolean) {
   if (typeof v !== "string" || !v) return "";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "";
+  const t = new Date(v).getTime();
+  if (Number.isNaN(t)) return "";
+  const d = new Date(t + 3 * 3600000);
   const p = (n: number) => String(n).padStart(2, "0");
-  const day = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-  return time ? `${day}T${p(d.getHours())}:${p(d.getMinutes())}` : day;
+  const day = `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}`;
+  return time ? `${day}T${p(d.getUTCHours())}:${p(d.getUTCMinutes())}` : day;
 }
 
 /** Bir alan listesinin içindeki veri yolları (sekmede hata işareti için) */

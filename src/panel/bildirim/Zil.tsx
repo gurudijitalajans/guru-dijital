@@ -16,6 +16,10 @@ const rel = (iso: string) => {
   return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(iso));
 };
 
+/** Bildirim merkezi gibi başka yerlerde yapılan işlemden sonra zil hemen tazelensin */
+export const BILDIRIM_EVENT = "guru:bildirim";
+export const pingBell = () => window.dispatchEvent(new Event(BILDIRIM_EVENT));
+
 /** Üst çubuktaki bildirim zili: okunmamış sayısı, son 30 bildirim, okundu yap, sil, okunanları temizle. Dakikada bir yenilenir. */
 export function Zil() {
   const [data, setData] = useState<{ unread: number; items: Bildirim[] }>({ unread: 0, items: [] });
@@ -24,7 +28,11 @@ export function Zil() {
   useEffect(() => {
     load();
     const t = window.setInterval(() => document.visibilityState === "visible" && load(), 60000);
-    return () => window.clearInterval(t);
+    window.addEventListener(BILDIRIM_EVENT, load);
+    return () => {
+      window.clearInterval(t);
+      window.removeEventListener(BILDIRIM_EVENT, load);
+    };
   }, [load]);
   useEffect(() => {
     if (open) load();

@@ -25,6 +25,8 @@ export async function moveDeal(id: number, stage: string, order: number, lostRea
     if (!STAGES.includes(stage)) return { ok: false, error: "Geçersiz aşama." };
     const data: Record<string, unknown> = { stage, order: Number.isFinite(order) ? order : undefined };
     if (stage === "kaybedildi" && lostReason?.trim()) data.lostReason = lostReason.trim().slice(0, 2000);
+    /* Yeniden açılan fırsatın eski kayıp sebebi analizde sayılmasın */
+    if (stage !== "kaybedildi") data.lostReason = null;
     return (await ctx.update("deals", id, data)) ? { ok: true } : { ok: false, error: "Fırsat bulunamadı." };
   } catch (e) {
     const lost = sessionLost(e);

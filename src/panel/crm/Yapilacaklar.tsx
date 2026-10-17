@@ -38,12 +38,13 @@ const GROUPS: [string, string][] = [
   ["sonra", "Sonra"],
 ];
 
-/* Erteleme: aynı saat korunur, gün kayar */
+/* Erteleme: bugünden itibaren gün kayar ("Yarın" gerçekten yarın), saat korunur. İş zaten o gün
+   ya da sonrasındaysa teslimden bir gün ileri gider (düğme hiçbir şey yapmamış görünmesin) */
 const shift = (due: string | null, days: number) => {
-  const base = due ? new Date(due) : new Date();
-  const d = new Date(Math.max(base.getTime(), Date.now()) + days * 86400000);
+  const d = new Date(Date.now() + days * 86400000);
   if (!due) d.setHours(10, 0, 0, 0);
   else d.setHours(new Date(due).getHours(), new Date(due).getMinutes(), 0, 0);
+  if (due && d.getTime() <= new Date(due).getTime()) return new Date(new Date(due).getTime() + days * 86400000).toISOString();
   return d.toISOString();
 };
 const nextMonday = (due: string | null) => {

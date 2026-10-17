@@ -119,8 +119,11 @@ export const emailConfigured = () => Boolean(process.env.RESEND_API_KEY);
  * istemcileri gradyan ve SVG göstermez), başlık, açıklama, bilgi satırları,
  * lacivert "Panelde aç" düğmesi. Tablo düzeni: Outlook dahil her istemcide aynı.
  */
-export function brandedEmail({ title, intro, rows = [], link, base, button = "Panelde aç" }: { title: string; intro: string; rows?: [string, string][]; link: string | null; base: string; button?: string }) {
-  const header = base ? `<tr><td style="padding:0"><img src="${esc(base)}/brand/eposta-baslik.png" width="560" height="100" alt="Guru Dijital" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:14px 14px 0 0"></td></tr>` : "";
+export function brandedEmail({ title, intro, rows = [], link, base, button = "Panelde aç", sender }: { title: string; intro: string; rows?: [string, string][]; link: string | null; base: string; button?: string; sender?: string }) {
+  /* Guru dışındaki işletmenin müşterisine giden e-postada işletmenin adı görünür */
+  const header = sender
+    ? `<tr><td style="padding:24px 28px;background:#011441;border-radius:14px 14px 0 0;color:#ffffff;font-size:19px;font-weight:bold;font-family:Arial,Helvetica,sans-serif">${esc(sender)}</td></tr>`
+    : base ? `<tr><td style="padding:0"><img src="${esc(base)}/brand/eposta-baslik.png" width="560" height="100" alt="Guru Dijital" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:14px 14px 0 0"></td></tr>` : "";
   const table = rows.length
     ? `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;margin:18px 0 6px">${rows
         .map(([k, v]) => `<tr><td style="padding:8px 12px 8px 0;color:#646d80;font-size:14px;vertical-align:top;white-space:nowrap">${esc(k)}</td><td style="padding:8px 0;color:#011441;font-size:15px;white-space:pre-wrap">${esc(v)}</td></tr>`)
@@ -137,7 +140,7 @@ ${header}
 ${table}${btn}
 </td></tr>
 </table>
-<p style="margin:16px 0 0;font-size:12px;color:#8a93a6;font-family:Arial,Helvetica,sans-serif">Guru Panel · Guru Dijital Ajans</p>
+<p style="margin:16px 0 0;font-size:12px;color:#8a93a6;font-family:Arial,Helvetica,sans-serif">${sender ? esc(sender) : "Guru Panel · Guru Dijital Ajans"}</p>
 </td></tr></table></body></html>`;
 }
 
@@ -153,7 +156,7 @@ export async function bookingVisitorEmail(
 ): Promise<{ ok: boolean; error?: string }> {
   if (!b.email || /\.test$/i.test(b.email) || !emailConfigured()) return { ok: false, error: "gönderilmedi" };
   try {
-    const { brandOf } = await import("./crm/brand");
+    const { brandOf, emailSender } = await import("./crm/brand");
     const { meetingAt } = await import("./crm/automation");
     const { kurallarOf } = await import("./takvim");
     const tenantId = b.tenant && typeof b.tenant === "object" ? (b.tenant as { id: number }).id : (b.tenant as number | undefined);
@@ -178,6 +181,7 @@ export async function bookingVisitorEmail(
       link: kind === "iptal" ? (base ? `${base}/iletisim` : null) : cal,
       base,
       button: kind === "iptal" ? "Yeni randevu al" : "Takvime ekle",
+      sender: emailSender(brand),
     });
     await req.payload.sendEmail({ to: b.email, subject: copy.subject, html, text: `${copy.intro}\n\nZaman: ${when}`, ...(brand.email ? { replyTo: brand.email } : {}) });
     return { ok: true };

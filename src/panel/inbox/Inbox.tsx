@@ -120,17 +120,43 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
   const router = useRouter();
   const endRef = useRef<HTMLDivElement>(null);
 
-  /* Liste her zaman güncel süzgeç, arama ve sayfa boyuyla okunur (yoklama da) */
+  /* Liste her zaman güncel süzgeç, arama ve sayfa boyuyla okunur (yoklama da). Yanıtlar sırasız
+     dönebilir: yalnız en son istenen liste ve şu an açık kayıt ekrana yazılır */
   const params = useRef({ q: "", limit: INBOX_PAGE });
+  const listSeq = useRef(0);
+  const keyRef = useRef(key);
+  const filterRef = useRef(filter);
   const reloadList = useCallback(async (f: InboxFilter) => {
-    const r = await listInbox(f, params.current);
-    setItems(r.items);
-    setMore(r.more);
+    const seq = ++listSeq.current;
+    try {
+      const r = await listInbox(f, params.current);
+      if (seq !== listSeq.current) return;
+      setItems(r.items);
+      setMore(r.more);
+    } catch {
+      /* geçici bağlantı hatası: bir sonraki yoklama tekrar dener */
+    }
   }, []);
   const reloadThread = useCallback(async (k: string) => {
     if (!k) return setThread(null);
-    const t = await getThread(k);
-    setThread((old) => (old && t && old.key === t.key && old.messages.length === t.messages.length && old.status === t.status && old.label === t.label ? old : t));
+    let t: Thread | null;
+    try {
+      t = await getThread(k);
+    } catch {
+      return;
+    }
+    if (k !== keyRef.current) return;
+    if (!t) {
+      /* Kayıt silinmiş ya da erişim yok: boş bölmede kalınmaz (telefonda geri düğmesi de yok) */
+      keyRef.current = "";
+      setKey("");
+      setThread(null);
+      writeUrl(filterRef.current, "");
+      toast.error("Kayıt bulunamadı ya da silinmiş.");
+      return;
+    }
+    const next = t;
+    setThread((old) => (old && JSON.stringify(old) === JSON.stringify(next) ? old : next));
   }, []);
 
   /* Yeni mesajlar için yoklama: liste 6, açık sohbet 4 saniyede bir (sekme görünürken) */
@@ -155,6 +181,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
       return next;
     });
   const pickFilter = (f: InboxFilter) => {
+    filterRef.current = f;
     setFilter(f);
     setSelected(new Set());
     setLimit(INBOX_PAGE);
@@ -170,6 +197,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
       return;
     }
     const t = setTimeout(() => {
+      setSelected(new Set());
       setLimit(INBOX_PAGE);
       params.current = { q, limit: INBOX_PAGE };
       start(() => reloadList(filter));
@@ -185,6 +213,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
   };
   const open = useCallback(
     (k: string) => {
+      keyRef.current = k;
       setKey(k);
       setReply("");
       setConfirm(false);
@@ -204,6 +233,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlKey]);
   const back = () => {
+    keyRef.current = "";
     setKey("");
     setThread(null);
     writeUrl(filter, "");
@@ -212,20 +242,19 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
   const run = (job: () => Promise<{ ok: boolean; error?: string }>, done: string) =>
     start(async () => {
       const r = await job();
-      if (!r.ok) return void toast.error(r.error ?? "İşlem yapılamadı.");
-      toast.success(done);
-      await Promise.all([reloadThread(key), reloadList(filter)]);
+      if (r.ok) toast.success(done);
+      else toast.error(r.error ?? "İşlem yapılamadı.");
+      /* Hata olsa da tazelenir: toplu işlemde bir kısmı yapılmış olabilir */
+      await Promise.all([reloadThread(keyRef.current), reloadList(filter)]);
       router.refresh();
     });
   const bulk = (job: (keys: string[]) => Promise<{ ok: boolean; error?: string }>, done: string) => {
     const keys = [...selected];
     run(async () => {
       const r = await job(keys);
-      if (r.ok) {
-        setSelected(new Set());
-        setBulkConfirm(false);
-        if (keys.includes(key)) back();
-      }
+      setSelected(new Set());
+      setBulkConfirm(false);
+      if (r.ok && keys.includes(keyRef.current)) back();
       return r;
     }, done);
   };
@@ -239,6 +268,7 @@ export function Inbox({ filters, initialFilter, initialPage, initialThread, me, 
       toast.success(`${KIND_LABEL[thread.kind]} silindi.`);
       back();
       await reloadList(filter);
+      router.refresh();
     });
   const assign = (v: string) => thread && run(() => assignConversation(thread.id, v ? Number(v) : null), v ? "Sohbet atandı." : "Atama kaldırıldı.");
 

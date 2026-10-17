@@ -13,7 +13,8 @@ const day = (v?: string | null) => (v ? new Intl.DateTimeFormat("tr-TR", { timeZ
 /* Hücre: ayraç, tırnak ya da satır sonu varsa tırnak içine; formül sanılmasın diye =, +, -, @ ile başlayan metne ' eklenir */
 const cell = (v: unknown) => {
   let s = v === null || v === undefined ? "" : String(v);
-  if (/^[=+\-@]/.test(s)) s = `'${s}`;
+  /* Telefon numarası (+90 532 …) formül değildir, olduğu gibi kalır */
+  if (/^[=+\-@]/.test(s) && !/^\+[\d\s()-]+$/.test(s)) s = `'${s}`;
   return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 

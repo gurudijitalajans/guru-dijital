@@ -7,7 +7,10 @@ import { isGuruTenant } from "./tenant";
  * İşletmenin "Belge ve e-posta bilgileri"nden; Guru Dijital'de boş alanlar
  * sitenin kendi bilgileri ve logosuyla dolar.
  */
-export type Brand = { name: string; shortName: string; logo: string | null; email: string; phone: string; address: string; website: string; tax: string };
+export type Brand = { name: string; shortName: string; logo: string | null; email: string; phone: string; address: string; website: string; tax: string; isGuru: boolean };
+
+/** Müşteriye giden e-postada gönderen adı: Guru dışındaki işletmede Guru markası görünmez */
+export const emailSender = (b: Brand) => (b.isGuru ? undefined : b.shortName || b.name || undefined);
 
 export async function brandOf(req: PayloadRequest, tenant: unknown): Promise<Brand> {
   const id = tenant && typeof tenant === "object" ? (tenant as { id: number }).id : (tenant as number);
@@ -26,7 +29,8 @@ export async function brandOf(req: PayloadRequest, tenant: unknown): Promise<Bra
       address: p.address || s?.contact?.address || "",
       website: p.website || site.url,
       tax,
+      isGuru: true,
     };
   }
-  return { name: p.legalName || t?.name || "", shortName: t?.name || "", logo, email: p.email || "", phone: p.phone || "", address: p.address || "", website: p.website || "", tax };
+  return { name: p.legalName || t?.name || "", shortName: t?.name || "", logo, email: p.email || "", phone: p.phone || "", address: p.address || "", website: p.website || "", tax, isGuru: false };
 }

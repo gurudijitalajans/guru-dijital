@@ -42,7 +42,9 @@ export function computeLoad(tasks: LoadTask[], weeks: WeekLoad[], today: string)
       continue;
     }
     const [s, e] = span(t, today);
-    const days = businessDays(s, e);
+    /* Yalnız hafta sonuna ya da tatile düşen görevin saati ilk iş gününe yazılır (yükten düşmez) */
+    const inRange = businessDays(s, e);
+    const days = inRange.length ? inRange : [addBusinessDays(e, 0)];
     const per = weeks.map((w) => days.filter((d) => w.days.includes(d)).length);
     if (!per.some(Boolean)) continue;
     const row = byPerson.get(who) ?? { hours: weeks.map(() => 0), tasks: [], noEstimate: 0 };

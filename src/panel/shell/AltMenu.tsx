@@ -38,6 +38,8 @@ export function AltMenu({ nav, path, onMenu }: { nav: NavGroup[]; path: string; 
   useEffect(() => {
     const main = document.getElementById("icerik");
     if (!main) return;
+    /* Yeni sayfa kısa olabilir (kaydırma olayı gelmez): menü görünür başlar */
+    const show = setTimeout(() => setHidden(false), 0);
     let last = main.scrollTop;
     const onScroll = () => {
       const y = main.scrollTop;
@@ -46,7 +48,10 @@ export function AltMenu({ nav, path, onMenu }: { nav: NavGroup[]; path: string; 
       last = y;
     };
     main.addEventListener("scroll", onScroll, { passive: true });
-    return () => main.removeEventListener("scroll", onScroll);
+    return () => {
+      clearTimeout(show);
+      main.removeEventListener("scroll", onScroll);
+    };
   }, [path]);
 
   const tab = (it: (typeof items)[number]) => {

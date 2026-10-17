@@ -121,7 +121,8 @@ async function receive(req: PayloadRequest, m: Inbound) {
       lastMessageAt: visitor.createdAt,
       lastText: m.text.slice(0, 160),
       visitorMessages: (conv.visitorMessages ?? 0) + 1,
-      ...(conv.status === "kapali" ? { status: "bot" } : {}),
+      /* Spam işaretli sohbet yeniden açılmaz, asistan da yanıt vermez */
+      ...(conv.status === "kapali" && !conv.spam ? { status: "bot" } : {}),
       ...(conv.status === "ekip" ? { needsReply: true } : {}),
       /* Yeni mesaj ertelemeyi kaldırır */
       snoozedUntil: null,

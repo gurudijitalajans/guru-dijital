@@ -19,7 +19,7 @@ export const CRM_SKIP = "crmSkip";
  * CRM_SKIP işaretiyle yazılır. Payload işareti req.context'e kalıcı olarak
  * birleştirir; aynı istekteki sonraki işlemler etkilenmesin diye geri alınır.
  */
-async function quietly<T>(req: PayloadRequest, run: () => Promise<T>): Promise<T> {
+export async function quietly<T>(req: PayloadRequest, run: () => Promise<T>): Promise<T> {
   const prev = req.context?.[CRM_SKIP];
   try {
     return await run();
@@ -32,7 +32,8 @@ const idOf = (v: unknown): Id | undefined =>
 
 /** Ertesi iş günü (hafta sonu ve resmi tatil atlanır), İstanbul saatiyle 10:00 (UTC 07:00) */
 export function nextBusinessDay(from = new Date()): string {
-  const d = new Date(from);
+  /* Gün İstanbul saatine göre: gece 00-03 arası gelen talepte UTC günü bir gün geride kalır */
+  const d = new Date(from.getTime() + 3 * 3600000);
   do d.setUTCDate(d.getUTCDate() + 1);
   while (isClosedDay(d.toISOString().slice(0, 10)));
   d.setUTCHours(7, 0, 0, 0);

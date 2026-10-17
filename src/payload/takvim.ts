@@ -199,7 +199,7 @@ export function gunDurumu(day: string, k: Kurallar): { acik: boolean; neden?: st
     const kapali = k.kapali.get(day);
     if (kapali && !kapali.yarim) return { acik: false, neden: kapali.ad };
     if (k.resmi && TATILLER[day]) return { acik: false, neden: TATILLER[day] };
-    if (!g?.acik) return { acik: false, neden: "Hafta sonu" };
+    if (!g?.acik) return { acik: false, neden: dow(day) === 0 || dow(day) === 6 ? "Hafta sonu" : "Kapalı gün" };
     if (kapali?.yarim) return { acik: true, kapanis: "13:00", neden: kapali.ad };
     if (k.arife && YARIM_GUNLER[day]) return { acik: true, kapanis: YARIM_GUNLER[day].from, neden: YARIM_GUNLER[day].name };
   }

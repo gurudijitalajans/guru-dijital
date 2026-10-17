@@ -202,6 +202,8 @@ function NewProject({ open, onOpenChange, team, templates, deals, me, fromDeal, 
             <label className="grid gap-1 text-[13px] text-muted">
               Sorumlu
               <select id="yeni-proje-sorumlu" value={f.owner} onChange={(e) => setF({ ...f, owner: e.target.value })} className={field}>
+                {/* Seçili kişi ekipte değilse (ör. Guru yöneticisi) liste yanlış kişiyi göstermesin */}
+                {team.some((m) => String(m.id) === f.owner) ? null : <option value="">Bana</option>}
                 {team.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
@@ -374,7 +376,7 @@ function ProjectSheet({ detail, team, canDelete, onClose }: { detail: ProjectDet
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!task.title.trim()) return;
-                run(() => createTask({ title: task.title, project: detail.id, assignee: task.assignee ? Number(task.assignee) : (detail.owner ?? null) }), "Görev eklendi.", () => setTask({ title: "", assignee: "" }));
+                run(() => createTask({ title: task.title, project: detail.id, assignee: task.assignee ? Number(task.assignee) : team.some((m) => m.id === detail.owner) ? detail.owner : null }), "Görev eklendi.", () => setTask({ title: "", assignee: "" }));
               }}
               className="mt-3 flex flex-wrap items-end gap-2"
             >

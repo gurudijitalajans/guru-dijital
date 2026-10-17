@@ -55,6 +55,14 @@ const STALE_DAYS = 7;
 const money = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
 const dayFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short" });
 const idleDays = (iso: string) => Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+/** Türkçe tutar: "25.000", "25.000,50", "25000,5" ve "25000.5" aynı biçimde okunur */
+const parseTL = (raw: string): number | null => {
+  const s = raw.replace(/[\s₺]/g, "");
+  if (!s) return null;
+  const n = s.includes(",") ? Number(s.replace(/\./g, "").replace(",", ".")) : /^\d{1,3}(\.\d{3})+$/.test(s) ? Number(s.replace(/\./g, "")) : Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+const tlInput = (n: number) => n.toLocaleString("tr-TR", { maximumFractionDigits: 2 });
 const byOrder = (a: BoardDeal, b: BoardDeal) => (a.order ?? Infinity) - (b.order ?? Infinity) || b.updatedAt.localeCompare(a.updatedAt);
 
 type View = "pano" | "liste";
@@ -89,6 +97,18 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
   }
   const [pending, start] = useTransition();
 
+  /* Birden çok parametre tek seferde (ör. yeni kayıt açılınca ?yeni düşer, ?gorev eklenir) */
+  const setParams = useCallback(
+    (kv: Record<string, string | null>) => {
+      const next = new URLSearchParams(params.toString());
+      for (const [k, v] of Object.entries(kv)) {
+        if (v) next.set(k, v);
+        else next.delete(k);
+      }
+      router.push(`${path}${next.toString() ? `?${next}` : ""}`, { scroll: false });
+    },
+    [params, path, router],
+  );
   const setParam = useCallback(
     (k: string, v: string | null) => {
       const next = new URLSearchParams(params.toString());
@@ -113,7 +133,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
         (d) =>
           (!term || `${d.title} ${d.who}`.toLocaleLowerCase("tr-TR").includes(term)) &&
           (!mine || d.owner === me) &&
-          (!staleOnly || (OPEN.some((s) => s.id === d.stage) && idleDays(d.updatedAt) >= STALE_DAYS)),
+          (!staleOnly || (OPEN.some((s) => s.id === d.stage) && idleDays(d.stageSince) >= STALE_DAYS)),
       ),
     [deals, term, mine, me, staleOnly],
   );
@@ -125,7 +145,16 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
   /* Taşıma: yeni sıra komşu kartların arası; ekranda hemen, sunucuda arkadan */
   const move = (id: number, stage: string, beforeId: number | null, lostReason?: string) => {
     const deal = deals.find((d) => d.id === id);
-    if (!deal) return;
+    /* Panoda olmayan (30 günden eski kapanmış) fırsat: yan paneldeki aşama düğmesi doğrudan taşır */
+    if (!deal) {
+      if (stage === "kaybedildi" && lostReason === undefined) return setLost({ id, order: NaN });
+      return start(async () => {
+        const r = await moveDeal(id, stage, NaN, lostReason);
+        if (!r.ok) return void toast.error(r.error ?? "Taşınamadı.");
+        toast.success(`Aşama: ${LABEL[stage]}`);
+        router.refresh();
+      });
+    }
     const col = deals.filter((d) => d.stage === stage && d.id !== id).sort(byOrder);
     const at = beforeId ? Math.max(0, col.findIndex((d) => d.id === beforeId)) : col.length;
     const prev = col[at - 1]?.order ?? (col[at] ? (col[at].order ?? at) - 1 : 0);
@@ -133,12 +162,13 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
     const order = (prev + next) / 2;
     if (deal.stage === stage && deal.order === order) return;
     if (stage === "kaybedildi" && lostReason === undefined) return setLost({ id, order });
-    const before = deals;
+    const prevDeal = deal;
     setDeals((list) => list.map((d) => (d.id === id ? { ...d, stage, order, updatedAt: new Date().toISOString(), closedAt: stage === "kazanildi" || stage === "kaybedildi" ? new Date().toISOString() : null } : d)));
     start(async () => {
       const r = await moveDeal(id, stage, order, lostReason);
       if (!r.ok) {
-        setDeals(before);
+        /* Yalnız bu kart geri alınır: arada yapılan başka taşımalar bozulmaz */
+        setDeals((list) => list.map((d) => (d.id === id ? prevDeal : d)));
         return void toast.error(r.error ?? "Taşınamadı.");
       }
       if (deal.stage !== stage) toast.success(stage === "kazanildi" ? `${deal.title} kazanıldı.${hasOps ? " Proje açmak için fırsatı açın." : ""}` : `${deal.title}: ${LABEL[stage]}`);
@@ -147,7 +177,8 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
   };
 
   const onDrop = (stage: string, beforeId: number | null) => {
-    if (dragId !== null) move(dragId, stage, beforeId);
+    /* Kart kendi üstüne bırakıldıysa yerinde kalır */
+    if (dragId !== null && beforeId !== dragId) move(dragId, stage, beforeId);
     setDragId(null);
     setOver(null);
   };
@@ -240,7 +271,7 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
                         <button
                           key={d.id}
                           type="button"
-                          draggable
+                          draggable={!pending}
                           onDragStart={(e) => {
                             setDragId(d.id);
                             e.dataTransfer.effectAllowed = "move";
@@ -357,7 +388,11 @@ export function DealsView({ deals: initial, detail, me, hasOps, canDelete = fals
           setLost(null);
         }}
       />
-      <NewDealDialog open={creating} onOpenChange={setCreating} onCreated={(id) => setParam("firsat", String(id))} />
+      <NewDealDialog open={creating} onOpenChange={(o) => {
+          setCreating(o);
+          /* "+" menüsünden gelinen ?yeni=1 kapanınca düşer: aynı kısayol tekrar çalışsın */
+          if (!o && yeni) setParams({ yeni: null });
+        }} onCreated={(id) => setParams({ firsat: String(id), yeni: null })} />
       <DealSheet canDelete={canDelete} team={team} me={me} detail={detail} hasOps={hasOps} onClose={() => setParam("firsat", null)} onMove={(st) => detail && move(detail.id, st, null)} pending={pending} />
     </>
   );
@@ -427,7 +462,7 @@ function NewDealDialog({ open, onOpenChange, onCreated }: { open: boolean; onOpe
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     start(async () => {
-      const r = await createDeal({ title, value: value ? Number(value.replace(/\./g, "").replace(",", ".")) : null, stage, expectedClose: close || null, contact: contact?.id ?? null });
+      const r = await createDeal({ title, value: parseTL(value), stage, expectedClose: close || null, contact: contact?.id ?? null });
       if (!r.ok || !r.id) return void toast.error(r.error ?? "Fırsat açılamadı.");
       toast.success("Fırsat açıldı.");
       onOpenChange(false);
@@ -582,14 +617,14 @@ function DealSheet({ detail, hasOps, canDelete, team, me, onClose, onMove, pendi
   }
   const startEdit = () => {
     if (!detail) return;
-    setForm({ title: detail.title, value: detail.value ? String(detail.value) : "", expectedClose: detail.expectedClose, service: detail.service, notes: detail.notes, contact: detail.contact ? { id: detail.contact.id, name: detail.contact.name } : null, company: detail.company, owner: detail.ownerId ? String(detail.ownerId) : "" });
+    setForm({ title: detail.title, value: detail.value ? tlInput(detail.value) : "", expectedClose: detail.expectedClose, service: detail.service, notes: detail.notes, contact: detail.contact ? { id: detail.contact.id, name: detail.contact.name } : null, company: detail.company, owner: detail.ownerId ? String(detail.ownerId) : "" });
     setEditing(true);
   };
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     if (!detail || !form) return;
     start(async () => {
-      const r = await updateDeal(detail.id, { title: form.title, value: form.value ? Number(form.value.replace(/\./g, "").replace(",", ".")) : null, expectedClose: form.expectedClose || null, service: form.service, notes: form.notes, contact: form.contact?.id ?? null, company: form.company?.id ?? null, owner: form.owner ? Number(form.owner) : null });
+      const r = await updateDeal(detail.id, { title: form.title, value: parseTL(form.value), expectedClose: form.expectedClose || null, service: form.service, notes: form.notes, contact: form.contact?.id ?? null, company: form.company?.id ?? null, owner: form.owner ? Number(form.owner) : null });
       if (!r.ok) return void toast.error(r.error ?? "Kaydedilemedi.");
       toast.success("Kaydedildi.");
       setEditing(false);

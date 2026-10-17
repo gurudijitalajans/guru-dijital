@@ -2,6 +2,7 @@ import type { CollectionConfig, PayloadRequest } from "payload";
 import { isLoggedIn } from "../access";
 import { tenantAdminAccess } from "../business/roles";
 import { DEAL_STAGES, stageLabel } from "./stages";
+import { isClosedDay } from "../../lib/tatiller";
 
 /**
  * Aşama otomasyonları (Kommo'daki "Digital Pipeline"ın sade hali): fırsat bir
@@ -82,23 +83,34 @@ export const Automations: CollectionConfig = {
   ],
 };
 
-/** İş günü sonu ve sonraki iş günleri (İstanbul saatiyle 18:00 / 10:00) */
+/**
+ * İş günü sonu ve sonraki iş günleri (İstanbul saatiyle 18:00 / 10:00). Gün İstanbul'a göre
+ * hesaplanır; hafta sonu ve resmi tatiller atlanır; geçmişe düşen saat sonraki iş gününe kayar.
+ */
 function dueFor(deadline: string, now = new Date()): string {
+  /* d: İstanbul yerel tarihini UTC alanlarında taşıyan tarih (Türkiye'de yaz saati yok, +3) */
+  const local = new Date(now.getTime() + 3 * 3600000);
   const atTr = (d: Date, h: number) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), h - 3, 0));
+  const closed = (d: Date) => isClosedDay(d.toISOString().slice(0, 10));
+  const nextOpen = (d: Date) => {
+    do d.setUTCDate(d.getUTCDate() + 1);
+    while (closed(d));
+    return d;
+  };
   if (deadline === "hemen") return now.toISOString();
-  if (deadline === "gun-sonu") return atTr(now, 18).toISOString();
+  if (deadline === "gun-sonu") {
+    const d = new Date(local);
+    if (closed(d) || atTr(d, 18) <= now) nextOpen(d);
+    return atTr(d, 18).toISOString();
+  }
   if (deadline === "hafta") {
-    const d = new Date(now);
+    const d = new Date(local);
     d.setUTCDate(d.getUTCDate() + ((5 - d.getUTCDay() + 7) % 7));
+    if (atTr(d, 17) <= now) d.setUTCDate(d.getUTCDate() + 7);
     return atTr(d, 17).toISOString();
   }
-  const n = Number(deadline) || 1;
-  const d = new Date(now);
-  let left = n;
-  while (left > 0) {
-    d.setUTCDate(d.getUTCDate() + 1);
-    if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) left--;
-  }
+  const d = new Date(local);
+  for (let left = Number(deadline) || 1; left > 0; left--) nextOpen(d);
   return atTr(d, 10).toISOString();
 }
 
@@ -114,7 +126,20 @@ export async function runStageAutomations(req: PayloadRequest, deal: Deal) {
   if (!tenant) return;
   const rules = await req.payload.find({ collection: "automations", where: { and: [{ tenant: { equals: tenant } }, { stage: { equals: deal.stage } }, { active: { equals: true } }] }, limit: 20, depth: 0, req, overrideAccess: true });
   if (!rules.docs.length) return;
-  const { logActivity } = await import("./automation");
+  const { logActivity, quietly } = await import("./automation");
+  /* Sorumlu değiştiren kural önce çalışır: aynı aşamadaki görev yeni sorumluya düşer */
+  const ordered = [...rules.docs].sort((a, b) => Number(b.action === "sorumlu") - Number(a.action === "sorumlu"));
+  let owner = idOf(deal.owner);
+  /* Fırsat aynı aşamaya yeniden girerse aynı görev ve e-posta tekrar açılmaz */
+  const already = async (title: string, open: boolean) =>
+    (
+      await req.payload.count({
+        collection: "activities",
+        where: { and: [{ deal: { equals: deal.id } }, { title: { equals: title } }, ...(open ? [{ done: { equals: false } }] : [])] },
+        req,
+        overrideAccess: true,
+      })
+    ).totalDocs > 0;
   const contact = idOf(deal.contact) ? await req.payload.findByID({ collection: "contacts", id: idOf(deal.contact)!, depth: 0, req, overrideAccess: true }).catch(() => null) : null;
   const company = idOf(deal.company) ? await req.payload.findByID({ collection: "companies", id: idOf(deal.company)!, depth: 0, req, overrideAccess: true }).catch(() => null) : null;
   const fill = (t: string) =>
@@ -122,27 +147,30 @@ export async function runStageAutomations(req: PayloadRequest, deal: Deal) {
       .replace(/\{ad\}/gi, (contact?.name ?? "").split(/\s+/)[0] ?? "")
       .replace(/\{firma\}/gi, company?.name ?? "")
       .replace(/\{firsat\}/gi, deal.title);
-  for (const r of rules.docs) {
+  for (const r of ordered) {
     try {
       if (r.action === "gorev") {
         const title = fill(r.taskTitle || `${stageLabel(deal.stage)} aşamasında takip: ${deal.title}`).slice(0, 120);
+        if (await already(title, true)) continue;
         await req.payload.create({
           collection: "activities",
-          data: { type: r.taskType ?? "arama", title, deal: deal.id, contact: idOf(deal.contact), company: idOf(deal.company), dueAt: dueFor(r.deadline ?? "1"), done: false, owner: idOf(r.assignTo) ?? idOf(deal.owner), tenant } as never,
+          data: { type: r.taskType ?? "arama", title, deal: deal.id, contact: idOf(deal.contact), company: idOf(deal.company), dueAt: dueFor(r.deadline ?? "1"), done: false, owner: idOf(r.assignTo) ?? owner, tenant } as never,
           req,
           overrideAccess: true,
         });
       } else if (r.action === "sorumlu" && idOf(r.assignTo)) {
-        await req.payload.update({ collection: "deals", id: deal.id, data: { owner: idOf(r.assignTo) } as never, req, overrideAccess: true, context: { crmSkip: true } });
+        await quietly(req, () => req.payload.update({ collection: "deals", id: deal.id, data: { owner: idOf(r.assignTo) } as never, req, overrideAccess: true, context: { crmSkip: true } }));
+        owner = idOf(r.assignTo);
         await logActivity(req, { type: "sistem", title: `Otomasyon: sorumlu değişti (${r.name})`, deal: deal.id });
       } else if (r.action === "eposta" && contact?.email && !/\.test$/i.test(contact.email)) {
         const { brandedEmail, emailConfigured } = await import("../notify");
         if (!emailConfigured()) continue;
-        const { brandOf } = await import("./brand");
+        const { brandOf, emailSender } = await import("./brand");
         const brand = await brandOf(req, tenant);
         const subject = fill(r.emailSubject || deal.title);
         const body = fill(r.emailBody || "");
-        await req.payload.sendEmail({ to: contact.email, subject, html: brandedEmail({ title: subject, intro: body, rows: [], link: null, base: process.env.NEXT_PUBLIC_SERVER_URL || "" }), text: body, ...(brand.email ? { replyTo: brand.email } : {}) });
+        if (await already(`Otomasyon e-postası: ${subject}`, false)) continue;
+        await req.payload.sendEmail({ to: contact.email, subject, html: brandedEmail({ title: subject, intro: body, rows: [], link: null, base: process.env.NEXT_PUBLIC_SERVER_URL || "", sender: emailSender(brand) }), text: body, ...(brand.email ? { replyTo: brand.email } : {}) });
         await logActivity(req, { type: "eposta", title: `Otomasyon e-postası: ${subject}`, body: `${contact.email}\n${body}`, deal: deal.id, contact: idOf(deal.contact) ?? undefined });
       } else if (r.action === "bildirim") {
         const { inApp } = await import("../notify");

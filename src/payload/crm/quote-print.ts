@@ -136,7 +136,9 @@ function responseSection(pub: PublicPart, q: Quote): string {
       ok ? "Teşekkürler; ekibimiz en kısa sürede sizinle iletişime geçecek." : "Geri bildiriminiz için teşekkürler."
     }${pub.respondedAt ? ` <span style="opacity:.75">(${date(pub.respondedAt)})</span>` : ""}${pub.customerNote ? `<br><span style="opacity:.85">Notunuz: ${esc(pub.customerNote)}</span>` : ""}</div></section>`;
   }
-  const expired = q.validUntil && new Date(q.validUntil).getTime() < Date.now();
+  /* Geçerlilik günü İstanbul'a göre sonuna kadar sürer */
+  const trDay = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" });
+  const expired = q.validUntil && trDay(new Date(q.validUntil)) < trDay(new Date());
   return `<section class="respond">
   <h2>Teklifi yanıtlayın</h2>
   <p style="margin:0" class="muted">Kabul ya da red yanıtınız doğrudan ekibimize iletilir. İsterseniz not ekleyin.</p>

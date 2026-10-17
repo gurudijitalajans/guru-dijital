@@ -8,9 +8,12 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { markRead, markUnreadNotification, pageNotifications, removeNotifications, type Bildirim } from "./actions";
+import { pingBell } from "./Zil";
 
 const ICON: Record<string, React.ComponentType<{ className?: string }>> = { talep: FileText, randevu: CalendarCheck, sohbet: MessageCircle, gorev: ListChecks, kontrol: ClipboardCheck, bahsetme: AtSign };
 const when = (iso: string) => new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+
+const dedupe = (items: Bildirim[]) => [...new Map(items.map((n) => [n.id, n])).values()];
 
 type Data = { items: Bildirim[]; more: boolean; unread: number; total: number };
 
@@ -25,7 +28,8 @@ export function Merkez({ initial }: { initial: Data }) {
   const reload = async (o = only, upTo = page) => {
     const pages = await Promise.all(Array.from({ length: upTo }, (_, i) => pageNotifications(i + 1, o)));
     const last = pages[pages.length - 1];
-    setData({ items: pages.flatMap((p) => p.items), more: last.more, unread: last.unread, total: last.total });
+    setData({ items: dedupe(pages.flatMap((p) => p.items)), more: last.more, unread: last.unread, total: last.total });
+    pingBell();
     router.refresh();
   };
   const act = (job: () => Promise<{ ok: boolean }>, done?: string) =>
@@ -45,7 +49,8 @@ export function Merkez({ initial }: { initial: Data }) {
     setPage(next);
     start(async () => {
       const r = await pageNotifications(next, only);
-      setData((d) => ({ ...r, items: [...d.items, ...r.items] }));
+      /* Arada yeni bildirim geldiyse sayfa sınırı kayar: aynı kayıt iki kez görünmesin */
+      setData((d) => ({ ...r, items: dedupe([...d.items, ...r.items]) }));
     });
   };
   const anyRead = data.items.some((n) => n.read);
@@ -92,7 +97,7 @@ export function Merkez({ initial }: { initial: Data }) {
                   <span className={cn("mt-0.5 grid size-9 shrink-0 place-items-center rounded-[9px]", n.read ? "bg-sunken text-muted" : "bg-accent-soft text-accent")} aria-hidden>
                     <Icon className="size-4" />
                   </span>
-                  <Link href={n.href} onClick={() => !n.read && void markRead(n.id)} className="min-w-0 flex-1 no-underline">
+                  <Link href={n.href} onClick={() => !n.read && void markRead(n.id).then(pingBell)} className="min-w-0 flex-1 no-underline">
                     <span className="flex items-center gap-2">
                       <span className={cn("min-w-0 truncate text-[15px] text-ink", !n.read && "font-semibold")}>{n.title}</span>
                       {n.count > 1 ? <span className="tabular shrink-0 rounded-full bg-sunken px-1.5 text-[12px] text-muted" title={`${n.count} hareket`}>×{n.count}</span> : null}
