@@ -127,12 +127,12 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'Guru Dijital Marka Tescil hizmet gönderisi',
   ],
   'mobil-uygulama': [
-    'Telefonun ana ekranında Guru Panel uygulama simgesi (temsili ana ekran)',
-    'Guru Panel açılış ekranı ve tam ekran uygulama görünümü',
-    'Uygulama mağazası sayfası düzeni (temsili)',
-    'İkinci mağaza düzeninde uygulama sayfası (temsili)',
-    'Mağaza için hazırlanan ekran görüntüsü seti (temsili)',
-    'Mobil uygulama süreci: keşiften mağaza yayınına beş adım',
+    'Bir kez yazılan kod iki platformda: kod düzenleyiciden iPhone ve Android ekranına (temsili arayüz)',
+    'Fikirden mağazaya beş adım: keşif, tasarım, geliştirme, test ve yayın',
+    'App Store ve Google Play inceleme durumları ve göndermeden önce kontrol listesi',
+    'Mağaza sayfası için uygulama simgesi ve ekran görüntüsü seti (temsili)',
+    'Uygulamanın entegrasyonları: bildirim, ödeme, kolay giriş, web sitesi, panel ve analitik',
+    'Yayından sonra sürüm geçmişi, iOS ve Android uyumu ve hata izleme',
   ],
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
@@ -141,7 +141,7 @@ const HERO_ALTS: Record<string, string> = {
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
   'e-ticaret-yonetimi': 'Pazar yerleri ve e-ticaret altyapıları: Trendyol, Hepsiburada, n11, Amazon, Etsy, Shopify ve ikas',
   'marka-tescil': 'Cam kum saatinin içinde kumdan tescil işareti: Marka Tescil',
-  'mobil-uygulama': 'Guru Panel telefonda: ana ekran, uygulama ve mağaza sayfası görünümü',
+  'mobil-uygulama': 'Aynı örnek uygulama iPhone ve Android\'de; App Store ve Google Play rozetleri (temsili arayüz)',
 }
 async function serviceGalleries(ctx: Ctx, only?: string[]) {
   for (const [slug, alts] of Object.entries(GALLERY_ALTS)) {

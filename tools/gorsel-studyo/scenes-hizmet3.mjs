@@ -69,8 +69,12 @@ import { eticaretScenesReal } from "./h3/eticaret.mjs";
 HIZMET3_SCENES.push(...eticaretScenesReal());
 import { tescilScenesReal } from "./h3/tescil.mjs";
 HIZMET3_SCENES.push(...tescilScenesReal());
-import { mobilScenesReal } from "./h3/mobil.mjs";
-HIZMET3_SCENES.push(...mobilScenesReal());
+/* Mobil Uygulama v4 (Guru Panel) yerine v5: h3/mobil2.mjs (aşağıda) */
 /* v4 paylaşım görselleri: gerçek iş hero'sundan (real-<slug>-hero.png) */
 for (const slug of ["web-tasarim", "sosyal-medya-yonetimi", "grafik-tasarim", "dijital-reklam-yonetimi", "ozel-yazilim", "seo", "e-ticaret-yonetimi", "marka-tescil", "mobil-uygulama"])
-  HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-hero.png`) }) });
+  HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], /* Mobil hero'nun solunda metin var: paylaşım görselinde yalnız telefonlu kare (ogkare) */
+  heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-${slug === "mobil-uygulama" ? "ogkare" : "hero"}.png`) }) });
+
+/* Mobil Uygulama v5: tek kod tabanı, iki mağaza (markasız örnek uygulama) */
+import { mobil2Scenes } from "./h3/mobil2.mjs";
+HIZMET3_SCENES.push(...mobil2Scenes());

@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 /* "Örneklerle …" bölümünün açıklaması: müşteri işi olmayan galerilerde neyin gösterildiği açıkça yazılır */
 const WORK_LEADS: Record<string, string> = {
   "ozel-yazilim": "Kendi geliştirdiğimiz Guru Panel'den ekranlar; ekranlarda örnek veri kullanılmıştır.",
-  "mobil-uygulama": "Guru Panel'in telefona kurulabilen sürümü ve temsili uygulama ekranları.",
+  "mobil-uygulama": "Markasız örnek bir uygulama üzerinden süreç, teknolojiler ve mağaza yayını; ekranlar temsilidir.",
   "marka-tescil": "Başvurudan tescile sürecin adımları ve bilmeniz gerekenler.",
 };
 
