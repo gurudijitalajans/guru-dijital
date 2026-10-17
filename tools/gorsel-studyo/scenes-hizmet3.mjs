@@ -62,7 +62,9 @@ HIZMET3_SCENES.push(...grafikScenesReal());
 import { reklamScenesReal } from "./h3/reklam.mjs";
 HIZMET3_SCENES.push(...reklamScenesReal());
 import { yazilimScenesReal } from "./h3/yazilim.mjs";
-HIZMET3_SCENES.push(...yazilimScenesReal());
+/* Özel Yazılım v5: Guru Panel yerine markasız örnek panel (h3/yazilim2.mjs); aynı adlı eski sahnelerin yerine geçer */
+import { yazilim2Scenes } from "./h3/yazilim2.mjs";
+{ const y2 = yazilim2Scenes(), ad = new Set(y2.map((x) => x.name)); HIZMET3_SCENES.push(...yazilimScenesReal().filter((x) => !ad.has(x.name)), ...y2); }
 import { seoScenesReal } from "./h3/seo-real.mjs";
 HIZMET3_SCENES.push(...seoScenesReal());
 import { eticaretScenesReal } from "./h3/eticaret.mjs";
@@ -72,8 +74,7 @@ HIZMET3_SCENES.push(...tescilScenesReal());
 /* Mobil Uygulama v4 (Guru Panel) yerine v5: h3/mobil2.mjs (aşağıda) */
 /* v4 paylaşım görselleri: gerçek iş hero'sundan (real-<slug>-hero.png) */
 for (const slug of ["web-tasarim", "sosyal-medya-yonetimi", "grafik-tasarim", "dijital-reklam-yonetimi", "ozel-yazilim", "seo", "e-ticaret-yonetimi", "marka-tescil", "mobil-uygulama"])
-  HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], /* Mobil hero'nun solunda metin var: paylaşım görselinde yalnız telefonlu kare (ogkare) */
-  heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-${slug === "mobil-uygulama" ? "ogkare" : "hero"}.png`) }) });
+  HIZMET3_SCENES.push({ name: `real-${slug}-og`, w: 1200, h: 630, html: og({ t: T[slug], title: OG[slug], heroPng: fileUrl(`${ROOT}/tools/gorsel-studyo/out/real-${slug}-hero.png`) }) });
 
 /* Mobil Uygulama v5: tek kod tabanı, iki mağaza (markasız örnek uygulama) */
 import { mobil2Scenes, mobil2Screens } from "./h3/mobil2.mjs";

@@ -95,12 +95,12 @@ const GALLERY_ALTS: Record<string, string[]> = {
     'E-ticaret vakası: kampanya döneminde ciro %96 arttı',
   ],
   'ozel-yazilim': [
-    'Guru Panel fırsatlar panosu, masaüstü ve telefonda (örnek veri)',
-    'Guru Panel teklifler ekranı, masaüstü ve telefonda (örnek veri)',
-    'Guru Panel görev panosu, masaüstü ve telefonda (örnek veri)',
-    'Guru Panel ekip yükü ekranı, masaüstü ve telefonda (örnek veri)',
-    'Guru Panel takvimi, masaüstü ve telefonda (örnek veri)',
-    'Guru Panel sohbet raporu ve gelen kutusu (örnek veri)',
+    'Panelin bağlandığı sistemler: muhasebe, ERP, kargo, ödeme, e-ticaret sitesi, Excel ve CSV',
+    'Satış hunisi ve kalem kalem teklif belgesi, toplam ve KDV ile (temsili arayüz)',
+    'Sipariş onayıyla başlayan otomasyon: fatura, kargo etiketi, stok ve müşteri bildirimi',
+    'Yapay zekâ gelen faturayı okuyup alanları doldurur, son onay kullanıcıda (temsili arayüz)',
+    'Satış raporu: aylık ciro, ortalama sipariş ve satış kanalları (temsili veri)',
+    'Aşama aşama teslim ve bakım; kaynak kodu ve veriler müşteriye ait',
   ],
   seo: [
     'SEO e-ticaret vakası: 6 ayda organik trafikte %325 artış',
@@ -137,7 +137,7 @@ const GALLERY_ALTS: Record<string, string[]> = {
 }
 /* Hero alt metni genel kalıptan farklı olması gereken hizmetler */
 const HERO_ALTS: Record<string, string> = {
-  'ozel-yazilim': 'Kendi geliştirdiğimiz Guru Panel: yönetim özeti masaüstünde, görev panosu telefonda (örnek veri)',
+  'ozel-yazilim': 'Markasız örnek yönetim paneli: özet ekranı dizüstünde, sipariş listesi telefonda (temsili arayüz)',
   seo: 'Yaptığımız sitelerin arama sonucundaki görünümü ve SEO vakalarından iki sonuç',
   'e-ticaret-yonetimi': 'Pazar yerleri ve e-ticaret altyapıları: Trendyol, Hepsiburada, n11, Amazon, Etsy, Shopify ve ikas',
   'marka-tescil': 'Cam kum saatinin içinde kumdan tescil işareti: Marka Tescil',

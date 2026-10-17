@@ -1,7 +1,7 @@
-// Mobil Uygulama v5 (örnek kareler): "tek kod tabanı, iki mağaza, sorunsuz yayın". Markasız tek örnek uygulama
+// Mobil Uygulama v8: hizmet galerilerinin dilinde (düz cihaz çerçeveleri, beyaz başlık kartı). Markasız tek örnek uygulama
 // (stüdyo randevu ve üyelik), iPhone ve Android'de; resmî mağaza rozetleri ve teknoloji logoları (Wikimedia
 // Commons, kaynak/katalog/mobil/logo). Puan, indirme sayısı, yorum yok; ekranlar "Temsili arayüz".
-import { fileUrl, grainLayer, icon, iphone, page, ROOT, themeBg } from "../lib.mjs";
+import { fileUrl, floatCard, grainLayer, icon, iphone, page, ROOT, themeBg } from "../lib.mjs";
 import { T } from "./common.mjs";
 import { floor, glow, lockup } from "./real.mjs";
 
@@ -12,10 +12,6 @@ const INK = "#101523";
 /* Örnek uygulamanın kendi rengi: lacivert zeminde öne çıkan sıcak mercan */
 const APP = "#ff6a3d";
 const APP2 = "#ff9a62";
-/* Blender işlemeleri (blender/mobil.py): tam sahne (hero, kapak) ve saydam tek telefonlar (tek-*) */
-const BL = (f) => fileUrl(`${ROOT}/tools/gorsel-studyo/blender/out/${f}.png`);
-/* Tek telefon görüntüsü 900x1500; telefon görüntünün yüksekliğinin ~%67'si. h: telefonun kendi boyu */
-const phoneImg = (f, x, y, h, extra = "") => `<img src="${BL(f)}" style="position:absolute;left:${x - h / 0.67 * 0.6 * 0.5}px;top:${y - h / 0.67 * 0.165}px;height:${h / 0.67}px;filter:drop-shadow(0 40px 50px rgb(0 6 26/.55));${extra}">`;
 const logoImg = (f, h, extra = "") => `<img src="${L(f)}" style="height:${h}px;width:auto;display:block;${extra}">`;
 
 /* ---------- Örnek uygulama: stüdyo randevu ve üyelik (markasız) ---------- */
@@ -78,26 +74,26 @@ const note = `<div class="row" style="gap:7px;font:400 13px Outfit;color:rgb(255
 /* Kilit ekranı bildirimi (iOS bildirim kartı biçimi) */
 const push = (title, text, time = "şimdi") => `<div class="row" style="gap:14px;align-items:flex-start"><span style="width:44px;height:44px;border-radius:12px;background:linear-gradient(150deg,${APP2},${APP});display:grid;place-items:center;flex-shrink:0;box-shadow:0 8px 18px -8px ${APP}">${icon("calendar-check", { size: 22, color: "#fff", stroke: 2.2 })}</span><div style="min-width:0;flex:1"><div class="row" style="font-size:14.5px;font-weight:600">${title}<span style="margin-left:auto;font-weight:400;font-size:13px;color:rgb(255 255 255/.7)">${time}</span></div><div style="font-size:14.5px;line-height:1.35;color:rgb(255 255 255/.86);margin-top:2px">${text}</div></div></div>`;
 
-/* ---------- 1) Hero 1600x1000 ---------- */
-export function mobil2Hero({ bare = false } = {}) {
-  /* Telefonlar Blender sahnesinde (blender/out/mobil-hero.png); solda metin, rozetler ve bildirim HTML'de */
-  const bg = `background:#011441 url('${BL("mobil-hero")}') 50% 50%/cover no-repeat;`;
-  if (bare) return page({ w: 1600, h: 1000, bg, body: grainLayer(0.04) });
+/* Başlık kartı: hizmet galerilerinin ortak kartı (simge, tür, başlık, açıklama, temsili notu) */
+const featCard = (ic, kind, title, desc, extra = "") => `<div class="row" style="gap:14px"><span style="width:50px;height:50px;border-radius:15px;background:#eceeff;display:grid;place-items:center;flex-shrink:0">${icon(ic, { size: 25, color: ACC, stroke: 2 })}</span>
+   <div><div style="font-size:13px;font-weight:600;letter-spacing:.08em;color:${ACC}">${kind.toLocaleUpperCase("tr-TR")}</div><div style="font-size:22px;font-weight:600;margin-top:2px;line-height:1.2">${title}</div></div></div>
+   ${desc ? `<div style="margin-top:12px;font-size:16px;color:#3b4763;line-height:1.4">${desc}</div>` : ""}${extra}
+   <div class="row" style="gap:7px;margin-top:12px;font-size:13px;color:#7a849b">${icon("info", { size: 14, color: "#7a849b", stroke: 2 })}Temsili arayüz</div>`;
+const badges = (h = 44) => `<div class="row" style="gap:10px;margin-top:16px">${logoImg("appstore", h)}${logoImg("googleplay", h)}</div>`;
+/* Telefon ve zemin gölgesi */
+const onFloor = (x, y, w, html, rot = 0) => `${floor(x - w * 0.1, y + w * 2.02, w * 1.2, w * 0.22, 0.6)}<div style="position:absolute;left:${x}px;top:${y}px;transform:rotate(${rot}deg);filter:drop-shadow(0 50px 50px rgb(0 6 26/.55))">${html}</div>`;
+
+/* ---------- 1) Hero 1600x1000: iPhone ve Android'de aynı uygulama + başlık kartı ---------- */
+export function mobil2Hero() {
+  const phones = `${onFloor(250, 250, 330, android(appScreen("android"), { width: 330 }), -4)}${onFloor(590, 165, 360, iphone(appScreen("ios"), { width: 360 }), 2)}`;
   const body = `
-  <div style="position:absolute;inset:0 auto 0 0;width:720px;background:linear-gradient(90deg,rgb(1 12 46/.55),rgb(1 12 46/0))"></div>
+  ${glow(120, 300, 1250, 700)}
   <div style="position:absolute;left:68px;top:60px">${lockup("Mobil Uygulama")}</div>
-  <div style="position:absolute;left:68px;top:250px;width:470px;color:#fff;font-family:Outfit">
-    <div style="font-size:58px;line-height:1.03;font-weight:600;letter-spacing:-.04em">Tek uygulama,<br><span style="color:#c3caff">iki mağaza</span></div>
-    <div style="font-size:19px;line-height:1.5;color:rgb(255 255 255/.74);margin-top:20px">iOS ve Android'de aynı deneyim; tasarımdan mağaza onayına kadar tek ekip.</div>
-    <div class="row" style="gap:12px;margin-top:30px">${logoImg("appstore", 50)}${logoImg("googleplay", 50)}</div>
-    <div class="row" style="gap:18px;margin-top:32px;padding-top:22px;border-top:1px solid rgb(255 255 255/.16)">
-      <span class="row" style="gap:10px;font:500 16px Outfit;color:rgb(255 255 255/.85)">${logoImg("react", 26)}React Native</span>
-      <span style="width:1px;height:22px;background:rgb(255 255 255/.2)"></span>
-      <span class="row" style="gap:10px">${logoImg("flutter", 21, "filter:brightness(0) invert(1);opacity:.85")}</span></div></div>
-  ${glass(push("Rezervasyon onaylandı", "Reformer Pilates · Bugün 18:30, Stüdyo 2"), "left:68px;top:700px;width:440px")}
-  <div style="position:absolute;left:68px;bottom:40px">${note}</div>
-  ${grainLayer(0.04)}`;
-  return page({ w: 1600, h: 1000, bg, body });
+  ${phones}
+  ${floatCard(featCard("smartphone", "Tek kod tabanı", "iOS ve Android'de aynı uygulama", "Tasarımdan mağaza onayına kadar tek ekip", badges()), "left:1030px;top:290px;width:470px")}
+  ${glass(push("Rezervasyon onaylandı", "Reformer Pilates · Bugün 18:30, Stüdyo 2"), "left:1030px;top:578px;width:470px")}
+  ${grainLayer(0.06)}`;
+  return page({ w: 1600, h: 1000, bg: themeBg(TM), body });
 }
 
 /* ---------- 2) Tek kod, iki platform 1200x900 ---------- */
@@ -116,20 +112,18 @@ const CODE = [
   ["}"],
 ];
 function techTile() {
-  const editor = `<div style="position:absolute;left:60px;top:200px;width:560px;border-radius:22px;overflow:hidden;background:#0f1324;box-shadow:inset 0 0 0 1px rgb(255 255 255/.1),0 60px 100px -40px rgb(0 6 26/.85);font-family:Outfit">
+  const editor = `<div style="position:absolute;left:56px;top:300px;width:540px;border-radius:22px;overflow:hidden;background:#0f1324;box-shadow:inset 0 0 0 1px rgb(255 255 255/.1),0 60px 100px -40px rgb(0 6 26/.85);font-family:Outfit">
     <div class="row" style="height:46px;padding:0 16px;gap:8px;background:#0b0e1b">${["#ff5f57", "#febc2e", "#28c840"].map((c) => `<span style="width:11px;height:11px;border-radius:50%;background:${c}"></span>`).join("")}
       <span class="row" style="margin-left:14px;gap:8px;height:30px;padding:0 12px;border-radius:9px;background:#151a30;color:#d7dcf5;font-size:13px">${logoImg("react", 15)}SiradakiDers.tsx</span></div>
-    <div style="padding:20px 0 22px;font:500 15.5px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c8cee8">${CODE.map((l, i) => `<div class="row" style="gap:18px"><span style="width:26px;text-align:right;color:#4b5375">${i + 1}</span><span style="white-space:pre">${l.join("")}</span></div>`).join("")}</div></div>`;
-  const arrow = (x, y) => `<path d="M 640 470 C 690 470, ${x - 50} ${y}, ${x} ${y}" fill="none" stroke="rgb(195 202 255/.7)" stroke-width="2.5" stroke-dasharray="7 8"/><circle cx="${x}" cy="${y}" r="5" fill="#c3caff"/>`;
-  const body = `${glow(300, 120, 900, 760, "rgb(125 139 255 / .4)")}
-  <div style="position:absolute;left:60px;top:58px;color:#fff;font-family:Outfit"><div style="font-size:13px;font-weight:600;letter-spacing:.1em;color:#c3caff">TEK KOD TABANI</div><div style="font-size:38px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1">Bir kez yazılır,<br>iki platformda çalışır</div></div>
+    <div style="padding:18px 0 20px;font:500 15px/1.72 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c8cee8">${CODE.map((l, i) => `<div class="row" style="gap:18px"><span style="width:26px;text-align:right;color:#4b5375">${i + 1}</span><span style="white-space:pre">${l.join("")}</span></div>`).join("")}</div></div>`;
+  const arrow = (x, y) => `<path d="M 600 480 C 640 480, ${x - 40} ${y}, ${x} ${y}" fill="none" stroke="rgb(195 202 255/.7)" stroke-width="2.5" stroke-dasharray="7 8"/><circle cx="${x}" cy="${y}" r="5" fill="#c3caff"/>`;
+  const body = `${glow(300, 160, 900, 700, "rgb(125 139 255 / .4)")}
+  ${floatCard(featCard("code-xml", "Tek kod tabanı", "Bir kez yazılır, iki platformda çalışır", ""), "left:56px;top:56px;width:480px", "18px 22px")}
   ${editor}
-  <svg width="1200" height="900" style="position:absolute;inset:0">${arrow(735, 300)}${arrow(955, 640)}</svg>
-  ${phoneImg("tek-ios", 735, 95, 430)}
-  ${phoneImg("tek-android", 965, 415, 420)}
-  <div class="row" style="position:absolute;left:60px;top:705px;gap:10px;flex-wrap:wrap;width:600px">${[["flutter", 22, ""], ["swift", 24, ""], ["kotlin", 22, "Kotlin"], ["firebase", 26, ""]].map(([f, h, t]) => `<span class="row" style="gap:10px;height:56px;padding:0 20px;border-radius:16px;background:#fff;box-shadow:0 20px 40px -24px rgb(0 6 26/.7)">${logoImg(f, h)}${t ? `<span style="font:600 17px Outfit;color:${INK}">${t}</span>` : ""}</span>`).join("")}</div>
-  <div style="position:absolute;left:62px;top:782px;font:400 14.5px Outfit;color:rgb(255 255 255/.66)">Projeye göre çapraz platform ya da yerel geliştirme; bildirim ve veri için Firebase</div>
-  <div style="position:absolute;right:60px;bottom:40px">${note}</div>
+  <svg width="1200" height="900" style="position:absolute;inset:0">${arrow(660, 330)}${arrow(905, 560)}</svg>
+  ${onFloor(660, 90, 250, iphone(appScreen("ios"), { width: 250 }), 2)}
+  ${onFloor(905, 230, 240, android(appScreen("android"), { width: 240 }), -3)}
+  <div class="row" style="position:absolute;left:56px;top:740px;gap:10px">${[["react", 24, "React Native"], ["flutter", 22, ""], ["swift", 24, ""], ["kotlin", 20, "Kotlin"]].map(([f, h, t]) => `<span class="row" style="gap:10px;height:56px;padding:0 18px;border-radius:16px;background:#fff;box-shadow:0 20px 40px -24px rgb(0 6 26/.7)">${logoImg(f, h)}${t ? `<span style="font:600 16px Outfit;color:${INK}">${t}</span>` : ""}</span>`).join("")}</div>
   ${grainLayer(0.06)}`;
   return page({ w: 1200, h: 900, bg: themeBg(TM), body });
 }
@@ -146,34 +140,35 @@ const RULES = [
   ["flask-conical", "Test dağıtımı", "TestFlight ve Google Play iç test kanalı"],
 ];
 function reviewTile() {
-  const body = `${glow(80, 160, 1040, 700, "rgb(125 139 255 / .38)")}
-  <div style="position:absolute;left:60px;top:58px;color:#fff;font-family:Outfit"><div style="font-size:13px;font-weight:600;letter-spacing:.1em;color:#c3caff">MAĞAZA ONAYI</div><div style="font-size:38px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1">İncelemeye hazır gider</div></div>
+  const head = tileHead("badge-check", "Mağaza onayı", "İncelemeye hazır gider");
+  const body = `
   ${white(statusCard("appstore", "Onaylandı"), "left:60px;top:200px;width:470px", "22px 24px 20px")}
   ${white(statusCard("googleplay", "Onaylandı"), "left:60px;top:395px;width:470px", "22px 24px 20px")}
   ${white(`<div class="row" style="gap:12px"><span style="width:44px;height:44px;border-radius:13px;background:#eceeff;display:grid;place-items:center">${icon("list-checks", { size: 22, color: ACC, stroke: 2 })}</span><div style="font-size:20px;font-weight:600">Göndermeden önce kontrol</div></div>
     <div style="margin-top:12px">${RULES.map(([ic, t, d]) => `<div class="row" style="gap:14px;padding:14px 0;border-top:1px solid #eef1f6"><span style="width:26px;height:26px;border-radius:50%;background:#e6f7ee;display:grid;place-items:center;flex-shrink:0">${icon("check", { size: 15, color: "#11704b", stroke: 3 })}</span><div style="min-width:0"><div style="font-size:17px;font-weight:600">${t}</div><div style="font-size:14px;color:#6b7590;margin-top:2px">${d}</div></div><span style="margin-left:auto;flex-shrink:0;opacity:.55">${icon(ic, { size: 20, color: INK, stroke: 1.8 })}</span></div>`).join("")}</div>`, "left:580px;top:200px;width:560px", "24px 26px 12px")}
   ${glass(push("Yeni sürüm yayında", "Sürüm 1.1 App Store ve Google Play'de güncellendi"), "left:60px;top:600px;width:470px")}
-  <div style="position:absolute;left:62px;bottom:40px">${note}</div>
-  ${grainLayer(0.06)}`;
-  return page({ w: 1200, h: 900, bg: themeBg(TM), body });
+`;
+  return tileBg(head, body);
 }
 
-/* ---------- Kapak 1200x1500 ---------- */
+/* ---------- Kapak 1200x1500: başlık + üç telefon (Android, iPhone, kilit ekranı) ---------- */
 function coverTile() {
-  /* Telefonlar Blender sahnesinde (blender/out/mobil-kapak.png); üstte başlık */
+  const phones = [[110, 690, -7, android(appScreen("android"), { width: 330 })], [435, 620, 0, iphone(appScreen("ios"), { width: 330 })], [760, 690, 7, iphone(lockScreen(), { width: 330 })]];
   const body = `
-  <div style="position:absolute;left:0;right:0;top:0;height:640px;background:linear-gradient(180deg,rgb(1 12 46/.6),rgb(1 12 46/0))"></div>
-  <div style="position:absolute;left:0;right:0;top:96px;display:grid;justify-items:center;text-align:center;color:#fff;font-family:Outfit">
+  <div style="position:absolute;left:150px;top:560px;width:900px;height:1000px;border-radius:50%;background:radial-gradient(closest-side,${TM.hi}88,transparent);filter:blur(20px)"></div>
+  <div style="position:absolute;left:0;right:0;top:96px;display:grid;justify-items:center;text-align:center;color:#fff">
     ${lockup("Mobil Uygulama", 30)}
     <h1 style="margin-top:40px;font-size:96px;line-height:1.02;font-weight:600;letter-spacing:-.045em">Cebinizdeki<br><span style="color:${TM.glow}">markanız</span></h1>
-    <div class="row" style="gap:12px;margin-top:30px">${logoImg("appstore", 50)}${logoImg("googleplay", 50)}</div>
+    <p style="margin-top:22px;font-size:28px;color:rgb(255 255 255/.8)">iOS ve Android için tek uygulama</p>
   </div>
-  ${grainLayer(0.04)}`;
-  return page({ w: 1200, h: 1500, bg: `background:#011441 url('${BL("mobil-kapak")}') 50% 50%/cover no-repeat;`, body });
+  ${phones.map(([x, y, r, html]) => `<div style="position:absolute;left:${x}px;top:${y}px;transform:rotate(${r}deg);filter:drop-shadow(0 50px 60px rgb(0 6 26/.6))">${html}</div>`).join("")}
+  ${grainLayer(0.06)}`;
+  return page({ w: 1200, h: 1500, bg: themeBg(TM), body });
 }
 
-const tileHead = (k, t) => `<div style="position:absolute;left:60px;top:58px;color:#fff;font-family:Outfit"><div style="font-size:13px;font-weight:600;letter-spacing:.1em;color:#c3caff">${k}</div><div style="font-size:38px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.1">${t}</div></div>`;
-const tileBg = (body) => page({ w: 1200, h: 900, bg: themeBg(TM), body: `${glow(80, 160, 1040, 700, "rgb(125 139 255 / .38)")}${body}${grainLayer(0.06)}` });
+/* Karo: sol üstte başlık kartı, içerik onun altından başlar (eski düzene göre 50 px aşağıda) */
+const tileHead = (ic, k, t) => floatCard(featCard(ic, k, t, ""), "left:56px;top:56px;width:480px", "18px 22px");
+const tileBg = (head, body) => page({ w: 1200, h: 900, bg: themeBg(TM), body: `${glow(80, 160, 1040, 700, "rgb(125 139 255 / .38)")}<div style="position:absolute;left:0;right:0;top:50px;height:900px">${body}</div>${head}${grainLayer(0.06)}` });
 
 /* ---------- Süreç: fikirden mağazaya ---------- */
 const PROCESS = [
@@ -184,15 +179,15 @@ const PROCESS = [
   ["rocket", "Yayın", "App Store ve Google Play"],
 ];
 function processTile() {
-  const body = `${tileHead("FİKİRDEN MAĞAZAYA", "Beş adımda yayında")}
+  const head = tileHead("rocket", "Fikirden mağazaya", "Beş adımda yayında");
+  const body = `
   ${white(`${PROCESS.map(([ic, t, d], i) => `<div class="row" style="gap:16px;align-items:flex-start;position:relative;padding:${i ? 18 : 0}px 0 0">
       ${i < PROCESS.length - 1 ? `<span style="position:absolute;left:23px;top:${i ? 66 : 48}px;width:2px;height:40px;background:#dfe3fb"></span>` : ""}
       <span style="width:48px;height:48px;border-radius:15px;background:${i === 4 ? `linear-gradient(150deg,${APP2},${APP})` : "#eceeff"};display:grid;place-items:center;flex-shrink:0">${icon(ic, { size: 23, color: i === 4 ? "#fff" : ACC, stroke: 2 })}</span>
-      <div style="min-width:0;padding-top:2px"><div class="row" style="gap:10px"><span style="font-size:13px;font-weight:600;color:#9aa2b8">0${i + 1}</span><span style="font-size:20px;font-weight:600">${t}</span></div><div style="font-size:15px;color:#6b7590;margin-top:2px">${d}</div></div></div>`).join("")}`, "left:60px;top:190px;width:540px", "28px 30px 30px")}
-  ${phoneImg("tek-ios-sol", 690, 120, 690)}
-  ${glass(`<div class="row" style="gap:10px;font-size:15px;font-weight:600">${icon("rocket", { size: 18, color: "#fff", stroke: 2 })}Yayında</div><div class="row" style="gap:10px;margin-top:10px">${logoImg("appstore", 34)}${logoImg("googleplay", 34)}</div>`, "left:60px;top:640px;width:330px", "18px 20px")}
-  <div style="position:absolute;left:62px;bottom:40px">${note}</div>`;
-  return tileBg(body);
+      <div style="min-width:0;padding-top:2px"><div class="row" style="gap:10px"><span style="font-size:20px;font-weight:600">${t}</span></div><div style="font-size:15px;color:#6b7590;margin-top:2px">${d}</div></div></div>`).join("")}`, "left:60px;top:190px;width:540px", "28px 30px 30px")}
+  ${onFloor(720, 150, 320, iphone(appScreen("ios"), { width: 320 }), 2)}
+  ${glass(`<div class="row" style="gap:10px;font-size:15px;font-weight:600">${icon("rocket", { size: 18, color: "#fff", stroke: 2 })}Yayında</div><div class="row" style="gap:10px;margin-top:10px">${logoImg("appstore", 34)}${logoImg("googleplay", 34)}</div>`, "left:60px;top:640px;width:330px", "18px 20px")}`;
+  return tileBg(head, body);
 }
 
 /* ---------- Mağaza sayfası tasarımı: simge ve ekran görüntüsü seti ---------- */
@@ -201,14 +196,14 @@ const promo = (title, sub, bg, x, rot = 0) => `<div style="position:absolute;lef
   <div style="padding:26px 22px 0;font-family:Outfit;color:#fff"><div style="font-size:24px;font-weight:600;line-height:1.12;letter-spacing:-.02em">${title}</div><div style="font-size:13.5px;color:rgb(255 255 255/.78);margin-top:6px">${sub}</div></div>
   <div style="position:absolute;left:30px;top:150px">${iphone(appScreen("ios"), { width: 180 })}</div></div>`;
 function storeTile() {
-  const body = `${tileHead("MAĞAZA SAYFASI", "Simge ve ekran görüntüleri")}
+  const head = tileHead("image", "Mağaza sayfası", "Simge ve ekran görüntüleri");
+  const body = `
   ${promo("Dersini saniyeler içinde ayır", "Takvimden seç, onayla", art("#ff8a5c", "#e8452d", "#ffd2a8"), 60, -3)}
   ${promo("Üyeliğin hep cebinde", "Kalan ders ve giriş kartı", art("#7b8cff", "#4351d6", "#c9d0ff"), 320, 0)}
   ${promo("Dersten önce hatırlatma", "Bildirimle kaçırma", art("#2a2f45", "#141826", "#ff6a3d66"), 580, 3)}
   ${white(`<div style="display:grid;justify-items:center;text-align:center">${appIconBig(120)}<div style="font-size:19px;font-weight:600;margin-top:18px">Uygulama simgesi</div><div style="font-size:14.5px;color:#6b7590;margin-top:4px;line-height:1.4">iOS ve Android'in istediği tüm boyutlarda</div></div>
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eef1f6;display:grid;gap:10px;font-size:14.5px;color:#3b4763">${["Ekran görüntüsü seti", "Mağaza açıklaması ve anahtar kelimeler", "Tanıtım görseli"].map((t) => `<div class="row" style="gap:10px">${icon("circle-check", { size: 18, color: "#16a34a", stroke: 2.4 })}${t}</div>`).join("")}</div>`, "left:860px;top:250px;width:280px", "28px 24px 22px")}
-  <div class="row" style="position:absolute;left:62px;bottom:40px;gap:24px">${note}</div>`;
-  return tileBg(body);
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eef1f6;display:grid;gap:10px;font-size:14.5px;color:#3b4763">${["Ekran görüntüsü seti", "Mağaza açıklaması ve anahtar kelimeler", "Tanıtım görseli"].map((t) => `<div class="row" style="gap:10px">${icon("circle-check", { size: 18, color: "#16a34a", stroke: 2.4 })}${t}</div>`).join("")}</div>`, "left:860px;top:250px;width:280px", "28px 24px 22px")}`;
+  return tileBg(head, body);
 }
 
 /* ---------- Entegrasyonlar: kilit ekranı bildirimleri ve bağlı servisler ---------- */
@@ -225,11 +220,11 @@ const INTEG = [
   ["chart-line", "Analitik", "Firebase ile kullanım ölçümü", 820, 570],
 ];
 function integTile() {
-  const body = `${tileHead("ENTEGRASYONLAR", "Uygulama tek başına kalmaz")}
+  const head = tileHead("plug", "Entegrasyonlar", "Uygulama tek başına kalmaz");
+  const body = `
   ${INTEG.map(([ic, t, d, x, y]) => white(`<div class="row" style="gap:14px"><span style="width:46px;height:46px;border-radius:14px;background:#eceeff;display:grid;place-items:center;flex-shrink:0">${icon(ic, { size: 22, color: ACC, stroke: 2 })}</span><div style="min-width:0"><div style="font-size:17px;font-weight:600">${t}</div><div style="font-size:14px;color:#6b7590;margin-top:2px;line-height:1.35">${d}</div></div></div>`, `left:${x}px;top:${y}px;width:320px`, "18px 18px")).join("")}
-  ${phoneImg("tek-kilit", 600, 160, 660)}
-  <div style="position:absolute;left:62px;bottom:40px">${note}</div>`;
-  return tileBg(body);
+  ${onFloor(445, 170, 310, iphone(lockScreen(), { width: 310 }))}`;
+  return tileBg(head, body);
 }
 
 /* ---------- Yayından sonra: sürümler ve kararlılık ---------- */
@@ -241,22 +236,21 @@ const RELEASES = [
 ];
 function careTile() {
   const bars = [62, 70, 66, 78, 74, 82, 88, 86, 92, 90, 95, 96];
-  const body = `${tileHead("YAYINDAN SONRA", "Bakım ve yeni sürümler")}
+  const head = tileHead("git-branch", "Yayından sonra", "Bakım ve yeni sürümler");
+  const body = `
   ${white(`<div class="row" style="gap:12px"><span style="width:44px;height:44px;border-radius:13px;background:#eceeff;display:grid;place-items:center">${icon("git-branch", { size: 21, color: ACC, stroke: 2 })}</span><div style="font-size:20px;font-weight:600">Sürüm geçmişi</div></div>
     <div style="margin-top:14px">${RELEASES.map(([v, t, d, ic], i) => `<div class="row" style="gap:14px;padding:14px 0;border-top:1px solid #eef1f6"><span style="width:52px;height:30px;border-radius:9px;background:${i === 3 ? `linear-gradient(150deg,${APP2},${APP})` : "#f1f3f9"};color:${i === 3 ? "#fff" : INK};display:grid;place-items:center;font:600 14px Outfit;flex-shrink:0">${v}</span><div style="min-width:0"><div style="font-size:17px;font-weight:600">${t}</div><div style="font-size:14px;color:#6b7590;margin-top:1px">${d}</div></div><span style="margin-left:auto;opacity:.5">${icon(ic, { size: 19, color: INK, stroke: 1.8 })}</span></div>`).join("")}</div>`, "left:60px;top:190px;width:520px", "24px 26px 12px")}
   ${white(`<div class="row" style="justify-content:space-between">${logoImg("firebase", 30)}<span style="height:28px;padding:0 12px;border-radius:999px;background:#e6f7ee;color:#11704b;font:600 12.5px Outfit;display:grid;place-items:center">Crashlytics</span></div>
     <div style="font-size:20px;font-weight:600;margin-top:18px">Hata izleme</div><div style="font-size:14.5px;color:#6b7590;margin-top:3px">Çökmeler sürüm sürüm izlenir, düzeltme yeni sürümle gelir</div>
     <div class="row" style="gap:7px;align-items:flex-end;height:200px;margin-top:24px">${bars.map((b, i) => `<span style="flex:1;height:${b}%;border-radius:6px 6px 3px 3px;background:${i > 8 ? `linear-gradient(180deg,${APP2},${APP})` : "#dfe3fb"}"></span>`).join("")}</div>
     <div class="row" style="justify-content:space-between;margin-top:8px;font-size:12.5px;color:#9aa2b8"><span>1.0</span><span>1.1</span><span>1.2</span><span>1.3</span></div>`, "left:620px;top:190px;width:520px", "24px 26px 20px")}
-  ${glass(push("Sürüm 1.3 yayında", "Android 16 uyumu ve küçük iyileştirmeler"), "left:60px;top:640px;width:520px")}
-  <div style="position:absolute;left:62px;bottom:40px">${note}</div>`;
-  return tileBg(body);
+  ${glass(push("Sürüm 1.3 yayında", "Android 16 uyumu ve küçük iyileştirmeler"), "left:60px;top:640px;width:520px")}`;
+  return tileBg(head, body);
 }
 
 /* Galeri sırası: hero, kapak, 1 tek kod, 2 süreç, 3 mağaza onayı, 4 mağaza sayfası, 5 entegrasyonlar, 6 yayından sonra */
 export const mobil2Scenes = () => [
   { name: "real-mobil-uygulama-hero", w: 1600, h: 1000, html: mobil2Hero() },
-  { name: "real-mobil-uygulama-ogkare", w: 1600, h: 1000, html: mobil2Hero({ bare: true }) },
   { name: "real-mobil-uygulama-kapak", w: 1200, h: 1500, html: coverTile() },
   ...[techTile(), processTile(), reviewTile(), storeTile(), integTile(), careTile()].map((html, k) => ({ name: `real-mobil-uygulama-${k + 1}`, w: 1200, h: 900, html })),
 ];
